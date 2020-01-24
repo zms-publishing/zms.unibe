@@ -1,0 +1,19 @@
+# TODO checkout from unibe-git via ssh
+#git+ssh://git@id-code.unibe.ch:7999/idcms/zms4-clone.git@zms-headless#egg=ZMS
+
+# => WORKAROUND: zms4 in branch zms-headless will be copied as git-archive-zip into container and unzipped
+-e ./zms4-headless
+
+Flask
+
+#Flask-ZODB # => does not work
+git+https://github.com/SpotlightKid/flask-zodb@master#egg=Flask-ZODB
+
+Flask-JWT-Extended
+Flask-RESTful
+Flask-SQLAlchemy
+
+python-dotenv
+
+# TODO run with production-ready application server
+#gunicorn
