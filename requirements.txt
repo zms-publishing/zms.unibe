@@ -1,7 +1,7 @@
-# TODO checkout from unibe-git via ssh
+# TODO checkout from unibe-git via ssh in container?!?
 #git+ssh://git@id-code.unibe.ch:7999/idcms/zms4-clone.git@zms-headless#egg=ZMS
 
-# => WORKAROUND: zms4 in branch zms-headless will be copied as git-archive-zip into container and unzipped
+# zms4 in branch zms-headless was injected into container - see Dockerfile
 -e ./zms4-headless
 
 Flask

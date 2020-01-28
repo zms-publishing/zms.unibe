@@ -6,10 +6,8 @@ services:
     build: .
     ports:
       - 5000:5000
-    # TODO checkout from unibe-git via ssh
-    # TODO mount does not work - because out of context?!?
-    #volumes:
-    #  - /Users/cm19b120/Workspace/UniBE/Flask/zms4:/restapi/zms4-headless
+    volumes:
+      - ./cmsapi:/restapi/cmsapi
     depends_on:
       - zeo-zodb-storage # => rw
       - sql-postgres-storage
@@ -20,6 +18,8 @@ services:
       - .env
     ports:
       - 8080:8080
+    volumes:
+      - code:/zms4/Extensions
     depends_on:
       - zeo-zodb-storage # => ro
 
@@ -29,6 +29,8 @@ services:
       - .env
     ports:
       - 9080:8080
+    volumes:
+      - code:/zms4/Extensions
     depends_on:
       - zeo-zodb-storage # => rw
 
@@ -53,4 +55,5 @@ services:
 
 volumes:
   zodb:
+  code:
   postgres:
