@@ -4,6 +4,8 @@ services:
 
   zms-headless-interface:
     build: .
+    env_file:
+      - .env
     ports:
       - 5000:5000
     volumes:
@@ -53,6 +55,8 @@ services:
     ports:
       - 5432:5432
 
+# Copy Data.fs into volume unicms_zodb
+# docker run --rm -v $PWD:/source -v unicms_zodb:/dest -w /source alpine cp Data.fs /dest
 volumes:
   zodb:
   code:

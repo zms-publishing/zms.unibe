@@ -8,6 +8,7 @@ RUN apk add --no-cache \
     git
 
 ENV INSTALL_PATH /restapi
+ENV PYTHONPATH /restapi
 
 # TODO run as user zope instead of root
 
