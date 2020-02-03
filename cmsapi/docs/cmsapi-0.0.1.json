@@ -1,0 +1,134 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "CMSAPI",
+    "version": "0.0.1",
+    "description": "REST-API connecting to UniBE CMS"
+  },
+  "servers": [
+    {
+      "url": "https://api.cmstest3.unibe.ch/v0"
+    },
+    {
+      "url": "http://api.cmstest3.unibe.ch/v0"
+    }
+  ],
+  "tags": [
+    {
+      "name": "announcements",
+      "description": "Retrieve announcements published on portal and subsites"
+    }
+  ],
+  "paths": {
+    "/announcements": {
+      "get": {
+        "tags": [
+          "announcements"
+        ],
+        "summary": "Get news and events at www.unibe.ch and *.unibe.ch",
+        "description": "Multiple status values can be provided with comma separated strings",
+        "operationId": "findPetsByStatus",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Status values that need to be considered for filter",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "default": "available",
+                "enum": [
+                  "available",
+                  "pending",
+                  "sold"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid status value",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/announcements/news": {
+      "get": {
+        "tags": [
+          "announcements"
+        ],
+        "summary": "Get news at www.unibe.ch and *.unibe.ch",
+        "description": "Muliple tags can be provided with comma separated strings. Use         tag1, tag2, tag3 for testing.",
+        "parameters": [
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Tags to filter by",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid tag value",
+            "content": {}
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/announcements/events": {
+      "get": {
+        "tags": [
+          "announcements"
+        ],
+        "summary": "Get events at www.unibe.ch and *.unibe.ch",
+        "description": "Muliple tags can be provided with comma separated strings. Use         tag1, tag2, tag3 for testing.",
+        "parameters": [
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Tags to filter by",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid tag value",
+            "content": {}
+          }
+        },
+        "deprecated": false
+      }
+    }
+  }
+}

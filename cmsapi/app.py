@@ -1,54 +1,29 @@
-from flask import Flask, request, redirect, render_template
-from flask_zodb import ZODB, List
+from flask import Flask
+from flask_restful import Api
+from flask_jwt_extended import JWTManager
+
+from cmsapi.db import zodb, sqldb
+from cmsapi.resources.announcement import Announcement, AnnouncementType
 
 app = Flask(__name__)
-app.config['ZODB_STORAGE'] = 'zeo://zeo-zodb-storage:9100'
+app.config["ZODB_STORAGE"] = "zeo://zeo-zodb-storage:9100"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["PROPAGATE_EXCEPTIONS"] = True
 
-db = ZODB(app)
+api = Api(app)
+jwt = JWTManager(app)
 
-
-@app.before_request
-def set_db_defaults():
-    if 'entries' not in db:
-        db['entries'] = List()
-
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        db['entries'].append(request.form['message'])
-        return redirect('/')
-    else:
-        message = db.get('entries', 'Be the first to shout!')
-        return render_template('index.html', message=message)
+api.add_resource(Announcement, '/v0/announcements/')
+api.add_resource(AnnouncementType, '/v0/announcements/<string:meta_type>/')
 
 
-@app.route('/show')
-def show_entries():
-    #zmsobj = db['entries']
-    zmsobj = db['Application']['myzmsx']['content']
-    #zmsobj = db['Application']['unibe']['content']
-    print(zmsobj)
-    print(zmsobj.getMetaobjIds())
-    print(zmsobj.attr('title'))
-    output = []
-    nodes = zmsobj.getTreeNodes(meta_types=['ZMSDocument', 'ZMSTextarea', 'ZMSGraphic', 'LgBootstrapSlide'])
-    for node in nodes:
-        title = node.attr('title', REQUEST={'lang': 'ger'})
-        output.append(title)
+@app.before_first_request
+def create_tables():
+    sqldb.create_all()
 
-        from Products.zms._blobfields import MyBlob
-        titleimg = node.attr('titleimage', REQUEST={'lang': 'eng'})
-        if isinstance(titleimg, MyBlob):
-            output.append(titleimg.getHref(REQUEST={'lang': 'eng'}))
-        img = node.attr('img', REQUEST={'lang': 'ger'})
-        if isinstance(img, MyBlob):
-            output.append(img.getHref(REQUEST={'lang': 'ger'}))
-        image = node.attr('image', REQUEST={'lang': 'ger'})
-        if isinstance(image, MyBlob):
-            output.append(image.getHref(REQUEST={'lang': 'ger'}))
-
-    return render_template('show_entries.html', entries=output)
 
 if __name__ == '__main__':
+    zodb.init_app(app)
+    sqldb.init_app(app)
     app.run(host='0.0.0.0', port=5000, debug=True)
