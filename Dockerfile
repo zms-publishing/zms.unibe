@@ -21,9 +21,9 @@ RUN bin/pip install -U pip \
 
 # $ cd /Users/cm19b120/Workspace/UniBE/Flask/zms4
 # $ git archive --output /Users/cm19b120/Workspace/UniBE/Flask/unibe-cms/restapi/zms4-headless.tar.gz zms-headless
-ADD zms4-headless.tar.gz zms4-headless
-COPY requirements.txt requirements.txt
+ADD zms4-headless.tar.gz zms-headless
 
+COPY requirements.txt requirements.txt
 RUN bin/pip install -r requirements.txt
 
 EXPOSE 5000
