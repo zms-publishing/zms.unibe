@@ -3,7 +3,7 @@
   "info": {
     "title": "CMSAPI",
     "version": "0.0.1",
-    "description": "REST-API connecting to UniBE CMS"
+    "description": "REST-API to connect with UniBE CMS"
   },
   "servers": [
     {
@@ -16,18 +16,21 @@
   "tags": [
     {
       "name": "announcements",
-      "description": "Retrieve announcements published on portal and subsites"
+      "description": "Retrieve data from www.unibe.ch (portal) and *.unibe.ch (subsites)"
+    },
+    {
+      "name": "canteens",
+      "description": "Retrieve data from mensa.unibe.ch (microsite)"
     }
   ],
   "paths": {
-    "/announcements": {
+    "/canteens/locations/": {
       "get": {
         "tags": [
-          "announcements"
+          "canteens"
         ],
-        "summary": "Get news and events at www.unibe.ch and *.unibe.ch",
+        "summary": "Get opening hours, pictures, text infos",
         "description": "Multiple status values can be provided with comma separated strings",
-        "operationId": "findPetsByStatus",
         "parameters": [
           {
             "name": "status",
@@ -61,12 +64,12 @@
         }
       }
     },
-    "/announcements/news": {
+    "/announcements/nodes/": {
       "get": {
         "tags": [
           "announcements"
         ],
-        "summary": "Get news at www.unibe.ch and *.unibe.ch",
+        "summary": "Get uuid of nodes containing announcements",
         "description": "Muliple tags can be provided with comma separated strings. Use         tag1, tag2, tag3 for testing.",
         "parameters": [
           {
@@ -95,20 +98,91 @@
         "deprecated": false
       }
     },
-    "/announcements/events": {
+    "/announcements/{uuid}/": {
       "get": {
         "tags": [
           "announcements"
         ],
-        "summary": "Get events at www.unibe.ch and *.unibe.ch",
+        "summary": "Get all announcements for given node-uuid",
+        "description": "Multiple status values can be provided with comma separated strings",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "description": "Status values that need to be considered for filter",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "default": "available",
+                "enum": [
+                  "available",
+                  "pending",
+                  "sold"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid status value",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/announcements/news/{uuid}/": {
+      "get": {
+        "tags": [
+          "announcements"
+        ],
+        "summary": "Get only news for given node-uuid",
         "description": "Muliple tags can be provided with comma separated strings. Use         tag1, tag2, tag3 for testing.",
         "parameters": [
           {
-            "name": "tags",
-            "in": "query",
+            "name": "uuid",
+            "in": "path",
             "description": "Tags to filter by",
             "required": true,
-            "style": "form",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid tag value",
+            "content": {}
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/announcements/events/{uuid}/": {
+      "get": {
+        "tags": [
+          "announcements"
+        ],
+        "summary": "Get only events for given node-uuid",
+        "description": "Muliple tags can be provided with comma separated strings. Use         tag1, tag2, tag3 for testing.",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "description": "Tags to filter by",
+            "required": true,
             "explode": true,
             "schema": {
               "type": "array",
