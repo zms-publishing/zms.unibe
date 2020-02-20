@@ -1,3 +1,5 @@
+import re
+
 from cmsapi.db import zodb
 from flask import jsonify
 from flask_restful import Resource
@@ -21,53 +23,47 @@ class Canteen(Resource):
         for i, e in enumerate(elements):
             obj = e.getObject()
 
-            info_ob = obj.getChildNodes(meta_types='ZMSTextarea')
+            # do not process Haus der Universitaet
+            if e.get_uid.replace('uid:', '') == '71706e50-45bf-4618-8145-3aaee2440a22' or \
+                    obj.getParentNode().getId() == 'e52912':
+                continue
+
+            info_ob = obj.filteredChildNodes(meta_types='ZMSTextarea')
             info_de = []
-            info_en = []
             for ob in info_ob:
                 text = ob.attr('text', REQUEST={'lang': 'ger'})
                 if text.strip() != "":
-                    info_de.append(ob.attr('text', REQUEST={'lang': 'ger'}))
-                text = ob.attr('text', REQUEST={'lang': 'eng'})
-                if text.strip() != "":
-                    info_en.append(ob.attr('text', REQUEST={'lang': 'eng'}))
+                    info_de.append(ob.attr('text', REQUEST={'lang': 'ger'}).replace('&nbsp;', ' ').replace('<p> </p>', '').replace('<h3> </h3>', ''))
 
             protocol = obj.getConfProperty('ASP.protocol', 'http')
             domain = obj.getConfProperty('ASP.ip_or_domain', 'localhost')
             href = '{}://{}'.format(protocol, domain)
 
-            # get all pictures in gallery of Haus der Universititaet
-            if e.get_uid.replace('uid:', '') == '71706e50-45bf-4618-8145-3aaee2440a22':
-                img_ob = obj.getTreeNodes(meta_types='ZMSGraphic')
-            else:
-                img_ob = obj.getChildNodes(meta_types='ZMSGraphic')
-
+            img_ob = obj.getChildNodes(meta_types='ZMSGraphic')
             img_de = []
-            img_en = []
             for ob in img_ob:
                 img = (ob.attr('img') is not None and not isinstance(ob.attr('img'), str)) and href + ob.attr('img').getHref(
                     REQUEST={'lang': 'ger'}) or ''
                 if img.strip() != "":
                     img_de.append(img)
-                img = (ob.attr('img') is not None and not isinstance(ob.attr('img'), str)) and href + ob.attr('img').getHref(
-                    REQUEST={'lang': 'eng'}) or ''
-                if img.strip() != "":
-                    img_en.append(img)
 
             canteen = {
                 'uuid': e.get_uid.replace('uid:', ''),
                 'path': href + e.getPath(),
                 'title': {
                     'de': obj.attr('title', REQUEST={'lang': 'ger'}),
-                    'en': obj.attr('title', REQUEST={'lang': 'eng'})
+                },
+                'address': {
+                    'street': obj.contactmap.attr('streetAddress', REQUEST={'lang': 'ger'}),
+                    'zipcode': obj.contactmap.attr('postalCode', REQUEST={'lang': 'ger'}),
+                    'city': obj.contactmap.attr('addressLocality', REQUEST={'lang': 'ger'}),
+                    'geopos': obj.contactmap.attr('coordValues', REQUEST={'lang': 'ger'}),
                 },
                 'info': {
-                    'de': info_de,
-                    'en': info_en
+                    'de': [re.sub('(\n|\r)', '', s) for s in info_de],
                 },
                 'image': {
                     'de': img_de,
-                    'en': img_en
                 },
             }
 
