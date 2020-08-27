@@ -1,0 +1,247 @@
+{
+    "basePath": "/cmsapi",
+    "definitions": {},
+    "info": {
+        "contact": {
+            "email": "",
+            "responsibleDeveloper": "",
+            "responsibleOrganization": "",
+            "url": ""
+        },
+        "description": "REST-API to connect with UniBE CMS",
+        "termsOfService": "",
+        "title": "CMSAPI",
+        "version": "0.5"
+    },
+    "paths": {
+        "/v0/announcements/agenda/": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No events found"
+                    },
+                    "404": {
+                        "description": "Problem with connection to agenda.unibe.ch"
+                    }
+                },
+                "summary": "Retrieve events from agenda.unibe.ch",
+                "tags": [
+                    "News and Events"
+                ]
+            }
+        },
+        "/v0/announcements/containers/": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "Retrieve containers deep in the hierarchy (default mode: only at root level of a subsite)",
+                        "in": "query",
+                        "name": "getall",
+                        "required": false,
+                        "type": "boolean"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "Empty response"
+                    }
+                },
+                "summary": "Retrieve identifiers of containers with news and/or events as hierarchical overview",
+                "tags": [
+                    "News and Events"
+                ]
+            }
+        },
+        "/v0/announcements/events/{uuid}/": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "The identifier of the newscontainer taken from /announcements/containers",
+                        "in": "path",
+                        "name": "uuid",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Filter by given creation date as starting point (format: YYYY[MM[DD]] / default: 1 year ago)",
+                        "in": "query",
+                        "name": "created",
+                        "required": false,
+                        "type": "date"
+                    },
+                    {
+                        "description": "Filter by given modification date as starting point (format: YYYY[MM[DD]] / default: 1 year ago)",
+                        "in": "query",
+                        "name": "changed",
+                        "required": false,
+                        "type": "date"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No events found"
+                    }
+                },
+                "summary": "Retrieve only events of the specified identifier",
+                "tags": [
+                    "News and Events"
+                ]
+            }
+        },
+        "/v0/announcements/news/{uuid}/": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "The identifier of the newscontainer taken from /announcements/containers",
+                        "in": "path",
+                        "name": "uuid",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Filter by given creation date as starting point (format: YYYY[MM[DD]] / default: 1 year ago)",
+                        "in": "query",
+                        "name": "created",
+                        "required": false,
+                        "type": "date"
+                    },
+                    {
+                        "description": "Filter by given modification date as starting point (format: YYYY[MM[DD]] / default: 1 year ago)",
+                        "in": "query",
+                        "name": "changed",
+                        "required": false,
+                        "type": "date"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No news found"
+                    }
+                },
+                "summary": "Retrieve only news of the specified identifier",
+                "tags": [
+                    "News and Events"
+                ]
+            }
+        },
+        "/v0/announcements/overview/": {
+            "get": {
+                "deprecated": true,
+                "parameters": [
+                    {
+                        "description": "Retrieve identifiers of newscontainers of all subsites recursively (default mode: at each root level only)",
+                        "in": "query",
+                        "name": "getall",
+                        "required": false,
+                        "type": "boolean"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "Empty response"
+                    }
+                },
+                "summary": "Retrieve identifiers of newscontainers containing news and/or events",
+                "tags": [
+                    "News and Events"
+                ]
+            }
+        },
+        "/v0/announcements/{uuid}/": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "The identifier of the newscontainer taken from /announcements/containers",
+                        "in": "path",
+                        "name": "uuid",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "description": "Filter by given creation date as starting point (format: YYYY[MM[DD]] / default: 1 year ago)",
+                        "in": "query",
+                        "name": "created",
+                        "required": false,
+                        "type": "date"
+                    },
+                    {
+                        "description": "Filter by given modification date as starting point (format: YYYY[MM[DD]] / default: 1 year ago)",
+                        "in": "query",
+                        "name": "changed",
+                        "required": false,
+                        "type": "date"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No news/events found"
+                    }
+                },
+                "summary": "Retrieve all news/events of the specified identifier",
+                "tags": [
+                    "News and Events"
+                ]
+            }
+        },
+        "/v0/canteens/overview/": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No canteens found"
+                    }
+                },
+                "summary": "Retrieve an overview of all canteens from mensa.unibe.ch",
+                "tags": [
+                    "Canteens"
+                ]
+            }
+        },
+        "/v0/canteens/{uuid}/": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "The identifier of the canteen",
+                        "in": "path",
+                        "name": "uuid",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No canteens found"
+                    }
+                },
+                "summary": "Retrieve details of a canteen from mensa.unibe.ch",
+                "tags": [
+                    "Canteens"
+                ]
+            }
+        }
+    },
+    "swagger": "2.0"
+}

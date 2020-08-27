@@ -1,0 +1,19 @@
+Flask==1.1.1
+
+# Flask-ZODB==0.1 (py2 only)
+# Flask-ZODB==0.2dev (py2+p3)
+git+https://github.com/SpotlightKid/flask-zodb@master#egg=Flask-ZODB
+
+Flask-JWT-Extended==3.24.1
+Flask-RESTful==0.3.8
+Flask-RESTX==0.1.1
+Flask-SQLAlchemy==2.4.1
+Werkzeug==0.16.1  # TODO: 1.0.0 does not work due import errors
+
+Flasgger
+
+anytree
+
+python-dotenv
+requests
+gunicorn
