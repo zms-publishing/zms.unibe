@@ -49,11 +49,11 @@ class AnnouncementContainers(Resource):
         tree = self.traverse_clients(self.zmscontent)
         t2 = time.time()
 
-        # print export_json(tree)
-        # print render_tree(tree)
-        # print 'AnnouncementContainers.retrieve_newscontainers(): done in %.2fsecs.' % (t1 - t0)
-        # print 'AnnouncementContainers.traverse_clients(): done in %.2fsecs.' % (t2 - t1)
-        # print 'AnnouncementContainers.get(): done in %.2fsecs.' % (t2 - t0)
+        # print(export_json(tree))
+        # print(render_tree(tree))
+        # print('AnnouncementContainers.retrieve_newscontainers(): done in %.2fsecs.' % (t1 - t0))
+        # print('AnnouncementContainers.traverse_clients(): done in %.2fsecs.' % (t2 - t1))
+        # print('AnnouncementContainers.get(): done in %.2fsecs.' % (t2 - t0))
 
         if tree is not None:
             return jsonify([DictExporter(attriter=lambda attrs:[(k, v) for k, v in attrs if k != "name"]).export(tree)])
@@ -75,7 +75,7 @@ class AnnouncementContainers(Resource):
             # instead of try/except using AbstractCatalogBrain.getObject()
             # because the latter ZCatalog method has a bad performnce in this case.
             if self.zmscontent.getLinkObj('{{${}}}'.format(n_path[1:])) is None:
-                # print "Object not found:", n_uuid, n_path
+                # print("Object not found:", n_uuid, n_path)
                 continue
 
             n_obj = n.getObject()
