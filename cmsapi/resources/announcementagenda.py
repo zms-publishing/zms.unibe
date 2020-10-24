@@ -1,4 +1,4 @@
-import httplib
+import http
 import requests
 
 from flask import jsonify
@@ -41,8 +41,8 @@ class AnnouncementAgenda(Resource):
         if self.query_announcements():
             return jsonify(self.filter_announcements())
         if self.agenda_error != '':
-            return str(self.agenda_error), httplib.NOT_FOUND
-        return '', httplib.NO_CONTENT
+            return str(self.agenda_error), http.HTTPStatus.NOT_FOUND
+        return '', http.HTTPStatus.NO_CONTENT
 
     def query_announcements(self):
         for i, e in enumerate(self.elements):
@@ -79,8 +79,6 @@ class AnnouncementAgenda(Resource):
                 }
             }
             self.announcements.append(announcement)
-
-        print("total: {}".format(len(self.elements)))
 
         if len(self.announcements) > 0:
             return True

@@ -1,4 +1,4 @@
-import httplib
+import http
 import re
 import ast
 
@@ -42,7 +42,7 @@ class Canteen(Resource):
             elements = self.zmsindex({'get_uid': 'uid:' + uuid})
             if self.query_canteens(elements):
                 return jsonify(self.canteens)
-        return '', httplib.NO_CONTENT
+        return '', http.HTTPStatus.NO_CONTENT
 
     def query_canteens(self, elements=None):
         if elements is not None:
@@ -139,8 +139,7 @@ class CanteenOverview(Canteen, Resource):
                 description: No canteens found
         """
         elements = self.zmsindex({'meta_id': self.default_meta, 'path': self.default_site})
-        print("total: {}".format(len(elements)))
 
         if self.query_canteens(elements):
             return jsonify(self.canteens)
-        return '', httplib.NO_CONTENT
+        return '', http.HTTPStatus.NO_CONTENT

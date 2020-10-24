@@ -8,14 +8,13 @@ from flask_jwt_extended import JWTManager
 from cmsapi.db import zodb, sqldb
 from cmsapi.resources.announcementagenda import AnnouncementAgenda
 from cmsapi.resources.announcementcontainers import AnnouncementContainers
-from cmsapi.resources.announcementoverview import AnnouncementOverview  # TODO: deprecated
 from cmsapi.resources.announcement import Announcement, AnnouncementNews, AnnouncementEvents
 from cmsapi.resources.canteen import Canteen, CanteenOverview
 
 app = Flask(__name__)
-app.config["ZODB_STORAGE"] = os.getenv('ZODB_STORAGE', 'zeo://localhost:9027')
+app.config["ZODB_STORAGE"] = os.getenv('ZODB_STORAGE', 'zeo://localhost:8090')
 
-cmsapi_version = "0.5"
+cmsapi_version = "1.0"
 
 swagger_config = {
     "headers": [
@@ -80,7 +79,6 @@ api.add_resource(Announcement, '/announcements/<string:uuid>/')
 api.add_resource(AnnouncementNews, '/announcements/news/<string:uuid>/')
 api.add_resource(AnnouncementEvents, '/announcements/events/<string:uuid>/')
 api.add_resource(AnnouncementContainers, '/announcements/containers/')
-api.add_resource(AnnouncementOverview, '/announcements/overview/')  # TODO: deprecated
 api.add_resource(AnnouncementAgenda, '/announcements/agenda/')
 
 api.add_resource(Canteen, '/canteens/<string:uuid>/')

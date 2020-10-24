@@ -1,4 +1,4 @@
-import httplib
+import http
 import time
 import urllib
 
@@ -63,7 +63,7 @@ class Announcement(Resource):
         """
         if self.query_announcements(uuid=uuid):
             return jsonify(self.filter_announcements())
-        return '', httplib.NO_CONTENT
+        return '', http.HTTPStatus.NO_CONTENT
 
     def query_announcements(self, boxtype=None, uuid=None):
         if boxtype is None:
@@ -140,10 +140,6 @@ class Announcement(Resource):
             else:
                 changed_ok = True
                 changed_dt = time.localtime(time.time() - default_timespan)
-
-            print(i, active_parent, active_self, obj.attr('boxtype'), available,
-                  time.strftime('%Y%m%d', created_dt), created_ok,
-                  time.strftime('%Y%m%d', changed_dt), changed_ok)
 
             if active_parent and active_self and available \
                     and (created_ok and changed_ok) \
@@ -240,10 +236,6 @@ class Announcement(Resource):
                 }
                 self.announcements.append(announcement)
 
-        print(boxtype)
-        print("total: {}".format(len(elements)))
-        print("filtered: {}".format(len(self.announcements)))
-
         if len(self.announcements) > 0:
             return True
         return False
@@ -308,7 +300,7 @@ class AnnouncementNews(Announcement, Resource):
         """
         if self.query_announcements(boxtype=['news'], uuid=uuid):
             return jsonify(self.filter_announcements())
-        return '', httplib.NO_CONTENT
+        return '', http.HTTPStatus.NO_CONTENT
 
 
 @api.route('/events/<uuid>/', endpoint='events_uuid')
@@ -344,4 +336,4 @@ class AnnouncementEvents(Announcement, Resource):
         """
         if self.query_announcements(boxtype=['event'], uuid=uuid):
             return jsonify(self.filter_announcements())
-        return '', httplib.NO_CONTENT
+        return '', http.HTTPStatus.NO_CONTENT

@@ -1,4 +1,4 @@
-import httplib
+import http
 import time
 
 from cmsapi.db import zodb
@@ -57,7 +57,7 @@ class AnnouncementContainers(Resource):
 
         if tree is not None:
             return jsonify([DictExporter(attriter=lambda attrs:[(k, v) for k, v in attrs if k != "name"]).export(tree)])
-        return '', httplib.NO_CONTENT
+        return '', http.HTTPStatus.NO_CONTENT
 
     def retrieve_newscontainers(self, path=''):
         for i, n in enumerate(self.zmsindex({'meta_id': 'newscontainer', 'path': path})):
