@@ -25,6 +25,7 @@ RUN python3.9 -m venv $INSTALL_PATH \
     -e zms4-headless
 
 RUN bin/pip install -r requirements-flask.txt \
+    -c https://zopefoundation.github.io/Zope/releases/5.0/constraints.txt \
  && mkdir log
 
 EXPOSE 5000
