@@ -1,15 +1,15 @@
-## UniBE CMSAPI
+# UniBE CMSAPI
 
 The implementation of a RESTful API for UniBE CMS relies on the web application (micro)framework [Flask](https://flask.palletsprojects.com). This should enable a more lightweight Python development mode alongside the historically grown Zope stack.
 
 Additionally CMSAPI makes use of [Flasgger](https://github.com/flasgger/flasgger) to generate the documentation and is served by [Gunicorn](https://gunicorn.org) in testing and production deployments.
 
-### Codebase
+## Codebase
 
-**RESTAPI repository (internal)**
+**REST-API repository (internal)**
 * https://id-code.unibe.ch/projects/IDCMS/repos/unibe-cms/browse/restapi
 
-### Development
+## Development
 
 [PyCharm](https://www.jetbrains.com/pycharm/) is the recommended IDE for local development. First the desired Python version has to be installed for your system. Second an isolated Python virtual environment has to be created. Third the needed software stack has to be installed and setup.
 
@@ -36,12 +36,13 @@ A sample run configuration:
         </configuration>
     </component>
 
-### Environments
+## Environments
 
-#### Testing
+### Testing
 
 * `CMSTEST3`
+* `TODO` integrate into [docker-config-test](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config-test/browse)
 
-#### Production
+### Production
 
-* `TODO`
+* `TODO` integrate into [docker-config](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config/browse)
