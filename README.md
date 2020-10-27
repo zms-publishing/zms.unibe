@@ -40,7 +40,7 @@ A sample run configuration:
 
 ### Testing
 
-* `CMSTEST3`
+* `CMSTEST3` see current [deployment script](https://id-code.unibe.ch/projects/IDCMS/repos/unibe-cms/browse/bin/zms.deployZMSunibe.cmstest3#90)
 * `TODO` integrate into [docker-config-test](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config-test/browse)
 
 ### Production
