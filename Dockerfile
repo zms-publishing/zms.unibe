@@ -1,4 +1,4 @@
-FROM python:3.9-alpine
+FROM python:3.6.9-alpine
 
 RUN apk --update upgrade && \
     apk --no-cache add \
