@@ -18,7 +18,7 @@ ENV INSTALL_PATH=/unibe-cmsapi \
 COPY . $INSTALL_PATH
 WORKDIR $INSTALL_PATH
 
-RUN python3.9 -m venv $INSTALL_PATH \
+RUN python3 -m venv $INSTALL_PATH \
  && bin/pip install -U pip wheel setuptools \
  && bin/pip install Zope[wsgi]==5.0 \
     -c https://zopefoundation.github.io/Zope/releases/5.0/constraints.txt \
