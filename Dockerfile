@@ -22,7 +22,7 @@ RUN python3 -m venv $INSTALL_PATH \
  && bin/pip install -U pip wheel setuptools \
  && bin/pip install Zope[wsgi]==5.0 \
     -c https://zopefoundation.github.io/Zope/releases/5.0/constraints.txt \
-    -e zms4-headless
+    -e zms-headless
 
 RUN bin/pip install -r requirements-flask.txt \
     -c https://zopefoundation.github.io/Zope/releases/5.0/constraints.txt \
