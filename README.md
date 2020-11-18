@@ -17,12 +17,12 @@ Assuming the `unibe-cms` repository has been cloned and a Python virtual environ
 
     (venvpy39-cmsapi) $ bin/pip install -U pip wheel setuptools
     
-    (venvpy39-cmsapi) $ bin/pip install Zope[wsgi]==5.0 \
+    (venvpy39-cmsapi) $ bin/pip install Zope[wsgi]==5.1 \
                         -e ../unibe-cms/restapi/zms-headless \
-                        -c https://zopefoundation.github.io/Zope/releases/5.0/constraints.txt
+                        -c https://zopefoundation.github.io/Zope/releases/5.1/constraints.txt
 
     (venvpy39-cmsapi) $ bin/pip install -r ../unibe-cms/restapi/requirements-flask.txt \
-                        -c https://zopefoundation.github.io/Zope/releases/5.0/constraints.txt
+                        -c https://zopefoundation.github.io/Zope/releases/5.1/constraints.txt
 
 A sample run configuration:
 
