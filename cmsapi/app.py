@@ -11,11 +11,12 @@ from cmsapi.resources.announcementcontainers import AnnouncementContainers
 from cmsapi.resources.announcementoverview import AnnouncementOverview  # TODO: deprecated
 from cmsapi.resources.announcement import Announcement, AnnouncementNews, AnnouncementEvents
 from cmsapi.resources.canteen import Canteen, CanteenOverview
+from cmsapi.resources.servicelinks import ServiceLinks, ServiceLinksItem
 
 app = Flask(__name__)
-app.config["ZODB_STORAGE"] = os.getenv('ZODB_STORAGE', 'zeo://localhost:9027')
+app.config["ZODB_STORAGE"] = os.getenv('ZODB_STORAGE', 'zeo://localhost:8090')
 
-cmsapi_version = "0.5"
+cmsapi_version = "0.6"
 
 swagger_config = {
     "headers": [
@@ -85,6 +86,9 @@ api.add_resource(AnnouncementAgenda, '/announcements/agenda/')
 
 api.add_resource(Canteen, '/canteens/<string:uuid>/')
 api.add_resource(CanteenOverview, '/canteens/overview/')
+
+api.add_resource(ServiceLinks, '/servicelinks/')
+api.add_resource(ServiceLinksItem, '/servicelinks/<string:item>/')
 
 
 @app.route('/healthcheck')
