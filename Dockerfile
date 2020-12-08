@@ -11,9 +11,7 @@ RUN apk --update upgrade && \
 
 ENV INSTALL_PATH=/unibe-cmsapi \
     PYTHONPATH=/unibe-cmsapi \
-    ZODB_STORAGE=zeo://host.docker.internal:8090
-
-# TODO: run as user zope instead of root
+    ZODB_STORAGE=zeo:8000
 
 COPY . $INSTALL_PATH
 WORKDIR $INSTALL_PATH
