@@ -11,7 +11,7 @@
         "description": "REST-API to connect with UniBE CMS",
         "termsOfService": "",
         "title": "CMSAPI",
-        "version": "0.5"
+        "version": "0.6"
     },
     "paths": {
         "/v0/announcements/agenda/": {
@@ -239,6 +239,47 @@
                 "summary": "Retrieve details of a canteen from mensa.unibe.ch",
                 "tags": [
                     "Canteens"
+                ]
+            }
+        },
+        "/v0/servicelinks/": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No information found"
+                    }
+                },
+                "summary": "Returns possible values for an {item} to be retrieved",
+                "tags": [
+                    "Service Links"
+                ]
+            }
+        },
+        "/v0/servicelinks/{item}/": {
+            "get": {
+                "parameters": [
+                    {
+                        "description": "A possible value taken from /servicelinks",
+                        "in": "path",
+                        "name": "item",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "204": {
+                        "description": "No information found"
+                    }
+                },
+                "summary": "Retrieve information from the requested item",
+                "tags": [
+                    "Service Links"
                 ]
             }
         }

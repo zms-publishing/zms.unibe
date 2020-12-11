@@ -13,7 +13,7 @@ api = Namespace("Service Links", path='/servicelinks')
 class ServiceLinks(Resource):
 
     def __init__(self):
-        # map possible endpoints to ZMS content UID
+        # map possible endpoints to ZMS content UID in client "Uni App"
         self.possible_items = {
             'contact': '58115e60-e80b-44c1-9a7d-bc65a42c9d5a',
             'imprint': 'd15e37f5-b317-4b47-baf1-c203a34bd0ad',
@@ -73,7 +73,8 @@ class ServiceLinksItem(ServiceLinks, Resource):
                 'title': 'title',
                 'text': 'text',
                 'attr_dc_description': 'meta',
-                'attr_ref': 'href',
+                'attr_ref': 'href',  # disabled acquisition of ZMSLinkElement-3.1.28 to set multilingual=true
+                                     # in client "Uni App" - obscure why this is not default in UniBE master
                 'file': 'href',
             }
             langs = {
@@ -90,10 +91,6 @@ class ServiceLinksItem(ServiceLinks, Resource):
                         'ZMSLinkElement',
                         'filecontainer',
                     ]):
-                        protocol = obj.getConfProperty('ASP.protocol', 'http')
-                        domain = obj.getConfProperty('ASP.ip_or_domain', 'localhost')
-                        url = '{}://{}'.format(protocol, domain)
-
                         service_item = {}
 
                         # get values of defined attrs in defined langs
@@ -101,7 +98,8 @@ class ServiceLinksItem(ServiceLinks, Resource):
                             for attr in attrs.keys():
                                 value = get_value(obj, attr, lang)
                                 if value is not None:
-                                    service_item[attrs[attr]] = {}
+                                    if attrs[attr] not in service_item:
+                                        service_item[attrs[attr]] = {}
                                     service_item[attrs[attr]][langs[lang]] = value
 
                         # get location data files organized in filecontainers
@@ -114,12 +112,12 @@ class ServiceLinksItem(ServiceLinks, Resource):
                                         meta = get_value(file_obj, 'attr_dc_description', lang)
                                         if meta is not None:
                                             service_item['files'].append({
-                                                'href': {langs[lang]: url + href},
+                                                'href': {langs[lang]: href},
                                                 'meta': {langs[lang]: meta},
                                             })
                                         else:
                                             service_item['files'].append({
-                                                'href': {langs[lang]: url + href},
+                                                'href': {langs[lang]: href},
                                             })
 
                         service_items.append(service_item)
@@ -129,16 +127,23 @@ class ServiceLinksItem(ServiceLinks, Resource):
 
 
 def get_value(obj, attr, lang):
-    if obj.isVisible(REQUEST={'lang': lang}):
-        value = obj.attr(attr, REQUEST={'lang': lang})
-
+    req = {'lang': lang}
+    if obj.isVisible(REQUEST=req):
+        value = obj.attr(attr, REQUEST=req)
         if attr in ['title', 'titlealt', 'text']:
             value = value.replace('&nbsp;', ' ').replace('\r', '').replace('\n', '')
-
         if attr in ['file', 'img']:
+            protocol = obj.getConfProperty('ASP.protocol', 'http')
+            domain = obj.getConfProperty('ASP.ip_or_domain', 'localhost')
+            url = '{}://{}'.format(protocol, domain)
             if isinstance(value, _blobfields.MyFile) or isinstance(value, _blobfields.MyImage):
-                return value.getHref(REQUEST={'lang': lang})
-
+                value = url + value.getHref(REQUEST=req)
+        if attr in ['attr_ref']:
+            linkobj = obj.getLinkObj(value)
+            portalmaster = obj.breadcrumbs_obj_path(True)[0]
+            if linkobj is not None and portalmaster is not None:
+                url = linkobj.getHref2IndexHtml(REQUEST=req)
+                value = linkobj.getHref2IndexHtmlInContext(portalmaster, url, REQUEST=req)
         if value.strip() != '':
             return value
     return None
