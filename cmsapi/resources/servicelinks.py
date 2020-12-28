@@ -76,6 +76,7 @@ class ServiceLinksItem(ServiceLinks, Resource):
                 'attr_ref': 'href',  # disabled acquisition of ZMSLinkElement-3.1.28 to set multilingual=true
                                      # in client "Uni App" - obscure why this is not default in UniBE master
                 'file': 'href',
+                'change_dt': 'lastmodified',
             }
             langs = {
                 'ger': 'de',
@@ -144,6 +145,8 @@ def get_value(obj, attr, lang):
             if linkobj is not None and portalmaster is not None:
                 url = linkobj.getHref2IndexHtml(REQUEST=req)
                 value = linkobj.getHref2IndexHtmlInContext(portalmaster, url, REQUEST=req)
+        if attr in ['created_dt', 'change_dt', 'attr_active_start', 'attr_active_end']:
+            value = obj.getLangFmtDate(value, fmt_str='ISO8601')
         if value.strip() != '':
             return value
     return None
