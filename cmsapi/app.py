@@ -12,7 +12,7 @@ from cmsapi.resources.announcement import Announcement, AnnouncementNews, Announ
 from cmsapi.resources.canteen import Canteen, CanteenOverview
 
 app = Flask(__name__)
-app.config["ZODB_STORAGE"] = 'zeo://' + os.getenv('ZODB_STORAGE', 'localhost:8000')
+app.config["ZODB_STORAGE"] = 'zeo://' + os.getenv('ZODB_STORAGE', 'localhost:8000?storage=main')
 
 cmsapi_version = "1.0"
 
