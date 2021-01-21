@@ -10,6 +10,7 @@ from cmsapi.resources.announcementagenda import AnnouncementAgenda
 from cmsapi.resources.announcementcontainers import AnnouncementContainers
 from cmsapi.resources.announcement import Announcement, AnnouncementNews, AnnouncementEvents
 from cmsapi.resources.canteen import Canteen, CanteenOverview
+from cmsapi.resources.servicelinks import ServiceLinks, ServiceLinksItem
 
 app = Flask(__name__)
 app.config["ZODB_STORAGE"] = 'zeo://' + os.getenv('ZODB_STORAGE', 'localhost:8000?storage=main')
@@ -83,6 +84,9 @@ api.add_resource(AnnouncementAgenda, '/announcements/agenda/')
 
 api.add_resource(Canteen, '/canteens/<string:uuid>/')
 api.add_resource(CanteenOverview, '/canteens/overview/')
+
+api.add_resource(ServiceLinks, '/servicelinks/')
+api.add_resource(ServiceLinksItem, '/servicelinks/<string:item>/')
 
 
 @app.route('/healthcheck')
