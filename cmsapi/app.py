@@ -13,7 +13,7 @@ from cmsapi.resources.canteen import Canteen, CanteenOverview
 from cmsapi.resources.servicelinks import ServiceLinks, ServiceLinksItem
 
 app = Flask(__name__)
-app.config["ZODB_STORAGE"] = 'zeo://' + os.getenv('ZODB_STORAGE', 'localhost:8000?storage=main')
+app.config["ZODB_STORAGE"] = 'zeo://' + os.getenv('ZODB_STORAGE', '127.0.0.1:8000?storage=main')
 
 cmsapi_version = "1.0"
 
