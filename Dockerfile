@@ -1,37 +1,19 @@
-FROM python:3.6.9-alpine
+FROM ep-devops.id.unibe.ch:5000/id/unibe-cmsbase:python3.9.1-zope5.1
 
-RUN apk --update upgrade \
- && apk --no-cache add \
-    gcc \
-    git \
-    libffi-dev \
-    musl-dev \
-    python3-dev \
- && rm -rf /tmp/* /var/cache/apk/* /var/tmp/*
-
-ENV INSTALL_PATH=/unibe-cms \
-    PYTHONPATH=/unibe-cms
-
-WORKDIR $INSTALL_PATH
-
-RUN python3 -m venv $INSTALL_PATH \
- && bin/pip install -U pip wheel setuptools \
- && bin/pip install Zope[wsgi]==5.1 \
-    -c https://zopefoundation.github.io/Zope/releases/5.1/constraints.txt
-
-COPY requirements-flask.txt $INSTALL_PATH/requirements-flask.txt
+COPY requirements-flask.txt $PYTHONPATH/requirements-flask.txt
+COPY zms-headless $PYTHONPATH/zms-headless
 
 RUN bin/pip install \
+    -e zms-headless \
     -r requirements-flask.txt \
-    -c https://zopefoundation.github.io/Zope/releases/5.1/constraints.txt
-
-COPY . $INSTALL_PATH
-ENV ZODB_STORAGE=zeo:8000
-EXPOSE 5000
-
-RUN bin/pip install -e zms-headless \
     -c https://zopefoundation.github.io/Zope/releases/5.1/constraints.txt \
  && mkdir log
+
+COPY cmsapi $PYTHONPATH/cmsapi
+
+ENV ZODB_STORAGE="zeo:8000?storage=main"
+
+EXPOSE 5000
 
 CMD [ "bin/gunicorn", "cmsapi.app:app", "--bind", "0.0.0.0:5000", \
       "--timeout", "60", \

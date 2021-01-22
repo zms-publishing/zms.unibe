@@ -1,4 +1,4 @@
-import httplib
+import http
 
 from cmsapi.db import zodb
 from flask import jsonify
@@ -124,7 +124,7 @@ class ServiceLinksItem(ServiceLinks, Resource):
                         service_items.append(service_item)
 
             return jsonify(service_items)
-        return '', httplib.NO_CONTENT
+        return '', http.HTTPStatus.NO_CONTENT
 
 
 def get_value(obj, attr, lang):
