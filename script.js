@@ -5,8 +5,7 @@ let repeatingValueClass = "repeating";
 class Row {
     constructor(person, responsibility) {
         this.organizationalUnit = responsibility.type;
-        this.externId = responsibility.externId;
-        this.department = responsibility.nameGerman;
+        this.department = responsibility.nameGerman + " (" + responsibility.externId + ")";
         this.name = person.firstname + " " + person.lastname;
         this.phone = person.phone;
         this.email = person.email;
@@ -16,8 +15,8 @@ class Row {
 function flatten(array) {
     let flatArray = [];
 
-    array.forEach(function (person) {
-        person.responsibilities.forEach(function (responsibility) {
+    array.forEach((person) => {
+        person.responsibilities.forEach((responsibility) => {
             flatArray.push(new Row(person, responsibility));
         });
     });
@@ -46,30 +45,34 @@ function draw(settings) {
 }
 
 function tableReady(settings) {
-    let departmentSet = new Set();
-    this.api().column("department:name").data().each(function (value) {
-        departmentSet.add(value);
-    });
-    $("#select-department").each(function() {
-        let select = this;
-        // select.addEventListener("change", filterByDepartment);
+    let api = this.api();
 
-        departmentSet.forEach(function(department) {
+    // Add all departments to set to ensure every element is unique
+    let departmentSet = new Set();
+    api.column("department:name").data().each((value) => departmentSet.add(value));
+    // Add all departments to an array and sort. (Set doesn't sort alphabetically.)
+    let departmentArray = [...departmentSet].sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
+
+    $("#select-department").each(function () {
+        this.addEventListener("change", function () {
+            api.column("department:name").search(this.value, false, false, false).draw();
+        });
+
+        departmentArray.forEach((department) => {
             let option = document.createElement("option");
             option.innerHTML = department;
             option.value = department;
-            select.appendChild(option);
+            this.appendChild(option);
         });
     });
 }
 
-$(document).ready(function () {
+$(document).ready(() => {
     let table = $("#table").DataTable({
         processing: true,
         ajax: {url: "test.json", dataSrc: flatten},
         columns: [
             {data: "organizationalUnit", name: "organizationalUnit", visible: false},
-            {data: "externId"},
             {data: "department", name: "department"},
             {data: "name"},
             {data: "phone"},
