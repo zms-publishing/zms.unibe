@@ -23,7 +23,7 @@ function flatten(array) {
     return flatArray;
 }
 
-function draw(settings) {
+function draw() {
     let column = this.api().column("department:name", {page: 'current'});
 
     let cells = column.nodes();
@@ -44,7 +44,7 @@ function draw(settings) {
     }
 }
 
-function tableReady(settings) {
+function tableReady() {
     let api = this.api();
 
     // Add all departments to set to ensure every element is unique
@@ -70,7 +70,7 @@ function tableReady(settings) {
 $(document).ready(() => {
     let table = $("#table").DataTable({
         processing: true,
-        ajax: {url: "test.json", dataSrc: flatten},
+        ajax: {url: "data.json", dataSrc: flatten},
         columns: [
             {data: "organizationalUnit", name: "organizationalUnit", visible: false},
             {data: "department", name: "department"},
