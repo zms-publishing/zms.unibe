@@ -148,4 +148,27 @@ $(document).ready(() => {
         drawCallback: draw,
         createdRow: assignClickListener,
     });
+
+    let checkboxes = $("#form input[type=checkbox]");
+
+    checkboxes.change(function () {
+        let changedBox = this;
+        let term = "";
+
+        if (changedBox.checked) {
+            term = changedBox.value;
+
+            // Uncheck other boxes
+            checkboxes.each(function () {
+                if (changedBox !== this) {
+                    this.checked = false;
+                }
+            });
+        }
+
+        table
+            .column("timeSpan:name")
+            .search(term, false, false, false)
+            .draw();
+    });
 });

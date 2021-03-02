@@ -1,3 +1,7 @@
 td.repeating {
     visibility: hidden;
 }
+
+label {
+    display: block;
+}
