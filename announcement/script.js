@@ -21,12 +21,17 @@ let typeDict = {
     "HINWEIS": "Hinweis"
 };
 
-function mapTimeSpan(timeSpan) {
-    return timeSpanDict[timeSpan];
-}
+let repeatingValueClass = "repeating";
 
 function mapType(type) {
     return typeDict[type];
+}
+
+function renderTimeSpan(timeSpan, role) {
+    if (role === "display") {
+        return timeSpanDict[timeSpan];
+    }
+    return timeSpan;
 }
 
 function renderDate(date, role) {
@@ -74,21 +79,24 @@ function convert(data) {
 }
 
 function draw() {
-    let api = this.api();
-    let rows = api.rows({page: "current"});
+    let column = this.api().column("timeSpan:name", {page: 'current'});
+
+    let cells = column.nodes();
+    let data = column.data().toArray();
 
     let lastTimeSpan = null;
 
-    rows.data().each((announcement, index) => {
-        let timeSpan = announcement.timeSpan;
+    for (let i = 0; i < data.length; i++) {
+        let cell = cells[i];
+        let timeSpan = data[i];
 
-        if (timeSpan !== lastTimeSpan) {
-            $(rows.nodes()).eq(index).before(
-                "<tr class=\"group\"><td colspan=\"5\">" + mapTimeSpan(timeSpan) + "</td></tr>"
-            );
+        if (timeSpan === lastTimeSpan) {
+            cell.classList.add(repeatingValueClass);
+        } else {
+            cell.classList.remove(repeatingValueClass);
         }
         lastTimeSpan = timeSpan;
-    });
+    }
 }
 
 /// This class should be modified/replaced for CMS.
@@ -124,18 +132,19 @@ $(document).ready(() => {
         processing: true,
         ajax: {url: "data.json", dataSrc: convert},
         columns: [
+            {data: "timeSpan", name: "timeSpan"},
             {data: "subject"},
             {data: "description"},
             {data: "type"},
             {data: "begin"},
-            {data: "end"},
-            {data: "timeSpan", visible: false, searchable: false}
+            {data: "end"}
         ],
         columnDefs: [
-            {render: mapType, targets: 2},
-            {render: renderDate, targets: [3, 4]}
+            {render: renderTimeSpan, targets: 0},
+            {render: mapType, targets: 3},
+            {render: renderDate, targets: [4, 5]}
         ],
-        order: [[5, "asc"], [3, "asc"]],
+        order: [[0, "asc"], [4, "asc"]],
         drawCallback: draw,
         createdRow: assignClickListener,
     });

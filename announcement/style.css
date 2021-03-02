@@ -1,4 +1,3 @@
-/* NOT REQUIRED! */
-.group {
-    font-weight: bold;
+td.repeating {
+    visibility: hidden;
 }
