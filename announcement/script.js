@@ -15,7 +15,7 @@ timeSpanDict[TimeSpan.PAST] = "Vergangenheit";
 
 let typeDict = {
     "WARTUNG": "Wartung",
-    "DRINGENDE WARTUNG": "Dringende Warung",
+    "DRINGENDE WARTUNG": "Dringende Wartung",
     "STOERUNG": "St&ouml;rung",
     "SICHERHEITSMELDUNG": "Sicherheitsmeldung",
     "HINWEIS": "Hinweis"
