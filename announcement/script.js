@@ -1,10 +1,25 @@
 "use strict";
 
-const TimeSpan = Object.freeze({NOW: 1, FUTURE: 2, PAST: 3});
+const TimeSpan = Object.freeze({
+    NOW: 1,
+    FUTURE: 2,
+    PAST: 3
+});
 
 let unknownDateText = "Unbekannt";
-let timeSpanDict = {1: "Jetzt", 2: "Anstehend", 3: "Vergangenheit"};
-let typeDict = {WARTUNG: "Wartung", STOERUNG: "St&ouml;rung"};
+
+let timeSpanDict = {};
+timeSpanDict[TimeSpan.NOW] = "Jetzt";
+timeSpanDict[TimeSpan.FUTURE] = "Anstehend";
+timeSpanDict[TimeSpan.PAST] = "Vergangenheit";
+
+let typeDict = {
+    "WARTUNG": "Wartung",
+    "DRINGENDE WARTUNG": "Dringende Warung",
+    "STOERUNG": "St&ouml;rung",
+    "SICHERHEITSMELDUNG": "Sicherheitsmeldung",
+    "HINWEIS": "Hinweis"
+};
 
 function mapTimeSpan(timeSpan) {
     return timeSpanDict[timeSpan];
@@ -56,10 +71,9 @@ function dateOrNull(text) {
 }
 
 function getTimeSpan(begin, end, now) {
-    // [some date] greater than [null] returns false.
-    if (now > end) {
+    if (end !== null && now > end) {
         return TimeSpan.PAST;
-    } else if (now > begin) {
+    } else if (begin !== null && now > begin) {
         return TimeSpan.NOW;
     } else {
         return TimeSpan.FUTURE;
@@ -73,6 +87,12 @@ function convert(data) {
     announcements.forEach((announcement) => {
         announcement.begin = dateOrNull(announcement.begin);
         announcement.end = dateOrNull(announcement.end);
+
+        if (announcement.subject === "testmail") {
+            console.log("yay");
+        }
+        console.log(announcement.subject);
+
         announcement.timeSpan = getTimeSpan(announcement.begin, announcement.end, now);
     });
 
