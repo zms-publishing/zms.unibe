@@ -43,26 +43,6 @@ function renderDate(date, role) {
     }
 }
 
-class PopUp {
-    constructor() {
-        this._subject = document.getElementById("detailSubject");
-        this._description = document.getElementById("detailDescription");
-        this._type = document.getElementById("detailType");
-        this._begin = document.getElementById("detailBegin");
-        this._end = document.getElementById("detailEnd");
-        this._service = document.getElementById("detailService");
-    }
-
-    set announcement(announcement) {
-        this._subject.innerHTML = announcement.subject;
-        this._description.innerHTML = announcement.description;
-        this._type.innerHTML = mapType(announcement.type);
-        this._begin.innerHTML = announcement.begin.toLocaleString();
-        this._end.innerHTML = announcement.end.toLocaleString();
-        this._service.innerHTML = announcement.service;
-    }
-}
-
 function dateOrNull(text) {
     if (text) {
         return new Date(text);
@@ -87,12 +67,6 @@ function convert(data) {
     announcements.forEach((announcement) => {
         announcement.begin = dateOrNull(announcement.begin);
         announcement.end = dateOrNull(announcement.end);
-
-        if (announcement.subject === "testmail") {
-            console.log("yay");
-        }
-        console.log(announcement.subject);
-
         announcement.timeSpan = getTimeSpan(announcement.begin, announcement.end, now);
     });
 
@@ -117,9 +91,31 @@ function draw() {
     });
 }
 
+/// This class should be modified/replaced for CMS.
+class PopUp {
+    constructor() {
+        this._subject = document.getElementById("detailSubject");
+        this._description = document.getElementById("detailDescription");
+        this._type = document.getElementById("detailType");
+        this._begin = document.getElementById("detailBegin");
+        this._end = document.getElementById("detailEnd");
+        this._service = document.getElementById("detailService");
+    }
+
+    set announcement(announcement) {
+        this._subject.innerHTML = announcement.subject;
+        this._description.innerHTML = announcement.description;
+        this._type.innerHTML = mapType(announcement.type);
+        this._begin.innerHTML = announcement.begin.toLocaleString();
+        this._end.innerHTML = announcement.end.toLocaleString();
+        this._service.innerHTML = announcement.service;
+    }
+}
+
 $(document).ready(() => {
     let popup = new PopUp();
 
+    // Replace with actual popup function.
     let assignClickListener = (row, announcement) => {
         row.addEventListener("click", () => popup.announcement = announcement);
     };
