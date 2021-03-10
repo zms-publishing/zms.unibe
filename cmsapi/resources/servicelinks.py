@@ -111,14 +111,17 @@ class ServiceLinksItem(ServiceLinks, Resource):
                                     href = get_value(file_obj, 'file', lang)
                                     if href is not None:
                                         meta = get_value(file_obj, 'attr_dc_description', lang)
+                                        lastmodified = get_value(file_obj, 'change_dt', lang)
                                         if meta is not None:
                                             service_item['files'].append({
                                                 'href': {langs[lang]: href},
+                                                'lastmodified': {langs[lang]: lastmodified},
                                                 'meta': {langs[lang]: meta},
                                             })
                                         else:
                                             service_item['files'].append({
                                                 'href': {langs[lang]: href},
+                                                'lastmodified': {langs[lang]: lastmodified},
                                             })
 
                         service_items.append(service_item)
