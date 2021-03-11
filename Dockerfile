@@ -4,7 +4,7 @@ COPY requirements-flask.txt $PYTHONPATH/requirements-flask.txt
 COPY zms-headless $PYTHONPATH/zms-headless
 
 RUN bin/pip install $PYTHONPATH/zms-headless \
-    -r requirements-flask.txt \
+    -r $PYTHONPATH/requirements-flask.txt \
     -c https://zopefoundation.github.io/Zope/releases/5.1.2/constraints.txt \
  && mkdir log
 
