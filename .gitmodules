@@ -1,0 +1,4 @@
+[submodule "zms-headless"]
+	path = zms-headless
+	url = ssh://git@id-code.unibe.ch:7999/idcms/zms-core.git
+	branch = zms-headless
