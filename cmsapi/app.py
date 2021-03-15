@@ -23,7 +23,7 @@ swagger_config = {
     "specs": [
         {
             "endpoint": "cmsapi",
-            "route": "Siyar1/cmsapi.json",  # WORKAROUND
+            "route": "/cmsapi.json",  # WORKAROUND
                                       # see ./templates/flasgger/swagger.html
                                       # with overwrite of url: "./cmsapi.json"
                                       # to get a relative url to be used in non-root deployments
