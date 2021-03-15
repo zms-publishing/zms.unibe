@@ -3,13 +3,15 @@
 cd $(dirname $0)
 BASEDIR=$(pwd)
 
-DOCKER_IMAGE_NAME1="ep-devops.id.unibe.ch:5000/id/unibe-cmsapi"
+IMAGE_API="ep-devops.id.unibe.ch:5000/id/unibe-cmsapi"
 
 cd ${BASEDIR}
 
 if [ $# -eq 0 ] ; then
-    echo 'Starting local build'
-    docker build -t ${DOCKER_IMAGE_NAME1}:local .
+    echo BUILDING API
+    docker build -t ${IMAGE_API}:local .
+    echo '======================================================'
+
     exit 1
 fi
 
@@ -26,7 +28,9 @@ else
     VERSION_TAG="latest"
 fi
 
-docker build -t ${DOCKER_IMAGE_NAME1}:${VERSION_TAG} .
-docker tag ${DOCKER_IMAGE_NAME1}:${VERSION_TAG} ${DOCKER_IMAGE_NAME1}:latest
-docker push ${DOCKER_IMAGE_NAME1}:${VERSION_TAG}
-docker push ${DOCKER_IMAGE_NAME1}:latest
+echo BUILDING API
+docker build -t ${IMAGE_API}:${VERSION_TAG} .
+docker tag ${IMAGE_API}:${VERSION_TAG} ${IMAGE_API}:latest
+docker push ${IMAGE_API}:${VERSION_TAG}
+docker push ${IMAGE_API}:latest
+echo '======================================================'

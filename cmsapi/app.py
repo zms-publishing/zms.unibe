@@ -25,7 +25,6 @@ swagger_config = {
             "endpoint": "cmsapi",
             "route": "/cmsapi.json",  # WORKAROUND
                                       # see ./templates/flasgger/swagger.html
-                                      # with overwrite of url: "./cmsapi.json"
                                       # to get a relative url to be used in non-root deployments
                                       # instead of the absolute url which Flasgger desires by raising
                                       # ValueError: urls must start with a leading slash
