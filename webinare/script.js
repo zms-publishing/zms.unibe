@@ -27,28 +27,6 @@ function csvToObjects(text) {
     return list;
 }
 
-function parseTime(data) {
-    let parts = [0, 0, 0, 0, 0, 0, 0];
-    let splits = data.split(":");
-
-    for (let i = 0; i < splits.length; i++) {
-        parts[4 + i] = parseInt(splits[i]);
-    }
-
-    return new Date(...parts);
-}
-
-function parseDate(data) {
-    let parts = [0, 0, 0];
-    let splits = data.split("-");
-
-    for (let i = 0; i < splits.length; i++) {
-        parts[i] = parseInt(splits[i]);
-    }
-
-    return new Date(...parts);
-}
-
 function convertData(data) {
     let objects = csvToObjects(data);
 
@@ -63,13 +41,24 @@ function convertData(data) {
         row.group = groupId;
 
         // If value empty, copy from row before
-        row.time = row.time ? parseTime(row.time) : lastRow.time;
-        row.date = row.date ? parseDate(row.date) : lastRow.date;
+        row.date = row.date ? new Date(row.date) : lastRow.date;
+        row.time = new Date(row.date.getTime());
         row.title = row.title ? row.title : lastRow.title;
         row.speaker = row.speaker ? row.speaker : lastRow.speaker;
         row.speakerLink = row.speakerLink ? row.speakerLink : lastRow.speakerLink;
         row.type = row.type ? row.type : lastRow.type;
         row.link = row.link ? row.link : lastRow.link;
+
+        // Remove time from date column
+        row.date.setHours(0);
+        row.date.setMinutes(0);
+        row.date.setSeconds(0);
+        row.date.setMilliseconds(0);
+
+        // Remove date from time column
+        row.time.setFullYear(1970);
+        row.time.setMonth(1);
+        row.time.setDate(1);
 
         lastRow = row;
     });
@@ -117,7 +106,7 @@ function renderSpeaker(data, type, row) {
     return row.speaker;
 }
 
-function expandDuplicates(api, column) {
+function mergeCellsOfSameGroup(api, column) {
     let groups = api.column("group:name", {page: "current"}).data().toArray();
     let nodes = api.column(column, {page: "current"}).nodes();
 
@@ -131,12 +120,12 @@ function expandDuplicates(api, column) {
             nodes[i].classList.toggle(cssHiddenClass, true);
             nodes[i].rowSpan = 1;
         } else {
-            nodes[i].classList.toggle(cssHiddenClass, false);
-
             if (fistNodeOfGroup) {
                 fistNodeOfGroup.rowSpan = repetitions;
                 repetitions = 1;
             }
+
+            nodes[i].classList.toggle(cssHiddenClass, false);
 
             fistNodeOfGroup = nodes[i];
             lastGroup = groups[i];
@@ -145,10 +134,10 @@ function expandDuplicates(api, column) {
 }
 
 function draw() {
-    expandDuplicates(this.api(), "date:name");
-    expandDuplicates(this.api(), "time:name");
-    expandDuplicates(this.api(), "title:name");
-    expandDuplicates(this.api(), "speaker:name");
+    mergeCellsOfSameGroup(this.api(), "date:name");
+    mergeCellsOfSameGroup(this.api(), "time:name");
+    mergeCellsOfSameGroup(this.api(), "title:name");
+    mergeCellsOfSameGroup(this.api(), "speaker:name");
 }
 
 $(document).ready(() => {
@@ -163,6 +152,8 @@ $(document).ready(() => {
             {data: "speaker", render: renderSpeaker},
             {data: "group", name: "group", visible: false},
         ],
+        autoWidth: false,
+        order: [[ 0, 'asc' ], [ 1, 'asc' ]],
         drawCallback: draw
     });
 });
