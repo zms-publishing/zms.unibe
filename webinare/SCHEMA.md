@@ -10,10 +10,10 @@
 If a row has no title, it's considered to be part of the last row with a title.
 
 ### Schema
-| Row | Value | Example |
+| Column | Value | Example |
 |:---|:---|:---|
 | date | An ISO Date/Time (YYYY-MM-DDTHH:mm) | 2020-06-14T12:30 |
-| title | The title of the webinar | https://... |
+| title | The title of the webinar | ... |
 | speaker | The name of the speaker | ... |
 | speakerLink | A link to the website of the speaker | https://... |
 | type | The text to display as link text | "Webinar" or "Recording" |
