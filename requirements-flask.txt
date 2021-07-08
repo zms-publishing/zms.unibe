@@ -1,18 +1,19 @@
-Flask==1.1.2
+Flask
 
 # Flask-ZODB==0.1 (py2 only)
 # Flask-ZODB==0.2dev (py2+p3)
 git+https://github.com/SpotlightKid/flask-zodb@master#egg=Flask-ZODB
 
-Flask-JWT-Extended==4.2.0
-Flask-RESTful==0.3.8
-Flask-RESTX==0.3.0
-Flask-SQLAlchemy==2.5.1
+Flask-JWT-Extended
+Flask-RESTful
+# Latest official release Flask-RESTX-0.4.0 (2021/05/27) is pinned to Flask<2.0.0
+git+https://github.com/python-restx/flask-restx@master#Flask-RESTX
+Flask-SQLAlchemy
 
-Flasgger==0.9.5
+Flasgger
 
-anytree==2.8.0
+anytree
 
-python-dotenv==0.17.1
-requests==2.25.1
-gunicorn==20.1.0
+python-dotenv
+requests
+gunicorn
