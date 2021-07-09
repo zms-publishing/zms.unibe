@@ -1,5 +1,6 @@
 import http
 
+from cmsapi.cache import cache
 from cmsapi.db import zodb
 from flask import jsonify
 from flask_restful import Resource, reqparse
@@ -49,6 +50,7 @@ class ServiceLinksItem(ServiceLinks, Resource):
         self.parser = reqparse.RequestParser(bundle_errors=True)
         self.args = self.parser.parse_args()
 
+    @cache.cached(6 * 3600)
     def get(self, item=None):
         """
         Retrieve information from the requested item

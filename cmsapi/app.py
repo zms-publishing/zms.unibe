@@ -5,6 +5,7 @@ from flask_restful import Api
 from flasgger import Swagger
 from flask_jwt_extended import JWTManager
 
+from cmsapi.cache import cache
 from cmsapi.db import zodb, sqldb
 from cmsapi.resources.announcementagenda import AnnouncementAgenda
 from cmsapi.resources.announcementcontainers import AnnouncementContainers
@@ -71,6 +72,7 @@ swagger_template = {
 }
 
 zodb.init_app(app)
+cache.init_app(app)
 jwt = JWTManager(app)
 api = Api(app, prefix='/v{}'.format(cmsapi_version.split('.')[0]))
 swa = Swagger(app, config=swagger_config, template=swagger_template)

@@ -2,6 +2,7 @@ import http
 import re
 import ast
 
+from cmsapi.cache import cache
 from cmsapi.db import zodb
 from flask import jsonify
 from flask_restful import Resource
@@ -20,6 +21,7 @@ class Canteen(Resource):
         self.default_site = '/unibe/portal/microsites/micro_Mensen/content/e52891/'
         self.canteens = []
 
+    @cache.cached(6 * 3600)
     def get(self, uuid=None):
         """
         Retrieve details of a canteen from mensa.unibe.ch
@@ -126,6 +128,7 @@ class CanteenOverview(Canteen, Resource):
         self.default_meta = 'ZMSFolder'
         self.canteens = []
 
+    @cache.cached(6 * 3600)
     def get(self):
         """
         Retrieve an overview of all canteens from mensa.unibe.ch

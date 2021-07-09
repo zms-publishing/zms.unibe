@@ -1,6 +1,7 @@
 import http
 import time
 
+from cmsapi.cache import cache
 from cmsapi.db import zodb
 from flask import jsonify
 from flask_restful import Resource, reqparse, inputs
@@ -21,6 +22,7 @@ class AnnouncementContainers(Resource):
         self.args = self.parser.parse_args()
         self.newscontainer = {}
 
+    @cache.cached(6 * 3600)
     def get(self):
         """
         Retrieve identifiers of containers with news and/or events as hierarchical overview
