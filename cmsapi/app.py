@@ -1,7 +1,8 @@
 import os
+import requests
 
 from flask import Flask
-from flask_restful import Api
+from flask_restful import Api, reqparse
 from flasgger import Swagger
 from flask_jwt_extended import JWTManager
 
@@ -16,7 +17,7 @@ from cmsapi.resources.servicelinks import ServiceLinks, ServiceLinksItem
 app = Flask(__name__)
 app.config["ZODB_STORAGE"] = 'zeo://' + os.getenv('ZODB_STORAGE', '127.0.0.1:8000?storage=main')
 
-cmsapi_version = "2.0"
+cmsapi_version = "2.0.0dev"
 
 swagger_config = {
     "headers": [
@@ -93,6 +94,31 @@ api.add_resource(ServiceLinksItem, '/servicelinks/<string:item>/')
 @app.route('/healthcheck')
 def check_health():
     return "OK", 200
+
+
+@app.route('/cache/<mode>')
+def purge_cache(mode=None):
+    parser = reqparse.RequestParser(bundle_errors=True)
+    parser.add_argument('key', type=str)
+    cache_key = parser.parse_args()['key']  # e.g. '/v2/canteens/overview/'
+    if mode == 'purge':
+        if cache_key is not None:
+            if cache.delete('view/' + cache_key):
+                return "Cache purged for " + cache_key, 200
+    if mode == 'refresh':
+        if cache_key is not None:
+            cache.delete('view/' + cache_key)
+            CACHE_REFRESH = os.getenv('CACHE_REFRESH', 'http://127.0.0.1:5000')
+            print(CACHE_REFRESH + cache_key)
+            refresh = requests.get(CACHE_REFRESH + cache_key, timeout=60)
+            if refresh.status_code in [200, 204]:
+                return "Cache refreshed for " + cache_key, 200
+            else:
+                return "Cache refresh failed for " + cache_key, 404
+    if mode == 'purgeall':
+        cache.clear()
+        return "Cache purged completely", 200
+    return "No cache found", 404
 
 
 if __name__ == '__main__':

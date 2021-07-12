@@ -41,6 +41,7 @@ class AnnouncementContainers(Resource):
             204:
                 description: Empty response
         """
+        print("### not cached AnnouncementContainers.get")
         t0 = time.time()
 
         # Create a dict of available newscontainers

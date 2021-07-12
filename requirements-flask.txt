@@ -9,6 +9,8 @@ Flask-RESTful
 git+https://github.com/python-restx/flask-restx@master#egg=Flask-RESTX
 
 Flask-Caching
+#libmc  # libmc._client.ThreadUnsafe https://github.com/douban/libmc#is-libmc-thread-safe-
+pylibmc  # Prerequisite: libmemcached
 
 Flask-JWT-Extended
 

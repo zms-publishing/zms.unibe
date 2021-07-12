@@ -63,6 +63,7 @@ class Announcement(Resource):
             204:
                 description: No news/events found
         """
+        print("### not cached Announcement.get", uuid)
         if self.query_announcements(uuid=uuid):
             return jsonify(self.filter_announcements())
         return '', http.HTTPStatus.NO_CONTENT

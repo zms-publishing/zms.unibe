@@ -1,3 +1,13 @@
 from flask_caching import Cache
+import os
 
-cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
+CACHE_BACKEND = os.getenv('CACHE_BACKEND', 'SimpleCache')
+CACHE_SERVERS = os.getenv('CACHE_SERVERS', '')  # used for MemcachedCache
+CACHE_STORAGE = os.getenv('CACHE_STORAGE', '')  # used for FileSystemCache
+
+print(CACHE_BACKEND, CACHE_SERVERS, CACHE_STORAGE)
+
+cache = Cache(config={'CACHE_TYPE': CACHE_BACKEND,
+                      'CACHE_MEMCACHED_SERVERS': [CACHE_SERVERS],
+                      'CACHE_DIR': CACHE_STORAGE,
+                      })

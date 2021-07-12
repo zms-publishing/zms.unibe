@@ -40,6 +40,7 @@ class Canteen(Resource):
             204:
                 description: No canteens found
         """
+        print("### not cached Canteen.get", uuid)
         if uuid is not None:
             elements = self.zmsindex({'get_uid': 'uid:' + uuid})
             if self.query_canteens(elements):
@@ -141,6 +142,7 @@ class CanteenOverview(Canteen, Resource):
             204:
                 description: No canteens found
         """
+        print("### not cached CanteenOverview.get")
         elements = self.zmsindex({'meta_id': self.default_meta, 'path': self.default_site})
 
         if self.query_canteens(elements):
