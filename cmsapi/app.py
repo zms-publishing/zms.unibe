@@ -105,29 +105,6 @@ def purge_cache(mode=None):
         if cache_key is not None:
             if cache.delete('view/' + cache_key):
                 return "Cache purged for " + cache_key, 200
-    if mode == 'refresh':
-        if cache_key is not None:
-            cache.delete('view/' + cache_key)
-            CACHE_REFRESH = os.getenv('CACHE_REFRESH', 'http://127.0.0.1:5000')
-            try:
-                #refresh = requests.get(CACHE_REFRESH + cache_key, timeout=60)
-                #print('cache/refresh:', refresh.status_code)
-                #status_code = refresh.status_code
-                import subprocess
-                refresh = subprocess.Popen("wget -T 60 --server-response {0} 2>&1 | awk '/^  HTTP/{{print $2}}'".format(
-                                           CACHE_REFRESH + cache_key),
-                                           stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                           shell=True, universal_newlines=True)
-                response = refresh.communicate()[0].strip()
-                status_code = int(response)
-            except:
-                import sys
-                print('cache/refresh:', sys.exc_info()[1])
-                status_code = 500
-            if status_code in [200, 204]:
-                return "Cache refreshed for " + cache_key, 200
-            else:
-                return "Cache refresh FAILED for " + cache_key, 404
     if mode == 'purgeall':
         cache.clear()
         return "Cache purged completely", 200
