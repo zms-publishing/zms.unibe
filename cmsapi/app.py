@@ -114,10 +114,12 @@ def purge_cache(mode=None):
             try:
                 refresh = requests.get(CACHE_REFRESH + cache_key, timeout=60)
                 print('cache/refresh:', refresh.status_code)
+                status_code = refresh.status_code
             except:
                 import sys
                 print('cache/refresh:', sys.exc_info()[1])
-            if refresh.status_code in [200, 204]:
+                status_code = 500
+            if status_code in [200, 204]:
                 return "Cache refreshed for " + cache_key, 200
             else:
                 return "Cache refresh failed for " + cache_key, 404
