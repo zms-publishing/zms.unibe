@@ -110,15 +110,20 @@ def purge_cache(mode=None):
         if cache_key is not None:
             cache.delete('view/' + cache_key)
             CACHE_REFRESH = os.getenv('CACHE_REFRESH', 'http://127.0.0.1:5000')
-            refresh = requests.get(CACHE_REFRESH + cache_key, timeout=60)
-            print('cache/refresh:', CACHE_REFRESH + cache_key, refresh.status_code)
+            print('cache/refresh:', CACHE_REFRESH + cache_key)
+            try:
+                refresh = requests.get(CACHE_REFRESH + cache_key, timeout=60)
+                print('cache/refresh:', refresh.status_code)
+            except:
+                import sys
+                print('cache/refresh:', sys.exc_info()[1])
             if refresh.status_code in [200, 204]:
                 return "Cache refreshed for " + cache_key, 200
             else:
                 return "Cache refresh failed for " + cache_key, 404
     if mode == 'purgeall':
         cache.clear()
-        print('cache/delete:', cache_key)
+        print('cache/clear:', cache_key)
         return "Cache purged completely", 200
     return "No cache found", 404
 
