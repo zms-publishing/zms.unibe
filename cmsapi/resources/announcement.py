@@ -34,7 +34,7 @@ class Announcement(Resource):
         #self.parser.add_argument('recursive', type=inputs.boolean)
         self.args = self.parser.parse_args()
 
-    @cache.cached(6 * 3600)
+    @cache.cached()
     def get(self, uuid=None):
         """
         Retrieve all news/events of the specified identifier
@@ -273,7 +273,7 @@ class Announcement(Resource):
 @api.route('/news/<uuid>/', endpoint='news_uuid')
 class AnnouncementNews(Announcement, Resource):
 
-    @cache.cached(6 * 3600)
+    @cache.cached()
     def get(self, uuid=None):
         """
         Retrieve only news of the specified identifier
@@ -310,7 +310,7 @@ class AnnouncementNews(Announcement, Resource):
 @api.route('/events/<uuid>/', endpoint='events_uuid')
 class AnnouncementEvents(Announcement, Resource):
 
-    @cache.cached(6 * 3600)
+    @cache.cached()
     def get(self, uuid=None):
         """
         Retrieve only events of the specified identifier

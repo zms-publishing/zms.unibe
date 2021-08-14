@@ -21,7 +21,7 @@ class Canteen(Resource):
         self.default_site = '/unibe/portal/microsites/micro_Mensen/content/e52891/'
         self.canteens = []
 
-    @cache.cached(6 * 3600)
+    @cache.cached()
     def get(self, uuid=None):
         """
         Retrieve details of a canteen from mensa.unibe.ch
@@ -129,7 +129,7 @@ class CanteenOverview(Canteen, Resource):
         self.default_meta = 'ZMSFolder'
         self.canteens = []
 
-    @cache.cached(6 * 3600)
+    @cache.cached()
     def get(self):
         """
         Retrieve an overview of all canteens from mensa.unibe.ch

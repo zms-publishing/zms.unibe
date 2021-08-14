@@ -22,7 +22,7 @@ class AnnouncementContainers(Resource):
         self.args = self.parser.parse_args()
         self.newscontainer = {}
 
-    @cache.cached(6 * 3600)
+    @cache.cached()
     def get(self):
         """
         Retrieve identifiers of containers with news and/or events as hierarchical overview
