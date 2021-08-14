@@ -6,10 +6,11 @@ Additionally CMSAPI makes use of [Flasgger](https://github.com/flasgger/flasgger
 
 ## Codebase
 
-**REST-API repository (internal)**
-* https://id-code.unibe.ch/projects/IDCMS/repos/unibe-cmsapi/browse
+**REST-API Repositories**
+* Internal Master: https://id-code.unibe.ch/projects/IDCMS/repos/unibe-cmsapi/browse (for deployments)
+* External Mirror: https://github.com/id-unibe-ch/unibe-cmsapi (for contributions)
 
-## Development
+## Local Development
 
 [PyCharm](https://www.jetbrains.com/pycharm/) is the recommended IDE for local development. First the desired Python version has to be installed for your system. Second an isolated Python virtual environment has to be created. Third the needed software stack has to be installed and setup.
 
@@ -17,12 +18,12 @@ Assuming the `unibe-cms` repository has been cloned and a Python virtual environ
 
     (venvpy39-cmsapi) $ bin/pip install -U pip wheel setuptools
     
-    (venvpy39-cmsapi) $ bin/pip install Zope[wsgi]==5.1.2 \
+    (venvpy39-cmsapi) $ bin/pip install Zope[wsgi]==5.3 \
                         -e ../unibe-cmsapi/zms-headless \
-                        -c https://zopefoundation.github.io/Zope/releases/5.1.2/constraints.txt
+                        -c https://zopefoundation.github.io/Zope/releases/5.3/constraints.txt
 
     (venvpy39-cmsapi) $ bin/pip install -r ../unibe-cms/restapi/requirements-flask.txt \
-                        -c https://zopefoundation.github.io/Zope/releases/5.1.2/constraints.txt
+                        -c https://zopefoundation.github.io/Zope/releases/5.3/constraints.txt
 
 A sample run configuration:
 
@@ -36,13 +37,8 @@ A sample run configuration:
         </configuration>
     </component>
 
-## Environments
+## Container Environments
 
-### Testing
-
-* `CMSTEST3` see current [deployment script](https://id-code.unibe.ch/projects/IDCMS/repos/unibe-cms/browse/bin/zms.deployZMSunibe.cmstest3#90)
-* `TODO` integrate into [docker-config-test](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config-test/browse)
-
-### Production
-
-* `TODO` integrate into [docker-config](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config/browse)
+* Development: [dev-unibe-cmsapi](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config-test/browse/stacks/dev-unibe-cmsapi)
+* Testing: [test-unibe-cmsapi](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config-test/browse/stacks/test-unibe-cmsapi/docker-compose.yml)
+* Production:  [prod-unibe-cmsapi](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config/browse/stacks/prod-unibe-cmsapi/docker-compose.yml)
