@@ -1,25 +1,19 @@
 Flask
-
-# Flask-ZODB==0.1 (py2 only)
-# Flask-ZODB==0.2dev (py2+p3)
-git+https://github.com/SpotlightKid/flask-zodb@master#egg=Flask-ZODB
-
 Flask-RESTful
-# Latest official release Flask-RESTX-0.4.0 (2021/05/27) is pinned to Flask<2.0.0
-git+https://github.com/python-restx/flask-restx@master#egg=Flask-RESTX
+Flask-RESTX
+
+file:///app/flask-zodb
+file:///app/zms-headless
 
 Flask-Caching
-#libmc  # libmc._client.ThreadUnsafe https://github.com/douban/libmc#is-libmc-thread-safe-
 pylibmc  # Prerequisite: libmemcached
 
 Flask-JWT-Extended
-
 Flask-SQLAlchemy
 
 Flasgger
 
 anytree
-
 python-dotenv
 requests
 gunicorn
