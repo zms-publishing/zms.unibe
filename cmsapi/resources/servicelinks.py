@@ -93,7 +93,7 @@ class ServiceLinksItem(ServiceLinks, Resource):
                         'ZMSTextarea',
                         'ZMSLinkElement',
                         'filecontainer',
-                    ]):
+                    ], REQUEST={}):
                         service_item = {}
 
                         # get values of defined attrs in defined langs
@@ -108,7 +108,7 @@ class ServiceLinksItem(ServiceLinks, Resource):
                         # get location data files organized in filecontainers
                         if obj.meta_id == 'filecontainer':
                             service_item['files'] = []
-                            for file_obj in obj.filteredChildNodes(meta_types=['ZMSFile']):
+                            for file_obj in obj.filteredChildNodes(meta_types=['ZMSFile'], REQUEST={}):
                                 for lang in langs.keys():
                                     href = get_value(file_obj, 'file', lang)
                                     if href is not None:

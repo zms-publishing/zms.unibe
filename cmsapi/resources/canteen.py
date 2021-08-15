@@ -57,7 +57,7 @@ class Canteen(Resource):
                         obj.getParentNode() is not None and obj.getParentNode().getId() == 'e52912':
                     continue
 
-                info_ob = obj.filteredChildNodes(meta_types='ZMSTextarea')
+                info_ob = obj.filteredChildNodes(meta_types='ZMSTextarea', REQUEST={})
                 info_de = []
                 for ob in info_ob:
                     text = ob.attr('text', REQUEST={'lang': 'ger'})
@@ -71,7 +71,7 @@ class Canteen(Resource):
                 domain = obj.getConfProperty('ASP.ip_or_domain', 'localhost')
                 href = '{}://{}'.format(protocol, domain)
 
-                img_ob = obj.getChildNodes(meta_types='ZMSGraphic')
+                img_ob = obj.getChildNodes(meta_types='ZMSGraphic', REQUEST={})
                 img_de = []
                 for ob in img_ob:
                     img = (ob.attr('img') is not None and isinstance(ob.attr('img'), _blobfields.MyImage)) and href + \
