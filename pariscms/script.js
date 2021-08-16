@@ -1,137 +1,91 @@
 "use strict";
 
-let repeatingValueClass = "repeating";
+let cssHiddenClass = "hidden";
 
-let responsibilityTypeOrder = ["TV", "S0", "KV"];
-let responsibilityTypeMap = {
+let roleNames = {
     "TV": "Technik",
     "S0": "Software",
     "KV": "Konto"
 };
 
-class Department {
-    constructor(name, externId, responsibilities) {
-        this.name = name;
-        this.externId = externId;
-        this.responsibilities = responsibilities;
-    }
-}
+function prepare(array) {
+    let entities = [];
 
-class Row {
-    constructor(person, department) {
-        this.responsibilities = department.responsibilities;
-        this.department = department.name + " (" + department.externId + ")";
-        this.name = person.firstname + " " + person.lastname;
-        this.phone = person.phone;
-        this.email = person.email;
-    }
-}
-
-function responsibilityComparer(left, right) {
-    return responsibilityTypeOrder.indexOf(left) - responsibilityTypeOrder.indexOf(right);
-}
-
-function departmentNameComparer(left, right) {
-    return left.localeCompare(right, undefined, {sensitivity: 'base'});
-}
-
-function flatten(array) {
-    let flatArray = [];
-
-    array.forEach((person) => {
-        // We make a map of each department, then we add each responsibility type to the corresponding department.
-        let departmentMap = {};
-
-        person.responsibilities.forEach((responsibility) => {
-            // This value is not visible and should an id or the shortest string possible.
-            let key = responsibility.shortNameGerman;
-
-            let department = departmentMap[key];
-
-            if (department === undefined) {
-                department = new Department(responsibility.nameGerman, responsibility.externId, []);
-                departmentMap[key] = department;
-            }
-
-            department.responsibilities.push(responsibility.type);
-        });
-
-        Object.values(departmentMap).forEach((department) => {
-            department.responsibilities.sort(responsibilityComparer);
-
-            flatArray.push(new Row(person, department));
-        });
+    array.forEach(institute => {
+        institute.members.forEach(member => {
+            entities.push({
+                department: `${institute.name} (${institute.externId})`,
+                member: {
+                    firstname: member.firstname,
+                    lastname: member.lastname,
+                    email: member.email,
+                    tel: member.tel
+                },
+                roles: member.roles.map(role => roleNames[role]).join(", ")
+            });
+        })
     });
-    return flatArray;
+
+    return entities;
 }
 
-function responsibilitiesRenderer(array, role) {
+function renderMember(data, role) {
+    let name = data.firstname + " " + data.lastname;
+    let tel = data.tel ? data.tel : "";
+
     if (role === "display") {
-        return array.map(type => responsibilityTypeMap[type]).join(", ");
+        if (data.email) {
+            return `<a href='mailto:${data.mail}'>${name}</a><br>${tel}`;
+        }
+        return `${name}<br>${tel}`;
     }
-    return array.join(";");
+    return name;
 }
 
 function draw() {
-    let column = this.api().column("department:name", {page: 'current'});
+    let nodes = this.api().column(0, {page: 'current'}).nodes().toArray();
 
-    let cells = column.nodes();
-    let data = column.data().toArray();
+    let groupText = null;
+    let groupNode = null;
+    let repetition = 1;
 
-    let lastDepartment = "";
-
-    for (let i = 0; i < data.length; i++) {
-        let cell = cells[i];
-        let department = data[i];
-
-        if (department === lastDepartment) {
-            cell.classList.add(repeatingValueClass);
+    nodes.forEach(node => {
+        if (node.innerHTML === groupText) {
+            // Hide
+            node.classList.toggle(cssHiddenClass, true);
+            repetition++;
         } else {
-            cell.classList.remove(repeatingValueClass);
+            // Show
+            node.classList.toggle(cssHiddenClass, false);
+            groupText = node.innerHTML;
+            groupNode = node;
+            repetition = 1;
         }
-        lastDepartment = department;
-    }
+        if (groupNode) {
+            // Expand
+            groupNode.rowSpan = repetition;
+        }
+    });
 }
 
-function tableReady() {
-    let api = this.api();
-
-    // Add all departments to set to ensure every element is unique
-    let departmentSet = new Set();
-    api.column("department:name").data().each((value) => departmentSet.add(value));
-    // Add all departments to an array and sort. (Set doesn't sort alphabetically.)
-    let departmentArray = [...departmentSet].sort(departmentNameComparer);
-
-    $("#select-department").each(function () {
-        this.addEventListener("change", function () {
-            api.column("department:name").search(this.value, false, false, false).draw();
-        });
-
-        departmentArray.forEach((department) => {
-            let option = document.createElement("option");
-            option.innerHTML = department;
-            option.value = department;
-            this.appendChild(option);
-        });
-    });
+function fillDepartmentDropdown() {
+    // TODO
 }
 
 $(document).ready(() => {
     let table = $("#table").DataTable({
         processing: true,
-        ajax: {url: "data.json", dataSrc: flatten},
+        ajax: {url: "data.json", dataSrc: prepare},
         columns: [
-            {data: "department", name: "department"},
-            {data: "name"},
-            {data: "phone"},
-            {data: "email"},
-            {data: "responsibilities", name: "responsibilities"}
+            {data: "department"},
+            {data: "member"},
+            {data: "roles"}
         ],
         columnDefs: [
-            {render: responsibilitiesRenderer, targets: 4},
+            {targets: 1, render: renderMember},
         ],
-        drawCallback: draw,
-        initComplete: tableReady
+        initComplete: fillDepartmentDropdown,
+        drawCallback: draw
     });
 
     let checkboxes = $("#form input[type=checkbox]");
@@ -152,7 +106,7 @@ $(document).ready(() => {
         }
 
         table
-            .column("responsibilities:name")
+            .column(2)
             .search(term, false, false, false)
             .draw();
     });
