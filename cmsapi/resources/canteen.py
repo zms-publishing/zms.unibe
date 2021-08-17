@@ -19,6 +19,7 @@ class Canteen(Resource):
         self.zmscontent = zodb['Application']['unibe']['portal']['microsites']['micro_Mensen']['content']
         self.zmsindex = zodb['Application']['unibe']['zcatalog_index']
         self.default_site = '/unibe/portal/microsites/micro_Mensen/content/e52891/'
+        self.zfv_mensa_ids = self.zmscontent.getConfProperty('ZFV.mensa.ids', '')
         self.canteens = []
 
     @cache.cached()
@@ -81,20 +82,21 @@ class Canteen(Resource):
 
                 title_de = obj.attr('title', REQUEST={'lang': 'ger'})
 
-                zfv_id = ''
-                try:
-                    zfv_ids = ast.literal_eval(self.zmscontent.getConfProperty('ZFV.mensa.ids', '{}'))
-                    if zfv_ids is not None and len(zfv_ids) > 0:
-                        if title_de in zfv_ids:
-                            zfv_id = zfv_ids[title_de]
-                except ValueError:
-                    pass
+                zfv_mensa_id = ''
+                if isinstance(self.zfv_mensa_ids, str) and self.zfv_mensa_ids.strip() != '':
+                    try:
+                        self.zfv_mensa_ids = ast.literal_eval(self.zfv_mensa_ids)
+                    except ValueError:
+                        pass
+                if isinstance(self.zfv_mensa_ids, dict) and len(self.zfv_mensa_ids) > 0:
+                    if title_de in self.zfv_mensa_ids:
+                        zfv_mensa_id = self.zfv_mensa_ids[title_de]
 
                 canteen = {
                     'uuid': e.get_uid.replace('uid:', ''),
                     'href': href,
                     'path': e.getPath(),
-                    'zfvid': zfv_id,
+                    'zfvid': zfv_mensa_id,
                     'title': {
                         'de': title_de,
                     },
@@ -123,11 +125,8 @@ class Canteen(Resource):
 @api.route('/overview/', endpoint='canteens_overview')
 class CanteenOverview(Canteen, Resource):
     def __init__(self):
-        self.zmscontent = zodb['Application']['unibe']['portal']['microsites']['micro_Mensen']['content']
-        self.zmsindex = zodb['Application']['unibe']['zcatalog_index']
-        self.default_site = '/unibe/portal/microsites/micro_Mensen/content/e52891/'
+        super(CanteenOverview, self).__init__()
         self.default_meta = 'ZMSFolder'
-        self.canteens = []
 
     @cache.cached()
     def get(self):
