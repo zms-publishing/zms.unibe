@@ -8,7 +8,7 @@ let roleNames = {
     "KV": "Konto"
 };
 
-function prepare(array) {
+function dataToRows(array) {
     let entities = [];
 
     array.forEach(institute => {
@@ -35,7 +35,7 @@ function renderMember(data, role) {
 
     if (role === "display") {
         if (data.email) {
-            return `<a href='mailto:${data.mail}'>${name}</a><br>${tel}`;
+            return `<a href='mailto:${data.email}'>${name}</a><br>${tel}`;
         }
         return `${name}<br>${tel}`;
     }
@@ -68,14 +68,34 @@ function draw() {
     });
 }
 
-function fillDepartmentDropdown() {
-    // TODO
+function dataReady() {
+    let api = this.api();
+
+    // Add all institutions to set to ensure every element is unique.
+    let set = new Set();
+    api.column(0).data().each((value) => set.add(value));
+
+    // Add all institutions to an array and sort. (Set doesn't sort alphabetically.)
+    let array = [...set].sort((l, r) => l.localeCompare(r, undefined, {sensitivity: 'base'}));
+
+    $("#institution-filter").each(function () {
+        this.addEventListener("change", function () {
+            api.column(0).search(this.value, false, false, false).draw();
+        });
+
+        array.forEach((institution) => {
+            let option = document.createElement("option");
+            option.innerHTML = institution;
+            option.value = institution;
+            this.appendChild(option);
+        });
+    });
 }
 
 $(document).ready(() => {
     let table = $("#table").DataTable({
         processing: true,
-        ajax: {url: "data.json", dataSrc: prepare},
+        ajax: {url: "data.json", dataSrc: dataToRows},
         columns: [
             {data: "department"},
             {data: "member"},
@@ -84,7 +104,7 @@ $(document).ready(() => {
         columnDefs: [
             {targets: 1, render: renderMember},
         ],
-        initComplete: fillDepartmentDropdown,
+        initComplete: dataReady,
         drawCallback: draw
     });
 
