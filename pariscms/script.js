@@ -99,7 +99,7 @@ $(document).ready(() => {
         columns: [
             {data: "department"},
             {data: "member"},
-            {data: "roles"}
+            {data: "roles", searchable: false}
         ],
         columnDefs: [
             {targets: 1, render: renderMember},
