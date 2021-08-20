@@ -170,10 +170,10 @@ class AnnouncementContainers(Resource):
 
 
 def get_config_domain(obj, root):
-    protocol = obj.getConfProperty('ASP.protocol', root.getConfProperty('ASP.protocol', 'http'))
+    protocol = 'https'
     domain = obj.getConfProperty('ASP.ip_or_domain', root.getConfProperty('ASP.ip_or_domain', None))
     if domain is not None:
-        return '{}://{}'.format(protocol, domain)
+        return '{}://{}'.format(protocol, domain.replace('cmstest1.', ''))
     return ''
 
 
