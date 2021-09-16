@@ -12,16 +12,19 @@ function csvToObjects(text) {
     let list = [];
 
     for (let rowI = 1; rowI < rows.length; rowI++) {
-        let object = {};
-        let row = rows[rowI].split(";");
+        // Ignore new line at end of file
+        if (rows[rowI].length > 0) {
+            let object = {};
+            let row = rows[rowI].split(";");
 
-        for (let colI = 0; colI < row.length; colI++) {
-            let data = row[colI];
+            for (let colI = 0; colI < row.length; colI++) {
+                let data = row[colI];
 
-            object[header[colI]] = data.length === 0 ? null : data;
+                object[header[colI]] = data.length === 0 ? null : data;
+            }
+
+            list.push(object);
         }
-
-        list.push(object);
     }
 
     return list;
@@ -36,29 +39,19 @@ function convertData(data) {
     objects.forEach(row => {
         if (row.title) {
             groupId++;
+
+            row.date = new Date(row.date);
+        } else {
+            row.date = lastRow.date;
+            row.title = lastRow.title;
+            row.affiliation = lastRow.title;
+            row.type = lastRow.type;
+            row.link = lastRow.link;
+            // row.speaker
+            // row.speakerLink
         }
         // Use to keep track which rows belong together
         row.group = groupId;
-
-        // If value empty, copy from row before
-        row.date = row.date ? new Date(row.date) : lastRow.date;
-        row.time = new Date(row.date.getTime());
-        row.title = row.title ? row.title : lastRow.title;
-        row.speaker = row.speaker ? row.speaker : lastRow.speaker;
-        row.speakerLink = row.speakerLink ? row.speakerLink : lastRow.speakerLink;
-        row.type = row.type ? row.type : lastRow.type;
-        row.link = row.link ? row.link : lastRow.link;
-
-        // Remove time from date column
-        row.date.setHours(0);
-        row.date.setMinutes(0);
-        row.date.setSeconds(0);
-        row.date.setMilliseconds(0);
-
-        // Remove date from time column
-        row.time.setFullYear(1970);
-        row.time.setMonth(1);
-        row.time.setDate(1);
 
         lastRow = row;
     });
@@ -66,42 +59,49 @@ function convertData(data) {
     return objects;
 }
 
-function renderDate(data, type) {
-    if (data == null) {
-        if (type === "display") {
-            return unknownText;
-        }
-        return Number.MAX_VALUE;
+function makeLink(url, text) {
+    if (url !== null) {
+        return `<a href="${url}" target="_blank">${text}</a>`;
     }
-    if (type === "display") {
-        return data.toLocaleDateString();
-    }
-    return data.getTime();
+    return `<span>${text}</span>`
 }
 
-function renderTime(data, type) {
-    if (data == null) {
+function renderDate(data, type, row) {
+    if (row.date == null) {
         if (type === "display") {
             return unknownText;
         }
         return Number.MAX_VALUE;
     }
     if (type === "display") {
-        return data.toLocaleTimeString();
+        return row.date.toLocaleDateString('de-CH', { day: "2-digit", month: "2-digit", year: "numeric" });
     }
-    return data.getTime();
+    return row.date.getTime();
+}
+
+function renderTime(data, type, row) {
+    if (row.date == null) {
+        if (type === "display") {
+            return unknownText;
+        }
+        return Number.MAX_VALUE;
+    }
+    if (type === "display") {
+        return row.date.toLocaleTimeString('de-CH', { hour: "2-digit", minute: "2-digit" });
+    }
+    return row.date.getTime();
 }
 
 function renderLink(data, type, row) {
     if (type === "display") {
-        return '<a href="' + row.link + '">' + row.type + '</a>'
+        return makeLink(row.link, row.type);
     }
     return row.type;
 }
 
 function renderSpeaker(data, type, row) {
     if (type === "display") {
-        return '<a href="' + row.speakerLink + '">' + row.speaker + '</a>'
+        return makeLink(row.speakerLink, row.speaker);
     }
     return row.speaker;
 }
@@ -120,10 +120,11 @@ function mergeCellsOfSameGroup(api, column) {
             nodes[i].classList.toggle(cssHiddenClass, true);
             nodes[i].rowSpan = 1;
         } else {
+            // No longer row of same group, expand row of last group.
             if (fistNodeOfGroup) {
                 fistNodeOfGroup.rowSpan = repetitions;
-                repetitions = 1;
             }
+            repetitions = 1;
 
             nodes[i].classList.toggle(cssHiddenClass, false);
 
@@ -148,6 +149,7 @@ $(document).ready(() => {
             {data: "date", name: "date", render: renderDate},
             {data: "time", name: "time", render: renderTime},
             {data: "title", name: "title"},
+            {data: "affiliation", name: "affiliation"},
             {data: "link", name: "speaker", render: renderLink},
             {data: "speaker", render: renderSpeaker},
             {data: "group", name: "group", visible: false},
