@@ -44,9 +44,9 @@ function convertData(data) {
         } else {
             row.date = lastRow.date;
             row.title = lastRow.title;
-            row.affiliation = lastRow.title;
             row.type = lastRow.type;
             row.link = lastRow.link;
+            // row.affiliation
             // row.speaker
             // row.speakerLink
         }
@@ -138,7 +138,6 @@ function draw() {
     mergeCellsOfSameGroup(this.api(), "date:name");
     mergeCellsOfSameGroup(this.api(), "time:name");
     mergeCellsOfSameGroup(this.api(), "title:name");
-    mergeCellsOfSameGroup(this.api(), "speaker:name");
 }
 
 $(document).ready(() => {
