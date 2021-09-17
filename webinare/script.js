@@ -7,7 +7,7 @@ let cssHiddenClass = "hidden";
 function csvToObjects(text) {
     let rows = text.split("\n");
 
-    let header = rows[0].split(";");
+    let header = rows[0].split(";").map(str => str.trim());
 
     let list = [];
 
@@ -46,7 +46,7 @@ function convertData(data) {
             row.title = lastRow.title;
             row.type = lastRow.type;
             row.link = lastRow.link;
-            // row.affiliation
+            row.affiliation = lastRow.affiliation;
             // row.speaker
             // row.speakerLink
         }
@@ -138,6 +138,8 @@ function draw() {
     mergeCellsOfSameGroup(this.api(), "date:name");
     mergeCellsOfSameGroup(this.api(), "time:name");
     mergeCellsOfSameGroup(this.api(), "title:name");
+    mergeCellsOfSameGroup(this.api(), "affiliation:name");
+    mergeCellsOfSameGroup(this.api(), "link:name");
 }
 
 $(document).ready(() => {
@@ -149,12 +151,14 @@ $(document).ready(() => {
             {data: "time", name: "time", render: renderTime},
             {data: "title", name: "title"},
             {data: "affiliation", name: "affiliation"},
-            {data: "link", name: "speaker", render: renderLink},
-            {data: "speaker", render: renderSpeaker},
+            {data: "link", name: "link",  render: renderLink},
+            {data: "speaker", name: "speaker", render: renderSpeaker},
             {data: "group", name: "group", visible: false},
         ],
+        drawCallback: draw,
         autoWidth: false,
         order: [[ 0, 'asc' ], [ 1, 'asc' ]],
-        drawCallback: draw
+        ordering: false,
+        pageLength: 25
     });
 });
