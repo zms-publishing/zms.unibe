@@ -10,6 +10,10 @@
 If a row has no title, it's considered to be a new speaker of the same webinar.
 In this case, only `speaker`, `affiliation` and `speakerLink` has to be filled in.
 
+### Date and time
+The date and time must be provided as OSI date time string.
+**If the supplied time is midnight (00:00), the time will be shown as unknown.**
+
 ### Schema
 | Column | Value | Example |
 |:---|:---|:---|

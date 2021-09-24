@@ -60,36 +60,37 @@ function convertData(data) {
 }
 
 function makeLink(url, text) {
-    if (url !== null) {
+    if (url) {
         return `<a href="${url}" target="_blank">${text}</a>`;
     }
     return `<span>${text}</span>`
 }
 
 function renderDate(data, type, row) {
-    if (row.date == null) {
-        if (type === "display") {
+    if (type === "display") {
+        if (!row.date) {
             return unknownText;
         }
-        return Number.MAX_VALUE;
-    }
-    if (type === "display") {
         return row.date.toLocaleDateString('de-CH', { day: "2-digit", month: "2-digit", year: "numeric" });
     }
-    return row.date.getTime();
+    if (row.date) {
+        return row.date.getTime();
+    }
+    return Number.MAX_VALUE;
 }
 
 function renderTime(data, type, row) {
-    if (row.date == null) {
-        if (type === "display") {
+    if (type === "display") {
+        if (!row.date || (row.date.getHours() === 0 && row.date.getMinutes() === 0)) {
+            // No time or time is midnight
             return unknownText;
         }
-        return Number.MAX_VALUE;
-    }
-    if (type === "display") {
         return row.date.toLocaleTimeString('de-CH', { hour: "2-digit", minute: "2-digit" });
     }
-    return row.date.getTime();
+    if (row.date) {
+        return row.date.getTime();
+    }
+    return Number.MAX_VALUE;
 }
 
 function renderLink(data, type, row) {
