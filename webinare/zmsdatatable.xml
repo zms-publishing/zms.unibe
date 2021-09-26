@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <ZMSDataTable uid="uid:dbf8c0e4-1daf-426d-96b2-afab367073b0" id="e1128206" id_prefix="e">
+    <attr_dc_coverage>global.ger</attr_dc_coverage>
+    <created_uid>bi18e080</created_uid>
+    <created_dt>
+<![CDATA[2021/09/17 15:09:21]]></created_dt>
+    <change_uid><lang id="ger">cmeier</lang></change_uid>
+    <change_dt><lang id="ger">
+<![CDATA[2021/09/26 13:22:47]]></lang></change_dt>
+    <active><lang id="ger">1</lang><lang id="fra">0</lang><lang id="eng">0</lang></active>
+    <datatype>csv</datatype>
+    <dataremote>1</dataremote>
+    <dataurl><lang id="ger">http://www.vphi.ch/unibe/portal/fak_vetmedizin/c_dept_dcr-vph/f_inst_vphi/content/e21059/e21062/e1128221/e1128199/vphi-webinare_ger.csv</lang></dataurl>
+    <obfuscate_emails><lang id="ger">0</lang><lang id="fra">0</lang><lang id="eng">0</lang></obfuscate_emails>
+    <_datafilecached><lang id="ger">
+<data content_type="text/csv" filename="2021-09-17T1553350200_ger.csv"></data></lang></_datafilecached>
+    <_datalastupdated>
+<![CDATA[2021/09/17 15:53:35]]></_datalastupdated>
+    <colstable><lang id="ger"><![CDATA[Date
+Time (CET)
+Title / Topic
+Affiliation
+Speaker Info
+Webinar / Recording]]></lang></colstable>
+    <colsdata><lang id="ger"><![CDATA[<script>
+$(function () {
+    "use strict";
+    
+    let unknownText = "";
+    
+    let cssHiddenClass = "hidden";
+    
+    function csvToObjects(text) {
+        let rows = text.split("\n");
+    
+        let header = rows[0].split(";").map(str => str.trim());
+    
+        let list = [];
+    
+        for (let rowI = 1; rowI < rows.length; rowI++) {
+            // Ignore new line at end of file
+            if (rows[rowI].length > 0) {
+                let object = {};
+                let row = rows[rowI].split(";");
+    
+                for (let colI = 0; colI < row.length; colI++) {
+                    let data = row[colI];
+    
+                    object[header[colI]] = data.length === 0 ? null : data;
+                }
+    
+                list.push(object);
+            }
+        }
+    
+        return list;
+    }
+    
+    function convertData(data) {
+        let objects = csvToObjects(data);
+    
+        let lastRow = null;
+        let groupId = 0;
+    
+        objects.forEach(row => {
+            if (row.title) {
+                groupId++;
+    
+                row.date = new Date(row.date);
+            } else {
+                row.date = lastRow.date;
+                row.title = lastRow.title;
+                row.type = lastRow.type;
+                row.link = lastRow.link;
+                row.affiliation = lastRow.affiliation;
+                // row.speaker
+                // row.speakerLink
+            }
+            // Use to keep track which rows belong together
+            row.group = groupId;
+    
+            lastRow = row;
+        });
+    
+        return objects;
+    }
+    
+    function makeLink(url, text) {
+        if (url) {
+            return `<a href="${url}" target="_blank">${text}</a>`;
+        }
+        return `<span>${text}</span>`
+    }
+    
+    function renderDate(data, type, row) {
+        if (type === "display") {
+            if (!row.date) {
+                return unknownText;
+            }
+            return row.date.toLocaleDateString('de-CH', { day: "2-digit", month: "2-digit", year: "numeric" });
+        }
+        if (row.date) {
+            return row.date.getTime();
+        }
+        return Number.MAX_VALUE;
+    }
+    
+    function renderTime(data, type, row) {
+        if (type === "display") {
+            if (!row.date || (row.date.getHours() === 0 && row.date.getMinutes() === 0)) {
+                // No time or time is midnight
+                return unknownText;
+            }
+            return row.date.toLocaleTimeString('de-CH', { hour: "2-digit", minute: "2-digit" });
+        }
+        if (row.date) {
+            return row.date.getTime();
+        }
+        return Number.MAX_VALUE;
+    }
+    
+    function renderLink(data, type, row) {
+        if (type === "display") {
+            return makeLink(row.link, row.type);
+        }
+        return row.type;
+    }
+    
+    function renderSpeaker(data, type, row) {
+        if (type === "display") {
+            return makeLink(row.speakerLink, row.speaker);
+        }
+        return row.speaker;
+    }
+    
+    function mergeCellsOfSameGroup(api, column) {
+        let groups = api.column("group:name", {page: "current"}).data().toArray();
+        let nodes = api.column(column, {page: "current"}).nodes();
+    
+        let lastGroup = null;
+        let fistNodeOfGroup = null;
+        let repetitions = 1;
+    
+        for (let i = 0; i < groups.length; i++) {
+            if (groups[i] === lastGroup) {
+                repetitions++;
+                nodes[i].classList.toggle(cssHiddenClass, true);
+                nodes[i].rowSpan = 1;
+            } else {
+                // No longer row of same group, expand row of last group.
+                if (fistNodeOfGroup) {
+                    fistNodeOfGroup.rowSpan = repetitions;
+                }
+                repetitions = 1;
+    
+                nodes[i].classList.toggle(cssHiddenClass, false);
+    
+                fistNodeOfGroup = nodes[i];
+                lastGroup = groups[i];
+            }
+        }
+    }
+    
+    function draw() {
+        mergeCellsOfSameGroup(this.api(), "date:name");
+        mergeCellsOfSameGroup(this.api(), "time:name");
+        mergeCellsOfSameGroup(this.api(), "title:name");
+        mergeCellsOfSameGroup(this.api(), "affiliation:name");
+        mergeCellsOfSameGroup(this.api(), "link:name");
+    }
+    
+    $(document).ready(() => {
+        $("#%s").DataTable({            // datatableID will be inserted on rendering
+            processing: true,
+            ajax: {
+                url: "%s",              // datafileURL will be inserted on rendering
+                dataType: "text",
+                dataSrc: convertData
+            },
+            columns: [
+                {data: "date", name: "date", render: renderDate},
+                {data: "time", name: "time", render: renderTime},
+                {data: "title", name: "title"},
+                {data: "affiliation", name: "affiliation"},
+                {data: "link", name: "link",  render: renderLink},
+                {data: "speaker", name: "speaker", render: renderSpeaker},
+                {data: "group", name: "group", visible: false},
+            ],
+            drawCallback: draw,
+            autoWidth: false,
+            order: [[ 0, 'asc' ], [ 1, 'asc' ]],
+            ordering: false,
+            asStripeClasses: [],        // disable zebra coloring of rows
+            pageLength: 25,
+        });
+    });
+});
+</script>]]></lang><lang id="fra"><![CDATA[// BO columns
+paging: true,
+scrollX: true,
+//scrollY: 300,
+//scrollCollapse: true,
+//order: [[ 1, "desc" ]], // order column descending
+//asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+columns: [],
+responsive: false, /*{
+	details: {
+		renderer: function(api, rowIdx) {
+            // Select hidden columns for the given row
+            var data = api.cells(rowIdx, ':hidden').eq(0).map(function(cell) {
+                var header = $(api.column(cell.column).header());
+                return '<tr>'+
+                        '<td>'+
+                            header.text() + ':' +
+                        '</td> ' +
+                        '<td>' +
+                            api.cell(cell).data() +
+                        '</td>' +
+                    '</tr>';
+            }).toArray().join('');
+
+            return data ? $('<table/>').append(data) : false;
+        }
+	}
+},*/
+// https://datatables.net/examples/api/multi_filter_select.html
+/*initComplete: function () {
+    i = 0;
+    this.api().columns().every(function() {
+        var column = this;
+        var column_filter_for = [3, 4];
+        if (column_filter_for.includes(i)) {
+            var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()) )
+                .on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append('<option value="'+d+'">'+d+'</option>')
+            } );
+        }
+        else {
+            column.text = '';
+        }
+        i++;
+    } );
+},*/
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+
+}
+// EO processCustomJS]]></lang><lang id="eng"><![CDATA[// BO columns
+paging: true,
+scrollX: true,
+//scrollY: 300,
+//scrollCollapse: true,
+//order: [[ 1, "desc" ]], // order column descending
+//asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+columns: [],
+responsive: false, /*{
+	details: {
+		renderer: function(api, rowIdx) {
+            // Select hidden columns for the given row
+            var data = api.cells(rowIdx, ':hidden').eq(0).map(function(cell) {
+                var header = $(api.column(cell.column).header());
+                return '<tr>'+
+                        '<td>'+
+                            header.text() + ':' +
+                        '</td> ' +
+                        '<td>' +
+                            api.cell(cell).data() +
+                        '</td>' +
+                    '</tr>';
+            }).toArray().join('');
+
+            return data ? $('<table/>').append(data) : false;
+        }
+	}
+},*/
+// https://datatables.net/examples/api/multi_filter_select.html
+/*initComplete: function () {
+    i = 0;
+    this.api().columns().every(function() {
+        var column = this;
+        var column_filter_for = [3, 4];
+        if (column_filter_for.includes(i)) {
+            var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()) )
+                .on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append('<option value="'+d+'">'+d+'</option>')
+            } );
+        }
+        else {
+            column.text = '';
+        }
+        i++;
+    } );
+},*/
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+
+}
+// EO processCustomJS]]></lang></colsdata>
+    <attr_dc_type_layout>3-09-0</attr_dc_type_layout>
+  </ZMSDataTable>

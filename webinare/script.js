@@ -146,7 +146,7 @@ function draw() {
 $(document).ready(() => {
     $("#table").DataTable({
         processing: true,
-        ajax: {url: "data.csv", dataType: "text", dataSrc: convertData},
+        ajax: {url: "http://localhost:7000/data.csv", dataType: "text", dataSrc: convertData},
         columns: [
             {data: "date", name: "date", render: renderDate},
             {data: "time", name: "time", render: renderTime},
