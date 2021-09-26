@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <ZMSDataTable uid="uid:d892fafa-49a8-4d8f-a0a2-a312479f5868" id="e1064195" id_prefix="e">
+    <attr_dc_coverage>global.ger</attr_dc_coverage>
+    <created_uid>cmeier</created_uid>
+    <created_dt>
+<![CDATA[2021/04/06 10:20:16]]></created_dt>
+    <change_uid><lang id="ger">deploy</lang><lang id="fra">papellegrini</lang><lang id="eng">papellegrini</lang></change_uid>
+    <change_dt><lang id="ger">
+<![CDATA[2021/09/25 06:01:01]]></lang><lang id="fra">
+<![CDATA[2021/04/07 13:48:41]]></lang><lang id="eng">
+<![CDATA[2021/04/07 13:48:41]]></lang></change_dt>
+    <active><lang id="ger">1</lang><lang id="fra">0</lang><lang id="eng">0</lang></active>
+    <datatype>json</datatype>
+    <dataremote>1</dataremote>
+    <dataurl><lang id="ger">https://api.epc.unibe.ch/pariscms/api/v1/institutions</lang></dataurl>
+    <obfuscate_emails><lang id="ger">1</lang><lang id="fra">0</lang><lang id="eng">0</lang></obfuscate_emails>
+    <_datafilecached><lang id="ger">
+<data content_type="application/json" filename="2021-09-25T0601010200_ger.json"></data></lang></_datafilecached>
+    <_datalastupdated>
+<![CDATA[2021/09/25 06:01:01]]></_datalastupdated>
+    <datawebservice>pariscms-ws</datawebservice>
+    <datahealthcheck>https://api.epc.unibe.ch/pariscms/actuator/health</datahealthcheck>
+    <colstable><lang id="ger">Einrichtung
+Verantwortlich
+Bereich</lang></colstable>
+    <colsdata><lang id="ger"><![CDATA[<script>
+$(function () {
+    "use strict";
+    
+    let cssHiddenClass = "hidden";
+    
+    let roleNames = {
+        "TV": "Technik",
+        "S0": "Software",
+        "KV": "Konto"
+    };
+    
+    function dataToRows(array) {
+        let entities = [];
+    
+        array.forEach(institute => {
+            institute.members.forEach(member => {
+                entities.push({
+                    department: `${institute.name} (${institute.externId})`,
+                    member: {
+                        firstname: member.firstname,
+                        lastname: member.lastname,
+                        email: member.email,
+                        tel: member.tel
+                    },
+                    roles: member.roles.map(role => roleNames[role]).join(", ")
+                });
+            })
+        });
+    
+        return entities;
+    }
+    
+    function renderMember(data, role) {
+        let name = data.firstname + " " + data.lastname;
+        let tel = data.tel ? data.tel : "";
+    
+        if (role === "display") {
+            if (data.email) {
+                return '<a href="' + data.email + '">' + name + '</a><br />' + tel;
+                
+            }
+            return `${name}<br />${tel}`;
+        }
+        return name;
+    }
+    
+    function draw() {
+        let nodes = this.api().column(0, {page: 'current'}).nodes().toArray();
+    
+        let groupText = null;
+        let groupNode = null;
+        let repetition = 1;
+    
+        nodes.forEach(node => {
+            if (node.innerHTML === groupText) {
+                // Hide
+                node.classList.toggle(cssHiddenClass, true);
+                repetition++;
+            } else {
+                // Show
+                node.classList.toggle(cssHiddenClass, false);
+                groupText = node.innerHTML;
+                groupNode = node;
+                repetition = 1;
+            }
+            if (groupNode) {
+                // Expand
+                groupNode.rowSpan = repetition;
+            }
+        });
+    }
+    
+    function dataReady() {
+        let api = this.api();
+    
+        // Add all institutions to set to ensure every element is unique.
+        let set = new Set();
+        api.column(0).data().each((value) => set.add(value));
+    
+        // Add all institutions to an array and sort. (Set doesn't sort alphabetically.)
+        let array = [...set].sort((l, r) => l.localeCompare(r, undefined, {sensitivity: 'base'}));
+    
+        $("#institution-filter").each(function () {
+            this.addEventListener("change", function () {
+                api.column(0).search(this.value, false, false, false).draw();
+            });
+    
+            array.forEach((institution) => {
+                let option = document.createElement("option");
+                option.innerHTML = institution;
+                option.value = institution;
+                this.appendChild(option);
+            });
+        });
+    }
+    
+    $(document).ready(() => {
+        let table = $("#%s").DataTable({    // datatableID will be inserted on rendering
+            processing: true,
+            ajax: {
+                url: "%s",                  // datafileURL will be inserted on rendering      
+                dataSrc: dataToRows         
+            },
+            columns: [
+                {data: "department", name: "department", width: "50%%"}, // percent must be escaped
+                {data: "member", width: "40%%"}, // percent must be escaped
+                {data: "roles", name: "roles", width: "10%%"}, // percent must be escaped
+            ],
+            columnDefs: [
+                {targets: 1, render: renderMember},
+            ],
+            initComplete: dataReady,
+            drawCallback: draw,
+            order: [[ 0, "asc" ]], // order by orgunit ascending
+            asStripeClasses: [], // disable zebra coloring of rows
+            bSortClasses: false, // disable coloring of sorted column
+            oLanguage: {
+                "sSearch": ""
+            },
+            dom: "frtipl",
+        });
+    
+        let checkboxes = $("#filter input[type=checkbox]");
+    
+        checkboxes.change(function () {
+            let changedBox = this;
+            let term = "";
+    
+            if (changedBox.checked) {
+                term = changedBox.value;
+    
+                // Uncheck other boxes
+                checkboxes.each(function () {
+                    if (changedBox !== this) {
+                        this.checked = false;
+                    }
+                });
+            }
+    
+            table
+                .column(2)
+                .search(term, false, false, false)
+                .draw();
+        });
+        
+        $('.dataTables_filter > label > input').attr("placeholder", "Volltextsuche");
+    });
+});
+</script>
+
+<style>
+.hidden {
+    display: none;
+}
+
+#filter label {
+    display: block;
+}
+
+#filter input {
+    outline: none;
+}
+
+#filter {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+#institution-filter {
+    border: 2px solid #e6e6e6;
+    padding: 3px;
+    margin-left: -3px;
+    border-radius: 3px;
+    font: inherit;
+}
+
+.dataTables_filter {
+    float: left !important;
+}
+
+.dataTables_filter input {
+    font: inherit !important;
+    width: 100%% !important;
+}
+
+table.dataTable.display tbody td {
+    padding: 8px 0;
+}
+
+table.dataTable.display tbody td:nth-child(1) {
+    padding: 8px 10px;
+}
+</style>
+
+<form id="filter">
+    <label>
+        <select id="institution-filter">
+            <option value="">Alle Einrichtungen</option>
+        </select>
+    </label>
+    <label><input type="checkbox" value="Technik"> nur Technik-Verantwortliche</label>
+    <label><input type="checkbox" value="Software"> nur Software-Verantwortliche</label>
+    <label><input type="checkbox" value="Konto"> nur Konto-Verantwortliche</label>
+
+</form>]]></lang><lang id="fra"><![CDATA[// BO columns
+paging: true,
+scrollX: true,
+//scrollY: 300,
+//scrollCollapse: true,
+//order: [[ 1, "desc" ]], // order column descending
+//asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+columns: [],
+responsive: false, /*{
+	details: {
+		renderer: function(api, rowIdx) {
+            // Select hidden columns for the given row
+            var data = api.cells(rowIdx, ':hidden').eq(0).map(function(cell) {
+                var header = $(api.column(cell.column).header());
+                return '<tr>'+
+                        '<td>'+
+                            header.text() + ':' +
+                        '</td> ' +
+                        '<td>' +
+                            api.cell(cell).data() +
+                        '</td>' +
+                    '</tr>';
+            }).toArray().join('');
+
+            return data ? $('<table/>').append(data) : false;
+        }
+	}
+},*/
+// https://datatables.net/examples/api/multi_filter_select.html
+/*initComplete: function () {
+    i = 0;
+    this.api().columns().every(function() {
+        var column = this;
+        var column_filter_for = [3, 4];
+        if (column_filter_for.includes(i)) {
+            var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()) )
+                .on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append('<option value="'+d+'">'+d+'</option>')
+            } );
+        }
+        else {
+            column.text = '';
+        }
+        i++;
+    } );
+},*/
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+
+}
+// EO processCustomJS]]></lang><lang id="eng"><![CDATA[// BO columns
+paging: true,
+scrollX: true,
+//scrollY: 300,
+//scrollCollapse: true,
+//order: [[ 1, "desc" ]], // order column descending
+//asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+columns: [],
+responsive: false, /*{
+	details: {
+		renderer: function(api, rowIdx) {
+            // Select hidden columns for the given row
+            var data = api.cells(rowIdx, ':hidden').eq(0).map(function(cell) {
+                var header = $(api.column(cell.column).header());
+                return '<tr>'+
+                        '<td>'+
+                            header.text() + ':' +
+                        '</td> ' +
+                        '<td>' +
+                            api.cell(cell).data() +
+                        '</td>' +
+                    '</tr>';
+            }).toArray().join('');
+
+            return data ? $('<table/>').append(data) : false;
+        }
+	}
+},*/
+// https://datatables.net/examples/api/multi_filter_select.html
+/*initComplete: function () {
+    i = 0;
+    this.api().columns().every(function() {
+        var column = this;
+        var column_filter_for = [3, 4];
+        if (column_filter_for.includes(i)) {
+            var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()) )
+                .on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append('<option value="'+d+'">'+d+'</option>')
+            } );
+        }
+        else {
+            column.text = '';
+        }
+        i++;
+    } );
+},*/
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+
+}
+// EO processCustomJS]]></lang></colsdata>
+    <attr_dc_type_layout>3-09-0</attr_dc_type_layout>
+  </ZMSDataTable>

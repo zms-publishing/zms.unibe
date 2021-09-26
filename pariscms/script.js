@@ -95,7 +95,7 @@ function dataReady() {
 $(document).ready(() => {
     let table = $("#table").DataTable({
         processing: true,
-        ajax: {url: "data.json", dataSrc: dataToRows},
+        ajax: {url: "http://localhost:7000/institutions.json", dataSrc: dataToRows},
         columns: [
             {data: "department"},
             {data: "member"},
