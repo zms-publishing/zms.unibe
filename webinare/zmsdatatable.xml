@@ -19,8 +19,8 @@
     <colstable><lang id="ger"><![CDATA[Date
 Time (CET)
 Title / Topic
+Speaker
 Affiliation
-Speaker Info
 Webinar / Recording]]></lang></colstable>
     <colsdata><lang id="ger"><![CDATA[<script>
 $(function () {
@@ -65,7 +65,6 @@ $(function () {
         objects.forEach(row => {
             if (row.title) {
                 groupId++;
-    
                 row.date = new Date(row.date);
             } else {
                 row.date = lastRow.date;
@@ -78,20 +77,20 @@ $(function () {
             }
             // Use to keep track which rows belong together
             row.group = groupId;
-    
+
             lastRow = row;
         });
-    
+
         return objects;
     }
-    
+
     function makeLink(url, text) {
         if (url) {
             return `<a href="${url}" target="_blank">${text}</a>`;
         }
         return `<span>${text}</span>`
     }
-    
+
     function renderDate(data, type, row) {
         if (type === "display") {
             if (!row.date) {
@@ -104,7 +103,7 @@ $(function () {
         }
         return Number.MAX_VALUE;
     }
-    
+
     function renderTime(data, type, row) {
         if (type === "display") {
             if (!row.date || (row.date.getHours() === 0 && row.date.getMinutes() === 0)) {
@@ -118,29 +117,29 @@ $(function () {
         }
         return Number.MAX_VALUE;
     }
-    
+
     function renderLink(data, type, row) {
-        if (type === "display") {
+        if (type === "display" && row.link.length > 1) {
             return makeLink(row.link, row.type);
         }
         return row.type;
     }
-    
+
     function renderSpeaker(data, type, row) {
         if (type === "display") {
             return makeLink(row.speakerLink, row.speaker);
         }
         return row.speaker;
     }
-    
+
     function mergeCellsOfSameGroup(api, column) {
         let groups = api.column("group:name", {page: "current"}).data().toArray();
         let nodes = api.column(column, {page: "current"}).nodes();
-    
+
         let lastGroup = null;
         let fistNodeOfGroup = null;
         let repetitions = 1;
-    
+
         for (let i = 0; i < groups.length; i++) {
             if (groups[i] === lastGroup) {
                 repetitions++;
@@ -152,15 +151,15 @@ $(function () {
                     fistNodeOfGroup.rowSpan = repetitions;
                 }
                 repetitions = 1;
-    
+
                 nodes[i].classList.toggle(cssHiddenClass, false);
-    
+
                 fistNodeOfGroup = nodes[i];
                 lastGroup = groups[i];
             }
         }
     }
-    
+
     function draw() {
         mergeCellsOfSameGroup(this.api(), "date:name");
         mergeCellsOfSameGroup(this.api(), "time:name");
@@ -168,7 +167,7 @@ $(function () {
         mergeCellsOfSameGroup(this.api(), "affiliation:name");
         mergeCellsOfSameGroup(this.api(), "link:name");
     }
-    
+
     $(document).ready(() => {
         $("#%s").DataTable({            // datatableID will be inserted on rendering
             processing: true,
@@ -181,9 +180,9 @@ $(function () {
                 {data: "date", name: "date", render: renderDate},
                 {data: "time", name: "time", render: renderTime},
                 {data: "title", name: "title"},
+                {data: "speaker", name: "speaker", render: renderSpeaker},
                 {data: "affiliation", name: "affiliation"},
                 {data: "link", name: "link",  render: renderLink},
-                {data: "speaker", name: "speaker", render: renderSpeaker},
                 {data: "group", name: "group", visible: false},
             ],
             drawCallback: draw,

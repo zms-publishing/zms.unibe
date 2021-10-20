@@ -1,6 +1,6 @@
 "use strict";
 
-let unknownText = "Unbekannt";
+let unknownText = "";
 
 let cssHiddenClass = "hidden";
 
@@ -39,7 +39,6 @@ function convertData(data) {
     objects.forEach(row => {
         if (row.title) {
             groupId++;
-
             row.date = new Date(row.date);
         } else {
             row.date = lastRow.date;
@@ -94,7 +93,7 @@ function renderTime(data, type, row) {
 }
 
 function renderLink(data, type, row) {
-    if (type === "display") {
+    if (type === "display" && row.link.length > 1) {
         return makeLink(row.link, row.type);
     }
     return row.type;
@@ -151,15 +150,16 @@ $(document).ready(() => {
             {data: "date", name: "date", render: renderDate},
             {data: "time", name: "time", render: renderTime},
             {data: "title", name: "title"},
+            {data: "speaker", name: "speaker", render: renderSpeaker},
             {data: "affiliation", name: "affiliation"},
             {data: "link", name: "link",  render: renderLink},
-            {data: "speaker", name: "speaker", render: renderSpeaker},
             {data: "group", name: "group", visible: false},
         ],
         drawCallback: draw,
         autoWidth: false,
         order: [[ 0, 'asc' ], [ 1, 'asc' ]],
         ordering: false,
-        pageLength: 25
+        asStripeClasses: [],        // disable zebra coloring of rows
+        pageLength: 25,
     });
 });
