@@ -156,9 +156,9 @@ class Announcement(Resource):
                     print('ERROR: Broken Link at ' + e.getPath())
                 img = obj.attr('img')
 
-                protocol = obj.getConfProperty('ASP.protocol', 'http')
-                domain = obj.getConfProperty('ASP.ip_or_domain', 'localhost')
-                href = '{}://{}'.format(protocol, domain)
+                protocol = 'https'
+                domain = obj.getConfProperty('ASP.ip_or_domain', 'www.unibe.ch')
+                href = '{}://{}'.format(protocol, domain.replace('cmstest1.', ''))
 
                 text_de = obj.attr('text', REQUEST={'lang': 'ger'}).replace('\r\n', '<br />')
                 text_en = obj.attr('text', REQUEST={'lang': 'eng'}).replace('\r\n', '<br />')
@@ -183,8 +183,8 @@ class Announcement(Resource):
                               obj.attr('img').getHref(REQUEST={'lang': 'eng'}) or ''
                     },
                     'infolink': {
-                        'de': infolink_de,
-                        'en': infolink_en
+                        'de': infolink_de.replace('http://', 'https://').replace('cmstest1.', ''),
+                        'en': infolink_en.replace('http://', 'https://').replace('cmstest1.', '')
                     },
                     'responsible': {
                         'de': obj.attr('attr_dc_creator', REQUEST={'lang': 'ger'}),

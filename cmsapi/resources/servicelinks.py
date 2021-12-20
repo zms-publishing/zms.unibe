@@ -139,9 +139,9 @@ def get_value(obj, attr, lang):
         if attr in ['title', 'titlealt', 'text']:
             value = value.replace('&nbsp;', ' ').replace('\r', '').replace('\n', '')
         if attr in ['file', 'img']:
-            protocol = obj.getConfProperty('ASP.protocol', 'http')
-            domain = obj.getConfProperty('ASP.ip_or_domain', 'localhost')
-            url = '{}://{}'.format(protocol, domain)
+            protocol = 'https'
+            domain = obj.getConfProperty('ASP.ip_or_domain', 'www.unibe.ch')
+            url = '{}://{}'.format(protocol, domain.replace('cmstest1.', ''))
             if isinstance(value, _blobfields.MyFile) or isinstance(value, _blobfields.MyImage):
                 value = url + value.getHref(REQUEST=req)
         if attr in ['attr_ref']:

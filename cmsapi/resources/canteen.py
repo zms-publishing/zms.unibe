@@ -68,9 +68,9 @@ class Canteen(Resource):
                             '<p> </p>', '').replace(
                             '<h3> </h3>', ''))
 
-                protocol = obj.getConfProperty('ASP.protocol', 'http')
-                domain = obj.getConfProperty('ASP.ip_or_domain', 'localhost')
-                href = '{}://{}'.format(protocol, domain)
+                protocol = 'https'
+                domain = obj.getConfProperty('ASP.ip_or_domain', 'www.unibe.ch')
+                href = '{}://{}'.format(protocol, domain.replace('cmstest1.', ''))
 
                 img_ob = obj.getChildNodes(meta_types='ZMSGraphic', REQUEST={})
                 img_de = []
