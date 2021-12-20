@@ -50,31 +50,40 @@ class AnnouncementAgenda(Resource):
                 'type': 'event',
                 'title': {
                     'de': e['veranstaltung_titel'],
+                    'en': e['veranstaltung_titel'],
                 },
                 'topic': {
                     'de': e['veranstaltung_zyklus'],
+                    'en': e['veranstaltung_zyklus'],
                 },
                 'infolink': {
                     'de': e['veranstalter_info_link'],
+                    'en': e['veranstalter_info_link'],
                 },
                 'eventdate': {
                     'de': e['json_datum_zeit_start'],
+                    'en': e['json_datum_zeit_start'],
                 },
                 'eventend': {
                     'de': e['json_datum_zeit_end'],
+                    'en': e['json_datum_zeit_end'],
                 },
                 'eventinfo': {
                     'speakers': {
                         'de': e["veranstaltung_referenten"],
+                        'en': e["veranstaltung_referenten"],
                     },
                     'location': {
                         'de': e["veranstaltung_ort"],
+                        'en': e["veranstaltung_ort"],
                     },
                     'building': {
                         'de': e["veranstaltung_gebaude_adresse"],
+                        'en': e["veranstaltung_gebaude_adresse"],
                     },
                     'room': {
                         'de': e["veranstaltung_horsaal"],
+                        'en': e["veranstaltung_horsaal"],
                     }
                 }
             }
