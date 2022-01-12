@@ -14,22 +14,22 @@ Additionally CMSAPI makes use of [Flasgger](https://github.com/flasgger/flasgger
 
 [PyCharm](https://www.jetbrains.com/pycharm/) is the recommended IDE for local development. First the desired Python version has to be installed for your system. Second an isolated Python virtual environment has to be created. Third the needed software stack has to be installed and setup.
 
-Assuming the `unibe-cms` repository has been cloned and a Python virtual environment named `venvpy39-cmsapi` has been created in parallel, the installation steps are:
+Assuming the `unibe-cms` repository has been cloned and a Python virtual environment named `venvpy310-cmsapi` has been created in parallel, the installation steps are:
 
-    (venvpy39-cmsapi) $ bin/pip install -U pip wheel setuptools
+    (venvpy310-cmsapi) $ bin/pip install -U pip wheel setuptools
     
-    (venvpy39-cmsapi) $ bin/pip install Zope[wsgi]==5.3 \
+    (venvpy310-cmsapi) $ bin/pip install Zope[wsgi]==5.4 \
                         -e ../unibe-cmsapi/zms-headless \
-                        -c https://zopefoundation.github.io/Zope/releases/5.3/constraints.txt
+                        -c https://zopefoundation.github.io/Zope/releases/5.4/constraints.txt
 
-    (venvpy39-cmsapi) $ bin/pip install -r ../unibe-cms/restapi/requirements-flask.txt \
-                        -c https://zopefoundation.github.io/Zope/releases/5.3/constraints.txt
+    (venvpy310-cmsapi) $ bin/pip install -r ../unibe-cms/restapi/requirements-flask.txt \
+                        -c https://zopefoundation.github.io/Zope/releases/5.4/constraints.txt
 
 A sample run configuration:
 
     <component name="ProjectRunConfigurationManager">
         <configuration default="false" name="unibe-cmsapi" type="Python.FlaskServer">
-            <option name="SDK_HOME" value="$PROJECT_DIR$/venvpy39-cmsapi/bin/python" />
+            <option name="SDK_HOME" value="$PROJECT_DIR$/venvpy310-cmsapi/bin/python" />
             <option name="target" value="$PROJECT_DIR$/unibe-cms/restapi/cmsapi/app.py" />
             <option name="targetType" value="PATH" />
             <option name="flaskDebug" value="true" />
