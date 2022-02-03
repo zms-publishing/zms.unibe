@@ -237,6 +237,17 @@ class Announcement(Resource):
                                 fmt_str='ISO8601'),
                     }
                 }
+                # show corona news on top by setting the current date
+                if '.unibe.ch/coronavirus' in infolink_de and announcement['eventdate']['de'] == 'None':
+                    now = time.localtime()
+                    announcement['lastmodified'] = {
+                        'created': self.zmscontent.getLangFmtDate(
+                                now,
+                                fmt_str='ISO8601'),
+                        'changed': self.zmscontent.getLangFmtDate(
+                                now,
+                                fmt_str='ISO8601'),
+                    }
                 self.announcements.append(announcement)
 
         if len(self.announcements) > 0:
