@@ -1,4 +1,4 @@
-FROM ep-devops.id.unibe.ch:5000/id/unibe-cmsbase:python3.10.1-zope5.4
+FROM ep-devops.id.unibe.ch:5000/id/unibe-cmsbase:python3.10.2-zope5.4
 
 ENV ZODB_STORAGE="zeo:8000?storage=main" \
     ACCESS_LOG_DIR="/app/log" \
