@@ -18,7 +18,7 @@ fi
 BRANCH=$1
 
 # TODO: muss aus git flow kommen
-VERSION="2.0.2"
+VERSION="2.0.3"
 VERSION_TAG=""
 if [[ ${BRANCH} = "master" ]] ; then
     VERSION_TAG=${VERSION}
