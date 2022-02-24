@@ -40,6 +40,8 @@ class Canteen(Resource):
                 description: OK
             204:
                 description: No canteens found
+        deprecated:
+            true
         """
         print("### not cached Canteen.get", uuid)
         if uuid is not None:
@@ -140,6 +142,8 @@ class CanteenOverview(Canteen, Resource):
                 description: OK
             204:
                 description: No canteens found
+        deprecated:
+            true
         """
         print("### not cached CanteenOverview.get")
         elements = self.zmsindex({'meta_id': self.default_meta, 'path': self.default_site})
