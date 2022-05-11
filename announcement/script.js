@@ -6,18 +6,18 @@ const TimeSpan = Object.freeze({
     PAST: 3
 });
 
-let unknownDateText = "Unbekannt";
+let unknownDateText = "";
 
 let timeSpanDict = {};
-timeSpanDict[TimeSpan.NOW] = "Jetzt";
+timeSpanDict[TimeSpan.NOW] = "Aktuell";
 timeSpanDict[TimeSpan.FUTURE] = "Anstehend";
-timeSpanDict[TimeSpan.PAST] = "Vergangenheit";
+timeSpanDict[TimeSpan.PAST] = "Vergangen";
 
 let typeDict = {
     "WARTUNG": "Wartung",
-    "DRINGENDE WARTUNG": "Dringende Wartung",
-    "STOERUNG": "St&ouml;rung",
-    "SICHERHEITSMELDUNG": "Sicherheitsmeldung",
+    "DRINGENDE WARTUNG": "Wartung",
+    "STOERUNG": "Störung",
+    "SICHERHEITSMELDUNG": "Sicherheit",
     "HINWEIS": "Hinweis"
 };
 
@@ -37,7 +37,12 @@ function renderTimeSpan(timeSpan, role) {
 function renderDate(date, role) {
     if (date) {
         if (role === "display") {
-            return date.toLocaleString();
+            let dateString = date.toLocaleString('de-CH', {day: '2-digit', month: '2-digit', year: 'numeric'});
+            let timeString = date.toLocaleString('de-CH', {hour: 'numeric', minute: 'numeric'});
+            if (timeString !== '00:00') {
+                return dateString + '<br />' + timeString;
+            }
+            return dateString;
         }
         return date.getTime();
     } else {
@@ -58,15 +63,18 @@ function dateOrNull(text) {
 function getTimeSpan(begin, end, now) {
     if (end !== null && now > end) {
         return TimeSpan.PAST;
-    } else if (begin !== null && now > begin) {
+    } else if (begin !== null && now >= begin && begin >= dateOrNull('2021/01/01')) {
         return TimeSpan.NOW;
-    } else {
+    } else if (begin > now) {
         return TimeSpan.FUTURE;
+    }
+    else {
+        return TimeSpan.PAST;
     }
 }
 
 function convert(data) {
-    let announcements = data.status_announcements;
+    let announcements = data;
     let now = new Date();
 
     announcements.forEach((announcement) => {
@@ -99,7 +107,25 @@ function draw() {
     }
 }
 
-/// This class should be modified/replaced for CMS.
+function linkify(inputText) {
+    var replacedText, replacePattern1, replacePattern2, replacePattern3;
+
+    // URLs starting with http://, https://, or ftp://
+    replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+    replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>');
+
+    // URLs starting with "www." (without // before it, or it'd re-link the ones done above).
+    replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+    replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank">$2</a>');
+
+    // Change email addresses to mailto:: links.
+    replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
+    replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>');
+
+    return replacedText;
+}
+
+// This class should be modified/replaced for CMS.
 class PopUp {
     constructor() {
         this._subject = document.getElementById("detailSubject");
@@ -112,11 +138,14 @@ class PopUp {
 
     set announcement(announcement) {
         this._subject.innerHTML = announcement.subject;
-        this._description.innerHTML = announcement.description;
-        this._type.innerHTML = mapType(announcement.type);
-        this._begin.innerHTML = announcement.begin.toLocaleString();
-        this._end.innerHTML = announcement.end.toLocaleString();
-        this._service.innerHTML = announcement.service;
+        let announcement_table = '<table>';
+        announcement_table += '<tr><th>Typ</th><td>' + mapType(announcement.type).toUpperCase() + '</td></tr>';
+        announcement_table += '<tr><th>Beginn</th><td>' + renderDate(announcement.begin, "display").replace('<br />', ' ') + '</td></tr>';
+        announcement_table += '<tr><th>Ende</th><td>' + renderDate(announcement.end, "display").replace('<br />', ' ') + '</td></tr>';
+        announcement_table += '<tr><th>Service</th><td>' + announcement.service + '</td></tr>';
+        announcement_table += '<tr><th>Info</th><td>' + linkify(announcement.info) + '</td></tr>';
+        announcement_table += '<tr><th>Beschreibung</th><td><p style="white-space: pre-line">' + linkify(announcement.description) + '</p></td></tr>';
+        this._description.innerHTML = announcement_table;
     }
 }
 
@@ -125,28 +154,45 @@ $(document).ready(() => {
 
     // Replace with actual popup function.
     let assignClickListener = (row, announcement) => {
-        row.addEventListener("click", () => popup.announcement = announcement);
+        row.addEventListener("click", () => {
+            popup.announcement = announcement;
+        });
     };
 
     let table = $("#table").DataTable({
         processing: true,
         ajax: {url: "data.json", dataSrc: convert},
         columns: [
-            {data: "timeSpan", name: "timeSpan"},
-            {data: "subject"},
-            {data: "description"},
-            {data: "type"},
-            {data: "begin"},
-            {data: "end"}
+            {data: "timeSpan", name: "timeSpan", width: "10%"},
+            {data: "begin", width: "15%"},
+            {data: "end", width: "15%"},
+            {data: "description", width: "50%",
+                render: function (data, type, row) {
+                    if (data.toString().length>100) {
+                        return '<strong>' + row['subject'] + '</strong><br />' + data.toString().substring(0, 100) + '...';
+                    }
+                    else {
+                        return '<strong>' + row['subject'] + '</strong><br />' + data.toString();
+                    }
+
+                }
+            },
+            {data: "type", width: "10%"}
         ],
         columnDefs: [
             {render: renderTimeSpan, targets: 0},
-            {render: mapType, targets: 3},
-            {render: renderDate, targets: [4, 5]}
+            {render: mapType, targets: 4},
+            {render: renderDate, targets: [1, 2]}
         ],
-        order: [[0, "asc"], [4, "asc"]],
+        order: [[0, "asc"], [1, "asc"]],
         drawCallback: draw,
         createdRow: assignClickListener,
+        asStripeClasses: [], // disable zebra coloring of rows
+        bSortClasses: false, // disable coloring of sorted column
+        oLanguage: {
+            "sSearch": ""
+        },
+        dom: "frtipl",
     });
 
     let checkboxes = $("#form input[type=checkbox]");
