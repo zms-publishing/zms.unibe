@@ -15,7 +15,7 @@ timeSpanDict[TimeSpan.PAST] = "Vergangen";
 
 let typeDict = {
     "WARTUNG": "Wartung",
-    "DRINGENDE WARTUNG": "Wartung",
+    "DRINGENDE WARTUNG": "Dringende Wartung",
     "STOERUNG": "Störung",
     "SICHERHEITSMELDUNG": "Sicherheit",
     "HINWEIS": "Hinweis"
@@ -37,7 +37,7 @@ function renderTimeSpan(timeSpan, role) {
 function renderDate(date, role) {
     if (date) {
         if (role === "display") {
-            let dateString = date.toLocaleString('de-CH', {day: '2-digit', month: '2-digit', year: 'numeric'});
+            let dateString = date.toLocaleString('de-CH', {day: '2-digit', month: '2-digit', year: 'numeric', weekday: 'short'});
             let timeString = date.toLocaleString('de-CH', {hour: 'numeric', minute: 'numeric'});
             if (timeString !== '00:00') {
                 return dateString + '<br />' + timeString;
@@ -142,9 +142,9 @@ class PopUp {
         announcement_table += '<tr><th>Typ</th><td>' + mapType(announcement.type).toUpperCase() + '</td></tr>';
         announcement_table += '<tr><th>Beginn</th><td>' + renderDate(announcement.begin, "display").replace('<br />', ' ') + '</td></tr>';
         announcement_table += '<tr><th>Ende</th><td>' + renderDate(announcement.end, "display").replace('<br />', ' ') + '</td></tr>';
-        announcement_table += '<tr><th>Service</th><td>' + announcement.service + '</td></tr>';
-        announcement_table += '<tr><th>Info</th><td>' + linkify(announcement.info) + '</td></tr>';
         announcement_table += '<tr><th>Beschreibung</th><td><p style="white-space: pre-line">' + linkify(announcement.description) + '</p></td></tr>';
+        announcement_table += '<tr><th>Service</th><td><p style="white-space: pre-line">' + announcement.service + '</p></td></tr>';
+        announcement_table += '<tr><th>Info</th><td><p style="white-space: pre-line">' + linkify(announcement.info) + '</p></td></tr>';
         this._description.innerHTML = announcement_table;
     }
 }
@@ -182,9 +182,10 @@ $(document).ready(() => {
         columnDefs: [
             {render: renderTimeSpan, targets: 0},
             {render: mapType, targets: 4},
-            {render: renderDate, targets: [1, 2]}
+            {render: renderDate, targets: [1, 2]},
+            {orderable: false, targets: [3, 4]}
         ],
-        order: [[0, "asc"], [1, "asc"]],
+        order: [[0, "asc"], [2, "desc"]],
         drawCallback: draw,
         createdRow: assignClickListener,
         asStripeClasses: [], // disable zebra coloring of rows
@@ -193,6 +194,32 @@ $(document).ready(() => {
             "sSearch": ""
         },
         dom: "frtipl",
+        initComplete: function () {
+            let i = 0;
+            this.api().columns().every(function() {
+                var column = this;
+                var column_filter_for = [4];
+                if (column_filter_for.includes(i)) {
+                    var select = $('<select><option value=""></option></select>')
+                        .appendTo( $(column.header()) )
+                        .on('change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex(
+                                mapType($(this).val())
+                            );
+                            column
+                                .search( val ? '^'+val+'$' : '', true, false )
+                                .draw();
+                        } );
+                    column.data().unique().sort().each( function ( d, j ) {
+                        select.append('<option value="'+d+'">'+mapType(d)+'</option>');
+                    } );
+                }
+                else {
+                    column.text = '';
+                }
+                i++;
+            });
+        },
     });
 
     let checkboxes = $("#form input[type=checkbox]");
