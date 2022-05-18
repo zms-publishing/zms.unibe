@@ -14,6 +14,7 @@ timeSpanDict[TimeSpan.FUTURE] = "Anstehend";
 timeSpanDict[TimeSpan.PAST] = "Vergangen";
 
 let typeDict = {
+    "": "",  // handle empty column select-option to reset filtering
     "WARTUNG": "Wartung",
     "DRINGENDE WARTUNG": "Dringende Wartung",
     "STOERUNG": "Störung",
