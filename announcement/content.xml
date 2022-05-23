@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <ZMSDataTable id="e1217287" id_prefix="e">
+  <ZMSDataTable id="e1222429" id_prefix="e">
     <attr_dc_coverage>global.ger</attr_dc_coverage>
     <created_uid>cmeier</created_uid>
     <created_dt>
-<![CDATA[2021/02/19 12:58:56]]></created_dt>
-    <change_uid><lang id="ger">cmeier</lang></change_uid>
-    <change_dt><lang id="ger">
-<![CDATA[2022/05/16 18:28:37]]></lang></change_dt>
+<![CDATA[2022/05/18 11:14:14]]></created_dt>
+    <change_uid><lang id="spa">cmeier</lang><lang id="fra">cmeier</lang><lang id="eng">cmeier</lang><lang id="ger">deploy</lang><lang id="ita">cmeier</lang><lang id="cat">cmeier</lang><lang id="ukr">cmeier</lang></change_uid>
+    <change_dt><lang id="spa">
+<![CDATA[2022/05/18 11:14:14]]></lang><lang id="fra">
+<![CDATA[2022/05/18 11:14:14]]></lang><lang id="eng">
+<![CDATA[2022/05/18 11:14:14]]></lang><lang id="ger">
+<![CDATA[2022/05/19 18:30:01]]></lang><lang id="ita">
+<![CDATA[2022/05/18 11:14:14]]></lang><lang id="cat">
+<![CDATA[2022/05/18 11:14:14]]></lang><lang id="ukr">
+<![CDATA[2022/05/18 11:14:14]]></lang></change_dt>
     <active><lang id="spa">0</lang><lang id="fra">0</lang><lang id="eng">0</lang><lang id="ger">1</lang><lang id="ita">0</lang><lang id="cat">1</lang><lang id="ukr">1</lang></active>
     <datatype>json</datatype>
     <dataremote>1</dataremote>
     <dataurl><lang id="ger">https://api.epc.unibe.ch/announcements/api/ServiceAnnouncements?includeArchivedSince=2020-01-01</lang></dataurl>
     <obfuscate_emails><lang id="spa">0</lang><lang id="fra">0</lang><lang id="eng">0</lang><lang id="ger">0</lang><lang id="ita">0</lang><lang id="cat">0</lang><lang id="ukr">0</lang></obfuscate_emails>
     <_datafilecached><lang id="ger">
-<data content_type="application/json" filename="2022-05-16T1828370200_ger.json"></data></lang></_datafilecached>
+<data content_type="application/json" filename="2022-05-19T1830010200_ger.json"></data></lang></_datafilecached>
     <_datalastupdated>
-<![CDATA[2022/05/16 18:28:37]]></_datalastupdated>
+<![CDATA[2022/05/19 18:30:01]]></_datalastupdated>
     <datawebservice>announcements-ws</datawebservice>
     <datahealthcheck>https://api.epc.unibe.ch/announcements/actuator/health</datahealthcheck>
     <colstable><lang id="ger">Wann
@@ -372,7 +378,16 @@ $(function () {
     
         let table = $("#%s").DataTable({ // datatableID will be inserted on rendering
             processing: true,
-            ajax: {url: "%s", dataSrc: convert}, // datafileURL will be inserted on rendering
+            ajax: {url: "%s", dataSrc: convert, // datafileURL will be inserted on rendering
+                error: function (xhr, error, code) {
+                    console.log(xhr);
+                    console.log(xhr.status);
+                    console.log(code);
+                    if (xhr.status === 404) {
+                        window.location.reload(); // force reload if outdated datafileURL is cached by browser
+                    }
+                }
+            },
             columns: [
                 {data: "timeSpan", name: "timeSpan", width: "10%%"},
                 {data: "begin", width: "15%%"},
@@ -464,7 +479,7 @@ $(function () {
 
         $('.dataTables_filter > label > input').attr("placeholder", "Volltextsuche");
         
-        $('#e1217287 tbody').on('mouseover', 'td', function () {
+        $('#e1222429 tbody').on('mouseover', 'td', function () {
             var tr = $(this).closest('tr');
             var row = table.row(tr);
             if ($(this).context.cellIndex == 1 || $(this).context.cellIndex == 2  || $(this).context.cellIndex == 3  || $(this).context.cellIndex == 4) {

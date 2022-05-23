@@ -162,7 +162,16 @@ $(document).ready(() => {
 
     let table = $("#table").DataTable({
         processing: true,
-        ajax: {url: "data.json", dataSrc: convert},
+        ajax: {url: "data.json", dataSrc: convert,
+            error: function (xhr, error, code) {
+                console.log(xhr);
+                console.log(xhr.status);
+                console.log(code);
+                if (xhr.status === 404) {
+                    // window.location.reload(); // force reload if outdated datafileURL is cached by browser
+                }
+            }
+        },
         columns: [
             {data: "timeSpan", name: "timeSpan", width: "10%"},
             {data: "begin", width: "15%"},
