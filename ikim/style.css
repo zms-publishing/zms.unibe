@@ -1,0 +1,13 @@
+.popup {
+    display: none;
+}
+.popup.visible {
+    display: block;
+}
+
+.expander {
+    display: none;
+}
+.expander.expanded {
+    display: block;
+}

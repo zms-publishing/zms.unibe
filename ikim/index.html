@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <title>ParisCMS-WS + DataTables JS</title>
+    <link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
+    <link type="text/css" rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="jquery.csv.js"></script>
+    <script src="script.js"></script>
+</head>
+<body>
+<table id="table">
+    <thead>
+    <tr>
+        <td>ICD10 code</td>
+        <td>Author</td>
+        <td>Year</td>
+        <td>Title</td>
+        <td>Trial design</td>
+        <td>Comparator</td>
+        <td>Sample size</td>
+    </tr>
+    </thead>
+</table>
+<div id="popup" class="popup">
+    <h4 id="popupTitle"></h4>
+    <p id="popupAuthor"></p>
+    <p>
+        <b>ICD10 Code:</b>
+        <span id="popupICD10"></span>
+    </p>
+    <p>
+        <b>Trial Design:</b>
+        <span id="popupTrialDesign"></span>
+    </p>
+    <p>
+        <b>Comparator:</b>
+        <span id="popupComparator"></span>
+    </p>
+    <p>
+        <b>Sample Size:</b>
+        <span id="popupSampleSize"></span>
+    </p>
+    <p>
+        <b>Peer Review:</b>
+        <span id="popupPeerReview"></span>
+    </p>
+    <div id="popupExpander" class="expander">
+        <p>
+            <b>Journal:</b>
+            <span id="popupJournal"></span>
+        </p>
+        <p>
+            <b>Volume:</b>
+            <span id="popupVolume"></span>
+        </p>
+        <p>
+            <b>Issue:</b>
+            <span id="popupIssue"></span>
+        </p>
+        <p>
+            <b>Pages:</b>
+            <span id="popupPages"></span>
+        </p>
+    </div>
+    <button id="popupClose">Close</button>
+    <button id="popupMore">More</button>
+</div>
+</body>
+</html>
