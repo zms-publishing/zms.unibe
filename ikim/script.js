@@ -15,16 +15,39 @@ class Popup {
         this._pages = document.getElementById("popupPages");
 
         this._expander = document.getElementById("popupExpander");
+        this._prev = document.getElementById("popupPrev");
+        this._next = document.getElementById("popupNext");
+
+        // This index DOES NOT refer to the visual index.
+        this._index = null;
+        this._api = null;
 
         document.getElementById("popupClose").addEventListener("click", () => {
             this._popup.classList.toggle("visible", false);
+            this._index = null;
         });
         document.getElementById("popupMore").addEventListener("click", () => {
             this._expander.classList.toggle("expanded");
         });
+        this._prev.addEventListener("click", () => {
+            let indexes = this.indexes();
+            let current = indexes.indexOf(this._index);
+
+            this.show(current - 1, indexes);
+        });
+        this._next.addEventListener("click", () => {
+            let indexes = this.indexes();
+            let current = indexes.indexOf(this._index);
+
+            this.show(current + 1, indexes);
+        });
     }
 
-    show(data) {
+    show(pos, indexes) {
+        let index = indexes[pos];
+        let data = this._api.row(index).data();
+
+        this._index = index;
         this._title.innerHTML = data.Title;
         this._author.innerHTML = data.Author;
         this._icd.innerHTML = data.ICD10;
@@ -38,8 +61,38 @@ class Popup {
         this._issue.innerHTML = data.Issue;
         this._pages.innerHTML = data.Pages;
 
+        this.updateNavButtons(pos, indexes);
         this._expander.classList.toggle("expanded", false);
         this._popup.classList.toggle("visible", true);
+    }
+
+    indexes() {
+        return this._api.rows(null, {pages: 'all', order: 'current'}).indexes();
+    }
+
+    updateNavButtons(pos, indexes) {
+        this._prev.disabled = pos === 0;
+        this._next.disabled = pos === indexes.length - 1;
+    }
+
+    setApi(api) {
+        this._api = api;
+    }
+
+    handleClick(index) {
+        let indexes = this.indexes();
+        let selected = indexes.indexOf(index);
+
+        this.show(selected, indexes);
+    }
+
+    handleDraw() {
+        if (this._index !== null) {
+            let indexes = this.indexes();
+            let pos = indexes.indexOf(this._index);
+
+            this.updateNavButtons(pos, indexes);
+        }
     }
 }
 
@@ -49,7 +102,7 @@ $(() => {
 
     let popup = new Popup();
 
-    $("#table").DataTable({
+    let table = $("#table").DataTable({
         ajax: {url: "http://localhost:7000/data.csv", dataType: "text", dataSrc: $.csv.toObjects},
         columns: [
             {data: "ICD10"},
@@ -60,6 +113,8 @@ $(() => {
             {data: "Comparator"},
             {data: "SampleSize"},
         ],
-        createdRow: (row, data) => row.addEventListener("click", () => popup.show(data)),
+        createdRow: (row, data, index) => row.addEventListener("click", () => popup.handleClick(index)),
+        drawCallback: () => popup.handleDraw(),
     });
+    popup.setApi(table);
 });
