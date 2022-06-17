@@ -102,7 +102,7 @@ $(() => {
 
     let popup = new Popup();
 
-    let table = $("#table").DataTable({
+    let api = $("#table").DataTable({
         ajax: {url: "http://localhost:7000/data.csv", dataType: "text", dataSrc: $.csv.toObjects},
         columns: [
             {data: "ICD10"},
@@ -116,5 +116,14 @@ $(() => {
         createdRow: (row, data, index) => row.addEventListener("click", () => popup.handleClick(index)),
         drawCallback: () => popup.handleDraw(),
     });
-    popup.setApi(table);
+    popup.setApi(api);
+
+    document.getElementById("export").addEventListener("click", () => {
+        let data = api.rows(null, {pages: 'all', search: 'applied', order: 'current'}).data();
+        let csv = $.csv.fromObjects(data);
+        let blob = new Blob([csv], {type: "text/csv"});
+        let url = window.URL.createObjectURL(blob);
+
+        window.open(url);
+    })
 });
