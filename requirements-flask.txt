@@ -1,19 +1,19 @@
-Flask==2.0.1
-Flask-RESTful==0.3.9
-Flask-RESTX==0.5.0
+Flask
+Flask-RESTful
+Flask-RESTX
 
 file:///app/flask-zodb
 file:///app/zms-headless
 
-Flask-Caching==1.10.1
+Flask-Caching
 pylibmc==1.6.1  # Prerequisite: libmemcached
 
-Flask-JWT-Extended==4.2.3
-Flask-SQLAlchemy==2.5.1
+Flask-JWT-Extended
+Flask-SQLAlchemy
 
-Flasgger==0.9.5
+Flasgger
 
-anytree==2.8.0
-python-dotenv==0.19.0
-requests==2.26.0
-gunicorn==20.1.0
+anytree
+python-dotenv
+requests
+gunicorn
