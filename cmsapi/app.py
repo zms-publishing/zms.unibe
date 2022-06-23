@@ -1,12 +1,12 @@
 import os
 
-from flask import Flask
-from flask_restful import Api, reqparse
+from flask import Flask, request
+from flask_restful import Api
 from flasgger import Swagger
 from flask_jwt_extended import JWTManager
 
 from cmsapi.cache import cache
-from cmsapi.db import zodb, sqldb
+from cmsapi.db import zodb
 from cmsapi.resources.announcementagenda import AnnouncementAgenda
 from cmsapi.resources.announcementcontainers import AnnouncementContainers
 from cmsapi.resources.announcement import Announcement, AnnouncementNews, AnnouncementEvents
@@ -97,9 +97,7 @@ def check_health():
 
 @app.route('/cache/<mode>')
 def purge_cache(mode=None):
-    parser = reqparse.RequestParser(bundle_errors=True)
-    parser.add_argument('key', type=str)
-    cache_key = parser.parse_args()['key']  # e.g. '/v2/canteens/overview/'
+    cache_key = request.args.get('key')  # e.g. '/v2/canteens/overview/'
     if mode == 'purge':
         if cache_key is not None:
             if cache.delete('view/' + cache_key):

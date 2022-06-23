@@ -3,7 +3,7 @@ import http
 from cmsapi.cache import cache
 from cmsapi.db import zodb
 from flask import jsonify
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
 from flask_restx import Namespace
 from Products.zms import _blobfields
 
@@ -47,8 +47,6 @@ class ServiceLinksItem(ServiceLinks, Resource):
         self.zmsindex = zodb['Application']['unibe']['zcatalog_index']
         self.zmscontent = zodb['Application']['unibe']['uniapp']['content']
         self.zmssite = '/unibe/uniapp/content/'
-        self.parser = reqparse.RequestParser(bundle_errors=True)
-        self.args = self.parser.parse_args()
 
     @cache.cached()
     def get(self, item=None):
