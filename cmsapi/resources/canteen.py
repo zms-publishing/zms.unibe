@@ -6,7 +6,7 @@ from cmsapi.cache import cache
 from cmsapi.db import zodb
 from flask import jsonify
 from flask_restful import Resource
-from flask_restx import Namespace, fields
+from flask_restx import Namespace
 from Products.zms import _blobfields
 
 api = Namespace("Canteens", path='/canteens')

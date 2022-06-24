@@ -3,8 +3,8 @@ import time
 
 from cmsapi.cache import cache
 from cmsapi.db import zodb
-from flask import jsonify
-from flask_restful import Resource, reqparse, inputs
+from flask import jsonify, request
+from flask_restful import Resource
 from anytree import Node, RenderTree
 from anytree.exporter import JsonExporter, DictExporter
 from Products.zms import _blobfields
@@ -17,9 +17,6 @@ class AnnouncementContainers(Resource):
     def __init__(self):
         self.zmsindex = zodb['Application']['unibe']['zcatalog_index']
         self.zmscontent = zodb['Application']['unibe']['portal']['content']
-        self.parser = reqparse.RequestParser(bundle_errors=True)
-        self.parser.add_argument('getall', type=inputs.boolean)
-        self.args = self.parser.parse_args()
         self.newscontainer = {}
 
     @cache.cached()
@@ -70,7 +67,7 @@ class AnnouncementContainers(Resource):
 
             is_at_root_level = len(n_path.split('/content')[1].split('/')) == 2 and True or False
             if not is_at_root_level:
-                if self.args['getall'] in [None, False, 0]:
+                if request.args.get('getall') in [None, False, 'False', 'false', '0', 0]:
                     continue
 
             # There may be orphaned entries in ZMSIndex due to tree deleting/moving.
