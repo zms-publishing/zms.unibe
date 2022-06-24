@@ -7,6 +7,9 @@ ENV ZODB_STORAGE="zeo:8000?storage=main" \
 COPY flask-zodb $APPHOME/flask-zodb
 COPY zms-headless $APPHOME/zms-headless
 COPY requirements-flask.txt $APPHOME/requirements-flask.txt
+COPY constraints-cmsapi.txt $APPHOME/constraints-cmsapi.txt
+
+# TODO: Update and add -c $APPHOME/constraints-cmsapi.txt in release-Branches
 
 RUN $APPHOME/bin/pip install \
     -r $APPHOME/requirements-flask.txt \

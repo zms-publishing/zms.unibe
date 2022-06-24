@@ -2,9 +2,9 @@ import http
 import time
 import urllib
 
-from flask import jsonify
-from flask_restful import Resource, reqparse, inputs
-from flask_restx import Namespace, fields
+from flask import jsonify, request
+from flask_restful import Resource
+from flask_restx import Namespace
 from Products.zms import _blobfields
 
 from cmsapi.cache import cache
@@ -24,15 +24,6 @@ class Announcement(Resource):
         self.default_meta = 'newsbox'
         #self.default_limit = 50
         self.announcements = []
-
-        self.parser = reqparse.RequestParser(bundle_errors=True)
-        #self.parser.add_argument('limit', type=int)
-        #self.parser.add_argument('search', type=str)
-        self.parser.add_argument('path', type=str)
-        self.parser.add_argument('created', type=str)
-        self.parser.add_argument('changed', type=str)
-        #self.parser.add_argument('recursive', type=inputs.boolean)
-        self.args = self.parser.parse_args()
 
     @cache.cached()
     def get(self, uuid=None):
@@ -72,8 +63,8 @@ class Announcement(Resource):
         if boxtype is None:
             boxtype = ['news', 'event', '']
             
-        if self.args['path'] is not None:
-            path = urllib.unquote_plus(self.args['path'])
+        if request.args.get('path') is not None:
+            path = urllib.unquote_plus(request.args.get('path'))
         elif uuid is not None:
             entr = self.zmsindex({'get_uid': 'uid:' + uuid})
             path = len(entr) > 0 and entr[0].getPath() or None
@@ -90,7 +81,7 @@ class Announcement(Resource):
         # default time span: one year ago
         default_timespan = 31536000
 
-        created_filter = self.args['created']
+        created_filter = request.args.get('created')
         created_ft = time.time() - default_timespan
         if created_filter is not None and created_filter.isdigit():
             try:
@@ -103,7 +94,7 @@ class Announcement(Resource):
             except ValueError:
                 return False
 
-        changed_filter = self.args['changed']
+        changed_filter = request.args.get('changed')
         changed_ft = time.time() - default_timespan
         if changed_filter is not None and changed_filter.isdigit():
             try:
@@ -237,6 +228,17 @@ class Announcement(Resource):
                                 fmt_str='ISO8601'),
                     }
                 }
+                # show corona news on top by setting the current date
+                if '.unibe.ch/coronavirus' in infolink_de and announcement['eventdate']['de'] == 'None':
+                    now = time.localtime()
+                    announcement['lastmodified'] = {
+                        'created': self.zmscontent.getLangFmtDate(
+                                now,
+                                fmt_str='ISO8601'),
+                        'changed': self.zmscontent.getLangFmtDate(
+                                now,
+                                fmt_str='ISO8601'),
+                    }
                 self.announcements.append(announcement)
 
         if len(self.announcements) > 0:
@@ -249,7 +251,7 @@ class Announcement(Resource):
         """
         filtered_announcements = []
 
-        search = self.args['search']
+        search = request.args.get('search')
         if search is not None:
             for announcement in announcements:
                 if announcement['title']['de'].lower().find(search.lower()) > -1:
@@ -257,7 +259,7 @@ class Announcement(Resource):
         else:
             filtered_announcements = announcements
 
-        limit = self.args['limit']
+        limit = request.args.get('limit')
         if limit is not None:
             # limit is set by the query string
             if limit > 0:
