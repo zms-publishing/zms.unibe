@@ -103,7 +103,7 @@ $(() => {
     let popup = new Popup();
 
     let api = $("#table").DataTable({
-        ajax: {url: "http://localhost:7000/data.csv", dataType: "text", dataSrc: $.csv.toObjects},
+        ajax: {url: "http://localhost:8081/2022-06-24T1053380200_ger.csv", dataType: "text", dataSrc: $.csv.toObjects},
         columns: [
             {data: "ICD10"},
             {data: "Author"},
@@ -125,5 +125,5 @@ $(() => {
         let url = window.URL.createObjectURL(blob);
 
         window.open(url);
-    })
+    });
 });
