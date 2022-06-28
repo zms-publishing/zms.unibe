@@ -18,12 +18,12 @@ Assuming the `unibe-cmsapi` repository has been cloned and a Python virtual envi
 
     (venvpy310-cmsapi) $ bin/pip install -U pip wheel setuptools
     
-    (venvpy310-cmsapi) $ bin/pip install Zope[wsgi]==5.5.1 \
+    (venvpy310-cmsapi) $ bin/pip install Zope[wsgi]==5.5.2 \
                         -e ../unibe-cmsapi/zms-headless \
-                        -c https://zopefoundation.github.io/Zope/releases/5.5.1/constraints.txt
+                        -c https://zopefoundation.github.io/Zope/releases/5.5.2/constraints.txt
 
     (venvpy310-cmsapi) $ bin/pip install -r ../unibe-cmsapi/requirements-flask.txt \
-                        -c https://zopefoundation.github.io/Zope/releases/5.5.1/constraints.txt
+                        -c https://zopefoundation.github.io/Zope/releases/5.5.2/constraints.txt
 
 A sample run configuration:
 
@@ -39,6 +39,10 @@ A sample run configuration:
 
 ## Container Environments
 
-* Development: [dev-unibe-cmsapi](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config-test/browse/stacks/dev-unibe-cmsapi)
-* Testing: [test-unibe-cmsapi](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config-test/browse/stacks/test-unibe-cmsapi/docker-compose.yml)
-* Production:  [prod-unibe-cmsapi](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config/browse/stacks/prod-unibe-cmsapi/docker-compose.yml)
+* Testing: [test-unibe-cmsapi](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config-test/browse/stacks/test-unibe-cmsapi/docker-compose.yml) (standalone stack) => https://api.uniapp-backend.test.unibe.ch/cms/
+* Production: [prod-unibe-cmsapi](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config/browse/stacks/prod-unibe-cmsapi/docker-compose.yml) (standalone stack) => https://api.uniapp-backend.unibe.ch/cms/
+
+**Proof of concept (PoC)**
+
+* Kemp4CMS: [test-unibe-cms_api](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config-test/browse/stacks/test-unibe-cms/docker-compose.yml#80) (service in stack) => https://api.cms.test.unibe.ch
+[`IDCMS-630`](https://idjira.unibe.ch/browse/IDCMS-630) Kemp as Load Balancer / HTTPS / Virtual Hosting / Cluster networking
