@@ -22,10 +22,7 @@ class Popup {
         this._index = null;
         this._api = null;
 
-        document.getElementById("popupClose").addEventListener("click", () => {
-            this._popup.classList.toggle("visible", false);
-            this._index = null;
-        });
+        document.getElementById("popupClose").addEventListener("click", () => this.close());
         document.getElementById("popupMore").addEventListener("click", () => {
             this._expander.classList.toggle("expanded");
         });
@@ -67,7 +64,7 @@ class Popup {
     }
 
     indexes() {
-        return this._api.rows(null, {pages: 'all', order: 'current'}).indexes();
+        return this._api.rows(null, {pages: 'all', search: 'applied', order: 'current'}).indexes();
     }
 
     updateNavButtons(pos, indexes) {
@@ -94,6 +91,11 @@ class Popup {
             this.updateNavButtons(pos, indexes);
         }
     }
+
+    close() {
+        this._popup.classList.toggle("visible", false);
+        this._index = null;
+    }
 }
 
 $(() => {
@@ -102,19 +104,21 @@ $(() => {
 
     let popup = new Popup();
 
-    let api = $("#table").DataTable({
-        ajax: {url: "http://localhost:8081/2022-06-24T1053380200_ger.csv", dataType: "text", dataSrc: $.csv.toObjects},
-        columns: [
-            {data: "ICD10"},
-            {data: "Author"},
-            {data: "Year"},
-            {data: "Title"},
-            {data: "TrialDesign"},
-            {data: "Comparator"},
-            {data: "SampleSize"},
-        ],
-        createdRow: (row, data, index) => row.addEventListener("click", () => popup.handleClick(index)),
-        drawCallback: () => popup.handleDraw(),
+    let api = $("#table")
+        .on('search.dt', () => popup.close())
+        .DataTable({
+            ajax: {url: "http://localhost:8081/2022-06-24T1053380200_ger.csv", dataType: "text", dataSrc: $.csv.toObjects},
+            columns: [
+                {data: "ICD10"},
+                {data: "Author"},
+                {data: "Year"},
+                {data: "Title"},
+                {data: "TrialDesign"},
+                {data: "Comparator"},
+                {data: "SampleSize"},
+            ],
+            createdRow: (row, data, index) => row.addEventListener("click", () => popup.handleClick(index)),
+            drawCallback: () => popup.handleDraw()
     });
     popup.setApi(api);
 
