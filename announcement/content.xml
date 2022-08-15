@@ -411,7 +411,7 @@ $(function () {
                 {render: renderDate, targets: [1, 2]},
                 {orderable: false, targets: [3, 4]}
             ],
-            order: [[0, "asc"], [2, "desc"]],
+            order: [[0, "asc"], [1, "asc"]],
             drawCallback: draw,
             createdRow: assignClickListener,
             asStripeClasses: [], // disable zebra coloring of rows
