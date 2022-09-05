@@ -7,12 +7,12 @@ ENV ZODB_STORAGE="zeo:8000?storage=main" \
 COPY flask-zodb $APPHOME/flask-zodb
 COPY zms-headless $APPHOME/zms-headless
 COPY requirements-flask.txt $APPHOME/requirements-flask.txt
-# COPY constraints-cmsapi.txt $APPHOME/constraints-cmsapi.txt
-# TODO: Update and add -c $APPHOME/constraints-cmsapi.txt in release-Branches
+COPY constraints-cmsapi.txt $APPHOME/constraints-cmsapi.txt
 
 RUN $APPHOME/bin/pip install \
     -r $APPHOME/requirements-flask.txt \
-    -c https://zopefoundation.github.io/Zope/releases/5.5.2/constraints.txt
+    -c https://zopefoundation.github.io/Zope/releases/5.5.2/constraints.txt \
+    -c $APPHOME/constraints-cmsapi.txt
 
 COPY cmsapi $APPHOME/cmsapi
 COPY init_scripts $ENTRYPOINT_SCRIPTS
