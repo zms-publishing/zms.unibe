@@ -1,0 +1,43 @@
+# Docker stack to be deployed on localhost for development
+# For test-unibe-cmsapi stack to be deployed in Docker Swarm cluster see
+# https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config-test/browse/stacks/test-unibe-cmsapi/docker-compose.yml
+
+version: '3.7'
+
+networks:
+  worker:
+  cms_network:
+
+services:
+
+  sql:
+    image: postgres:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+    ports:
+      - 5432:5432
+    volumes:
+      - /Users/cm19b120/Workspace/Projects/ZMS-Data/postgresql:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+    networks:
+      - cms_network
+
+volumes:
+  extensions:
+    driver: local
+
+  mediadb:
+    driver: local
+
+  zodb:
+    driver: local
+
+  logs:
+    driver: local

@@ -3,7 +3,7 @@
 cd $(dirname $0)
 BASEDIR=$(pwd)
 
-IMAGE_API="ep-devops.id.unibe.ch:5000/id/unibe-cmsapi"
+IMAGE_API="ep-devops.id.unibe.ch:5000/id/unibe-cms-api-v3"
 
 cd ${BASEDIR}
 
@@ -18,7 +18,7 @@ fi
 BRANCH=$1
 
 # TODO: muss aus git flow kommen
-VERSION="2.1.0dev"
+VERSION="3.0.0dev"
 VERSION_TAG=""
 if [[ ${BRANCH} = "master" ]] ; then
     VERSION_TAG=${VERSION}
