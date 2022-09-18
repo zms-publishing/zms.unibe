@@ -10,6 +10,28 @@ networks:
 
 services:
 
+  api:
+    image: ep-devops.id.unibe.ch:5000/id/unibe-cms-api-v3:local
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+    ports:
+      - 5553:5003
+    volumes:
+      - /Users/cm19b120/Workspace/Projects/ZMS-Data/logs:/app/log
+    environment:
+      - PYTHONUNBUFFERED=true
+      - ZODB_STORAGE=zeo:8000?storage=main
+      - SQLDB_STORAGE=postgres:mysecretpassword@sql:5432/unibe_cmsapi
+    networks:
+      - worker
+      - cms_network
+
   sql:
     image: postgres:latest
     deploy:
