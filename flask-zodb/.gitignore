@@ -1,8 +1,0 @@
-*.py?
-*.swp
-*.egg-info
-build/
-.coverage
-htmlcov
-.tox
-dist

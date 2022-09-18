@@ -1,3 +1,0 @@
-include README.mkd LICENSE Makefile tests.py
-recursive-include docs *.rst
-recursive-include examples *.py *.css *.html README
