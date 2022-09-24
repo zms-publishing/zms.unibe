@@ -10,9 +10,8 @@ router = APIRouter(
 @router.get("/models")
 async def get_models(
         metaobj: MetaObj,
-        types: list[AttrType] = Query(...),
-        include_metas: bool = True):
+        types: list[AttrType] = Query(...)):
     return get_zms_model(
         name=metaobj.value,
         types=[item.value for item in types],
-        metas=include_metas)
+        metas=True)

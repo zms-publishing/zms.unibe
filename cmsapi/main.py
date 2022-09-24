@@ -24,7 +24,8 @@ def create_db_and_tables():
 
 @app.on_event("startup")
 def on_startup():
-    create_db_and_tables()
+    # create_db_and_tables()
+    pass
 
 
 @app.get("/", include_in_schema=False)
