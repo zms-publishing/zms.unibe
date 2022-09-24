@@ -1,0 +1,30 @@
+from sqlmodel import Field
+from datetime import date
+
+from .zmsdefaults import ZMSBase
+
+
+class UniaktuellArticle(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    title_de: str
+    title_en: str
+    title_fr: str
+    publish_dt_de: date | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    publish_dt_en: date | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    publish_dt_fr: date | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'UniaktuellArticle'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'title_de':         'title',
+            'title_en':         'title',
+            'title_fr':         'title',
+            'publish_dt_de':    'publishdate',
+            'publish_dt_en':    'publishdate',
+            'publish_dt_fr':    'publishdate',
+        }

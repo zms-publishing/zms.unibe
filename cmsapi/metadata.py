@@ -4,6 +4,10 @@ cmsapi_tags = [  # see https://fastapi.tiangolo.com/tutorial/metadata/#metadata-
         "description": "Retrieve consolidated overview of announcements",
     },
     {
+        "name": "Uniaktuell",
+        "description": "Retrieve articles of online magazine",
+    },
+    {
         "name": "ZMS Defaults",
         "description": "Retrieve content objects",
         "externalDocs": {

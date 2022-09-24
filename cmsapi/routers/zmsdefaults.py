@@ -82,7 +82,7 @@ async def get_datatables(
         rtn = []
         for res in results.all():
             rtn.append(schema.ZMSDataTable.parse_obj({
-                'site': str(res.ZMSSite.domain),
-                'url': str(res.ZMSDataTable.dataurl),
+                'site': strip_cmstest(res.ZMSSite.domain),
+                'url': res.ZMSDataTable.dataurl,
             }))
         return rtn
