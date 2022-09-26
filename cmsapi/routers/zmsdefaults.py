@@ -78,7 +78,6 @@ async def get_datatables(
         statement = select(model.ZMSDataTable, model.ZMSSite).join(model.ZMSSite). \
             offset(offset).limit(limit)
         results = session.exec(statement)
-        print(statement)
         rtn = []
         for res in results.all():
             rtn.append(schema.ZMSDataTable.parse_obj({

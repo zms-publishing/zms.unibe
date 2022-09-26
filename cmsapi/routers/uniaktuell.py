@@ -29,7 +29,6 @@ async def get_articles(
         results = session.exec(statement)
         rtn = []
         for res in results.all():
-            print(res)
             rtn.append(schema.UniaktuellArticle.parse_obj({
                 'uuid': res.UniaktuellArticle.uuid,
                 'title': get_attr_by_lang(lang,

@@ -28,7 +28,6 @@ async def get_sites_with_news_events(
             order_by(ZMSSite.domain). \
             offset(offset).limit(limit).distinct()
         results = session.exec(statement)
-        print(statement)
         rtn = []
         for res in results.all():
             rtn.append(schema.Site.parse_obj({
@@ -62,7 +61,6 @@ async def get_events_by_site(
 def query_news_events(type, site, lang, offset, limit):
     rtn = []
     statement = []
-    print(strip_cmstest(site, reverse=True))
     with Session(engine) as session:
         for model in (TeaserElement2022, Newsbox):
             statement.append(

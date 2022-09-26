@@ -5,7 +5,7 @@ import ZODB, zodburi
 from sqlmodel import create_engine
 from devtools import debug
 
-from .commands import init_tables
+from .commands import init_tables, update_tables
 from ..models.zmsdefaults import ZMSSite, ZMSFolder, ZMSDocument, ZMSFormulator, ZMSDataTable
 from ..models.newsevents import TeaserElement2022, Newsbox
 from ..models.uniaktuell import UniaktuellArticle
@@ -18,12 +18,12 @@ SQLDB_STORAGE = "postgresql://postgres:mysecretpassword@localhost:5432/unibe_cms
 
 MODELS_AVAILABLE = {
     'ZMSSite': ZMSSite,
-    'ZMSFolder': ZMSFolder,
-    'ZMSDocument': ZMSDocument,
+    # 'ZMSFolder': ZMSFolder,
+    # 'ZMSDocument': ZMSDocument,
     'ZMSDataTable': ZMSDataTable,
     'ZMSFormulator': ZMSFormulator,
     'TeaserElement2022': TeaserElement2022,
-    'Newsbox': Newsbox,
+    # 'Newsbox': Newsbox,
     'UniaktuellArticle': UniaktuellArticle,
 }
 
@@ -33,17 +33,23 @@ def main(command: str = typer.Argument(None),
 
     models = []
     for obj in metaobj:
-        if obj in MODELS_AVAILABLE:
+        if obj == 'all':
+            models = [x[1] for x in MODELS_AVAILABLE.items()]
+        elif obj in MODELS_AVAILABLE:
             models.append(MODELS_AVAILABLE[obj])
 
+    t0 = time.time()
+
     if command == 'init':
-        t0 = time.time()
         init_tables(models, *connect_db())
-        t1 = time.time()
-        ts = t1-t0
-        debug(ts/60 > 1 and f'{ts/60} min' or f'{ts} sec')
+    elif command == 'update':
+        update_tables(models, *connect_db())
     else:
         raise typer.Abort()
+
+    t1 = time.time()
+    ts = t1-t0
+    debug(ts/60 > 1 and f'{ts/60} min' or f'{ts} sec')
 
 
 def connect_db():
@@ -57,7 +63,7 @@ def connect_db():
         SQLDB_STORAGE,
         # for SQLite only
         # connect_args={"check_same_thread": False},
-        echo=True
+        # echo=True
     )
 
     debug(ZODB_STORAGE, dbargs)
