@@ -10,14 +10,12 @@ def init_tables(models, *args):
 
     zmsindex, sqlengine = args
 
-    for model in models:
-        try:
-            model.__table__.drop(sqlengine)
-        except:
-            pass
+    with Session(sqlengine) as session:
+
+        SQLModel.metadata.drop_all(sqlengine)
         SQLModel.metadata.create_all(sqlengine)
 
-        with Session(sqlengine) as session:
+        for model in models:
             query = zmsindex({'meta_id': model.get_zms_metaid()})
             for obj in _iterate_over_content_objects(query, model):
                 session.add(obj)

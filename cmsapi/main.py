@@ -1,8 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
-from sqlmodel import SQLModel
-from .db import engine
 
 from .metadata import cmsapi_tags
 from .routers import zmsmodels, zmsdefaults, newsevents, uniaktuell
@@ -17,16 +15,6 @@ app.include_router(zmsmodels.router)
 app.include_router(zmsdefaults.router)
 app.include_router(newsevents.router)
 app.include_router(uniaktuell.router)
-
-
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
-
-
-@app.on_event("startup")
-def on_startup():
-    # create_db_and_tables()
-    pass
 
 
 @app.get("/", include_in_schema=False)
