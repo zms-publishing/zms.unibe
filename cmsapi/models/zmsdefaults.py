@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Column, DateTime
 from datetime import datetime
 from uuid import UUID
 
@@ -9,18 +9,18 @@ class ZMSBase(SQLModel, table=False):
     active_de: bool
     active_en: bool
     active_fr: bool
-    active_start_de: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    active_start_en: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    active_start_fr: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    active_end_de: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    active_end_en: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    active_end_fr: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    created_dt_de: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    created_dt_en: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    created_dt_fr: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    lastmod_dt_de: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    lastmod_dt_en: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    lastmod_dt_fr: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    active_start_de: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    active_start_en: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    active_start_fr: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    active_end_de: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    active_end_en: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    active_end_fr: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    created_dt_de: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    created_dt_en: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    created_dt_fr: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    lastmod_dt_de: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    lastmod_dt_en: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    lastmod_dt_fr: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     level: int
 
     @staticmethod

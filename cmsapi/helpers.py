@@ -220,6 +220,10 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
     return value
 
 
+def local_timezone(dt):
+    return dt.astimezone(pytz.timezone('Europe/Zurich'))
+
+
 def get_attr_by_lang(lang, de, en, fr):
 
     if lang == 'de':

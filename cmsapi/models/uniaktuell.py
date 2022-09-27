@@ -1,4 +1,4 @@
-from sqlmodel import Field
+from sqlmodel import Field, Column, DateTime
 from datetime import date
 
 from .zmsdefaults import ZMSBase
@@ -9,9 +9,9 @@ class UniaktuellArticle(ZMSBase, table=True):
     title_de: str
     title_en: str
     title_fr: str
-    publish_dt_de: date | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    publish_dt_en: date | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    publish_dt_fr: date | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    publish_dt_de: date | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    publish_dt_en: date | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    publish_dt_fr: date | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
 
     @staticmethod
     def get_zms_metaid():

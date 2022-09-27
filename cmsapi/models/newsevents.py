@@ -1,4 +1,4 @@
-from sqlmodel import Field
+from sqlmodel import Field, Column, DateTime
 from datetime import datetime
 
 from .zmsdefaults import ZMSBase
@@ -10,8 +10,8 @@ class Newsbox(ZMSBase, table=True):
     title_en: str
     title_fr: str
     type: str | None
-    start_dt: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    end_dt: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    start_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    end_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     topic: str | None
     url: str | None
 
@@ -39,8 +39,8 @@ class TeaserElement2022(ZMSBase, table=True):
     title_en: str
     title_fr: str
     type: str | None
-    start_dt: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    end_dt: datetime | None  # = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    start_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    end_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     topic: str | None
     url: str | None
 
