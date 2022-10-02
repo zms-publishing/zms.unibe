@@ -1,10 +1,10 @@
 from sqlmodel import Field, Column, DateTime
 from datetime import date
 
-from .zmsdefaults import ZMSBase
+from .zmsobjects import ZMSBase
 
 
-class UniaktuellArticle(ZMSBase, table=True):
+class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=UniaktuellArticle&types=%2A
     __table_args__ = {'extend_existing': True}
     title_de: str
     title_en: str

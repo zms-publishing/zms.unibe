@@ -3,18 +3,16 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 
 from .metadata import cmsapi_tags
-from .routers import zmsmodels, zmsdefaults, newsevents, uniaktuell
+from .routers import newsevents, zmsobjects
 
 app = FastAPI(title="CMSAPI v3 PoC",
               version="3.0.0dev",
-              description="REST-API to retrieve data from UniBE CMS",
+              description="REST-API to retrieve and consolidate data stored in Content and Event Management Systems",
               openapi_tags=cmsapi_tags,
               swagger_ui_parameters={"defaultModelsExpandDepth": -1})
 
-app.include_router(zmsmodels.router)
-app.include_router(zmsdefaults.router)
 app.include_router(newsevents.router)
-app.include_router(uniaktuell.router)
+app.include_router(zmsobjects.router)
 
 
 @app.get("/", include_in_schema=False)

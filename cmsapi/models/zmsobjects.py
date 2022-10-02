@@ -3,7 +3,7 @@ from datetime import datetime
 from uuid import UUID
 
 
-class ZMSBase(SQLModel, table=False):
+class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inherit
     uuid: UUID = Field(primary_key=True)
     site_uuid: UUID = Field(foreign_key="zmssite.uuid")
     active_de: bool
@@ -48,7 +48,7 @@ class ZMSBase(SQLModel, table=False):
         }
 
 
-class ZMSSite(SQLModel, table=True):
+class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?metaobj=ZMS&types=%2A
     __table_args__ = {'extend_existing': True}
     uuid: UUID = Field(primary_key=True)
     active_de: bool
@@ -58,6 +58,7 @@ class ZMSSite(SQLModel, table=True):
     title_en: str
     title_fr: str
     domain: str | None
+    path: str
     type: str
 
     @staticmethod
@@ -72,11 +73,12 @@ class ZMSSite(SQLModel, table=True):
             'title_en':         'title',
             'title_fr':         'title',
             'domain':           "obj.getConfProperty('UniBE.Server')",
+            'path':             "obj.getPath()",
             'type':             'attr_dc_type',
         }
 
 
-class ZMSFolder(ZMSBase, table=True):
+class ZMSFolder(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/models?metaobj=ZMSFolder&types=%2A
     __table_args__ = {'extend_existing': True}
     title_de: str
     title_en: str
@@ -98,7 +100,7 @@ class ZMSFolder(ZMSBase, table=True):
         }
 
 
-class ZMSDocument(ZMSBase, table=True):
+class ZMSDocument(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/models?metaobj=ZMSDocument&types=%2A
     __table_args__ = {'extend_existing': True}
     title_de: str
     title_en: str
@@ -120,7 +122,7 @@ class ZMSDocument(ZMSBase, table=True):
         }
 
 
-class ZMSFormulator(ZMSBase, table=True):
+class ZMSFormulator(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/models?metaobj=ZMSFormulator&types=%2A
     __table_args__ = {'extend_existing': True}
     title_de: str
     title_en: str
@@ -140,8 +142,9 @@ class ZMSFormulator(ZMSBase, table=True):
         }
 
 
-class ZMSDataTable(ZMSBase, table=True):
+class ZMSDataTable(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/models?metaobj=ZMSDataTable&types=%2A
     __table_args__ = {'extend_existing': True}
+    path: str
     dataurl: str | None
 
     @staticmethod
@@ -152,5 +155,6 @@ class ZMSDataTable(ZMSBase, table=True):
     def get_attr_mappings():
         return {
             # sql_attr          # zms_attr
-            'dataurl':          'dataurl'
+            'dataurl':          'dataurl',
+            'path':             'obj.getPath()',
         }

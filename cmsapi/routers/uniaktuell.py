@@ -4,17 +4,17 @@ from ..db import engine
 
 from ..models import uniaktuell as model
 from ..schemas import uniaktuell as schema
-from ..helpers import Lang, strip_cmstest, get_attr_by_lang
+from ..helpers import Lang, get_subdomain, get_attr_by_lang
 
-from ..models.zmsdefaults import ZMSSite
+from ..models.zmsobjects import ZMSSite
 
 router = APIRouter(
     prefix="/v3/uniaktuell",
-    tags=["Uniaktuell"]
+    tags=["Uniaktuell"]  # TODO: add Uniaktuell to metadata
 )
 
 
-@router.get("/articles", response_model=list[schema.UniaktuellArticle])
+@router.get("/articles", response_model=list[schema.UniaktuellArticle], include_in_schema=False)  # TODO: add router
 async def get_articles(
         lang: Lang = Lang.de,
         offset: int = 0,
@@ -35,6 +35,6 @@ async def get_articles(
                                           res.UniaktuellArticle.title_de,
                                           res.UniaktuellArticle.title_en,
                                           res.UniaktuellArticle.title_fr),
-                'site': strip_cmstest(res.ZMSSite.domain),
+                'site': get_subdomain(res.ZMSSite.domain),
             }))
         return rtn

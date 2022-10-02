@@ -6,6 +6,7 @@ import sys
 import os
 from enum import Enum
 from datetime import datetime
+from Products.zms import _blobfields
 
 PATH = os.path.abspath(os.path.dirname(__file__))
 PATH = PATH.startswith('/app') and PATH + '/..' or PATH + '/../../unibe-cms'
@@ -164,7 +165,7 @@ def _inspect_module(module_name, module_path, types):
                         ZMS_MODEL_ATTR[attr["id"]] = attr
 
 
-def strip_cmstest(domain, reverse=False):
+def get_subdomain(domain, reverse=False):
     if domain is None:
         domain = ''
     if reverse:
@@ -172,8 +173,14 @@ def strip_cmstest(domain, reverse=False):
         rtn = domain == 'intern' and 'intern.cmstest1.unibe.ch' or rtn
         rtn = domain == 'sam.intern' and 'sam.intern.cmstest1.unibe.ch' or rtn
         return rtn
-    rtn = domain.replace('.cmstest1', '').replace('www.unibe.ch', 'portal')
+    rtn = domain.replace('cmstest1.', '').replace('www.unibe.ch', 'portal')
     return rtn.replace('www.', '').replace('.unibe.ch', '')
+
+
+def strip_cmstest(domain):
+    if domain is None:
+        return ''
+    return domain.replace('cmstest1.', '').replace('cmstest.', '').replace('cms.test.', '')
 
 
 def get_datetime_props(cls):
@@ -197,6 +204,9 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
     if zms_attr == "obj.getLevel()":
         return obj.getLevel()
 
+    if zms_attr == "obj.getPath()":
+        return obj.getPath()
+
     if zms_attr == "obj.getConfProperty('UniBE.Server')":
         return obj.getConfProperty('UniBE.Server')
 
@@ -209,10 +219,17 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
 
     value = obj.attr(zms_attr, REQUEST={'lang': lang})
 
+    if value is not None and isinstance(value, _blobfields.MyImage):
+        value = 'https://www.unibe.ch' + value.getHref(REQUEST={'lang': lang})
+
+    if value is not None and isinstance(value, str) and value.startswith('{$uid:'):
+        value = strip_cmstest(
+            obj.getLinkObj(value).getHref2IndexHtmlInContext(None, REQUEST={'lang': lang, 'ZMS_CONTEXT_URL': True}))
+
     if zms_attr == 'active':
         value = value and obj.isTranslated(REQUEST={'lang': lang}, lang=lang)
         value = value and len(list(filter(lambda x: not x.isActive(REQUEST={'lang': lang}),
-                                          obj.breadcrumbs_obj_path()))) == 0
+                                          obj.breadcrumbs_obj_path(portalMaster=False)))) == 0
 
     if sql_attr in get_datetime_props(cls):
         value = value is not None and pytz.timezone('Europe/Zurich').localize(datetime(*value[:6]))

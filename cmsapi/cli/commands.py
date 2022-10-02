@@ -1,57 +1,56 @@
-import traceback
+import time
 from sqlmodel import SQLModel, Session, select
-from devtools import debug
 
-from ..helpers import get_attr_value
-from ..models.zmsdefaults import ZMSBase
+from ..models.zmsobjects import ZMSSite
+from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
+from .agendas import _fetch_agenda_data
+from .newsevents import _store_newsevents_data
+from .zmsobjects import _iterate_content_objects
 
 
-def init_tables(models, *args):
+def init_tables(models, *args, _all=False):
 
     zmsindex, sqlengine = args
 
-    with Session(sqlengine) as session:
-
-        SQLModel.metadata.drop_all(sqlengine)
-        SQLModel.metadata.create_all(sqlengine)
-
-        for model in models:
-            query = zmsindex({'meta_id': model.get_zms_metaid()})
-            for obj in _iterate_over_content_objects(query, model):
-                session.add(obj)
-            session.commit()
+    for model in models:
+        if model == ZMSSite:
+            if _all:
+                SQLModel.metadata.drop_all(sqlengine)
+            SQLModel.metadata.create_all(sqlengine)
+            update_tables((ZMSSite,), *args)
+        else:
+            model.__table__.drop(sqlengine)
+            model.__table__.create(sqlengine)
+            update_tables((model,), *args)
 
 
 def update_tables(models, *args):
 
     zmsindex, sqlengine = args
 
-    for model in models:
-        with Session(sqlengine) as session:
-            query = zmsindex({'meta_id': model.get_zms_metaid()})
-            for obj in _iterate_over_content_objects(query, model):
-                statement = select(model).where(model.uuid == obj.uuid)
-                results = session.exec(statement)
-                row = results.first()
-                if row is not None:
-                    session.delete(row)
-                session.add(obj)
-            session.commit()
+    with Session(sqlengine) as session:
 
+        for model in models:
 
-def _iterate_over_content_objects(query, model):
+            t0 = time.time()
+            print('--------------------------------------------------------------------------')
+            print('Process', model)
 
-    rtn = []
-    attrs = {}
+            if model in (AgendaPortal, AgendaLibraryDE, AgendaLibraryEN):
+                _fetch_agenda_data(session, sqlengine)
+                _store_newsevents_data(session, sqlengine)
+            else:
+                query = zmsindex({'meta_id': model.get_zms_metaid()})  # TODO: optimize retrieval for 1000+ objects
+                for obj in _iterate_content_objects(query, model):
+                    statement = select(model).where(model.uuid == obj.uuid)
+                    results = session.exec(statement)
+                    row = results.first()
+                    if row is not None:
+                        session.delete(row)
+                    session.add(obj)
+                session.commit()
 
-    for i, x in enumerate(query):
-        try:
-            for sql_attr, zms_attr in {**model.get_attr_mappings(), **ZMSBase.get_attr_mappings()}.items():
-                attrs[sql_attr] = get_attr_value(sql_attr, zms_attr, x.getObject(), model)
-        except Exception as e:
-            debug(x.get_uid)
-            traceback.print_exc()
-            continue
-        rtn.append(
-            model(**attrs))
-    return rtn
+            t1 = time.time()
+            ts = t1 - t0
+            print('--------------------------------------------------------------------------')
+            print(model.__name__, ts / 60 > 1 and f': {ts / 60} min' or f': {ts} sec')
