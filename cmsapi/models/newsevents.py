@@ -1,63 +1,37 @@
-from sqlmodel import Field, Column, DateTime
+from sqlmodel import SQLModel, Field, Column, DateTime
+from uuid import UUID
 from datetime import datetime
 
-from .zmsdefaults import ZMSBase
 
-
-class Newsbox(ZMSBase, table=True):
+class NewsEvents(SQLModel, table=True):  # intermediate table consolidating Agendas and TeaserElement2022 for queries
     __table_args__ = {'extend_existing': True}
-    title_de: str
-    title_en: str
-    title_fr: str
+    uuid: UUID = Field(primary_key=True)
+    site_uuid: UUID = Field(foreign_key="zmssite.uuid")
+    active_de: bool
+    active_en: bool
+    active_fr: bool
+
+    title_de: str | None
+    title_en: str | None
+    title_fr: str | None
     type: str | None
-    start_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    end_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    topic: str | None
-    url: str | None
+    path: str
+    level: int
+    start_dt: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    end_dt: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    location_de: str | None
+    location_en: str | None
+    location_fr: str | None
 
-    @staticmethod
-    def get_zms_metaid():
-        return 'newsbox'
-
-    @staticmethod
-    def get_attr_mappings():
-        return {
-            # sql_attr          # zms_attr
-            'title_de':         'title',
-            'title_en':         'title',
-            'title_fr':         'title',
-            'type':             'boxtype',
-            'start_dt':         'attr_event_start',
-            'topic':            'attr_dc_subject_topic',
-            'url':              'attr_url'
-        }
-
-
-class TeaserElement2022(ZMSBase, table=True):
-    __table_args__ = {'extend_existing': True}
-    title_de: str
-    title_en: str
-    title_fr: str
-    type: str | None
-    start_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    end_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    topic: str | None
-    url: str | None
-
-    @staticmethod
-    def get_zms_metaid():
-        return 'teaser_element_2022'
-
-    @staticmethod
-    def get_attr_mappings():
-        return {
-            # sql_attr          # zms_attr
-            'title_de':         'title',
-            'title_en':         'title',
-            'title_fr':         'title',
-            'type':             'teaser_type',
-            'start_dt':         'event_date_start',
-            'end_dt':           'event_date_end',
-            'topic':            'topic',
-            'url':              'url'
-        }
+    url_de: str | None
+    url_en: str | None
+    url_fr: str | None
+    infos_de: str | None
+    infos_en: str | None
+    infos_fr: str | None
+    topics_de: str | None
+    topics_en: str | None
+    topics_fr: str | None
+    image_de: str | None
+    image_en: str | None
+    image_fr: str | None
