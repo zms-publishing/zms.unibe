@@ -1,6 +1,8 @@
 FastAPI             # https://fastapi.tiangolo.com
 SQLModel            # https://sqlmodel.tiangolo.com
 pydantic            # https://pydantic-docs.helpmanual.io
+
+requests            # https://requests.readthedocs.io
 psycopg2-binary     # TODO: https://www.psycopg.org/docs/install.html#psycopg-vs-psycopg-binary
 uvicorn[standard]   # https://www.uvicorn.org
 
