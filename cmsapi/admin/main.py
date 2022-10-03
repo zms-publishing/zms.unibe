@@ -7,17 +7,17 @@ from ..models.zmsobjects import ZMSSite, ZMSDataTable, ZMSFormulator
 from ..models.teaserelement2022 import TeaserElement2022
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 
-# alias cmsadm='cd /Users/cm19b120/Workspace/Projects/CMS-Integrations/unibe-cmsapi-v3/; venv/bin/python -m cmsapi.cli.main'
+# alias cmsadm='cd ~/Workspace/Projects/CMS-Integrations/unibe-cmsapi-v3/; venv/bin/python -m cmsapi.admin.main'
 
 
 MODELS_AVAILABLE = {
     'ZMSSite': ZMSSite,
     'ZMSDataTable': ZMSDataTable,
     'ZMSFormulator': ZMSFormulator,
-    'TeaserElement2022': TeaserElement2022,
     'AgendaPortal': AgendaPortal,
     'AgendaLibraryDE': AgendaLibraryDE,
     'AgendaLibraryEN': AgendaLibraryEN,
+    'TeaserElement2022': TeaserElement2022,
 }
 
 
@@ -37,6 +37,7 @@ def main(command: str = typer.Argument(None, help='init | update'),
             raise typer.Abort()
 
     if feature == 'NewsEvents':  # this Argument overrides any individually set Options via --metaobj
+        # Keep this order! TeaserElement2022 must exist before Agendas - see TODO: separate processing in newsevents
         models = (ZMSSite, TeaserElement2022, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN)
 
     t0 = time.time()

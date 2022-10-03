@@ -9,11 +9,11 @@ from ..models.teaserelement2022 import TeaserElement2022
 
 def _store_newsevents_data(session, sqlengine):  # fill intermediate table consolidating data sources for queries
 
-    NewsEvents.__table__.drop(sqlengine)
+    NewsEvents.__table__.drop(sqlengine)  # TODO: separate processing of DATA SOURCES 1-5 to avoid multiple executions
     NewsEvents.__table__.create(sqlengine)
 
-    # Data source 1
-    statement = select(AgendaPortal)
+    # DATA SOURCE 1 ######################
+    statement = select(AgendaPortal)  # DE
     results = session.exec(statement)
     for res in results.all():
         obj = NewsEvents()
@@ -42,7 +42,37 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         session.add(obj)
     session.commit()
 
-    # Data source 2
+    # DATA SOURCE 2 ######################
+    statement = select(AgendaPortal)  # EN (as copy of DE to show content without a multilang AgendaPortal)
+    results = session.exec(statement)
+    for res in results.all():
+        obj = NewsEvents()
+        obj.uuid = uuid4()  # temporary UUID until next import - for internal use only
+        obj.site_uuid = UUID('9c92af4f-6e95-4391-86d5-76eb8ad48360')  # UniBE Portal
+        obj.active_de = False
+        obj.active_en = True
+        obj.active_fr = False
+
+        obj.title_en = res.veranstaltung_titel
+        obj.type = 'event'
+        obj.path = 'agenda_portal'
+        obj.level = 1
+        obj.start_dt = res.json_datum_zeit_start
+        obj.end_dt = res.json_datum_zeit_end > res.json_datum_zeit_start and \
+                     res.json_datum_zeit_end or \
+                     res.json_datum_zeit_start  # to filter out outdated Events - see where(NewsEvents.end_dt > datetime.utcnow())
+        obj.location_en = f'{res.veranstaltung_horsaal}\n' \
+                          f'{res.veranstaltung_gebaude_adresse}\n' \
+                          f'{res.veranstaltung_ort}'
+
+        obj.url_en = res.veranstalter_info_link
+        obj.infos_en = res.veranstaltung_referenten
+        obj.topics_en = res.veranstaltung_zyklus
+
+        session.add(obj)
+    session.commit()
+
+    # DATA SOURCE 3 ###################
     statement = select(AgendaLibraryDE)
     results = session.exec(statement)
     for res in results.all():
@@ -70,7 +100,7 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         session.add(obj)
     session.commit()
 
-    # Data source 3
+    # DATA SOURCE 4 ###################
     statement = select(AgendaLibraryEN)
     results = session.exec(statement)
     for res in results.all():
@@ -98,7 +128,7 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         session.add(obj)
     session.commit()
 
-    # Data source 4
+    # DATA SOURCE 5 ######################
     statement = [select(TeaserElement2022).
                  where(or_(TeaserElement2022.active_de, TeaserElement2022.active_en, TeaserElement2022.active_fr)).
                  where(or_(TeaserElement2022.active_start_de <= datetime.utcnow(),
@@ -111,6 +141,9 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
     results = session.exec(statement[0])
 
     for res in results.all():
+
+        if res.title_de == '&nbsp;' or res.title_en == '&nbsp;' or res.title_fr == '&nbsp;':
+            continue
 
         if res.level == 2 and res.site_uuid == UUID('9c92af4f-6e95-4391-86d5-76eb8ad48360'):
             obj_level = 1  # rate UniBE Portal News higher - see order_by(NewsEvents.level) in routers/newsevents
