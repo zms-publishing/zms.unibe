@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 
 from .metadata import cmsapi_tags
-from .routers import newsevents, zmsobjects
+from .routers import newsevents, zmsobjects, mobileapp
 
 app = FastAPI(title="CMSAPI v3 PoC",
               version="3.0.0dev",
@@ -12,6 +12,7 @@ app = FastAPI(title="CMSAPI v3 PoC",
               swagger_ui_parameters={"defaultModelsExpandDepth": -1})
 
 app.include_router(newsevents.router)
+app.include_router(mobileapp.router)
 app.include_router(zmsobjects.router)
 
 

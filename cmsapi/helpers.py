@@ -167,7 +167,7 @@ def _inspect_module(module_name, module_path, types):
 
 def get_subdomain(domain, reverse=False):
     if domain is None:
-        domain = ''
+        return ''
     if reverse:
         rtn = domain == 'portal' and 'www.cmstest1.unibe.ch' or f'www.{domain}.cmstest1.unibe.ch'
         rtn = domain == 'intern' and 'intern.cmstest1.unibe.ch' or rtn

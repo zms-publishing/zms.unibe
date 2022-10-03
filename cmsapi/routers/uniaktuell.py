@@ -10,7 +10,7 @@ from ..models.zmsobjects import ZMSSite
 
 router = APIRouter(
     prefix="/v3/uniaktuell",
-    tags=["Uniaktuell"]  # TODO: add Uniaktuell to metadata
+    tags=["UniBE Uniaktuell"]  # TODO: add Uniaktuell to metadata
 )
 
 

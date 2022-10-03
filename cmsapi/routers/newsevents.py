@@ -10,7 +10,7 @@ from ..helpers import Lang, get_attr_by_lang, strip_cmstest, local_timezone
 
 router = APIRouter(
     prefix="/v3",
-    tags=["News and Events"])
+    tags=["UniBE News and Events"])
 
 
 @router.get("/news", response_model=list[schema.News])
@@ -114,11 +114,11 @@ async def get_events(
 
             if res.NewsEvents.path == 'agenda_portal':
                 data_source = 'https://agenda.unibe.ch/agenda.json'
-                section_type = 'Agenda'
+                section_type = 'Agenda Portal'
                 data_uuid = None
             elif res.NewsEvents.path == 'agenda_library':
                 data_source = f'https://agenda.ub.unibe.ch/{lang}/api/event'
-                section_type = 'Agenda'
+                section_type = 'Agenda Library'
                 data_uuid = None
 
             rtn.append(schema.Event.parse_obj({
