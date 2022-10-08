@@ -14,7 +14,7 @@ router = APIRouter(
     tags=["UniBE News and Events"])
 
 
-@router.get("/news", response_model=list[schema.News])
+@router.get("/news", summary='News', response_model=list[schema.News])
 async def get_news(
         lang: Lang = Lang.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
@@ -82,7 +82,7 @@ async def get_news(
     return rtn
 
 
-@router.get("/events", response_model=list[schema.Event])
+@router.get("/events", summary='Events', response_model=list[schema.Event])
 async def get_events(
         lang: Lang = Lang.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
@@ -175,7 +175,7 @@ async def get_events(
     return rtn
 
 
-@router.get("/sections", response_model=list[schema.Section])
+@router.get("/sections", summary='Sections', response_model=list[schema.Section])
 async def get_sections(
         lang: Lang = Lang.de,
         offset: int = 0,

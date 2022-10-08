@@ -6,6 +6,7 @@ from .commands import init_tables, update_tables
 from ..models.zmsobjects import ZMSSite, ZMSDataTable, ZMSFormulator
 from ..models.teaserelement2022 import TeaserElement2022
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
+from ..models.mobileapp import MobileApp
 
 # alias cmsadm='cd ~/Workspace/Projects/CMS-Integrations/unibe-cmsapi-v3/; venv/bin/python -m cmsapi.admin.main'
 
@@ -31,6 +32,7 @@ def main(command: str = typer.Argument(None, help='init | update'),
         if obj == 'all':
             _all = True  # refresh data of all relations - w/ init reflecting model change of ZMSSite
             models = [x[1] for x in MODELS_AVAILABLE.items()]
+            models.append(MobileApp)
         elif obj in MODELS_AVAILABLE:
             models.append(MODELS_AVAILABLE[obj])
         else:
@@ -39,6 +41,9 @@ def main(command: str = typer.Argument(None, help='init | update'),
     if feature == 'NewsEvents':  # this Argument overrides any individually set Options via --metaobj
         # Keep this order! TeaserElement2022 must exist before Agendas - see TODO: separate processing in newsevents
         models = (ZMSSite, TeaserElement2022, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN)
+
+    if feature == 'MobileApp':
+        models = (MobileApp, )
 
     t0 = time.time()
 

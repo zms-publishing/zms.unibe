@@ -193,13 +193,33 @@ def get_datetime_props(cls):
 
 def get_attr_value(sql_attr, zms_attr, obj, cls):
 
-    lang = 'ger'
+    if sql_attr.endswith('_en'):
+        lang = 'eng'
+    elif sql_attr.endswith('_fr'):
+        lang = 'fra'
+    else:
+        lang = 'ger'
 
     if zms_attr == 'obj._uid':
         return obj._uid
 
     if zms_attr == 'obj.getDocumentElement()._uid':
         return obj.getDocumentElement()._uid
+
+    if zms_attr == 'obj.getParentNode()._uid':
+        if obj.getLevel() > 0:
+            return obj.getParentNode()._uid
+        else:
+            return obj._uid
+
+    if zms_attr == 'obj.getParentNode().attr("title")':
+        if obj.getLevel() > 0:
+            return obj.getParentNode().attr("title", REQUEST={'lang': lang})
+        else:
+            return obj.attr("title", REQUEST={'lang': lang})
+
+    if zms_attr == 'obj.meta_id':
+        return obj.meta_id
 
     if zms_attr == "obj.getLevel()":
         return obj.getLevel()
@@ -210,16 +230,9 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
     if zms_attr == "obj.getConfProperty('UniBE.Server')":
         return obj.getConfProperty('UniBE.Server')
 
-    if sql_attr.endswith('_de'):
-        lang = 'ger'
-    elif sql_attr.endswith('_en'):
-        lang = 'eng'
-    elif sql_attr.endswith('_fr'):
-        lang = 'fra'
-
     value = obj.attr(zms_attr, REQUEST={'lang': lang})
 
-    if value is not None and isinstance(value, _blobfields.MyImage):
+    if value is not None and (isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile)):
         value = 'https://www.unibe.ch' + value.getHref(REQUEST={'lang': lang})
 
     if value is not None and isinstance(value, str) and value.startswith('{$uid:'):

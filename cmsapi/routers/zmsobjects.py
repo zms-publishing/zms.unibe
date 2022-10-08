@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.get("/models")
+@router.get("/models", summary='Content Models')
 async def get_content_models(
         metaobj: MetaObj,
         types: list[AttrType] = Query(...)):
@@ -22,7 +22,7 @@ async def get_content_models(
         metas=True)
 
 
-@router.get("/sites", response_model=list[schema.ZMSSite])
+@router.get("/sites", summary='Content Sites', response_model=list[schema.ZMSSite])
 async def get_content_sites(
         lang: Lang = Lang.de,
         offset: int = 0,
@@ -76,7 +76,7 @@ async def get_folders_by_site(
         return results.all()
 
 
-@router.get("/forms/{site}", response_model=list[model.ZMSFormulator])  # TODO: router/schema
+@router.get("/forms/{site}", summary='Forms by Site', response_model=list[model.ZMSFormulator])  # TODO: router/schema
 async def get_forms_by_site(
         site: str,
         offset: int = 0,
@@ -89,7 +89,7 @@ async def get_forms_by_site(
         return results.all()
 
 
-@router.get("/datatables", response_model=list[schema.ZMSDataTable])  # TODO: router/schema
+@router.get("/datatables", summary='Datatables', response_model=list[schema.ZMSDataTable])  # TODO: router/schema
 async def get_datatables(
         offset: int = 0,
         limit: int = 100):

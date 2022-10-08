@@ -1,9 +1,10 @@
 import time
-from sqlmodel import SQLModel, Session, select
+from sqlmodel import SQLModel, Session, select, inspect
 from devtools import debug
 
 from ..models.zmsobjects import ZMSSite
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
+from ..models.mobileapp import MobileApp
 from .agendas import _fetch_agenda_data
 from .newsevents import _store_newsevents_data
 from .zmsobjects import _iterate_content_objects
@@ -20,7 +21,8 @@ def init_tables(models, *args, _all=False):
             SQLModel.metadata.create_all(sqlengine)
             update_tables((ZMSSite,), *args)
         else:
-            model.__table__.drop(sqlengine)
+            if inspect(sqlengine).has_table(model.__table__):
+                model.__table__.drop(sqlengine)
             model.__table__.create(sqlengine)
             update_tables((model,), *args)
 
@@ -41,8 +43,15 @@ def update_tables(models, *args):
                 _fetch_agenda_data(session, sqlengine)
                 _store_newsevents_data(session, sqlengine)
             else:
+                if not inspect(sqlengine).has_table(model.__table__):
+                    model.__table__.create(sqlengine)
+                if model == MobileApp:
+                    query = zmsindex({'path': '/unibe/uniapp/content/'})
+                else:
+                    query = zmsindex({'meta_id': model.get_zms_metaid()})  # TODO: optimize retrieval for 1000+ objects
+
                 uuids_new = []
-                query = zmsindex({'meta_id': model.get_zms_metaid()})  # TODO: optimize retrieval for 1000+ objects
+
                 for obj in _iterate_content_objects(query, model):
                     statement = select(model).where(model.uuid == obj.uuid)
                     results = session.exec(statement)
