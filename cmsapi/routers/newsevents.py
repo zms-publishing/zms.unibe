@@ -86,6 +86,8 @@ async def get_news(
 async def get_events(
         lang: Lang = Lang.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
+        start: datetime | None = Query(None, description='Filter by start after (UTC)'),
+        end: datetime | None = Query(None, description='Filter by end before (UTC)'),
         offset: int = 0,
         limit: int = 50):
 
@@ -99,6 +101,8 @@ async def get_events(
                                             de=NewsEvents.active_de,
                                             en=NewsEvents.active_en,
                                             fr=NewsEvents.active_fr)).
+                     where(start is None and True or (NewsEvents.start_dt > start)).
+                     where(end is None and True or (NewsEvents.end_dt < end)).
                      where(NewsEvents.end_dt > datetime.utcnow()).
                      where(or_(ZMSSite.type == 'Home',
                                ZMSSite.type == 'Fakultaet',
