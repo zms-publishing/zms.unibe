@@ -15,10 +15,10 @@ MODELS_AVAILABLE = {
     'ZMSSite': ZMSSite,
     'ZMSDataTable': ZMSDataTable,
     'ZMSFormulator': ZMSFormulator,
+    'TeaserElement2022': TeaserElement2022,  # Keep this order! TeaserElement2022 must exist before Agendas - see TODO
     'AgendaPortal': AgendaPortal,
     'AgendaLibraryDE': AgendaLibraryDE,
     'AgendaLibraryEN': AgendaLibraryEN,
-    'TeaserElement2022': TeaserElement2022,
 }
 
 

@@ -22,6 +22,7 @@ class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inheri
     lastmod_dt_en: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     lastmod_dt_fr: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     level: int
+    path: str
 
     @staticmethod
     def get_attr_mappings():
@@ -45,6 +46,7 @@ class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inheri
             'lastmod_dt_en':    'change_dt',
             'lastmod_dt_fr':    'change_dt',
             'level':            'obj.getLevel()',
+            'path':             'obj.getPath()',
         }
 
 
@@ -144,7 +146,6 @@ class ZMSFormulator(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/
 
 class ZMSDataTable(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/models?metaobj=ZMSDataTable&types=%2A
     __table_args__ = {'extend_existing': True}
-    path: str
     dataurl: str | None
 
     @staticmethod
@@ -156,5 +157,4 @@ class ZMSDataTable(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/m
         return {
             # sql_attr          # zms_attr
             'dataurl':          'dataurl',
-            'path':             'obj.getPath()',
         }

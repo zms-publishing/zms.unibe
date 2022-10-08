@@ -5,7 +5,6 @@ from .zmsobjects import ZMSBase
 
 class MobileApp(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    path: str
     meta_id: str
     title_de: str
     title_en: str
@@ -31,7 +30,6 @@ class MobileApp(ZMSBase, table=True):
     def get_attr_mappings():
         return {
             # sql_attr          # zms_attr
-            'path':             'obj.getPath()',
             'meta_id':          'obj.meta_id',
             'title_de':         'title',
             'title_en':         'title',

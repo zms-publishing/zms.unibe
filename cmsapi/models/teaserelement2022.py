@@ -10,7 +10,6 @@ class TeaserElement2022(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
     title_en: str
     title_fr: str
     type: str
-    path: str
     start_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     end_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     location: str | None
@@ -47,7 +46,6 @@ class TeaserElement2022(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
             'title_en':         'title',
             'title_fr':         'title',
             'type':             'teaser_type',
-            'path':             'obj.getPath()',
             'start_dt':         'event_date_start',
             'end_dt':           'event_date_end',
             'location':         'event_location',
