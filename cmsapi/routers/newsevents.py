@@ -1,6 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from sqlmodel import Session, select, or_
 from datetime import datetime
+from uuid import UUID
 
 from ..db import engine
 from ..models.newsevents import NewsEvents
@@ -16,6 +17,7 @@ router = APIRouter(
 @router.get("/news", response_model=list[schema.News])
 async def get_news(
         lang: Lang = Lang.de,
+        sections: list[UUID] | None = Query(None, description='Filter by sections'),
         offset: int = 0,
         limit: int = 50):
 
@@ -34,6 +36,7 @@ async def get_news(
                                ZMSSite.type == 'Institut',
                                ZMSSite.type == 'Uniaktuell',  # to fetch UB (Library) by deprecated type
                                ZMSSite.type == 'Microsite')).
+                     where(or_(sections is None and True or (NewsEvents.site_uuid == section for section in sections))).
                      order_by(NewsEvents.level).
                      order_by(ZMSSite.type).  # TODO: introduce order_by(lastmod) for News...?!
                      offset(offset).limit(limit)]
@@ -41,6 +44,8 @@ async def get_news(
         results = session.exec(statement[0])
 
         for res in results.all():
+            if '/uniintern' in res.ZMSSite.path or '/uniintern' in res.NewsEvents.path:
+                continue
             rtn.append(schema.News.parse_obj({
                 'newsDate': local_timezone(res.NewsEvents.start_dt),
                 'newsTitle': get_attr_by_lang(lang,
@@ -80,6 +85,7 @@ async def get_news(
 @router.get("/events", response_model=list[schema.Event])
 async def get_events(
         lang: Lang = Lang.de,
+        sections: list[UUID] | None = Query(None, description='Filter by sections'),
         offset: int = 0,
         limit: int = 50):
 
@@ -99,6 +105,7 @@ async def get_events(
                                ZMSSite.type == 'Institut',
                                ZMSSite.type == 'Uniaktuell',  # to fetch UB (Library) by deprecated type
                                ZMSSite.type == 'Microsite')).
+                     where(or_(sections is None and True or (NewsEvents.site_uuid == section for section in sections))).
                      order_by(NewsEvents.start_dt).
                      order_by(ZMSSite.type).
                      offset(offset).limit(limit)]
@@ -106,6 +113,8 @@ async def get_events(
         results = session.exec(statement[0])
 
         for res in results.all():
+            if '/uniintern' in res.ZMSSite.path or '/uniintern' in res.NewsEvents.path:
+                continue
             section_domain = f'https://{strip_cmstest(res.ZMSSite.domain)}'
             section_type = res.ZMSSite.type
             data_source = res.NewsEvents.path
@@ -157,6 +166,51 @@ async def get_events(
                 'dataSource': data_source,
                 'dataLevel': data_level,
                 'dataUuid': data_uuid,
+            }))
+
+    return rtn
+
+
+@router.get("/sections", response_model=list[schema.Section])
+async def get_sections(
+        lang: Lang = Lang.de,
+        offset: int = 0,
+        limit: int = 10):
+
+    rtn = []
+
+    with Session(engine) as session:
+
+        statement = [select(NewsEvents.site_uuid, ZMSSite).join(ZMSSite).
+                     where(get_attr_by_lang(lang,
+                                            de=ZMSSite.active_de,
+                                            en=ZMSSite.active_en,
+                                            fr=ZMSSite.active_fr)).
+                     group_by(NewsEvents.site_uuid,
+                              ZMSSite.title_de,
+                              ZMSSite.title_en,
+                              ZMSSite.title_fr,
+                              ZMSSite.domain,
+                              ZMSSite.type,
+                              ZMSSite.uuid).
+                     order_by(ZMSSite.type).
+                     offset(offset).limit(limit)]
+
+        results = session.exec(statement[0])
+
+        for res in results.all():
+            if '/uniintern' in res.ZMSSite.path:
+                continue
+            rtn.append(schema.Section.parse_obj({
+                'sectionTitle': get_attr_by_lang(lang,
+                                                 de=res.ZMSSite.title_de,
+                                                 en=res.ZMSSite.title_en,
+                                                 fr=res.ZMSSite.title_fr),
+                'sectionDomain': strip_cmstest(res.ZMSSite.domain),
+                'sectionType': '/unibiblio' in res.ZMSSite.path and
+                               'Library' or res.ZMSSite.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
+                'sectionPath': res.ZMSSite.path,
+                'sectionUuid': res.ZMSSite.uuid,
             }))
 
     return rtn

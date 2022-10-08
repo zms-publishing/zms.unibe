@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from uuid import UUID
 
+
                                     # TODO: move this mapping overview to README
 class News(BaseModel):              # TEASER ELEMENT 2022
     newsTitle: str                  # title
@@ -40,3 +41,11 @@ class Event(BaseModel):             # TEASER ELEMENT 2022   AGENDA PORTAL       
     dataSource: str                 # ZMS getPath           agenda.unibe.ch/agenda.json     https://agenda.ub.unibe.ch/.
     dataLevel: str                  # ZMS getlevel          1                               1
     dataUuid: UUID | None           # ZMS uuid              -                               -
+
+
+class Section(BaseModel):
+    sectionDomain: str
+    sectionTitle: str
+    sectionType: str
+    sectionPath: str
+    sectionUuid: UUID
