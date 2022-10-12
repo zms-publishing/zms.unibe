@@ -5,6 +5,7 @@ from datetime import datetime
 from ..models.newsevents import NewsEvents
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.teaserelement2022 import TeaserElement2022
+from ..models.newsbox import Newsbox
 
 
 def _store_newsevents_data(session, sqlengine):  # fill intermediate table consolidating data sources for queries
@@ -156,6 +157,9 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         obj.active_de = res.active_de
         obj.active_en = res.active_en
         obj.active_fr = res.active_fr
+        obj.lastmod_dt_de = res.lastmod_dt_de
+        obj.lastmod_dt_en = res.lastmod_dt_en
+        obj.lastmod_dt_fr = res.lastmod_dt_fr
 
         obj.title_de = res.title_de
         obj.title_en = res.title_en
@@ -183,6 +187,63 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         obj.image_de = res.img_de
         obj.image_en = res.img_en
         obj.image_fr = res.img_fr
+
+        session.add(obj)
+    session.commit()
+
+    # DATA SOURCE 6 ######################
+    statement = [select(Newsbox).
+                 where(or_(Newsbox.active_de, Newsbox.active_en, Newsbox.active_fr)).
+                 where(or_(Newsbox.active_start_de <= datetime.utcnow(),
+                           Newsbox.active_start_en <= datetime.utcnow(),
+                           Newsbox.active_start_fr <= datetime.utcnow())).
+                 where(or_(Newsbox.active_end_de <= datetime.utcnow(),
+                           Newsbox.active_end_de <= datetime.utcnow(),
+                           Newsbox.active_end_de <= datetime.utcnow()))]
+
+    results = session.exec(statement[0])
+
+    for res in results.all():
+
+        if res.title_de == '&nbsp;' or res.title_en == '&nbsp;' or res.title_fr == '&nbsp;':
+            continue
+
+        if res.level == 2 and res.site_uuid == UUID('9c92af4f-6e95-4391-86d5-76eb8ad48360'):
+            obj_level = 1  # rate UniBE Portal News higher - see order_by(NewsEvents.level) in routers/newsevents
+        else:
+            obj_level = res.level  # must always be >=2, because TeaserElement2022 are always be placed in a container
+
+        obj = NewsEvents()
+        obj.uuid = res.uuid
+        obj.site_uuid = res.site_uuid
+        obj.active_de = res.active_de
+        obj.active_en = res.active_en
+        obj.active_fr = res.active_fr
+        obj.lastmod_dt_de = res.lastmod_dt_de
+        obj.lastmod_dt_en = res.lastmod_dt_en
+        obj.lastmod_dt_fr = res.lastmod_dt_fr
+
+        obj.title_de = res.title_de
+        obj.title_en = res.title_en
+        obj.title_fr = res.title_fr
+        obj.type = res.type
+        obj.path = res.path
+        obj.level = obj_level
+        obj.start_dt = res.start_dt
+        obj.end_dt = res.end_dt
+
+        obj.url_de = res.url_de
+        obj.url_en = res.url_en
+        obj.url_fr = res.url_fr
+        obj.infos_de = res.text_de
+        obj.infos_en = res.text_en
+        obj.infos_fr = res.text_fr
+        obj.topics_de = res.topic_de
+        obj.topics_en = res.topic_en
+        obj.topics_fr = res.topic_fr
+        obj.image_de = res.img
+        obj.image_en = res.img
+        obj.image_fr = res.img
 
         session.add(obj)
     session.commit()

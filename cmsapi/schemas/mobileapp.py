@@ -9,4 +9,4 @@ class Service(BaseModel):
     serviceInfo: str | None
     servicePath: str
     serviceUuid: UUID
-    serviceLastmodified: datetime
+    serviceLastmod: datetime

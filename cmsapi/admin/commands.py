@@ -5,7 +5,8 @@ from devtools import debug
 from ..models.zmsobjects import ZMSSite
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.mobileapp import MobileApp
-from .agendas import _fetch_agenda_data
+from ..models.newsbox import Newsbox
+from .agendas import _fetch_agenda_data, _fetch_status_messages
 from .newsevents import _store_newsevents_data
 from .zmsobjects import _iterate_content_objects
 
@@ -47,6 +48,16 @@ def update_tables(models, *args):
                     model.__table__.create(sqlengine)
                 if model == MobileApp:
                     query = zmsindex({'path': '/unibe/uniapp/content/'})
+                elif model == Newsbox:
+                    query = zmsindex({'path': '/unibe/portal/unibiblio/content', 'meta_id': 'newsbox'})
+                    query += zmsindex({'path': '/unibe/portal/fak_theologie/content', 'meta_id': 'newsbox'})
+                    query += zmsindex({'path': '/unibe/portal/fak_rechtwis/content', 'meta_id': 'newsbox'})
+                    query += zmsindex({'path': '/unibe/portal/fak_wiso/content', 'meta_id': 'newsbox'})
+                    query += zmsindex({'path': '/unibe/portal/fak_medizin/content', 'meta_id': 'newsbox'})
+                    query += zmsindex({'path': '/unibe/portal/fak_vetmedizin/content', 'meta_id': 'newsbox'})
+                    query += zmsindex({'path': '/unibe/portal/fak_historisch/content', 'meta_id': 'newsbox'})
+                    query += zmsindex({'path': '/unibe/portal/fak_humanwis/content', 'meta_id': 'newsbox'})
+                    query += zmsindex({'path': '/unibe/portal/fak_naturwis/content', 'meta_id': 'newsbox'})
                 else:
                     query = zmsindex({'meta_id': model.get_zms_metaid()})  # TODO: optimize retrieval for 1000+ objects
 

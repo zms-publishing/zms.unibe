@@ -73,9 +73,9 @@ def _retrieve_service(lang, offset, limit, uuid):
 
             if uuid == UUID('1c0a8927-bfb4-4215-a8fd-c41bba079d21'):  # map attributes if location
                 service_info = get_attr_by_lang(lang,
-                                                 de=res.parent_title_de,
-                                                 en=res.parent_title_en,
-                                                 fr=res.parent_title_fr).strip()
+                                                de=res.parent_title_de,
+                                                en=res.parent_title_en,
+                                                fr=res.parent_title_fr).strip()
 
             rtn.append(schema.Service.parse_obj({
                 'serviceTitle': service_title,
@@ -83,10 +83,10 @@ def _retrieve_service(lang, offset, limit, uuid):
                 'serviceInfo': service_info,
                 'servicePath': res.path,
                 'serviceUuid': res.uuid,
-                'serviceLastmodified': get_attr_by_lang(lang,
-                                                        de=local_timezone(res.lastmod_dt_de),
-                                                        en=local_timezone(res.lastmod_dt_en),
-                                                        fr=local_timezone(res.lastmod_dt_fr)),
+                'serviceLastmod': get_attr_by_lang(lang,
+                                                   de=local_timezone(res.lastmod_dt_de),
+                                                   en=local_timezone(res.lastmod_dt_en),
+                                                   fr=local_timezone(res.lastmod_dt_fr)),
             }))
 
     return rtn

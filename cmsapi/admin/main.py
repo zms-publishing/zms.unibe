@@ -5,6 +5,7 @@ from .db import connect_db
 from .commands import init_tables, update_tables
 from ..models.zmsobjects import ZMSSite, ZMSDataTable, ZMSFormulator
 from ..models.teaserelement2022 import TeaserElement2022
+from ..models.newsbox import Newsbox
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.mobileapp import MobileApp
 
@@ -15,7 +16,8 @@ MODELS_AVAILABLE = {
     'ZMSSite': ZMSSite,
     'ZMSDataTable': ZMSDataTable,
     'ZMSFormulator': ZMSFormulator,
-    'TeaserElement2022': TeaserElement2022,  # Keep this order! TeaserElement2022 must exist before Agendas - see TODO
+    'TeaserElement2022': TeaserElement2022,  # Keep this order - must exist before Agendas! - see TODO below
+    'Newsbox': Newsbox,
     'AgendaPortal': AgendaPortal,
     'AgendaLibraryDE': AgendaLibraryDE,
     'AgendaLibraryEN': AgendaLibraryEN,
@@ -23,14 +25,14 @@ MODELS_AVAILABLE = {
 
 
 def main(command: str = typer.Argument(None, help='init | update'),
-         feature: str = typer.Argument(None, help='NewsEvents'),
-         metaobj: list[str] = typer.Option([], help=' | '.join(MODELS_AVAILABLE.keys()))):
+         feature: str = typer.Argument(None, help='NewsEvents | MobileApp'),
+         metaobj: list[str] = typer.Option([], help=' | '.join(MODELS_AVAILABLE.keys())+' | all')):
 
     _all = False  # drop and create all tables
-    models = [ZMSSite]  # refresh data of basic relation always - w/o init reflecting model change of ZMSSite
+    models = [ZMSSite]  # refresh data of basic relation - w/o reflecting model change of ZMSSite
     for obj in metaobj:
         if obj == 'all':
-            _all = True  # refresh data of all relations - w/ init reflecting model change of ZMSSite
+            _all = True  # refresh data of all relations - w/ reflecting model change of ZMSSite
             models = [x[1] for x in MODELS_AVAILABLE.items()]
             models.append(MobileApp)
         elif obj in MODELS_AVAILABLE:
@@ -39,8 +41,8 @@ def main(command: str = typer.Argument(None, help='init | update'),
             raise typer.Abort()
 
     if feature == 'NewsEvents':  # this Argument overrides any individually set Options via --metaobj
-        # Keep this order! TeaserElement2022 must exist before Agendas - see TODO: separate processing in newsevents
-        models = (ZMSSite, TeaserElement2022, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN)
+        # Keep this order - must exist before Agendas! - see TODO: separate processing in newsevents
+        models = (ZMSSite, TeaserElement2022, Newsbox, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN)
 
     if feature == 'MobileApp':
         models = (MobileApp, )

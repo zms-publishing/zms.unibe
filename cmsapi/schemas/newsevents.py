@@ -6,6 +6,7 @@ from uuid import UUID
                                     # TODO: move this mapping overview to README
 class News(BaseModel):              # TEASER ELEMENT 2022
     newsTitle: str                  # title
+    newsDate: datetime              # ZMS lastmod_dt
 
     newsUrl: str | None             # url
     newsInfos: str | None           # text + source

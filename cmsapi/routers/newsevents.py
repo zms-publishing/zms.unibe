@@ -18,8 +18,9 @@ router = APIRouter(
 async def get_news(
         lang: Lang = Lang.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
+        date: datetime | None = Query(None, description='Filter by date after (UTC)'),
         offset: int = 0,
-        limit: int = 50):
+        limit: int = 20):
 
     rtn = []
 
@@ -31,6 +32,7 @@ async def get_news(
                                             de=NewsEvents.active_de,
                                             en=NewsEvents.active_en,
                                             fr=NewsEvents.active_fr)).
+                     where(date is None and True or (NewsEvents.lastmod_dt_de > date)).
                      where(or_(ZMSSite.type == 'Home',
                                ZMSSite.type == 'Fakultaet',
                                ZMSSite.type == 'Institut',
@@ -38,7 +40,11 @@ async def get_news(
                                ZMSSite.type == 'Microsite')).
                      where(or_(sections is None and True or (NewsEvents.site_uuid == section for section in sections))).
                      order_by(NewsEvents.level).
-                     order_by(ZMSSite.type).  # TODO: introduce order_by(lastmod) for News...?!
+                     order_by(get_attr_by_lang(lang,
+                                               de=NewsEvents.lastmod_dt_de,
+                                               en=NewsEvents.lastmod_dt_en,
+                                               fr=NewsEvents.lastmod_dt_fr).desc()).
+                     order_by(ZMSSite.type).
                      offset(offset).limit(limit)]
 
         results = session.exec(statement[0])
@@ -47,7 +53,10 @@ async def get_news(
             if '/uniintern' in res.ZMSSite.path or '/uniintern' in res.NewsEvents.path:
                 continue
             rtn.append(schema.News.parse_obj({
-                'newsDate': local_timezone(res.NewsEvents.start_dt),
+                'newsDate': local_timezone(get_attr_by_lang(lang,
+                                                            de=res.NewsEvents.lastmod_dt_de,
+                                                            en=res.NewsEvents.lastmod_dt_en,
+                                                            fr=res.NewsEvents.lastmod_dt_fr)),
                 'newsTitle': get_attr_by_lang(lang,
                                               de=res.NewsEvents.title_de,
                                               en=res.NewsEvents.title_en,
@@ -89,7 +98,7 @@ async def get_events(
         start: datetime | None = Query(None, description='Filter by start after (UTC)'),
         end: datetime | None = Query(None, description='Filter by end before (UTC)'),
         offset: int = 0,
-        limit: int = 50):
+        limit: int = 20):
 
     rtn = []
 
@@ -179,7 +188,7 @@ async def get_events(
 async def get_sections(
         lang: Lang = Lang.de,
         offset: int = 0,
-        limit: int = 10):
+        limit: int = 20):
 
     rtn = []
 
@@ -197,7 +206,11 @@ async def get_sections(
                               ZMSSite.domain,
                               ZMSSite.type,
                               ZMSSite.uuid).
-                     order_by(ZMSSite.type).
+                     order_by(ZMSSite.type.desc()).
+                     order_by(get_attr_by_lang(lang,
+                                               de=ZMSSite.title_de,
+                                               en=ZMSSite.title_en,
+                                               fr=ZMSSite.title_fr)).
                      offset(offset).limit(limit)]
 
         results = session.exec(statement[0])

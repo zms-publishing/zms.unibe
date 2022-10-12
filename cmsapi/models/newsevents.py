@@ -3,13 +3,16 @@ from uuid import UUID
 from datetime import datetime
 
 
-class NewsEvents(SQLModel, table=True):  # intermediate table consolidating Agendas and TeaserElement2022 for queries
+class NewsEvents(SQLModel, table=True):  # intermediate consolidation of Agendas, Newsbox, TeaserElement2022 for queries
     __table_args__ = {'extend_existing': True}
     uuid: UUID = Field(primary_key=True)
     site_uuid: UUID = Field(foreign_key="zmssite.uuid")
     active_de: bool
     active_en: bool
     active_fr: bool
+    lastmod_dt_de: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    lastmod_dt_en: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    lastmod_dt_fr: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
 
     title_de: str | None
     title_en: str | None
