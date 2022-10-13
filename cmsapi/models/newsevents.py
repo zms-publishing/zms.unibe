@@ -38,3 +38,16 @@ class NewsEvents(SQLModel, table=True):  # intermediate consolidation of Agendas
     image_de: str | None
     image_en: str | None
     image_fr: str | None
+
+
+class StatusMessage(SQLModel, table=True):  # to import data of http://id.unibe.ch/statusmeldungen provided by
+                                            # https://api.epc.unibe.ch/announcements/api/ServiceAnnouncements
+    __table_args__ = {'extend_existing': True}
+    id: int = Field(primary_key=True)
+    begin: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    end: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    type: str
+    subject: str
+    description: str
+    service: str
+    info: str | None

@@ -8,6 +8,7 @@ from ..models.teaserelement2022 import TeaserElement2022
 from ..models.newsbox import Newsbox
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.mobileapp import MobileApp
+from ..models.newsevents import StatusMessage
 
 # alias cmsadm='cd ~/Workspace/Projects/CMS-Integrations/unibe-cmsapi-v3/; venv/bin/python -m cmsapi.admin.main'
 
@@ -16,7 +17,7 @@ MODELS_AVAILABLE = {
     'ZMSSite': ZMSSite,
     'ZMSDataTable': ZMSDataTable,
     'ZMSFormulator': ZMSFormulator,
-    'TeaserElement2022': TeaserElement2022,  # Keep this order - must exist before Agendas! - see TODO below
+    'TeaserElement2022': TeaserElement2022,
     'Newsbox': Newsbox,
     'AgendaPortal': AgendaPortal,
     'AgendaLibraryDE': AgendaLibraryDE,
@@ -25,7 +26,7 @@ MODELS_AVAILABLE = {
 
 
 def main(command: str = typer.Argument(None, help='init | update'),
-         feature: str = typer.Argument(None, help='NewsEvents | MobileApp'),
+         feature: str = typer.Argument(None, help='NewsEvents | StatusMessage | MobileApp'),
          metaobj: list[str] = typer.Option([], help=' | '.join(MODELS_AVAILABLE.keys())+' | all')):
 
     _all = False  # drop and create all tables
@@ -35,17 +36,20 @@ def main(command: str = typer.Argument(None, help='init | update'),
             _all = True  # refresh data of all relations - w/ reflecting model change of ZMSSite
             models = [x[1] for x in MODELS_AVAILABLE.items()]
             models.append(MobileApp)
+            models.append(StatusMessage)
         elif obj in MODELS_AVAILABLE:
             models.append(MODELS_AVAILABLE[obj])
         else:
             raise typer.Abort()
 
     if feature == 'NewsEvents':  # this Argument overrides any individually set Options via --metaobj
-        # Keep this order - must exist before Agendas! - see TODO: separate processing in newsevents
-        models = (ZMSSite, TeaserElement2022, Newsbox, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN)
+        models = (ZMSSite, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN, TeaserElement2022, Newsbox)
 
     if feature == 'MobileApp':
         models = (MobileApp, )
+
+    if feature == 'StatusMessage':
+        models = (StatusMessage, )
 
     t0 = time.time()
 

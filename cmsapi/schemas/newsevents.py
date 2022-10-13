@@ -50,3 +50,21 @@ class Section(BaseModel):
     sectionType: str
     sectionPath: str
     sectionUuid: UUID
+
+
+class StatusMessage(BaseModel):
+    statusTitle: str                # "subject": "Aktualisierung des Telefoniesystems",
+    statusStart: datetime           # "begin": "2021-02-23T05:00:00",
+    statusEnd: datetime | None      # "end": "2021-02-25T22:00:00",
+
+    statusInfos: str | None         # "description": "Die Komponenten des Telefoniesystems (Avaya Aura) werden auf die neusten Softwareversionen aktualisiert. Weitere Wartungsfenster folgen.\r\n\r\nTrotz der Redundanz der Systeme k\u00f6nnten kurze Performance-Einbussen oder minimale Unterbr\u00fcche entstehen.",
+                                    # "info": "Gegebenenfalls verlangen einzelne Deskphones sich neu anzumelden. Dazu sind die Zugangsdaten gem\u00e4ss Bedienungsanleitung einzugeben. www.telecom.unibe.ch/bedienungsanleitungen"
+    statusTopics: str | None        # "type": "WARTUNG",
+                                    # "service": "Telefonie +41 31 631 xx xx",
+    sectionDomain: str
+    sectionTitle: str
+    sectionType: str
+
+    dataSource: str
+    dataLevel: str
+    dataUuid: UUID | None

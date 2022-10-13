@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Query
 from sqlmodel import Session, select, or_
-from datetime import datetime
+from datetime import datetime, timedelta
 from uuid import UUID
 
 from ..db import engine
-from ..models.newsevents import NewsEvents
+from ..models.newsevents import NewsEvents, StatusMessage
 from ..models.zmsobjects import ZMSSite
 from ..schemas import newsevents as schema
 from ..helpers import Lang, get_attr_by_lang, strip_cmstest, local_timezone
@@ -14,7 +14,8 @@ router = APIRouter(
     tags=["UniBE News and Events"])
 
 
-@router.get("/news", summary='News', response_model=list[schema.News])
+@router.get("/news", summary="News", response_model=list[schema.News],
+            description='News from portal and faculties of unibe.ch')
 async def get_news(
         lang: Lang = Lang.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
@@ -82,7 +83,8 @@ async def get_news(
                                                  en=res.ZMSSite.title_en,
                                                  fr=res.ZMSSite.title_fr),
                 'sectionDomain': f'https://{strip_cmstest(res.ZMSSite.domain)}',
-                'sectionType': res.ZMSSite.type,
+                'sectionType': '/unibiblio' in res.ZMSSite.path and
+                               'Library' or res.ZMSSite.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
                 'dataSource': res.NewsEvents.path,
                 'dataLevel': res.NewsEvents.level,
                 'dataUuid': res.NewsEvents.uuid,
@@ -91,7 +93,8 @@ async def get_news(
     return rtn
 
 
-@router.get("/events", summary='Events', response_model=list[schema.Event])
+@router.get("/events", summary='Events', response_model=list[schema.Event],
+            description='Events from portal and faculties of unibe.ch, agenda.unibe.ch and agenda.ub.unibe.ch')
 async def get_events(
         lang: Lang = Lang.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
@@ -184,7 +187,8 @@ async def get_events(
     return rtn
 
 
-@router.get("/sections", summary='Sections', response_model=list[schema.Section])
+@router.get("/sections", summary='Sections', response_model=list[schema.Section],
+            description='Sections to filter News and Events')
 async def get_sections(
         lang: Lang = Lang.de,
         offset: int = 0,
@@ -228,6 +232,48 @@ async def get_sections(
                                'Library' or res.ZMSSite.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
                 'sectionPath': res.ZMSSite.path,
                 'sectionUuid': res.ZMSSite.uuid,
+            }))
+
+    return rtn
+
+
+@router.get("/statusmessages", summary='IT Status messages', response_model=list[schema.StatusMessage],
+            description='Status messages of IT Services')
+async def get_statusmessages(
+        lang: Lang = Lang.de,
+        start: datetime | None = Query(None, description='Filter by start after (UTC)'),
+        end: datetime | None = Query(None, description='Filter by end before (UTC)'),
+        offset: int = 0,
+        limit: int = 20):
+
+    rtn = []
+
+    with Session(engine) as session:
+
+        statement = [select(StatusMessage).
+                     where(start is None and True or (StatusMessage.begin > start)).
+                     where(end is None and True or (StatusMessage.end < end)).
+                     where(or_(StatusMessage.end > datetime.utcnow() - timedelta(days=1),  # show resolved by yesterday
+                               StatusMessage.end == datetime.fromisoformat('1970-01-01T00:00:00'))).  # show open issues
+                     order_by(StatusMessage.begin).
+                     order_by(StatusMessage.end.desc()).
+                     offset(offset).limit(limit)]
+
+        results = session.exec(statement[0])
+
+        for res in results.all():
+            rtn.append(schema.StatusMessage.parse_obj({
+                'statusTitle': res.subject,
+                'statusStart': local_timezone(res.begin),
+                'statusEnd': res.end > local_timezone(datetime.fromisoformat('1970-01-01T00:00:00+00:00'))
+                             and local_timezone(res.end) or None,
+                'statusInfos': f'{res.description}\n\n{res.info}',
+                'statusTopics': res.service,
+                'sectionDomain': 'http://id.unibe.ch/statusmeldungen',
+                'sectionTitle': 'IT Services',
+                'sectionType': res.type,
+                'dataSource': 'https://api.epc.unibe.ch/announcements/api/ServiceAnnouncements',
+                'dataLevel': 1,
             }))
 
     return rtn

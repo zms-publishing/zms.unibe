@@ -4,6 +4,7 @@ from devtools import debug
 
 from ..models.zmsobjects import ZMSSite
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
+from ..models.newsevents import StatusMessage
 from ..models.mobileapp import MobileApp
 from ..models.newsbox import Newsbox
 from .agendas import _fetch_agenda_data, _fetch_status_messages
@@ -42,7 +43,8 @@ def update_tables(models, *args):
 
             if model in (AgendaPortal, AgendaLibraryDE, AgendaLibraryEN):
                 _fetch_agenda_data(session, sqlengine)
-                _store_newsevents_data(session, sqlengine)
+            elif model == StatusMessage:
+                _fetch_status_messages(session, sqlengine)
             else:
                 if not inspect(sqlengine).has_table(model.__table__):
                     model.__table__.create(sqlengine)
@@ -91,3 +93,6 @@ def update_tables(models, *args):
             ts = t1 - t0
             print('--------------------------------------------------------------------------')
             print(model.__name__, ts / 60 > 1 and f': {ts / 60} min' or f': {ts} sec')
+
+        # refresh intermediate NewsEvents table consolidating data sources for queries
+        _store_newsevents_data(session, sqlengine)

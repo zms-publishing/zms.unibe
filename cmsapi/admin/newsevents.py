@@ -1,4 +1,4 @@
-from sqlmodel import select, or_
+from sqlmodel import select, or_, inspect
 from uuid import UUID, uuid4
 from datetime import datetime
 
@@ -10,7 +10,8 @@ from ..models.newsbox import Newsbox
 
 def _store_newsevents_data(session, sqlengine):  # fill intermediate table consolidating data sources for queries
 
-    NewsEvents.__table__.drop(sqlengine)  # TODO: separate processing of DATA SOURCES 1-5 to avoid multiple executions
+    if inspect(sqlengine).has_table(NewsEvents.__table__):
+        NewsEvents.__table__.drop(sqlengine)
     NewsEvents.__table__.create(sqlengine)
 
     # DATA SOURCE 1 ######################
@@ -136,8 +137,8 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
                            TeaserElement2022.active_start_en <= datetime.utcnow(),
                            TeaserElement2022.active_start_fr <= datetime.utcnow())).
                  where(or_(TeaserElement2022.active_end_de <= datetime.utcnow(),
-                           TeaserElement2022.active_end_de <= datetime.utcnow(),
-                           TeaserElement2022.active_end_de <= datetime.utcnow()))]
+                           TeaserElement2022.active_end_en <= datetime.utcnow(),
+                           TeaserElement2022.active_end_fr <= datetime.utcnow()))]
 
     results = session.exec(statement[0])
 
@@ -198,8 +199,8 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
                            Newsbox.active_start_en <= datetime.utcnow(),
                            Newsbox.active_start_fr <= datetime.utcnow())).
                  where(or_(Newsbox.active_end_de <= datetime.utcnow(),
-                           Newsbox.active_end_de <= datetime.utcnow(),
-                           Newsbox.active_end_de <= datetime.utcnow()))]
+                           Newsbox.active_end_en <= datetime.utcnow(),
+                           Newsbox.active_end_fr <= datetime.utcnow()))]
 
     results = session.exec(statement[0])
 
