@@ -193,10 +193,15 @@ def get_datetime_props(cls):
 
 def get_attr_value(sql_attr, zms_attr, obj, cls):
 
-    if sql_attr.endswith('_en'):
+    if sql_attr.endswith('_de') and zms_attr.endswith('_ger'):
+        lang = 'ger'
+        zms_attr = zms_attr[:-4]
+    elif sql_attr.endswith('_en') and zms_attr.endswith('_eng'):
         lang = 'eng'
-    elif sql_attr.endswith('_fr'):
+        zms_attr = zms_attr[:-4]
+    elif sql_attr.endswith('_fr') and zms_attr.endswith('_fra'):
         lang = 'fra'
+        zms_attr = zms_attr[:-4]
     else:
         lang = 'ger'
 
@@ -213,6 +218,12 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
             return obj._uid
 
     if zms_attr == 'obj.getParentNode().attr("title")':
+        if sql_attr.endswith('_de'):
+            lang = 'ger'
+        if sql_attr.endswith('_en'):
+            lang = 'eng'
+        if sql_attr.endswith('_fr'):
+            lang = 'fra'
         if obj.getLevel() > 0:
             return obj.getParentNode().attr("title", REQUEST={'lang': lang})
         else:
@@ -229,6 +240,9 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
 
     if zms_attr == "obj.getConfProperty('UniBE.Server')":
         return obj.getConfProperty('UniBE.Server')
+
+    if zms_attr == "obj.getConfProperty('UniBE.Alias')":
+        return obj.getConfProperty('UniBE.Alias')
 
     value = obj.attr(zms_attr, REQUEST={'lang': lang})
 

@@ -45,6 +45,7 @@ async def get_content_sites(
                 'siteType': res.type,
                 'siteShort': get_subdomain(res.domain),
                 'siteTitle': get_attr_by_lang(lang, de=res.title_de, en=res.title_en, fr=res.title_fr),
+                'siteAlias': ', '.join(strip_cmstest(res.alias).strip().split()),
                 'siteDomain': strip_cmstest(res.domain),
             }))
         return rtn

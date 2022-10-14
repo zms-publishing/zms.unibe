@@ -2,10 +2,6 @@ cmsapi_tags = [  # see https://fastapi.tiangolo.com/tutorial/metadata/#metadata-
     {
         "name": "UniBE News and Events",
         "description": "Retrieve an overview of announcements",
-        "externalDocs": {
-            "description": "see website",
-            "url": "https://www.unibe.ch",
-        },
     },
     {
         "name": "UniBE Mobile App",

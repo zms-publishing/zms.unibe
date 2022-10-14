@@ -7,7 +7,7 @@ from .routers import newsevents, zmsobjects, mobileapp
 
 app = FastAPI(title="CMSAPI v3 PoC",
               version="3.0.0dev",
-              description="REST-API to retrieve and consolidate data stored in Content and Event Management Systems",
+              description="Python-based REST-API to retrieve, analyze and consolidate data",
               openapi_tags=cmsapi_tags,
               swagger_ui_parameters={"defaultModelsExpandDepth": -1})
 

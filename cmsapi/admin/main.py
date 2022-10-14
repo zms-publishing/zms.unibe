@@ -9,6 +9,7 @@ from ..models.newsbox import Newsbox
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.mobileapp import MobileApp
 from ..models.newsevents import StatusMessage
+from ..models.uniaktuell import UniaktuellArticle
 
 # alias cmsadm='cd ~/Workspace/Projects/CMS-Integrations/unibe-cmsapi-v3/; venv/bin/python -m cmsapi.admin.main'
 
@@ -22,6 +23,7 @@ MODELS_AVAILABLE = {
     'AgendaPortal': AgendaPortal,
     'AgendaLibraryDE': AgendaLibraryDE,
     'AgendaLibraryEN': AgendaLibraryEN,
+    'UniaktuellArticle': UniaktuellArticle,
 }
 
 
@@ -30,7 +32,7 @@ def main(command: str = typer.Argument(None, help='init | update'),
          metaobj: list[str] = typer.Option([], help=' | '.join(MODELS_AVAILABLE.keys())+' | all')):
 
     _all = False  # drop and create all tables
-    models = [ZMSSite]  # refresh data of basic relation - w/o reflecting model change of ZMSSite
+    models = []  # refresh data of basic relation - w/o reflecting model change of ZMSSite
     for obj in metaobj:
         if obj == 'all':
             _all = True  # refresh data of all relations - w/ reflecting model change of ZMSSite
@@ -48,7 +50,7 @@ def main(command: str = typer.Argument(None, help='init | update'),
     if feature == 'MobileApp':
         models = (MobileApp, )
 
-    if feature == 'StatusMessage':
+    if feature == 'StatusMessages':
         models = (StatusMessage, )
 
     t0 = time.time()

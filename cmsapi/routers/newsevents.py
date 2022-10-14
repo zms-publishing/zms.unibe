@@ -15,7 +15,9 @@ router = APIRouter(
 
 
 @router.get("/news", summary="News", response_model=list[schema.News],
-            description='News from portal and faculties of unibe.ch')
+            description='News from portal at <a href="https://www.unibe.ch" target="_blank">unibe.ch</a> '
+                        'and faculties at <a href="https://www.unibe.ch/fakultaeteninstitute" '
+                        'target="_blank">unibe.ch/fakultaeteninstitute</a>')
 async def get_news(
         lang: Lang = Lang.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
@@ -94,7 +96,11 @@ async def get_news(
 
 
 @router.get("/events", summary='Events', response_model=list[schema.Event],
-            description='Events from portal and faculties of unibe.ch, agenda.unibe.ch and agenda.ub.unibe.ch')
+            description='Events from portal at <a href="https://www.unibe.ch" target="_blank">unibe.ch</a> '
+                        'and faculties at <a href="https://www.unibe.ch/fakultaeteninstitute" '
+                        'target="_blank">unibe.ch/fakultaeteninstitute</a> as well as '
+                        '<a href="https://agenda.unibe.ch" target="_blank">agenda.unibe.ch</a> and '
+                        '<a href="https://agenda.ub.unibe.ch" target="_blank">agenda.ub.unibe.ch</a>')
 async def get_events(
         lang: Lang = Lang.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
@@ -238,7 +244,8 @@ async def get_sections(
 
 
 @router.get("/statusmessages", summary='IT Status messages', response_model=list[schema.StatusMessage],
-            description='Status messages of IT Services')
+            description='Status messages of IT Services at '
+                        '<a href="http://id.unibe.ch/statusmeldungen" target="_blank">id.unibe.ch/statusmeldungen</a>')
 async def get_statusmessages(
         lang: Lang = Lang.de,
         start: datetime | None = Query(None, description='Filter by start after (UTC)'),

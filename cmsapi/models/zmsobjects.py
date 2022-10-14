@@ -30,21 +30,21 @@ class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inheri
             # sql_attr          # zms_attr
             'uuid':             'obj._uid',
             'site_uuid':        'obj.getDocumentElement()._uid',
-            'active_de':        'active',
-            'active_en':        'active',
-            'active_fr':        'active',
-            'active_start_de':  'attr_active_start',
-            'active_start_en':  'attr_active_start',
-            'active_start_fr':  'attr_active_start',
-            'active_end_de':    'attr_active_end',
-            'active_end_en':    'attr_active_end',
-            'active_end_fr':    'attr_active_end',
-            'created_dt_de':    'created_dt',
-            'created_dt_en':    'created_dt',
-            'created_dt_fr':    'created_dt',
-            'lastmod_dt_de':    'change_dt',
-            'lastmod_dt_en':    'change_dt',
-            'lastmod_dt_fr':    'change_dt',
+            'active_de':        'active_ger',
+            'active_en':        'active_eng',
+            'active_fr':        'active_fra',
+            'active_start_de':  'attr_active_start_ger',
+            'active_start_en':  'attr_active_start_eng',
+            'active_start_fr':  'attr_active_start_fra',
+            'active_end_de':    'attr_active_end_ger',
+            'active_end_en':    'attr_active_end_eng',
+            'active_end_fr':    'attr_active_end_fra',
+            'created_dt_de':    'created_dt_ger',
+            'created_dt_en':    'created_dt_eng',
+            'created_dt_fr':    'created_dt_fra',
+            'lastmod_dt_de':    'change_dt_ger',
+            'lastmod_dt_en':    'change_dt_eng',
+            'lastmod_dt_fr':    'change_dt_fra',
             'level':            'obj.getLevel()',
             'path':             'obj.getPath()',
         }
@@ -60,6 +60,7 @@ class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?meta
     title_en: str
     title_fr: str
     domain: str | None
+    alias: str | None
     path: str
     type: str
 
@@ -71,10 +72,11 @@ class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?meta
     def get_attr_mappings():
         return {
             # sql_attr          # zms_attr
-            'title_de':         'title',
-            'title_en':         'title',
-            'title_fr':         'title',
+            'title_de':         'title_ger',
+            'title_en':         'title_eng',
+            'title_fr':         'title_fra',
             'domain':           "obj.getConfProperty('UniBE.Server')",
+            'alias':            "obj.getConfProperty('UniBE.Alias')",
             'path':             "obj.getPath()",
             'type':             'attr_dc_type',
         }
@@ -95,9 +97,9 @@ class ZMSFolder(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/mode
     def get_attr_mappings():
         return {
             # sql_attr          # zms_attr
-            'title_de':         'title',
-            'title_en':         'title',
-            'title_fr':         'title',
+            'title_de':         'title_ger',
+            'title_en':         'title_eng',
+            'title_fr':         'title_fra',
             'type':             'attr_dc_type',
         }
 
@@ -117,9 +119,9 @@ class ZMSDocument(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/mo
     def get_attr_mappings():
         return {
             # sql_attr          # zms_attr
-            'title_de':         'title',
-            'title_en':         'title',
-            'title_fr':         'title',
+            'title_de':         'title_ger',
+            'title_en':         'title_eng',
+            'title_fr':         'title_fra',
             'type':             'attr_dc_type',
         }
 
@@ -138,9 +140,9 @@ class ZMSFormulator(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/
     def get_attr_mappings():
         return {
             # sql_attr          # zms_attr
-            'title_de':         'title',
-            'title_en':         'title',
-            'title_fr':         'title',
+            'title_de':         'title_ger',
+            'title_en':         'title_eng',
+            'title_fr':         'title_fra',
         }
 
 

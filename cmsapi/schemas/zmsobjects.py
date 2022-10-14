@@ -7,7 +7,8 @@ class ZMSSite(BaseModel):  # Response schema
     siteType: str | None
     siteTitle: str
     siteShort: str
-    siteDomain: str
+    siteAlias: str | None
+    siteDomain: str | None
     siteUuid: UUID
 
 

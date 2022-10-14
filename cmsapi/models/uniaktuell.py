@@ -21,10 +21,10 @@ class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
     def get_attr_mappings():
         return {
             # sql_attr          # zms_attr
-            'title_de':         'title',
-            'title_en':         'title',
-            'title_fr':         'title',
-            'publish_dt_de':    'publishdate',
-            'publish_dt_en':    'publishdate',
-            'publish_dt_fr':    'publishdate',
+            'title_de':         'title_ger',
+            'title_en':         'title_eng',
+            'title_fr':         'title_fra',
+            'publish_dt_de':    'publishdate_ger',
+            'publish_dt_en':    'publishdate_eng',
+            'publish_dt_fr':    'publishdate_fra',
         }
