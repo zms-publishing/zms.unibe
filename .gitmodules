@@ -1,6 +1,6 @@
 [submodule "zms-headless"]
 	path = zms-headless
-	url = ssh://git@github.unibe.ch:idasm-unibe-ch/zms-core.git
+	url = git@github.unibe.ch:idasm-unibe-ch/zms-core.git
 	branch = zms-headless
 [submodule "frontend"]
 	path = frontend
