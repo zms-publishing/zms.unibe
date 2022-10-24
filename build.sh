@@ -3,7 +3,7 @@
 cd $(dirname $0)
 BASEDIR=$(pwd)
 
-IMAGE_API="ep-devops.id.unibe.ch:5000/id/unibe-cms-api-v3"
+IMAGE_API="ep-devops.id.unibe.ch:5000/id/unibe-cmsapi-v3"
 
 cd ${BASEDIR}
 

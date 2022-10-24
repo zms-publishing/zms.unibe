@@ -11,7 +11,7 @@ networks:
 services:
 
   api:
-    image: ep-devops.id.unibe.ch:5000/id/unibe-cms-api-v3:local
+    image: ep-devops.id.unibe.ch:5000/id/unibe-cmsapi-v3:local
     deploy:
       replicas: 1
       restart_policy:
@@ -23,7 +23,7 @@ services:
     ports:
       - 5553:5003
     volumes:
-      - /Users/cm19b120/Workspace/Projects/ZMS-Data/logs:/app/log
+      - /Users/cm19b120/PyCharm/ENV/logs:/app/log
     environment:
       - PYTHONUNBUFFERED=true
       - ZODB_STORAGE=zeo:8000?storage=main
@@ -45,7 +45,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - /Users/cm19b120/Workspace/Projects/ZMS-Data/postgresql:/var/lib/postgresql/data
+      - /Users/cm19b120/PyCharm/ENV/postgresql:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=mysecretpassword
     networks:

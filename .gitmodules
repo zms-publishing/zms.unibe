@@ -1,7 +1,8 @@
 [submodule "zms-headless"]
 	path = zms-headless
-	url = git@github.unibe.ch:idasm-unibe-ch/zms-core.git
+    # url = git@github.unibe.ch:idasm-unibe-ch/zms-core.git
+	url = ssh://git@id-code.unibe.ch:7999/idcms/zms-core.git
 	branch = zms-headless
-[submodule "frontend"]
-	path = frontend
-	url = git@github.unibe.ch:idasm-unibe-ch/unibe-cms-frontend.git
+# [submodule "frontend"]
+# 	path = frontend
+# 	url = git@github.unibe.ch:idasm-unibe-ch/unibe-cms-frontend.git

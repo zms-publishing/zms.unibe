@@ -1,4 +1,4 @@
-FROM ep-devops.id.unibe.ch:5000/id/unibe-cms-base:python3.10.5-zope5.5.2
+FROM ep-devops.id.unibe.ch:5000/id/unibe-cmsbase:python3.10.4-zope5.5.1
 
 ENV ZODB_STORAGE="zeo:8000?storage=main" \
     ACCESS_LOG_DIR="/app/log" \
@@ -11,8 +11,8 @@ COPY constraints-fastapi.txt $APPHOME/constraints-fastapi.txt
 RUN $APPHOME/bin/pip install \
     -r $APPHOME/requirements-fastapi.txt \
     -c $APPHOME/constraints-fastapi.txt \
-    -c https://zopefoundation.github.io/Zope/releases/5.5.2/constraints.txt
+    -c https://zopefoundation.github.io/Zope/releases/5.5.1/constraints.txt
 
-COPY frontend/ZMSModels $APPHOME/frontend/ZMSModels
+# COPY frontend/ZMSModels $APPHOME/frontend/ZMSModels
 COPY cmsapi $APPHOME/cmsapi
 COPY init_scripts $ENTRYPOINT_SCRIPTS

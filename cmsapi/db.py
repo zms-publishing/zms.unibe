@@ -1,10 +1,15 @@
 from sqlmodel import create_engine
 import os
 
-SQLDB_STORAGE = 'postgresql://' + os.getenv('SQLDB_STORAGE', 'postgres:mysecretpassword@127.0.0.1:5432/unibe_cmsapi')
-# SQLDB_STORAGE = "sqlite:///../venv/unibe-cmsapi.db"
+SQLDB_STORAGE = os.getenv('SQLDB_STORAGE', 'postgresql://127.0.0.1:5432/unibe_cmsapi')
 
-engine = create_engine(SQLDB_STORAGE,
+try:
+    with open('/run/secrets/sqldb.credentials') as file:  # via Docker Swarm secrets config
+        credentials = file.read().strip()
+except FileNotFoundError:
+    credentials = 'postgres:mysecretpassword'
+
+engine = create_engine(SQLDB_STORAGE.replace('://', f'://{credentials}@'),
                        # connect_args={"check_same_thread": False},  # for SQLite only
                        # echo=True
                        )
