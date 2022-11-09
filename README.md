@@ -1,8 +1,8 @@
 # UniBE CMSAPI
 
-The implementation of a RESTful API for UniBE CMS relies on the web application (micro)framework [Flask](https://flask.palletsprojects.com). This should enable a more lightweight Python development mode alongside the historically grown Zope stack.
+The implementation of a RESTful API for UniBE CMS relies on the ~~web application (micro)framework Flask~~ [FastAPI](https://fastapi.tiangolo.com) Library. This should enable a more lightweight Python development mode alongside the historically grown Zope stack.
 
-Additionally CMSAPI makes use of [Flasgger](https://github.com/flasgger/flasgger) to generate the documentation and is served by [Gunicorn](https://gunicorn.org) in testing and production deployments.
+Additionally CMSAPI makes use of ~~Flasgger to generate the documentation~~ [SQLModel](https://sqlmodel.tiangolo.com) to implement the object relational mapping and is served by [Uvicorn](https://www.uvicorn.org) in testing and production deployments.
 
 ## Codebase
 
