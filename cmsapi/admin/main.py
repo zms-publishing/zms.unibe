@@ -11,8 +11,8 @@ from ..models.mobileapp import MobileApp
 from ..models.newsevents import StatusMessage
 from ..models.uniaktuell import UniaktuellArticle
 
-# alias cmsadm='cd ~/Workspace/Projects/CMS-Integrations/unibe-cmsapi-v3/; venv/bin/python -m cmsapi.admin.main'
-
+# alias cmsadm='cd ~/PyCharm/CMSAPI/unibe-cmsapi-v3/; venv/bin/python -m cmsapi.admin.main'
+# alias cmsadm='/app/bin/python -m cmsapi.admin.main'
 
 MODELS_AVAILABLE = {
     'ZMSSite': ZMSSite,
@@ -28,7 +28,7 @@ MODELS_AVAILABLE = {
 
 
 def main(command: str = typer.Argument(None, help='init | update'),
-         feature: str = typer.Argument(None, help='NewsEvents | StatusMessage | MobileApp'),
+         feature: str = typer.Argument(None, help='NewsEvents | StatusMessages | MobileApp'),
          metaobj: list[str] = typer.Option([], help=' | '.join(MODELS_AVAILABLE.keys())+' | all')):
 
     _all = False  # drop and create all tables

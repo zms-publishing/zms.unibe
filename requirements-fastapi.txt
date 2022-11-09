@@ -3,7 +3,10 @@ SQLModel            # https://sqlmodel.tiangolo.com
 pydantic            # https://pydantic-docs.helpmanual.io
 
 requests            # https://requests.readthedocs.io
-psycopg2-binary     # TODO: https://www.psycopg.org/docs/install.html#psycopg-vs-psycopg-binary
+
+psycopg2            # https://www.psycopg.org/docs/install.html#psycopg-vs-psycopg-binary => libpq-dev required to build from source
+zodburi             # https://docs.pylonsproject.org/projects/zodburi/en/latest/
+
 uvicorn[standard]   # https://www.uvicorn.org
 
 typer[all]          # https://typer.tiangolo.com

@@ -26,8 +26,8 @@ services:
       - /Users/cm19b120/PyCharm/ENV/logs:/app/log
     environment:
       - PYTHONUNBUFFERED=true
-      - ZODB_STORAGE=zeo:8000?storage=main
-      - SQLDB_STORAGE=postgres:mysecretpassword@sql:5432/unibe_cmsapi
+      - ZODB_STORAGE=zeo://host.docker.internal:8000?storage=main
+      - SQLDB_STORAGE=postgresql://sql:5432/unibe_cmsapi
     networks:
       - worker
       - cms_network

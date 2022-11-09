@@ -4,6 +4,10 @@ ENV ZODB_STORAGE="zeo:8000?storage=main" \
     ACCESS_LOG_DIR="/app/log" \
     ERROR_LOG_DIR="/app/log"
 
+RUN apk update \
+ && apk --no-cache add \
+    libpq-dev
+
 COPY zms-headless $APPHOME/zms-headless
 COPY requirements-fastapi.txt $APPHOME/requirements-fastapi.txt
 COPY constraints-fastapi.txt $APPHOME/constraints-fastapi.txt
@@ -13,6 +17,7 @@ RUN $APPHOME/bin/pip install \
     -c $APPHOME/constraints-fastapi.txt \
     -c https://zopefoundation.github.io/Zope/releases/5.5.1/constraints.txt
 
+# TODO: reactivate for model inspection
 # COPY frontend/ZMSModels $APPHOME/frontend/ZMSModels
 COPY cmsapi $APPHOME/cmsapi
 COPY init_scripts $ENTRYPOINT_SCRIPTS
