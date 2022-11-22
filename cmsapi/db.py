@@ -10,6 +10,7 @@ except FileNotFoundError:
     credentials = 'postgres:mysecretpassword'
 
 engine = create_engine(SQLDB_STORAGE.replace('://', f'://{credentials}@'),
+                       pool_pre_ping=True,
                        # connect_args={"check_same_thread": False},  # for SQLite only
                        # echo=True
                        )

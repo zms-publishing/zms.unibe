@@ -21,6 +21,7 @@ def connect_db():
     zmsindex = root['Application']['unibe']['zcatalog_index']
 
     sqlengine = create_engine(SQLDB_STORAGE.replace('://', f'://{credentials}@'),
+                              pool_pre_ping=True,
                               # connect_args={"check_same_thread": False},  # for SQLite only
                               # echo=True
                               )
