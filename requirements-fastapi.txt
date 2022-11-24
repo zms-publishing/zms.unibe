@@ -12,4 +12,6 @@ uvicorn[standard]   # https://www.uvicorn.org
 typer[all]          # https://typer.tiangolo.com
 devtools[pygments]  # https://python-devtools.helpmanual.io/usage/#usage-without-import
 
+xmltodict           # https://github.com/martinblech/xmltodict
+
 file:///app/zms-headless

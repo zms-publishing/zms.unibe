@@ -1,8 +1,20 @@
 from pydantic import BaseModel
 from uuid import UUID
+from datetime import datetime
+from ..schemas.newsevents import Section
 
 
-class UniaktuellArticle(BaseModel):  # TODO: Response schema
-    uuid: UUID
-    title: str
-    site: str | None
+class UniaktuellArticle(BaseModel):
+    title: str                      # title
+    date: datetime | None           # publish_dt
+
+    infos: str | None               # abstract
+    topics: str | None              # category + topics
+    image: str | None               # img
+    url: str | None                 # url
+
+    section: Section
+
+    dataSource: str                 # ZMS path
+    dataLevel: str                  # ZMS getlevel
+    dataUuid: UUID                  # ZMS uuid

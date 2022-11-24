@@ -4,6 +4,7 @@ import inspect
 import pytz
 import sys
 import os
+import xmltodict
 from enum import Enum
 from datetime import datetime
 from Products.zms import _blobfields
@@ -217,6 +218,16 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         else:
             return obj._uid
 
+    if zms_attr == 'obj.getHref2IndexHtmlInContext()':
+        if sql_attr.endswith('_de'):
+            lang = 'ger'
+        if sql_attr.endswith('_en'):
+            lang = 'eng'
+        if sql_attr.endswith('_fr'):
+            lang = 'fra'
+        return strip_cmstest(
+            obj.getHref2IndexHtmlInContext(None, REQUEST={'lang': lang, 'ZMS_CONTEXT_URL': True}))
+
     if zms_attr == 'obj.getParentNode().attr("title")':
         if sql_attr.endswith('_de'):
             lang = 'ger'
@@ -278,3 +289,25 @@ def get_attr_by_lang(lang, de, en, fr):
         return fr
     else:
         return None
+
+
+def get_uniaktuell_lang_str(lang, key):
+
+    from pathlib import Path
+    uniaktuell_langdict = xmltodict.parse(open(f'{Path(__file__).parent.absolute()}/models/uniaktuell.langdict.xml').read())
+
+    if lang == 'de':
+        lang = 'ger'
+    elif lang == 'en':
+        lang = 'eng'
+    elif lang == 'fr':
+        lang = 'fra'
+
+    for i in uniaktuell_langdict['list']['item']:
+        for j in i['dictionary']['item']:
+            if '#text' in j:
+                if j['#text'] == key:
+                    for x in i['dictionary']['item']:
+                        if '#text' in x and x['@key'] == lang:
+                            return x['#text']
+    return ''
