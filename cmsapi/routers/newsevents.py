@@ -53,40 +53,49 @@ async def get_news(
         results = session.exec(statement[0])
 
         for res in results.all():
-            if '/uniintern' in res.ZMSSite.path or '/uniintern' in res.NewsEvents.path:
+            if '/uniintern' in res.ZMSSite.path \
+                    or '/uniintern' in res.NewsEvents.path \
+                    or '/trashcan' in res.NewsEvents.path:
                 continue
+
+            section = schema.Section(
+                type='/unibiblio' in res.ZMSSite.path and
+                     'Library' or res.ZMSSite.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
+                title=get_attr_by_lang(lang,
+                                       de=res.ZMSSite.title_de,
+                                       en=res.ZMSSite.title_en,
+                                       fr=res.ZMSSite.title_fr),
+                domain=f'https://{strip_cmstest(res.ZMSSite.domain)}',
+                path=res.ZMSSite.path,
+                uuid=res.ZMSSite.uuid
+            )
+
             rtn.append(schema.News.parse_obj({
-                'newsDate': local_timezone(get_attr_by_lang(lang,
+                'date': local_timezone(get_attr_by_lang(lang,
                                                             de=res.NewsEvents.lastmod_dt_de,
                                                             en=res.NewsEvents.lastmod_dt_en,
                                                             fr=res.NewsEvents.lastmod_dt_fr)),
-                'newsTitle': get_attr_by_lang(lang,
+                'title': get_attr_by_lang(lang,
                                               de=res.NewsEvents.title_de,
                                               en=res.NewsEvents.title_en,
                                               fr=res.NewsEvents.title_fr),
-                'newsUrl': get_attr_by_lang(lang,
+                'url': get_attr_by_lang(lang,
                                             de=res.NewsEvents.url_de,
                                             en=res.NewsEvents.url_en,
                                             fr=res.NewsEvents.url_fr),
-                'newsInfos': get_attr_by_lang(lang,
+                'infos': get_attr_by_lang(lang,
                                               de=res.NewsEvents.infos_de,
                                               en=res.NewsEvents.infos_en,
                                               fr=res.NewsEvents.infos_fr),
-                'newsTopics': get_attr_by_lang(lang,
+                'topics': get_attr_by_lang(lang,
                                                de=res.NewsEvents.topics_de,
                                                en=res.NewsEvents.topics_en,
                                                fr=res.NewsEvents.topics_fr),
-                'newsImage': get_attr_by_lang(lang,
+                'image': get_attr_by_lang(lang,
                                               de=res.NewsEvents.image_de,
                                               en=res.NewsEvents.image_en,
                                               fr=res.NewsEvents.image_fr),
-                'sectionTitle': get_attr_by_lang(lang,
-                                                 de=res.ZMSSite.title_de,
-                                                 en=res.ZMSSite.title_en,
-                                                 fr=res.ZMSSite.title_fr),
-                'sectionDomain': f'https://{strip_cmstest(res.ZMSSite.domain)}',
-                'sectionType': '/unibiblio' in res.ZMSSite.path and
-                               'Library' or res.ZMSSite.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
+                'section': section,
                 'dataSource': res.NewsEvents.path,
                 'dataLevel': res.NewsEvents.level,
                 'dataUuid': res.NewsEvents.uuid,
@@ -135,56 +144,64 @@ async def get_events(
         results = session.exec(statement[0])
 
         for res in results.all():
-            if '/uniintern' in res.ZMSSite.path or '/uniintern' in res.NewsEvents.path:
+            if '/uniintern' in res.ZMSSite.path \
+                    or '/uniintern' in res.NewsEvents.path \
+                    or '/trashcan' in res.NewsEvents.path:
                 continue
-            section_domain = f'https://{strip_cmstest(res.ZMSSite.domain)}'
-            section_type = res.ZMSSite.type
+
+            section = schema.Section(
+                type='/unibiblio' in res.ZMSSite.path and
+                     'Library' or res.ZMSSite.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
+                title=get_attr_by_lang(lang,
+                                       de=res.ZMSSite.title_de,
+                                       en=res.ZMSSite.title_en,
+                                       fr=res.ZMSSite.title_fr),
+                domain=f'https://{strip_cmstest(res.ZMSSite.domain)}',
+                path=res.ZMSSite.path,
+                uuid=res.ZMSSite.uuid
+            )
+
             data_source = res.NewsEvents.path
             data_level = res.NewsEvents.level
             data_uuid = res.NewsEvents.uuid
 
             if res.NewsEvents.path == 'agenda_portal':
                 data_source = 'https://agenda.unibe.ch/agenda.json'
-                section_type = 'Agenda Portal'
+                section.type = 'Agenda Portal'
                 data_uuid = None
             elif res.NewsEvents.path == 'agenda_library':
                 data_source = f'https://agenda.ub.unibe.ch/{lang}/api/event'
-                section_type = 'Agenda Library'
+                section.type = 'Agenda Library'
                 data_uuid = None
 
             rtn.append(schema.Event.parse_obj({
-                'eventStart': local_timezone(res.NewsEvents.start_dt),
-                'eventEnd': local_timezone(res.NewsEvents.end_dt),
-                'eventTitle': get_attr_by_lang(lang,
+                'start': local_timezone(res.NewsEvents.start_dt),
+                'end': local_timezone(res.NewsEvents.end_dt),
+                'title': get_attr_by_lang(lang,
                                                de=res.NewsEvents.title_de,
                                                en=res.NewsEvents.title_en,
                                                fr=res.NewsEvents.title_fr),
-                'eventLocation': get_attr_by_lang(lang,
+                'location': get_attr_by_lang(lang,
                                                   de=res.NewsEvents.location_de,
                                                   en=res.NewsEvents.location_en,
                                                   fr=res.NewsEvents.location_fr),
-                'eventUrl': get_attr_by_lang(lang,
+                'url': get_attr_by_lang(lang,
                                              de=res.NewsEvents.url_de,
                                              en=res.NewsEvents.url_en,
                                              fr=res.NewsEvents.url_fr),
-                'eventInfos': get_attr_by_lang(lang,
+                'infos': get_attr_by_lang(lang,
                                                de=res.NewsEvents.infos_de,
                                                en=res.NewsEvents.infos_en,
                                                fr=res.NewsEvents.infos_fr),
-                'eventTopics': get_attr_by_lang(lang,
+                'topics': get_attr_by_lang(lang,
                                                 de=res.NewsEvents.topics_de,
                                                 en=res.NewsEvents.topics_en,
                                                 fr=res.NewsEvents.topics_fr),
-                'eventImage': get_attr_by_lang(lang,
+                'image': get_attr_by_lang(lang,
                                                de=res.NewsEvents.image_de,
                                                en=res.NewsEvents.image_en,
                                                fr=res.NewsEvents.image_fr),
-                'sectionTitle': get_attr_by_lang(lang,
-                                                 de=res.ZMSSite.title_de,
-                                                 en=res.ZMSSite.title_en,
-                                                 fr=res.ZMSSite.title_fr),
-                'sectionDomain': section_domain,
-                'sectionType': section_type,
+                'section': section,
                 'dataSource': data_source,
                 'dataLevel': data_level,
                 'dataUuid': data_uuid,
@@ -229,15 +246,15 @@ async def get_sections(
             if '/uniintern' in res.ZMSSite.path:
                 continue
             rtn.append(schema.Section.parse_obj({
-                'sectionTitle': get_attr_by_lang(lang,
-                                                 de=res.ZMSSite.title_de,
-                                                 en=res.ZMSSite.title_en,
-                                                 fr=res.ZMSSite.title_fr),
-                'sectionDomain': strip_cmstest(res.ZMSSite.domain),
-                'sectionType': '/unibiblio' in res.ZMSSite.path and
-                               'Library' or res.ZMSSite.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
-                'sectionPath': res.ZMSSite.path,
-                'sectionUuid': res.ZMSSite.uuid,
+                'title': get_attr_by_lang(lang,
+                                          de=res.ZMSSite.title_de,
+                                          en=res.ZMSSite.title_en,
+                                          fr=res.ZMSSite.title_fr),
+                'domain': strip_cmstest(res.ZMSSite.domain),
+                'type': '/unibiblio' in res.ZMSSite.path and
+                        'Library' or res.ZMSSite.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
+                'path': res.ZMSSite.path,
+                'uuid': res.ZMSSite.uuid,
             }))
 
     return rtn
@@ -269,18 +286,24 @@ async def get_statusmessages(
         results = session.exec(statement[0])
 
         for res in results.all():
+            section = schema.Section(
+                type=res.type,
+                title='IT Services',
+                domain='http://id.unibe.ch/statusmeldungen',
+                path=None,
+                uuid=None
+            )
             rtn.append(schema.StatusMessage.parse_obj({
-                'statusTitle': res.subject,
-                'statusStart': local_timezone(res.begin),
-                'statusEnd': res.end > local_timezone(datetime.fromisoformat('1970-01-01T00:00:00+00:00'))
+                'title': res.subject,
+                'start': local_timezone(res.begin),
+                'end': res.end > local_timezone(datetime.fromisoformat('1970-01-01T00:00:00+00:00'))
                              and local_timezone(res.end) or None,
-                'statusInfos': f'{res.description}\n\n{res.info}',
-                'statusTopics': res.service,
-                'sectionDomain': 'http://id.unibe.ch/statusmeldungen',
-                'sectionTitle': 'IT Services',
-                'sectionType': res.type,
+                'infos': f'{res.description}\n\n{res.info}',
+                'topics': res.service,
+                'section': section,
                 'dataSource': 'https://api.epc.unibe.ch/announcements/api/ServiceAnnouncements',
                 'dataLevel': 1,
+                'dataUuid': None
             }))
 
     return rtn
