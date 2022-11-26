@@ -12,6 +12,10 @@ if [ $# -eq 0 ] ; then
     docker build -t ${IMAGE_API}:local .
     echo '======================================================'
 
+    echo BUILDING DOCS
+    docker build -t squidfunk/mkdocs-material:local docs
+    echo '======================================================'
+
     exit 1
 fi
 

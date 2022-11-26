@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+
+# Project information
+site_name: CMSAPI v3 - Documentation
+#site_url: https://squidfunk.github.io/mkdocs-material/
+site_author: Christian Meier
+site_description: >-
+  Create a branded static site from a set of Markdown files to host the
+  documentation of your Open Source or commercial project
+
+# Repository
+#repo_name: zms-publishing/ZMS
+#repo_url: https://github.com/zms-publishing/ZMS
+
+# Copyright
+copyright: Copyright &copy; 2020-2022 University of Bern, IT Services Department, Applications & Service Management
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  features:
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - toc.integrate
+
+plugins:
+  - search
+  - git-revision-date-localized:
+        type: iso_datetime
+        #type: timeago | custom
+        custom_format: "%d. %B %Y"
+        timezone: Europe/Zurich
+        locale: en
+        fallback_to_build_date: false
+        enable_creation_date: true
+        exclude:
+            - index.md
+        enabled: true
+  - git-authors:
+        show_contribution: true
+        show_line_count: true
+        count_empty_lines: true
+        fallback_to_empty: false
+        exclude:
+            - index.md
+        enabled: true
+#  - git-committers
+
+#extra:
+#  version:
+#    provider: mike
+
+# Page tree
+nav:
+  - Home: index.md
+

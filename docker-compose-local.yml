@@ -51,6 +51,23 @@ services:
     networks:
       - cms_network
 
+  doc:
+    image: squidfunk/mkdocs-material:local
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+    ports:
+      - 7773:8000
+    volumes:
+      - /Users/cm19b120/PyCharm/CMSAPI/unibe-cmsapi-v3:/docs
+    networks:
+      - cms_network
+
 volumes:
   extensions:
     driver: local
