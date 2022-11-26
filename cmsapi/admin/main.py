@@ -10,6 +10,7 @@ from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.mobileapp import MobileApp
 from ..models.newsevents import StatusMessage
 from ..models.uniaktuell import UniaktuellArticle
+from ..models.mediareleases import MediaRelease
 
 # alias cmsadm='cd ~/PyCharm/CMSAPI/unibe-cmsapi-v3/; venv/bin/python -m cmsapi.admin.main'
 # alias cmsadm='/app/bin/python -m cmsapi.admin.main'
@@ -24,6 +25,7 @@ MODELS_AVAILABLE = {
     'AgendaLibraryDE': AgendaLibraryDE,
     'AgendaLibraryEN': AgendaLibraryEN,
     'UniaktuellArticle': UniaktuellArticle,
+    'MediaRelease': MediaRelease,
 }
 
 
@@ -45,7 +47,7 @@ def main(command: str = typer.Argument(None, help='init | update'),
             raise typer.Abort()
 
     if feature == 'NewsEvents':  # this Argument overrides any individually set Options via --metaobj
-        models = (ZMSSite, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN, TeaserElement2022, Newsbox)
+        models = (AgendaPortal, AgendaLibraryDE, AgendaLibraryEN, TeaserElement2022, Newsbox)
 
     if feature == 'MobileApp':
         models = (MobileApp, )

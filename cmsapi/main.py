@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 
 from .metadata import cmsapi_tags
-from .routers import newsevents, zmsobjects, mobileapp, uniaktuell
+from .routers import newsevents, zmsobjects, mobileapp, uniaktuell, mediareleases
 
 app = FastAPI(title="CMSAPI v3 PoC",
               version="3.0.0dev",
@@ -13,6 +13,7 @@ app = FastAPI(title="CMSAPI v3 PoC",
 
 app.include_router(newsevents.router)
 app.include_router(uniaktuell.router)
+app.include_router(mediareleases.router)
 app.include_router(mobileapp.router)
 app.include_router(zmsobjects.router)
 

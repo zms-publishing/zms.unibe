@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from sqlmodel import Session, select
+from datetime import datetime
 from ..db import engine
 
 from ..models import uniaktuell as model
@@ -17,10 +18,11 @@ router = APIRouter(
 @router.get("/uniaktuell", summary='Articles', response_model=list[schema.UniaktuellArticle],
             description='Articles from online magazine at <a href="https://www.uniaktuell.unibe.ch" '
                         'target="_blank">uniaktuell.unibe.ch</a>')
-async def get_articles(
+async def get_uniaktuell(
         lang: Lang = Lang.de,
+        date: datetime | None = Query(None, description='Filter by date after (UTC)'),
         offset: int = 0,
-        limit: int = 10):
+        limit: int = 20):
     with Session(engine) as session:
         statement = [select(model.UniaktuellArticle, ZMSSite).join(ZMSSite).
                      where(get_attr_by_lang(lang,
@@ -28,6 +30,7 @@ async def get_articles(
                                             en=model.UniaktuellArticle.active_en,
                                             fr=model.UniaktuellArticle.active_fr)).
                      where(ZMSSite.path.like('%uni%aktuell%')).
+                     where(date is None and True or (model.UniaktuellArticle.publish_dt_de > date)).
                      order_by(get_attr_by_lang(lang,
                                                de=model.UniaktuellArticle.publish_dt_de,
                                                en=model.UniaktuellArticle.publish_dt_en,

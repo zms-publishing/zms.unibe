@@ -7,6 +7,8 @@ from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.newsevents import StatusMessage
 from ..models.mobileapp import MobileApp
 from ..models.newsbox import Newsbox
+from ..models.uniaktuell import UniaktuellArticle
+from ..models.mediareleases import MediaRelease
 from .agendas import _fetch_agenda_data, _fetch_status_messages
 from .newsevents import _store_newsevents_data
 from .zmsobjects import _iterate_content_objects
@@ -60,6 +62,17 @@ def update_tables(models, *args):
                     query += zmsindex({'path': '/unibe/portal/fak_historisch/content', 'meta_id': 'newsbox'})
                     query += zmsindex({'path': '/unibe/portal/fak_humanwis/content', 'meta_id': 'newsbox'})
                     query += zmsindex({'path': '/unibe/portal/fak_naturwis/content', 'meta_id': 'newsbox'})
+                elif model == UniaktuellArticle:
+                    # TODO: switch to uni_aktuell
+                    query = zmsindex({'path': '/unibe/portal/uniaktuell/content/e1162347',  # 2022
+                                      'meta_id': 'UniaktuellArticle'})
+                    query += zmsindex({'path': '/unibe/portal/uniaktuell/content/e1036084',  # 2021
+                                       'meta_id': 'UniaktuellArticle'})
+                elif model == MediaRelease:
+                    query = zmsindex({'path': '/unibe/portal/content/e796/e803/e59463/e805/e1160710/e1162114',  # 2022
+                                      'meta_id': 'media_news'})
+                    query += zmsindex({'path': '/unibe/portal/content/e796/e803/e59463/e805/e1027714/e1029489',  # 2021
+                                       'meta_id': 'media_news'})
                 else:
                     query = zmsindex({'meta_id': model.get_zms_metaid()})  # TODO: optimize retrieval for 1000+ objects
 
