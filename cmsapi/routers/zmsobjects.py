@@ -8,7 +8,8 @@ from ..helpers import Lang, MetaObj, AttrType, get_zms_model, get_attr_by_lang, 
 
 router = APIRouter(
     prefix="/v3/zms",
-    tags=["ZMS Objects"]
+    tags=["ZMS Objects"],
+    include_in_schema=False
 )
 
 

@@ -11,7 +11,7 @@ from ..helpers import Lang, get_attr_by_lang, strip_cmstest, local_timezone
 
 router = APIRouter(
     prefix="/v3",
-    tags=["UniBE News and Events"])
+    tags=["UniBE News, Events and Announcements"])
 
 
 @router.get("/news", summary="News", response_model=schema.NewsResponse,

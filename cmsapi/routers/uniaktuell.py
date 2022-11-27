@@ -12,7 +12,7 @@ from ..models.zmsobjects import ZMSSite
 
 router = APIRouter(
     prefix="/v3",
-    tags=["UniBE News and Events"])
+    tags=["UniBE News, Events and Announcements"])
 
 
 @router.get("/uniaktuell", summary='Magazine articles', response_model=schema.UniaktuellArticleResponse,

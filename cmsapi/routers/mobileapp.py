@@ -10,7 +10,7 @@ from ..models.mobileapp import MobileApp
 
 router = APIRouter(
     prefix="/v3/app",
-    tags=["UniBE Mobile App"]
+    tags=["UniBE Mobile App Service Links"]
 )
 
 
