@@ -5,7 +5,7 @@ from datetime import datetime
 from ..models.newsevents import NewsEvents
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.teaserelement2022 import TeaserElement2022
-from ..models.newsbox import Newsbox
+from ..models.newsbox import NewsBox
 
 
 def _store_newsevents_data(session, sqlengine):  # fill intermediate table consolidating data sources for queries
@@ -193,14 +193,14 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
     session.commit()
 
     # DATA SOURCE 6 ######################
-    statement = [select(Newsbox).
-                 where(or_(Newsbox.active_de, Newsbox.active_en, Newsbox.active_fr)).
-                 where(or_(Newsbox.active_start_de <= datetime.utcnow(),
-                           Newsbox.active_start_en <= datetime.utcnow(),
-                           Newsbox.active_start_fr <= datetime.utcnow())).
-                 where(or_(Newsbox.active_end_de <= datetime.utcnow(),
-                           Newsbox.active_end_en <= datetime.utcnow(),
-                           Newsbox.active_end_fr <= datetime.utcnow()))]
+    statement = [select(NewsBox).
+                 where(or_(NewsBox.active_de, NewsBox.active_en, NewsBox.active_fr)).
+                 where(or_(NewsBox.active_start_de <= datetime.utcnow(),
+                           NewsBox.active_start_en <= datetime.utcnow(),
+                           NewsBox.active_start_fr <= datetime.utcnow())).
+                 where(or_(NewsBox.active_end_de <= datetime.utcnow(),
+                           NewsBox.active_end_en <= datetime.utcnow(),
+                           NewsBox.active_end_fr <= datetime.utcnow()))]
 
     results = session.exec(statement[0])
 

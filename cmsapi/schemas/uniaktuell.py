@@ -18,3 +18,10 @@ class UniaktuellArticle(BaseModel):
     dataSource: str                 # ZMS path
     dataLevel: str                  # ZMS getlevel
     dataUuid: UUID                  # ZMS uuid
+
+
+class UniaktuellArticleResponse(BaseModel):
+    offset: int
+    limit: int
+    total: int
+    data: list[UniaktuellArticle]

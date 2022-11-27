@@ -5,7 +5,7 @@ from .db import connect_db
 from .commands import init_tables, update_tables
 from ..models.zmsobjects import ZMSSite, ZMSDataTable, ZMSFormulator
 from ..models.teaserelement2022 import TeaserElement2022
-from ..models.newsbox import Newsbox
+from ..models.newsbox import NewsBox
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.mobileapp import MobileApp
 from ..models.newsevents import StatusMessage
@@ -17,13 +17,15 @@ from ..models.mediareleases import MediaRelease
 
 MODELS_AVAILABLE = {
     'ZMSSite': ZMSSite,
-    'ZMSDataTable': ZMSDataTable,
-    'ZMSFormulator': ZMSFormulator,
+    # 'ZMSDataTable': ZMSDataTable,
+    # 'ZMSFormulator': ZMSFormulator,
     'TeaserElement2022': TeaserElement2022,
-    'Newsbox': Newsbox,
+    'NewsBox': NewsBox,
     'AgendaPortal': AgendaPortal,
     'AgendaLibraryDE': AgendaLibraryDE,
     'AgendaLibraryEN': AgendaLibraryEN,
+    'MobileApp': MobileApp,
+    'StatusMessage': StatusMessage,
     'UniaktuellArticle': UniaktuellArticle,
     'MediaRelease': MediaRelease,
 }
@@ -34,26 +36,23 @@ def main(command: str = typer.Argument(None, help='init | update'),
          metaobj: list[str] = typer.Option([], help=' | '.join(MODELS_AVAILABLE.keys())+' | all')):
 
     _all = False  # drop and create all tables
-    models = []  # refresh data of basic relation - w/o reflecting model change of ZMSSite
     for obj in metaobj:
         if obj == 'all':
-            _all = True  # refresh data of all relations - w/ reflecting model change of ZMSSite
+            _all = True
             models = [x[1] for x in MODELS_AVAILABLE.items()]
-            models.append(MobileApp)
-            models.append(StatusMessage)
         elif obj in MODELS_AVAILABLE:
             models.append(MODELS_AVAILABLE[obj])
         else:
             raise typer.Abort()
 
     if feature == 'NewsEvents':  # this Argument overrides any individually set Options via --metaobj
-        models = (AgendaPortal, AgendaLibraryDE, AgendaLibraryEN, TeaserElement2022, Newsbox)
+        models = (ZMSSite, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN, TeaserElement2022, NewsBox)
+
+    if feature == 'Announcements':
+        models = (ZMSSite, StatusMessage, UniaktuellArticle, MediaRelease)
 
     if feature == 'MobileApp':
-        models = (MobileApp, )
-
-    if feature == 'StatusMessages':
-        models = (StatusMessage, )
+        models = (ZMSSite, MobileApp, )
 
     t0 = time.time()
 

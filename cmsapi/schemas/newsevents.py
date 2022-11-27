@@ -11,6 +11,13 @@ class Section(BaseModel):
     uuid: UUID | None               # ZMS siteuuid
 
 
+class SectionResponse(BaseModel):
+    offset: int
+    limit: int
+    total: int
+    data: list[Section]
+
+
                                     # TODO: move this mapping overview to README
 class News(BaseModel):              # TEASER ELEMENT 2022
     title: str                      # title
@@ -26,6 +33,13 @@ class News(BaseModel):              # TEASER ELEMENT 2022
     dataSource: str                 # ZMS path
     dataLevel: str                  # ZMS getlevel
     dataUuid: UUID                  # ZMS uuid
+
+
+class NewsResponse(BaseModel):
+    offset: int
+    limit: int
+    total: int
+    data: list[News]
 
 
 class Event(BaseModel):             # TEASER ELEMENT 2022   AGENDA PORTAL                   AGENDA LIBRARY
@@ -48,6 +62,13 @@ class Event(BaseModel):             # TEASER ELEMENT 2022   AGENDA PORTAL       
     dataUuid: UUID | None           # ZMS uuid              -                               -
 
 
+class EventResponse(BaseModel):
+    offset: int
+    limit: int
+    total: int
+    data: list[Event]
+
+
 class StatusMessage(BaseModel):
     title: str                      # "subject": "Aktualisierung des Telefoniesystems",
     start: datetime                 # "begin": "2021-02-23T05:00:00",
@@ -62,3 +83,10 @@ class StatusMessage(BaseModel):
     dataSource: str
     dataLevel: str
     dataUuid: UUID | None
+
+
+class StatusMessageResponse(BaseModel):
+    offset: int
+    limit: int
+    total: int
+    data: list[StatusMessage]

@@ -3,7 +3,7 @@ from uuid import UUID
 from datetime import datetime
 
 
-class NewsEvents(SQLModel, table=True):  # intermediate consolidation of Agendas, Newsbox, TeaserElement2022 for queries
+class NewsEvents(SQLModel, table=True):  # intermediate consolidation of Agendas, NewsBox, TeaserElement2022 for queries
     __table_args__ = {'extend_existing': True}
     uuid: UUID = Field(primary_key=True)
     site_uuid: UUID = Field(foreign_key="zmssite.uuid")

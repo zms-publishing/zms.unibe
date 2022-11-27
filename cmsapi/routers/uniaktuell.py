@@ -15,14 +15,17 @@ router = APIRouter(
     tags=["UniBE News and Events"])
 
 
-@router.get("/uniaktuell", summary='Articles', response_model=list[schema.UniaktuellArticle],
-            description='Articles from online magazine at <a href="https://www.uniaktuell.unibe.ch" '
+@router.get("/uniaktuell", summary='Magazine articles', response_model=schema.UniaktuellArticleResponse,
+            description='Magazine articles from <a href="https://www.uniaktuell.unibe.ch" '
                         'target="_blank">uniaktuell.unibe.ch</a>')
 async def get_uniaktuell(
         lang: Lang = Lang.de,
         date: datetime | None = Query(None, description='Filter by date after (UTC)'),
         offset: int = 0,
         limit: int = 20):
+
+    data = []
+
     with Session(engine) as session:
         statement = [select(model.UniaktuellArticle, ZMSSite).join(ZMSSite).
                      where(get_attr_by_lang(lang,
@@ -34,13 +37,14 @@ async def get_uniaktuell(
                      order_by(get_attr_by_lang(lang,
                                                de=model.UniaktuellArticle.publish_dt_de,
                                                en=model.UniaktuellArticle.publish_dt_en,
-                                               fr=model.UniaktuellArticle.publish_dt_fr).desc()).
-                     offset(offset).limit(limit)]
-        results = session.exec(statement[0])
-        rtn = []
+                                               fr=model.UniaktuellArticle.publish_dt_fr).desc())]
+
+        results = session.exec(statement[0].offset(offset).limit(limit))
+        total = session.exec(statement[0])
+
         for res in results.all():
             if '/uniintern' in res.ZMSSite.path \
-                    or '/uniintern' in res.UniaktuellArticle.path \
+                    or '/zms_schulung' in res.ZMSSite.path \
                     or '/trashcan' in res.UniaktuellArticle.path:
                 continue
 
@@ -65,7 +69,7 @@ async def get_uniaktuell(
                                                                      res.UniaktuellArticle.topics_en,
                                                                      res.UniaktuellArticle.topics_fr))]
 
-            rtn.append(schema.UniaktuellArticle.parse_obj({
+            data.append(schema.UniaktuellArticle.parse_obj({
                 'title': get_attr_by_lang(lang,
                                           res.UniaktuellArticle.title_de,
                                           res.UniaktuellArticle.title_en,
@@ -92,4 +96,10 @@ async def get_uniaktuell(
                 'dataLevel': res.UniaktuellArticle.level,
                 'dataUuid': res.UniaktuellArticle.uuid,
             }))
-        return rtn
+
+        return {
+            'offset': offset,
+            'limit': limit,
+            'total': len(total.all()),
+            'data': data
+        }

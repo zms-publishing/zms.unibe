@@ -16,7 +16,7 @@ router = APIRouter(
 
 def _retrieve_service(lang, offset, limit, uuid):
 
-    rtn = []
+    data = []
 
     if uuid == UUID('1c0a8927-bfb4-4215-a8fd-c41bba079d21'):  # handle files if location
         service_filter = MobileApp.meta_id == 'ZMSFile'
@@ -77,7 +77,7 @@ def _retrieve_service(lang, offset, limit, uuid):
                                                 en=res.parent_title_en,
                                                 fr=res.parent_title_fr).strip()
 
-            rtn.append(schema.Service.parse_obj({
+            data.append(schema.Service.parse_obj({
                 'serviceTitle': service_title,
                 'serviceLink': service_link,
                 'serviceInfo': service_info,
@@ -89,7 +89,7 @@ def _retrieve_service(lang, offset, limit, uuid):
                                                    fr=local_timezone(res.lastmod_dt_fr)),
             }))
 
-    return rtn
+    return data
 
 
 @router.get("/contact", summary='Contact', response_model=list[schema.Service])

@@ -4,7 +4,7 @@ from datetime import datetime
 from .zmsobjects import ZMSBase
 
 
-class Newsbox(ZMSBase, table=True):
+class NewsBox(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
     title_de: str
     title_en: str

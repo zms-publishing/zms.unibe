@@ -14,7 +14,7 @@ router = APIRouter(
     tags=["UniBE News and Events"])
 
 
-@router.get("/news", summary="News", response_model=list[schema.News],
+@router.get("/news", summary="News", response_model=schema.NewsResponse,
             description='News from portal at <a href="https://www.unibe.ch" target="_blank">unibe.ch</a> '
                         'and faculties at <a href="https://www.unibe.ch/fakultaeteninstitute" '
                         'target="_blank">unibe.ch/fakultaeteninstitute</a>')
@@ -25,7 +25,7 @@ async def get_news(
         offset: int = 0,
         limit: int = 20):
 
-    rtn = []
+    data = []
 
     with Session(engine) as session:
 
@@ -42,19 +42,19 @@ async def get_news(
                                ZMSSite.type == 'Uniaktuell',  # to fetch UB (Library) by deprecated type
                                ZMSSite.type == 'Microsite')).
                      where(or_(sections is None and True or (NewsEvents.site_uuid == section for section in sections))).
-                     order_by(NewsEvents.level).
+                     # order_by(NewsEvents.level).
                      order_by(get_attr_by_lang(lang,
                                                de=NewsEvents.lastmod_dt_de,
                                                en=NewsEvents.lastmod_dt_en,
                                                fr=NewsEvents.lastmod_dt_fr).desc()).
-                     order_by(ZMSSite.type).
-                     offset(offset).limit(limit)]
+                     order_by(ZMSSite.type)]
 
-        results = session.exec(statement[0])
+        results = session.exec(statement[0].offset(offset).limit(limit))
+        total = session.exec(statement[0])
 
         for res in results.all():
             if '/uniintern' in res.ZMSSite.path \
-                    or '/uniintern' in res.NewsEvents.path \
+                    or '/zms_schulung' in res.ZMSSite.path \
                     or '/trashcan' in res.NewsEvents.path:
                 continue
 
@@ -70,41 +70,46 @@ async def get_news(
                 uuid=res.ZMSSite.uuid
             )
 
-            rtn.append(schema.News.parse_obj({
+            data.append(schema.News.parse_obj({
                 'date': local_timezone(get_attr_by_lang(lang,
-                                                            de=res.NewsEvents.lastmod_dt_de,
-                                                            en=res.NewsEvents.lastmod_dt_en,
-                                                            fr=res.NewsEvents.lastmod_dt_fr)),
+                                                        de=res.NewsEvents.lastmod_dt_de,
+                                                        en=res.NewsEvents.lastmod_dt_en,
+                                                        fr=res.NewsEvents.lastmod_dt_fr)),
                 'title': get_attr_by_lang(lang,
-                                              de=res.NewsEvents.title_de,
-                                              en=res.NewsEvents.title_en,
-                                              fr=res.NewsEvents.title_fr),
+                                          de=res.NewsEvents.title_de,
+                                          en=res.NewsEvents.title_en,
+                                          fr=res.NewsEvents.title_fr),
                 'url': get_attr_by_lang(lang,
-                                            de=res.NewsEvents.url_de,
-                                            en=res.NewsEvents.url_en,
-                                            fr=res.NewsEvents.url_fr),
+                                        de=res.NewsEvents.url_de,
+                                        en=res.NewsEvents.url_en,
+                                        fr=res.NewsEvents.url_fr),
                 'infos': get_attr_by_lang(lang,
-                                              de=res.NewsEvents.infos_de,
-                                              en=res.NewsEvents.infos_en,
-                                              fr=res.NewsEvents.infos_fr),
+                                          de=res.NewsEvents.infos_de,
+                                          en=res.NewsEvents.infos_en,
+                                          fr=res.NewsEvents.infos_fr),
                 'topics': get_attr_by_lang(lang,
-                                               de=res.NewsEvents.topics_de,
-                                               en=res.NewsEvents.topics_en,
-                                               fr=res.NewsEvents.topics_fr),
+                                           de=res.NewsEvents.topics_de,
+                                           en=res.NewsEvents.topics_en,
+                                           fr=res.NewsEvents.topics_fr),
                 'image': get_attr_by_lang(lang,
-                                              de=res.NewsEvents.image_de,
-                                              en=res.NewsEvents.image_en,
-                                              fr=res.NewsEvents.image_fr),
+                                          de=res.NewsEvents.image_de,
+                                          en=res.NewsEvents.image_en,
+                                          fr=res.NewsEvents.image_fr),
                 'section': section,
                 'dataSource': res.NewsEvents.path,
                 'dataLevel': res.NewsEvents.level,
                 'dataUuid': res.NewsEvents.uuid,
             }))
 
-    return rtn
+        return {
+            'offset': offset,
+            'limit': limit,
+            'total': len(total.all()),
+            'data': data
+        }
 
 
-@router.get("/events", summary='Events', response_model=list[schema.Event],
+@router.get("/events", summary='Events', response_model=schema.EventResponse,
             description='Events from portal at <a href="https://www.unibe.ch" target="_blank">unibe.ch</a> '
                         'and faculties at <a href="https://www.unibe.ch/fakultaeteninstitute" '
                         'target="_blank">unibe.ch/fakultaeteninstitute</a> as well as '
@@ -118,7 +123,7 @@ async def get_events(
         offset: int = 0,
         limit: int = 20):
 
-    rtn = []
+    data = []
 
     with Session(engine) as session:
 
@@ -138,14 +143,14 @@ async def get_events(
                                ZMSSite.type == 'Microsite')).
                      where(or_(sections is None and True or (NewsEvents.site_uuid == section for section in sections))).
                      order_by(NewsEvents.start_dt).
-                     order_by(ZMSSite.type).
-                     offset(offset).limit(limit)]
+                     order_by(ZMSSite.type)]
 
-        results = session.exec(statement[0])
+        results = session.exec(statement[0].offset(offset).limit(limit))
+        total = session.exec(statement[0])
 
         for res in results.all():
             if '/uniintern' in res.ZMSSite.path \
-                    or '/uniintern' in res.NewsEvents.path \
+                    or '/zms_schulung' in res.ZMSSite.path \
                     or '/trashcan' in res.NewsEvents.path:
                 continue
 
@@ -174,50 +179,54 @@ async def get_events(
                 section.type = 'Agenda Library'
                 data_uuid = None
 
-            rtn.append(schema.Event.parse_obj({
+            data.append(schema.Event.parse_obj({
                 'start': local_timezone(res.NewsEvents.start_dt),
                 'end': local_timezone(res.NewsEvents.end_dt),
                 'title': get_attr_by_lang(lang,
-                                               de=res.NewsEvents.title_de,
-                                               en=res.NewsEvents.title_en,
-                                               fr=res.NewsEvents.title_fr),
+                                          de=res.NewsEvents.title_de,
+                                          en=res.NewsEvents.title_en,
+                                          fr=res.NewsEvents.title_fr),
                 'location': get_attr_by_lang(lang,
-                                                  de=res.NewsEvents.location_de,
-                                                  en=res.NewsEvents.location_en,
-                                                  fr=res.NewsEvents.location_fr),
+                                             de=res.NewsEvents.location_de,
+                                             en=res.NewsEvents.location_en,
+                                             fr=res.NewsEvents.location_fr),
                 'url': get_attr_by_lang(lang,
-                                             de=res.NewsEvents.url_de,
-                                             en=res.NewsEvents.url_en,
-                                             fr=res.NewsEvents.url_fr),
+                                        de=res.NewsEvents.url_de,
+                                        en=res.NewsEvents.url_en,
+                                        fr=res.NewsEvents.url_fr),
                 'infos': get_attr_by_lang(lang,
-                                               de=res.NewsEvents.infos_de,
-                                               en=res.NewsEvents.infos_en,
-                                               fr=res.NewsEvents.infos_fr),
+                                          de=res.NewsEvents.infos_de,
+                                          en=res.NewsEvents.infos_en,
+                                          fr=res.NewsEvents.infos_fr),
                 'topics': get_attr_by_lang(lang,
-                                                de=res.NewsEvents.topics_de,
-                                                en=res.NewsEvents.topics_en,
-                                                fr=res.NewsEvents.topics_fr),
+                                           de=res.NewsEvents.topics_de,
+                                           en=res.NewsEvents.topics_en,
+                                           fr=res.NewsEvents.topics_fr),
                 'image': get_attr_by_lang(lang,
-                                               de=res.NewsEvents.image_de,
-                                               en=res.NewsEvents.image_en,
-                                               fr=res.NewsEvents.image_fr),
+                                          de=res.NewsEvents.image_de,
+                                          en=res.NewsEvents.image_en,
+                                          fr=res.NewsEvents.image_fr),
                 'section': section,
                 'dataSource': data_source,
                 'dataLevel': data_level,
                 'dataUuid': data_uuid,
             }))
 
-    return rtn
+        return {
+            'offset': offset,
+            'limit': limit,
+            'total': len(total.all()),
+            'data': data
+        }
 
 
-@router.get("/sections", summary='Sections', response_model=list[schema.Section],
-            description='Sections to filter News and Events')
+@router.get("/sections", summary='Sections to filter News and Events', response_model=schema.SectionResponse)
 async def get_sections(
         lang: Lang = Lang.de,
         offset: int = 0,
         limit: int = 20):
 
-    rtn = []
+    data = []
 
     with Session(engine) as session:
 
@@ -237,15 +246,16 @@ async def get_sections(
                      order_by(get_attr_by_lang(lang,
                                                de=ZMSSite.title_de,
                                                en=ZMSSite.title_en,
-                                               fr=ZMSSite.title_fr)).
-                     offset(offset).limit(limit)]
+                                               fr=ZMSSite.title_fr))]
 
-        results = session.exec(statement[0])
+        results = session.exec(statement[0].offset(offset).limit(limit))
+        total = session.exec(statement[0])
 
         for res in results.all():
-            if '/uniintern' in res.ZMSSite.path:
+            if '/uniintern' in res.ZMSSite.path \
+                    or '/zms_schulung' in res.ZMSSite.path:
                 continue
-            rtn.append(schema.Section.parse_obj({
+            data.append(schema.Section.parse_obj({
                 'title': get_attr_by_lang(lang,
                                           de=res.ZMSSite.title_de,
                                           en=res.ZMSSite.title_en,
@@ -257,20 +267,24 @@ async def get_sections(
                 'uuid': res.ZMSSite.uuid,
             }))
 
-    return rtn
+        return {
+            'offset': offset,
+            'limit': limit,
+            'total': len(total.all()),
+            'data': data
+        }
 
 
-@router.get("/statusmessages", summary='IT Status messages', response_model=list[schema.StatusMessage],
-            description='Status messages of IT Services at '
+@router.get("/statusmessages", summary='IT Status messages', response_model=schema.StatusMessageResponse,
+            description='IT Status messages from '
                         '<a href="http://id.unibe.ch/statusmeldungen" target="_blank">id.unibe.ch/statusmeldungen</a>')
 async def get_statusmessages(
-        lang: Lang = Lang.de,
         start: datetime | None = Query(None, description='Filter by start after (UTC)'),
         end: datetime | None = Query(None, description='Filter by end before (UTC)'),
         offset: int = 0,
         limit: int = 20):
 
-    rtn = []
+    data = []
 
     with Session(engine) as session:
 
@@ -280,10 +294,10 @@ async def get_statusmessages(
                      where(or_(StatusMessage.end > datetime.utcnow() - timedelta(days=1),  # show resolved by yesterday
                                StatusMessage.end == datetime.fromisoformat('1970-01-01T00:00:00'))).  # show open issues
                      order_by(StatusMessage.begin).
-                     order_by(StatusMessage.end.desc()).
-                     offset(offset).limit(limit)]
+                     order_by(StatusMessage.end.desc())]
 
-        results = session.exec(statement[0])
+        results = session.exec(statement[0].offset(offset).limit(limit))
+        total = session.exec(statement[0])
 
         for res in results.all():
             section = schema.Section(
@@ -293,11 +307,11 @@ async def get_statusmessages(
                 path=None,
                 uuid=None
             )
-            rtn.append(schema.StatusMessage.parse_obj({
+            data.append(schema.StatusMessage.parse_obj({
                 'title': res.subject,
                 'start': local_timezone(res.begin),
                 'end': res.end > local_timezone(datetime.fromisoformat('1970-01-01T00:00:00+00:00'))
-                             and local_timezone(res.end) or None,
+                       and local_timezone(res.end) or None,
                 'infos': f'{res.description}\n\n{res.info}',
                 'topics': res.service,
                 'section': section,
@@ -306,4 +320,9 @@ async def get_statusmessages(
                 'dataUuid': None
             }))
 
-    return rtn
+        return {
+            'offset': offset,
+            'limit': limit,
+            'total': len(total.all()),
+            'data': data
+        }

@@ -6,16 +6,16 @@ from ..db import engine
 from ..models import mediareleases as model
 from ..schemas import mediareleases as schema
 from ..schemas.newsevents import Section
-from ..helpers import Lang, strip_cmstest, get_attr_by_lang, get_uniaktuell_lang_str
+from ..helpers import Lang, strip_cmstest, get_attr_by_lang
 
 from ..models.zmsobjects import ZMSSite
 
 router = APIRouter(
     prefix="/v3",
-    tags=["UniBE News, Events and Announcements"])
+    tags=["UniBE News and Events"])
 
 
-@router.get("/mediareleases", summary='Media releases', response_model=list[schema.MediaRelease],
+@router.get("/mediareleases", summary='Media releases', response_model=schema.MediaReleaseResponse,
             description='Media releases from '
                         '<a href="https://www.unibe.ch/news/media_news/media_relations_e/media_releases" '
                         'target="_blank">unibe.ch/medien</a>')
@@ -24,6 +24,9 @@ async def get_mediareleases(
         date: datetime | None = Query(None, description='Filter by date after (UTC)'),
         offset: int = 0,
         limit: int = 20):
+
+    data = []
+
     with Session(engine) as session:
         statement = [select(model.MediaRelease, ZMSSite).join(ZMSSite).
                      where(get_attr_by_lang(lang,
@@ -34,13 +37,14 @@ async def get_mediareleases(
                      order_by(get_attr_by_lang(lang,
                                                de=model.MediaRelease.publish_dt_de,
                                                en=model.MediaRelease.publish_dt_en,
-                                               fr=model.MediaRelease.publish_dt_fr).desc()).
-                     offset(offset).limit(limit)]
-        results = session.exec(statement[0])
-        rtn = []
+                                               fr=model.MediaRelease.publish_dt_fr).desc())]
+
+        results = session.exec(statement[0].offset(offset).limit(limit))
+        total = session.exec(statement[0])
+
         for res in results.all():
             if '/uniintern' in res.ZMSSite.path \
-                    or '/uniintern' in res.MediaRelease.path \
+                    or '/zms_schulung' in res.ZMSSite.path \
                     or '/trashcan' in res.MediaRelease.path:
                 continue
 
@@ -56,7 +60,7 @@ async def get_mediareleases(
                 uuid=res.ZMSSite.uuid
             )
 
-            rtn.append(schema.MediaRelease.parse_obj({
+            data.append(schema.MediaRelease.parse_obj({
                 'title': get_attr_by_lang(lang,
                                           res.MediaRelease.title_de,
                                           res.MediaRelease.title_en,
@@ -86,4 +90,10 @@ async def get_mediareleases(
                 'dataLevel': res.MediaRelease.level,
                 'dataUuid': res.MediaRelease.uuid,
             }))
-        return rtn
+
+        return {
+            'offset': offset,
+            'limit': limit,
+            'total': len(total.all()),
+            'data': data
+        }
