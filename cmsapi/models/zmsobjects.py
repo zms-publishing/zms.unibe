@@ -61,8 +61,10 @@ class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?meta
     title_fr: str
     domain: str | None
     alias: str | None
+    level: int
     path: str
     type: str
+    parent_uuid: UUID
 
     @staticmethod
     def get_zms_metaid():
@@ -77,8 +79,10 @@ class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?meta
             'title_fr':         'title_fra',
             'domain':           "obj.getConfProperty('UniBE.Server')",
             'alias':            "obj.getConfProperty('UniBE.Alias')",
-            'path':             "obj.getPath()",
+            'level':            'obj.getLevel()',
+            'path':             'obj.getPath()',
             'type':             'attr_dc_type',
+            'parent_uuid':      'obj.getParentHome()._uid'
         }
 
 

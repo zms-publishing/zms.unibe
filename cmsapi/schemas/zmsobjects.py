@@ -10,6 +10,7 @@ class ZMSSite(BaseModel):  # Response schema
     siteAlias: str | None
     siteDomain: str | None
     siteUuid: UUID
+    siteParentUuid: UUID
 
 
 class ZMSDocument(BaseModel):  # TODO: apply Response schema to router

@@ -5,6 +5,11 @@ import pytz
 import sys
 import os
 import xmltodict
+
+from anytree import Node, RenderTree
+from anytree.exporter import JsonExporter, DictExporter
+from devtools import debug
+from uuid import UUID
 from enum import Enum
 from datetime import datetime
 from Products.zms import _blobfields
@@ -27,7 +32,7 @@ class Lang(str, Enum):
 class SiteType(str, Enum):
     Abteilung = "Abteilung"
     Bereich = "Bereich"
-    Department = "Department"
+    Departement = "Departement"
     Einrichtung = "Einrichtung"
     Fakultaet = "Fakultaet"
     Home = "Home"
@@ -218,6 +223,9 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         else:
             return obj._uid
 
+    if zms_attr == 'obj.getParentHome()._uid':
+        return getattr(obj.getHome().aq_parent, 'content', obj.getHome().content)._uid
+
     if zms_attr == 'obj.getHref2IndexHtmlInContext()':
         if sql_attr.endswith('_de'):
             lang = 'ger'
@@ -244,7 +252,10 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         return obj.meta_id
 
     if zms_attr == "obj.getLevel()":
-        return obj.getLevel()
+        level = obj.getLevel()
+        if level == 0:
+            return len(obj.getPath().split('/'))-2  # calculate for a ZMSSite at content level
+        return level
 
     if zms_attr == "obj.getPath()":
         return obj.getPath()
@@ -311,3 +322,64 @@ def get_uniaktuell_lang_str(lang, key):
                         if '#text' in x and x['@key'] == lang:
                             return x['#text']
     return ''
+
+
+def get_sections_tree(data, lang):
+
+    root = Node(str(UUID('2780d477-f517-49bb-a0f4-c46b56eeaab2')),
+                title='UniBE')
+    nodes = {}
+
+    # set nodes with parent == root
+    for i, obj in enumerate(data):
+        if obj.parent_uuid == UUID('2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
+                obj.uuid != UUID('2780d477-f517-49bb-a0f4-c46b56eeaab2'):
+            nodes[obj.uuid] = Node(str(obj.uuid), parent=root,
+                                   domain=strip_cmstest(obj.domain),
+                                   title=get_attr_by_lang(lang,
+                                                          de=obj.title_de,
+                                                          en=obj.title_en,
+                                                          fr=obj.title_fr),
+                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
+                                   uuid=obj.uuid)
+
+    # set nodes with parent != root
+    for i, obj in enumerate(data):
+        if obj.parent_uuid != UUID('2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
+                obj.uuid != UUID('2780d477-f517-49bb-a0f4-c46b56eeaab2'):
+            nodes[obj.uuid] = Node(str(obj.uuid),
+                                   domain=strip_cmstest(obj.domain),
+                                   title=get_attr_by_lang(lang,
+                                                          de=obj.title_de,
+                                                          en=obj.title_en,
+                                                          fr=obj.title_fr),
+                                   type=obj.type,
+                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
+                                   uuid=obj.uuid)
+
+    # set parent nodes - prerequiste: order_by(model.ZMSSite.level) to process in hierachy
+    for i, obj in enumerate(data):
+        if obj.parent_uuid in nodes.keys():
+            nodes[obj.uuid] = Node(str(obj.uuid), parent=nodes[obj.parent_uuid],
+                                   domain=strip_cmstest(obj.domain),
+                                   title=get_attr_by_lang(lang,
+                                                          de=obj.title_de,
+                                                          en=obj.title_en,
+                                                          fr=obj.title_fr),
+                                   type='/unibiblio' in obj.path and
+                                        'Library' or obj.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
+                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
+                                   uuid=obj.uuid)
+        elif obj.parent_uuid != UUID('2780d477-f517-49bb-a0f4-c46b56eeaab2'):
+            debug(obj.parent_uuid)
+
+    for pre, fill, node in RenderTree(root):
+        # print("%s%s" % (pre, node.title))
+        pass
+
+    jsonexporter = JsonExporter(indent=2, sort_keys=True, ensure_ascii=False)
+    # print(jsonexporter.export(root))
+
+    dictexporter = DictExporter(attriter=lambda attrs: [(k, v) for k, v in attrs if k != "name"])
+
+    return dictexporter.export(root)

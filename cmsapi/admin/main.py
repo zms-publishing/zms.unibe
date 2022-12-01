@@ -36,6 +36,7 @@ def main(command: str = typer.Argument(None, help='init | update'),
          metaobj: list[str] = typer.Option([], help=' | '.join(MODELS_AVAILABLE.keys())+' | all')):
 
     _all = False  # drop and create all tables
+    models = []
     for obj in metaobj:
         if obj == 'all':
             _all = True

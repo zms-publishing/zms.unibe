@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query
-from sqlmodel import Session, select, or_
+from sqlmodel import Session, select, or_, not_
 from datetime import datetime, timedelta
 from uuid import UUID
 
@@ -7,7 +7,7 @@ from ..db import engine
 from ..models.newsevents import NewsEvents, StatusMessage
 from ..models.zmsobjects import ZMSSite
 from ..schemas import newsevents as schema
-from ..helpers import Lang, get_attr_by_lang, strip_cmstest, local_timezone
+from ..helpers import Lang, get_attr_by_lang, strip_cmstest, local_timezone, get_sections_tree
 
 router = APIRouter(
     prefix="/v3",
@@ -220,9 +220,10 @@ async def get_events(
         }
 
 
-@router.get("/sections", summary='Sections to filter News and Events', response_model=schema.SectionResponse)
+@router.get("/sections", summary='Sections to filter News and Events')
 async def get_sections(
         lang: Lang = Lang.de,
+        tree: bool = False,
         offset: int = 0,
         limit: int = 20):
 
@@ -246,7 +247,31 @@ async def get_sections(
                      order_by(get_attr_by_lang(lang,
                                                de=ZMSSite.title_de,
                                                en=ZMSSite.title_en,
+                                               fr=ZMSSite.title_fr)),
+                     select(ZMSSite).
+                     where(get_attr_by_lang(lang,
+                                            de=ZMSSite.active_de,
+                                            en=ZMSSite.active_en,
+                                            fr=ZMSSite.active_fr)).
+                     where(ZMSSite.type.in_(('', 'Home', 'Fakultaet', 'Departement', 'Institut',  # no Microsites
+                                             'Abteilung', 'Bereich', 'Einrichtung', 'Uniaktuell'))).
+                     where(get_attr_by_lang(lang,
+                                            de=ZMSSite.title_de,
+                                            en=ZMSSite.title_en,
+                                            fr=ZMSSite.title_fr) != '').
+                     where(not_(ZMSSite.path.contains('/unibe/uniintern'))).
+                     where(not_(ZMSSite.path.contains('/unibe/uniapp'))).
+                     where(not_(ZMSSite.path.contains('/unibe/images'))).
+                     where(not_(ZMSSite.path.contains('/unibe/jahresberichte'))).
+                     order_by(ZMSSite.level).
+                     order_by(get_attr_by_lang(lang,
+                                               de=ZMSSite.title_de,
+                                               en=ZMSSite.title_en,
                                                fr=ZMSSite.title_fr))]
+
+        if tree:
+            results = session.exec(statement[1])
+            return get_sections_tree(results.all(), lang)
 
         results = session.exec(statement[0].offset(offset).limit(limit))
         total = session.exec(statement[0])
