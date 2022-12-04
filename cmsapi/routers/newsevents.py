@@ -7,7 +7,7 @@ from ..db import engine
 from ..models.newsevents import NewsEvents, StatusMessage
 from ..models.zmsobjects import ZMSSite
 from ..schemas import newsevents as schema
-from ..helpers import Lang, get_attr_by_lang, strip_cmstest, local_timezone, get_sections_tree
+from ..helpers import Lang, SiteType, get_attr_by_lang, strip_cmstest, local_timezone, get_sections_tree
 
 router = APIRouter(
     prefix="/v3",
@@ -21,7 +21,7 @@ router = APIRouter(
 async def get_news(
         lang: Lang = Lang.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
-        date: datetime | None = Query(None, description='Filter by date after (UTC)'),
+        date_after: datetime | None = Query(None, description='Filter by date after (UTC)'),
         offset: int = 0,
         limit: int = 20):
 
@@ -35,12 +35,16 @@ async def get_news(
                                             de=NewsEvents.active_de,
                                             en=NewsEvents.active_en,
                                             fr=NewsEvents.active_fr)).
-                     where(date is None and True or (NewsEvents.lastmod_dt_de > date)).
-                     where(or_(ZMSSite.type == 'Home',
-                               ZMSSite.type == 'Fakultaet',
-                               ZMSSite.type == 'Institut',
-                               ZMSSite.type == 'Uniaktuell',  # to fetch UB (Library) by deprecated type
-                               ZMSSite.type == 'Microsite')).
+                     where(date_after is None and True or (NewsEvents.lastmod_dt_de > date_after)).
+                     where(not_(ZMSSite.path.contains('/arbeitgeberin'))).
+                     where(not_(ZMSSite.path.contains('/images'))).
+                     where(not_(ZMSSite.path.contains('/jahresberichte'))).
+                     where(not_(ZMSSite.path.contains('/uniapp'))).
+                     where(not_(ZMSSite.path.contains('/uniintern'))).
+                     where(not_(ZMSSite.path.contains('/uniaktuell'))).
+                     where(not_(ZMSSite.path.contains('/uni_aktuell'))).
+                     where(not_(ZMSSite.path.contains('/zms_schulung'))).
+                     where(not_(NewsEvents.path.contains('/trashcan'))).
                      where(or_(sections is None and True or (NewsEvents.site_uuid == section for section in sections))).
                      # order_by(NewsEvents.level).
                      order_by(get_attr_by_lang(lang,
@@ -53,14 +57,8 @@ async def get_news(
         total = session.exec(statement[0])
 
         for res in results.all():
-            if '/uniintern' in res.ZMSSite.path \
-                    or '/zms_schulung' in res.ZMSSite.path \
-                    or '/trashcan' in res.NewsEvents.path:
-                continue
-
             section = schema.Section(
-                type='/unibiblio' in res.ZMSSite.path and
-                     'Library' or res.ZMSSite.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
+                type=res.ZMSSite.type,
                 title=get_attr_by_lang(lang,
                                        de=res.ZMSSite.title_de,
                                        en=res.ZMSSite.title_en,
@@ -118,8 +116,8 @@ async def get_news(
 async def get_events(
         lang: Lang = Lang.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
-        start: datetime | None = Query(None, description='Filter by start after (UTC)'),
-        end: datetime | None = Query(None, description='Filter by end before (UTC)'),
+        start_after: datetime | None = Query(None, description='Filter by start after (UTC)'),
+        end_before: datetime | None = Query(None, description='Filter by end before (UTC)'),
         offset: int = 0,
         limit: int = 20):
 
@@ -133,14 +131,18 @@ async def get_events(
                                             de=NewsEvents.active_de,
                                             en=NewsEvents.active_en,
                                             fr=NewsEvents.active_fr)).
-                     where(start is None and True or (NewsEvents.start_dt > start)).
-                     where(end is None and True or (NewsEvents.end_dt < end)).
+                     where(start_after is None and True or (NewsEvents.start_dt > start_after)).
+                     where(end_before is None and True or (NewsEvents.end_dt < end_before)).
                      where(NewsEvents.end_dt > datetime.utcnow()).
-                     where(or_(ZMSSite.type == 'Home',
-                               ZMSSite.type == 'Fakultaet',
-                               ZMSSite.type == 'Institut',
-                               ZMSSite.type == 'Uniaktuell',  # to fetch UB (Library) by deprecated type
-                               ZMSSite.type == 'Microsite')).
+                     where(not_(ZMSSite.path.contains('/arbeitgeberin'))).
+                     where(not_(ZMSSite.path.contains('/images'))).
+                     where(not_(ZMSSite.path.contains('/jahresberichte'))).
+                     where(not_(ZMSSite.path.contains('/uniapp'))).
+                     where(not_(ZMSSite.path.contains('/uniintern'))).
+                     where(not_(ZMSSite.path.contains('/uniaktuell'))).
+                     where(not_(ZMSSite.path.contains('/uni_aktuell'))).
+                     where(not_(ZMSSite.path.contains('/zms_schulung'))).
+                     where(not_(NewsEvents.path.contains('/trashcan'))).
                      where(or_(sections is None and True or (NewsEvents.site_uuid == section for section in sections))).
                      order_by(NewsEvents.start_dt).
                      order_by(ZMSSite.type)]
@@ -149,14 +151,8 @@ async def get_events(
         total = session.exec(statement[0])
 
         for res in results.all():
-            if '/uniintern' in res.ZMSSite.path \
-                    or '/zms_schulung' in res.ZMSSite.path \
-                    or '/trashcan' in res.NewsEvents.path:
-                continue
-
             section = schema.Section(
-                type='/unibiblio' in res.ZMSSite.path and
-                     'Library' or res.ZMSSite.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
+                type=res.ZMSSite.type,
                 title=get_attr_by_lang(lang,
                                        de=res.ZMSSite.title_de,
                                        en=res.ZMSSite.title_en,
@@ -224,6 +220,7 @@ async def get_events(
 async def get_sections(
         lang: Lang = Lang.de,
         tree: bool = False,
+        types: list[SiteType] = Query(['Fakultaet', 'Departement', 'Institut', 'Library']),
         offset: int = 0,
         limit: int = 20):
 
@@ -236,6 +233,15 @@ async def get_sections(
                                             de=ZMSSite.active_de,
                                             en=ZMSSite.active_en,
                                             fr=ZMSSite.active_fr)).
+                     where(ZMSSite.type.in_(types + ['', 'Home'])).
+                     where(not_(ZMSSite.path.contains('/arbeitgeberin'))).
+                     where(not_(ZMSSite.path.contains('/images'))).
+                     where(not_(ZMSSite.path.contains('/jahresberichte'))).
+                     where(not_(ZMSSite.path.contains('/uniapp'))).
+                     where(not_(ZMSSite.path.contains('/uniintern'))).
+                     where(not_(ZMSSite.path.contains('/uniaktuell'))).
+                     where(not_(ZMSSite.path.contains('/uni_aktuell'))).
+                     where(not_(ZMSSite.path.contains('/zms_schulung'))).
                      group_by(NewsEvents.site_uuid,
                               ZMSSite.title_de,
                               ZMSSite.title_en,
@@ -243,7 +249,6 @@ async def get_sections(
                               ZMSSite.domain,
                               ZMSSite.type,
                               ZMSSite.uuid).
-                     order_by(ZMSSite.type.desc()).
                      order_by(get_attr_by_lang(lang,
                                                de=ZMSSite.title_de,
                                                en=ZMSSite.title_en,
@@ -253,16 +258,19 @@ async def get_sections(
                                             de=ZMSSite.active_de,
                                             en=ZMSSite.active_en,
                                             fr=ZMSSite.active_fr)).
-                     where(ZMSSite.type.in_(('', 'Home', 'Fakultaet', 'Departement', 'Institut',  # no Microsites
-                                             'Abteilung', 'Bereich', 'Einrichtung', 'Uniaktuell'))).
                      where(get_attr_by_lang(lang,
                                             de=ZMSSite.title_de,
                                             en=ZMSSite.title_en,
                                             fr=ZMSSite.title_fr) != '').
-                     where(not_(ZMSSite.path.contains('/unibe/uniintern'))).
-                     where(not_(ZMSSite.path.contains('/unibe/uniapp'))).
-                     where(not_(ZMSSite.path.contains('/unibe/images'))).
-                     where(not_(ZMSSite.path.contains('/unibe/jahresberichte'))).
+                     where(ZMSSite.type.in_(types + ['', 'Home'])).
+                     where(not_(ZMSSite.path.contains('/arbeitgeberin'))).
+                     where(not_(ZMSSite.path.contains('/images'))).
+                     where(not_(ZMSSite.path.contains('/jahresberichte'))).
+                     where(not_(ZMSSite.path.contains('/uniapp'))).
+                     where(not_(ZMSSite.path.contains('/uniintern'))).
+                     where(not_(ZMSSite.path.contains('/uniaktuell'))).
+                     where(not_(ZMSSite.path.contains('/uni_aktuell'))).
+                     where(not_(ZMSSite.path.contains('/zms_schulung'))).
                      order_by(ZMSSite.level).
                      order_by(get_attr_by_lang(lang,
                                                de=ZMSSite.title_de,
@@ -277,17 +285,13 @@ async def get_sections(
         total = session.exec(statement[0])
 
         for res in results.all():
-            if '/uniintern' in res.ZMSSite.path \
-                    or '/zms_schulung' in res.ZMSSite.path:
-                continue
             data.append(schema.Section.parse_obj({
                 'title': get_attr_by_lang(lang,
                                           de=res.ZMSSite.title_de,
                                           en=res.ZMSSite.title_en,
                                           fr=res.ZMSSite.title_fr),
                 'domain': strip_cmstest(res.ZMSSite.domain),
-                'type': '/unibiblio' in res.ZMSSite.path and
-                        'Library' or res.ZMSSite.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
+                'type': res.ZMSSite.type,
                 'path': res.ZMSSite.path,
                 'uuid': res.ZMSSite.uuid,
             }))
@@ -304,8 +308,8 @@ async def get_sections(
             description='IT Status messages from '
                         '<a href="http://id.unibe.ch/statusmeldungen" target="_blank">id.unibe.ch/statusmeldungen</a>')
 async def get_statusmessages(
-        start: datetime | None = Query(None, description='Filter by start after (UTC)'),
-        end: datetime | None = Query(None, description='Filter by end before (UTC)'),
+        start_after: datetime | None = Query(None, description='Filter by start after (UTC)'),
+        end_before: datetime | None = Query(None, description='Filter by end before (UTC)'),
         offset: int = 0,
         limit: int = 20):
 
@@ -314,8 +318,8 @@ async def get_statusmessages(
     with Session(engine) as session:
 
         statement = [select(StatusMessage).
-                     where(start is None and True or (StatusMessage.begin > start)).
-                     where(end is None and True or (StatusMessage.end < end)).
+                     where(start_after is None and True or (StatusMessage.begin > start_after)).
+                     where(end_before is None and True or (StatusMessage.end < end_before)).
                      where(or_(StatusMessage.end > datetime.utcnow() - timedelta(days=1),  # show resolved by yesterday
                                StatusMessage.end == datetime.fromisoformat('1970-01-01T00:00:00'))).  # show open issues
                      order_by(StatusMessage.begin).

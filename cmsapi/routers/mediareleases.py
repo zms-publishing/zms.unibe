@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query
-from sqlmodel import Session, select
+from sqlmodel import Session, select, not_
 from datetime import datetime
 from ..db import engine
 
@@ -21,7 +21,7 @@ router = APIRouter(
                         'target="_blank">unibe.ch/medien</a>')
 async def get_mediareleases(
         lang: Lang = Lang.de,
-        date: datetime | None = Query(None, description='Filter by date after (UTC)'),
+        date_after: datetime | None = Query(None, description='Filter by date after (UTC)'),
         offset: int = 0,
         limit: int = 20):
 
@@ -33,7 +33,14 @@ async def get_mediareleases(
                                             de=model.MediaRelease.active_de,
                                             en=model.MediaRelease.active_en,
                                             fr=model.MediaRelease.active_fr)).
-                     where(date is None and True or (model.MediaRelease.publish_dt_de > date)).
+                     where(not_(ZMSSite.path.contains('/arbeitgeberin'))).
+                     where(not_(ZMSSite.path.contains('/images'))).
+                     where(not_(ZMSSite.path.contains('/jahresberichte'))).
+                     where(not_(ZMSSite.path.contains('/uniapp'))).
+                     where(not_(ZMSSite.path.contains('/uniintern'))).
+                     where(not_(ZMSSite.path.contains('/zms_schulung'))).
+                     where(not_(model.MediaRelease.path.contains('/trashcan'))).
+                     where(date_after is None and True or (model.MediaRelease.publish_dt_de > date_after)).
                      order_by(get_attr_by_lang(lang,
                                                de=model.MediaRelease.publish_dt_de,
                                                en=model.MediaRelease.publish_dt_en,
@@ -43,14 +50,8 @@ async def get_mediareleases(
         total = session.exec(statement[0])
 
         for res in results.all():
-            if '/uniintern' in res.ZMSSite.path \
-                    or '/zms_schulung' in res.ZMSSite.path \
-                    or '/trashcan' in res.MediaRelease.path:
-                continue
-
             section = Section(
-                type='/unibiblio' in res.ZMSSite.path and
-                     'Library' or res.ZMSSite.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
+                type=res.ZMSSite.type,
                 title=get_attr_by_lang(lang,
                                        de=res.ZMSSite.title_de,
                                        en=res.ZMSSite.title_en,

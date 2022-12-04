@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query
-from sqlmodel import Session, select
+from sqlmodel import Session, select, not_
 from datetime import datetime
 from ..db import engine
 
@@ -20,7 +20,7 @@ router = APIRouter(
                         'target="_blank">uniaktuell.unibe.ch</a>')
 async def get_uniaktuell(
         lang: Lang = Lang.de,
-        date: datetime | None = Query(None, description='Filter by date after (UTC)'),
+        date_after: datetime | None = Query(None, description='Filter by date after (UTC)'),
         offset: int = 0,
         limit: int = 20):
 
@@ -32,8 +32,15 @@ async def get_uniaktuell(
                                             de=model.UniaktuellArticle.active_de,
                                             en=model.UniaktuellArticle.active_en,
                                             fr=model.UniaktuellArticle.active_fr)).
+                     where(not_(ZMSSite.path.contains('/arbeitgeberin'))).
+                     where(not_(ZMSSite.path.contains('/images'))).
+                     where(not_(ZMSSite.path.contains('/jahresberichte'))).
+                     where(not_(ZMSSite.path.contains('/uniapp'))).
+                     where(not_(ZMSSite.path.contains('/uniintern'))).
+                     where(not_(ZMSSite.path.contains('/zms_schulung'))).
+                     where(not_(model.UniaktuellArticle.path.contains('/trashcan'))).
                      where(ZMSSite.path.like('%uni%aktuell%')).
-                     where(date is None and True or (model.UniaktuellArticle.publish_dt_de > date)).
+                     where(date_after is None and True or (model.UniaktuellArticle.publish_dt_de > date_after)).
                      order_by(get_attr_by_lang(lang,
                                                de=model.UniaktuellArticle.publish_dt_de,
                                                en=model.UniaktuellArticle.publish_dt_en,
@@ -43,14 +50,8 @@ async def get_uniaktuell(
         total = session.exec(statement[0])
 
         for res in results.all():
-            if '/uniintern' in res.ZMSSite.path \
-                    or '/zms_schulung' in res.ZMSSite.path \
-                    or '/trashcan' in res.UniaktuellArticle.path:
-                continue
-
             section = Section(
-                type='/unibiblio' in res.ZMSSite.path and
-                     'Library' or res.ZMSSite.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
+                type=res.ZMSSite.type,
                 title=get_attr_by_lang(lang,
                                        de=res.ZMSSite.title_de,
                                        en=res.ZMSSite.title_en,

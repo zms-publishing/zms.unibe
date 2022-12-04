@@ -81,7 +81,7 @@ class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?meta
             'alias':            "obj.getConfProperty('UniBE.Alias')",
             'level':            'obj.getLevel()',
             'path':             'obj.getPath()',
-            'type':             'attr_dc_type',
+            'type':             'obj.getType()',
             'parent_uuid':      'obj.getParentHome()._uid'
         }
 

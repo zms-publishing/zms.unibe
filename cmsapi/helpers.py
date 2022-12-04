@@ -30,15 +30,14 @@ class Lang(str, Enum):
 
 
 class SiteType(str, Enum):
+    Fakultaet = "Fakultaet"
+    Departement = "Departement"
+    Institut = "Institut"
     Abteilung = "Abteilung"
     Bereich = "Bereich"
-    Departement = "Departement"
     Einrichtung = "Einrichtung"
-    Fakultaet = "Fakultaet"
-    Home = "Home"
-    Institut = "Institut"
     Microsite = "Microsite"
-    Uniaktuell = "Uniaktuell"
+    Library = "Library"
 
 
 class AttrType(str, Enum):
@@ -260,6 +259,12 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
     if zms_attr == "obj.getPath()":
         return obj.getPath()
 
+    if zms_attr == "obj.getType()":
+        if '/unibiblio' in obj.getPath():
+            return 'Library'  # overwrite deprecated type "Uniaktuell" of UB (Library)
+        else:
+            return obj.attr("attr_dc_type")  # TODO: handle multilang if needed - for ZMSSite not necessary
+
     if zms_attr == "obj.getConfProperty('UniBE.Server')":
         return obj.getConfProperty('UniBE.Server')
 
@@ -340,6 +345,7 @@ def get_sections_tree(data, lang):
                                                           de=obj.title_de,
                                                           en=obj.title_en,
                                                           fr=obj.title_fr),
+                                   type=obj.type,
                                    path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
                                    uuid=obj.uuid)
 
@@ -366,8 +372,7 @@ def get_sections_tree(data, lang):
                                                           de=obj.title_de,
                                                           en=obj.title_en,
                                                           fr=obj.title_fr),
-                                   type='/unibiblio' in obj.path and
-                                        'Library' or obj.type,  # overwrite deprecated type "Uniaktuell" of UB (Library)
+                                   type=obj.type,
                                    path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
                                    uuid=obj.uuid)
         elif obj.parent_uuid != UUID('2780d477-f517-49bb-a0f4-c46b56eeaab2'):
