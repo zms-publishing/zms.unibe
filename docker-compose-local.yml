@@ -26,6 +26,36 @@ services:
       - /Users/cm19b120/PyCharm/ENV/logs:/app/log
     environment:
       - PYTHONUNBUFFERED=true
+      - RUN_CRONJOBS=false  # init_scripts startUp only in the dedicated admin container below
+      - ZODB_STORAGE=zeo://host.docker.internal:8000?storage=main
+      - SQLDB_STORAGE=postgresql://sql:5432/unibe_cmsapi
+    networks:
+      - worker
+      - cms_network
+
+  adm:
+    image: ep-devops.id.unibe.ch:5000/id/unibe-cmsapi-v3:local
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+    volumes:
+      - /Users/cm19b120/PyCharm/ENV/logs:/app/log
+      # https://devopscell.com/cron/docker/alpine/linux/2017/10/30/run-cron-docker-alpine.html
+      # - ./cron/1min:/etc/periodic/1min/:ro
+      # - ./cron/15min:/etc/periodic/15min/:ro
+      # - ./cron/daily:/etc/periodic/daily/:ro
+      # - ./cron/hourly:/etc/periodic/hourly/:ro
+      # - ./cron/monthly:/etc/periodic/monthly/:ro
+      # - ./cron/officehours:/etc/periodic/officehours/:ro
+      # - ./cron/weekly:/etc/periodic/weekly/:ro
+    environment:
+      - PYTHONUNBUFFERED=true
+      - RUN_CRONJOBS=true  # init_scripts startUp in this dedicated admin container only
       - ZODB_STORAGE=zeo://host.docker.internal:8000?storage=main
       - SQLDB_STORAGE=postgresql://sql:5432/unibe_cmsapi
     networks:
