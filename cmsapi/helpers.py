@@ -4,10 +4,12 @@ import inspect
 import pytz
 import sys
 import os
+import io
 import xmltodict
 
 from anytree import Node, RenderTree
 from anytree.exporter import JsonExporter, DictExporter
+from ics import Calendar, Event
 from devtools import debug
 from uuid import UUID
 from enum import Enum
@@ -388,3 +390,32 @@ def get_sections_tree(data, lang):
     dictexporter = DictExporter(attriter=lambda attrs: [(k, v) for k, v in attrs if k != "name"])
 
     return dictexporter.export(root)
+
+
+def generate_ics(lang, results):
+
+    calendar = Calendar()
+
+    for res in results:
+        event = Event()
+        event.name = get_attr_by_lang(lang,
+                                      de=res.NewsEvents.title_de,
+                                      en=res.NewsEvents.title_en,
+                                      fr=res.NewsEvents.title_fr)
+        event.begin = local_timezone(res.NewsEvents.start_dt)
+        event.end = local_timezone(res.NewsEvents.end_dt)
+        event.description = get_attr_by_lang(lang,
+                                             de=res.NewsEvents.infos_de,
+                                             en=res.NewsEvents.infos_en,
+                                             fr=res.NewsEvents.infos_fr)
+        event.location = get_attr_by_lang(lang,
+                                          de=res.NewsEvents.location_de,
+                                          en=res.NewsEvents.location_en,
+                                          fr=res.NewsEvents.location_fr)
+        event.url = get_attr_by_lang(lang,
+                                     de=res.NewsEvents.url_de,
+                                     en=res.NewsEvents.url_en,
+                                     fr=res.NewsEvents.url_fr)
+        calendar.events.add(event)
+
+    return io.StringIO(calendar.serialize())

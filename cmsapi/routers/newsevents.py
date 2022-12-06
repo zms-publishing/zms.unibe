@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Query
+from fastapi.responses import StreamingResponse
 from sqlmodel import Session, select, or_, not_
 from datetime import datetime, timedelta
 from uuid import UUID
@@ -7,7 +8,7 @@ from ..db import engine
 from ..models.newsevents import NewsEvents, StatusMessage
 from ..models.zmsobjects import ZMSSite
 from ..schemas import newsevents as schema
-from ..helpers import Lang, SiteType, get_attr_by_lang, strip_cmstest, local_timezone, get_sections_tree
+from ..helpers import Lang, SiteType, get_attr_by_lang, strip_cmstest, local_timezone, get_sections_tree, generate_ics
 
 router = APIRouter(
     prefix="/v3",
@@ -107,21 +108,7 @@ async def get_news(
         }
 
 
-@router.get("/events", summary='Events', response_model=schema.EventResponse,
-            description='Events from portal at <a href="https://www.unibe.ch" target="_blank">unibe.ch</a> '
-                        'and faculties at <a href="https://www.unibe.ch/fakultaeteninstitute" '
-                        'target="_blank">unibe.ch/fakultaeteninstitute</a> as well as '
-                        '<a href="https://agenda.unibe.ch" target="_blank">agenda.unibe.ch</a> and '
-                        '<a href="https://agenda.ub.unibe.ch" target="_blank">agenda.ub.unibe.ch</a>')
-async def get_events(
-        lang: Lang = Lang.de,
-        sections: list[UUID] | None = Query(None, description='Filter by sections'),
-        start_after: datetime | None = Query(None, description='Filter by start after (UTC)'),
-        end_before: datetime | None = Query(None, description='Filter by end before (UTC)'),
-        offset: int = 0,
-        limit: int = 20):
-
-    data = []
+def fetch_events(lang, sections, start_after, end_before, offset, limit):
 
     with Session(engine) as session:
 
@@ -150,70 +137,111 @@ async def get_events(
         results = session.exec(statement[0].offset(offset).limit(limit))
         total = session.exec(statement[0])
 
-        for res in results.all():
-            section = schema.Section(
-                type=res.ZMSSite.type,
-                title=get_attr_by_lang(lang,
-                                       de=res.ZMSSite.title_de,
-                                       en=res.ZMSSite.title_en,
-                                       fr=res.ZMSSite.title_fr),
-                domain=f'https://{strip_cmstest(res.ZMSSite.domain)}',
-                path=res.ZMSSite.path,
-                uuid=res.ZMSSite.uuid
-            )
+        return results.all(), total.all()
 
-            data_source = res.NewsEvents.path
-            data_level = res.NewsEvents.level
-            data_uuid = res.NewsEvents.uuid
 
-            if res.NewsEvents.path == 'agenda_portal':
-                data_source = 'https://agenda.unibe.ch/agenda.json'
-                section.type = 'Agenda Portal'
-                data_uuid = None
-            elif res.NewsEvents.path == 'agenda_library':
-                data_source = f'https://agenda.ub.unibe.ch/{lang}/api/event'
-                section.type = 'Agenda Library'
-                data_uuid = None
+@router.get("/events", summary='Events', response_model=schema.EventResponse,
+            description='Events from portal at <a href="https://www.unibe.ch" target="_blank">unibe.ch</a> '
+                        'and faculties at <a href="https://www.unibe.ch/fakultaeteninstitute" '
+                        'target="_blank">unibe.ch/fakultaeteninstitute</a> as well as '
+                        '<a href="https://agenda.unibe.ch" target="_blank">agenda.unibe.ch</a> and '
+                        '<a href="https://agenda.ub.unibe.ch" target="_blank">agenda.ub.unibe.ch</a>')
+async def get_events(
+        lang: Lang = Lang.de,
+        sections: list[UUID] | None = Query(None, description='Filter by sections'),
+        start_after: datetime | None = Query(None, description='Filter by start after (UTC)'),
+        end_before: datetime | None = Query(None, description='Filter by end before (UTC)'),
+        offset: int = 0,
+        limit: int = 20):
 
-            data.append(schema.Event.parse_obj({
-                'start': local_timezone(res.NewsEvents.start_dt),
-                'end': local_timezone(res.NewsEvents.end_dt),
-                'title': get_attr_by_lang(lang,
-                                          de=res.NewsEvents.title_de,
-                                          en=res.NewsEvents.title_en,
-                                          fr=res.NewsEvents.title_fr),
-                'location': get_attr_by_lang(lang,
-                                             de=res.NewsEvents.location_de,
-                                             en=res.NewsEvents.location_en,
-                                             fr=res.NewsEvents.location_fr),
-                'url': get_attr_by_lang(lang,
-                                        de=res.NewsEvents.url_de,
-                                        en=res.NewsEvents.url_en,
-                                        fr=res.NewsEvents.url_fr),
-                'infos': get_attr_by_lang(lang,
-                                          de=res.NewsEvents.infos_de,
-                                          en=res.NewsEvents.infos_en,
-                                          fr=res.NewsEvents.infos_fr),
-                'topics': get_attr_by_lang(lang,
-                                           de=res.NewsEvents.topics_de,
-                                           en=res.NewsEvents.topics_en,
-                                           fr=res.NewsEvents.topics_fr),
-                'image': get_attr_by_lang(lang,
-                                          de=res.NewsEvents.image_de,
-                                          en=res.NewsEvents.image_en,
-                                          fr=res.NewsEvents.image_fr),
-                'section': section,
-                'dataSource': data_source,
-                'dataLevel': data_level,
-                'dataUuid': data_uuid,
-            }))
+    data = []
+    results, total = fetch_events(lang, sections, start_after, end_before, offset, limit)
 
-        return {
-            'offset': offset,
-            'limit': limit,
-            'total': len(total.all()),
-            'data': data
-        }
+    for res in results:
+        section = schema.Section(
+            type=res.ZMSSite.type,
+            title=get_attr_by_lang(lang,
+                                   de=res.ZMSSite.title_de,
+                                   en=res.ZMSSite.title_en,
+                                   fr=res.ZMSSite.title_fr),
+            domain=f'https://{strip_cmstest(res.ZMSSite.domain)}',
+            path=res.ZMSSite.path,
+            uuid=res.ZMSSite.uuid
+        )
+
+        data_source = res.NewsEvents.path
+        data_level = res.NewsEvents.level
+        data_uuid = res.NewsEvents.uuid
+
+        if res.NewsEvents.path == 'agenda_portal':
+            data_source = 'https://agenda.unibe.ch/agenda.json'
+            section.type = 'Agenda Portal'
+            data_uuid = None
+        elif res.NewsEvents.path == 'agenda_library':
+            data_source = f'https://agenda.ub.unibe.ch/{lang}/api/event'
+            section.type = 'Agenda Library'
+            data_uuid = None
+
+        data.append(schema.Event.parse_obj({
+            'start': local_timezone(res.NewsEvents.start_dt),
+            'end': local_timezone(res.NewsEvents.end_dt),
+            'title': get_attr_by_lang(lang,
+                                      de=res.NewsEvents.title_de,
+                                      en=res.NewsEvents.title_en,
+                                      fr=res.NewsEvents.title_fr),
+            'location': get_attr_by_lang(lang,
+                                         de=res.NewsEvents.location_de,
+                                         en=res.NewsEvents.location_en,
+                                         fr=res.NewsEvents.location_fr),
+            'url': get_attr_by_lang(lang,
+                                    de=res.NewsEvents.url_de,
+                                    en=res.NewsEvents.url_en,
+                                    fr=res.NewsEvents.url_fr),
+            'infos': get_attr_by_lang(lang,
+                                      de=res.NewsEvents.infos_de,
+                                      en=res.NewsEvents.infos_en,
+                                      fr=res.NewsEvents.infos_fr),
+            'topics': get_attr_by_lang(lang,
+                                       de=res.NewsEvents.topics_de,
+                                       en=res.NewsEvents.topics_en,
+                                       fr=res.NewsEvents.topics_fr),
+            'image': get_attr_by_lang(lang,
+                                      de=res.NewsEvents.image_de,
+                                      en=res.NewsEvents.image_en,
+                                      fr=res.NewsEvents.image_fr),
+            'section': section,
+            'dataSource': data_source,
+            'dataLevel': data_level,
+            'dataUuid': data_uuid,
+        }))
+
+    return {
+        'offset': offset,
+        'limit': limit,
+        'total': len(total),
+        'data': data
+    }
+
+
+@router.get("/events/calendar.ics", include_in_schema=False)
+async def get_events_calendar(
+        lang: Lang = Lang.de,
+        sections: list[UUID] | None = Query(None, description='Filter by sections'),
+        start_after: datetime | None = Query(None, description='Filter by start after (UTC)'),
+        end_before: datetime | None = Query(None, description='Filter by end before (UTC)'),
+        offset: int = 0,
+        limit: int = 100):
+
+    if sections is None:
+        sections = [UUID('9c92af4f-6e95-4391-86d5-76eb8ad48360'),  # UniBE Portal
+                    UUID('6f2a0c71-67cf-40db-bc36-8483471b1c32'),  # UniBE Library
+                    ]
+    if start_after is None:
+        start_after = datetime.utcnow() - timedelta(days=30)  # fetch one month ago by default
+
+    results, total = fetch_events(lang, sections, start_after, end_before, offset, limit)
+
+    return StreamingResponse(generate_ics(lang, results), media_type='text/calendar')
 
 
 @router.get("/sections", summary='Sections to filter News and Events')
