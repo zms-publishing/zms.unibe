@@ -1,0 +1,1001 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Create a branded static site from a set of Markdown files to host the documentation of your Open Source or commercial project">
+      
+      
+        <meta name="author" content="Christian Meier">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>Draft - CMSAPI v3 - Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#newsevents-api" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="CMSAPI v3 - Documentation" class="md-header__button md-logo" aria-label="CMSAPI v3 - Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CMSAPI v3 - Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Draft
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href=".." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+    
+  
+
+
+  <li class="md-tabs__item">
+    <a href="./" class="md-tabs__link md-tabs__link--active">
+      Draft
+    </a>
+  </li>
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="CMSAPI v3 - Documentation" class="md-nav__button md-logo" aria-label="CMSAPI v3 - Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    CMSAPI v3 - Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Draft
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Draft
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#status-codes" class="md-nav__link">
+    Status codes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#localization" class="md-nav__link">
+    Localization
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#query-params" class="md-nav__link">
+    Query Params
+  </a>
+  
+    <nav class="md-nav" aria-label="Query Params">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#arguments" class="md-nav__link">
+    Arguments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-request" class="md-nav__link">
+    Example Request
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-response" class="md-nav__link">
+    Example Response
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fields" class="md-nav__link">
+    Fields
+  </a>
+  
+    <nav class="md-nav" aria-label="Fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#timestamps" class="md-nav__link">
+    TIMESTAMPS
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#categories" class="md-nav__link">
+    Categories
+  </a>
+  
+    <nav class="md-nav" aria-label="Categories">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#category-resource" class="md-nav__link">
+    Category resource
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-categories-for-news" class="md-nav__link">
+    Get categories for news
+  </a>
+  
+    <nav class="md-nav" aria-label="Get categories for news">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http-request" class="md-nav__link">
+    HTTP REQUEST
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-response-200" class="md-nav__link">
+    Example response (200)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-categories-for-events" class="md-nav__link">
+    Get categories for events
+  </a>
+  
+    <nav class="md-nav" aria-label="Get categories for events">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http-request_1" class="md-nav__link">
+    HTTP REQUEST
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-response-200_1" class="md-nav__link">
+    Example response (200)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#news-events" class="md-nav__link">
+    News &amp; Events
+  </a>
+  
+    <nav class="md-nav" aria-label="News &amp; Events">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#news-resource" class="md-nav__link">
+    News resource
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eventextrainfo-resource" class="md-nav__link">
+    EventExtraInfo resource
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-resource" class="md-nav__link">
+    Event resource
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-news-of-categories" class="md-nav__link">
+    Get news of categories
+  </a>
+  
+    <nav class="md-nav" aria-label="Get news of categories">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http-request_2" class="md-nav__link">
+    HTTP REQUEST
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arguments_1" class="md-nav__link">
+    ARGUMENTS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-response-200_2" class="md-nav__link">
+    Example response (200)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-events-of-categories" class="md-nav__link">
+    Get events of categories
+  </a>
+  
+    <nav class="md-nav" aria-label="Get events of categories">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http-request_3" class="md-nav__link">
+    HTTP REQUEST
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arguments_2" class="md-nav__link">
+    ARGUMENTS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-response-200_3" class="md-nav__link">
+    Example response (200)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+  
+                  
+
+
+<h1 id="newsevents-api">News/Events API</h1>
+<h2 id="status-codes">Status codes</h2>
+<ul>
+<li><code>200 OK</code> Successful request</li>
+<li><code>404 Not Found</code> No such object</li>
+<li><code>500 Internal Server Error</code> Something went wrong</li>
+<li><code>503 Service Unavailable</code> Service is down (maybe for maintenance)</li>
+</ul>
+<h2 id="localization">Localization</h2>
+<p>Localization is defined in each request with query param or URL param.
+Accepted values are:</p>
+<ul>
+<li><code>de</code> - Deutsch</li>
+<li><code>en</code> - English</li>
+<li><code>fr</code> - Français</li>
+</ul>
+<p>The fallback language handling should be implemented in the CMS API.</p>
+<p>Date and datetime <strong>do not</strong> rely on localization and are always returned in standard format.</p>
+<h2 id="query-params">Query Params</h2>
+<p>All <code>GET</code> endpoints which return a list support offset based pagination, <code>startAt</code>/<code>endAt</code> and <code>uuids</code> filters.</p>
+<h3 id="arguments">Arguments</h3>
+<table>
+<thead>
+<tr>
+<th align="right">Parameter</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right"><code>limit</code><br> <em>int optional</em></td>
+<td align="left">Maximal number of elements per query. Min: 1.</td>
+</tr>
+<tr>
+<td align="right"><code>offset</code> <br><em>int optional</em></td>
+<td align="left">Current offset. Default is 0 which is the first element. Must be &gt;= 0.</td>
+</tr>
+<tr>
+<td align="right"><code>startAt</code> <br><em>string optional</em></td>
+<td align="left">The date start filter. e.g. "2022-10-06"</td>
+</tr>
+<tr>
+<td align="right"><code>endAt</code> <br><em>string optional</em></td>
+<td align="left">The date end filter. e.g. "2022-10-30"</td>
+</tr>
+<tr>
+<td align="right"><code>uuids*</code> <br><em>string[]</em></td>
+<td align="left">The uuids of the newscontainers. e.g. ["fb3f47eb-f2d3-4889-ae48-c72f24b7900c", "581e2cf8-fe7f-4e72-898d-92512d9596f0"]</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-request">Example Request</h3>
+<pre><code class="language-shell">$ curl https://announcement-api.unibe.ch/events?limit=10&amp;offset=2&amp;startAt=2022-10-06&amp;endAt=2022-10-30&amp;uuids=fb3f47eb-f2d3-4889-ae48-c72f24b7900c&amp;uuids=581e2cf8-fe7f-4e72-898d-92512d9596f0
+</code></pre>
+<h3 id="example-response">Example Response</h3>
+<pre><code class="language-json">{
+  &quot;offset&quot;: 5,
+  &quot;limit&quot;: 10,
+  &quot;total&quot;: 20,
+  &quot;data&quot;: [
+    //...
+  ]
+}
+</code></pre>
+<h2 id="fields">Fields</h2>
+<h3 id="timestamps">TIMESTAMPS</h3>
+<p>All timestamp are returned in ISO8601 format in UTC with fields ending in postfix <code>At</code>.
+Example: <code>"publishedAt": "2015-07-01T00:55:47Z"</code></p>
+<h2 id="categories">Categories</h2>
+<h3 id="category-resource">Category resource</h3>
+<table>
+<thead>
+<tr>
+<th align="right">Field</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right"><code>id</code> <br><em>string</em></td>
+<td align="left">Category ID</td>
+</tr>
+<tr>
+<td align="right"><code>title</code> <br><em>string</em></td>
+<td align="left">Category title</td>
+</tr>
+<tr>
+<td align="right"><code>link</code> <br><em>string</em></td>
+<td align="left">Link to category on <em>unibe.ch</em> site</td>
+</tr>
+<tr>
+<td align="right"><code>subCategories</code> <br><em>[Category], optional</em></td>
+<td align="left">Sub categories of category</td>
+</tr>
+</tbody>
+</table>
+<h3 id="get-categories-for-news">Get categories for news</h3>
+<h4 id="http-request">HTTP REQUEST</h4>
+<p><code>GET /v2/announcements/categories/news</code></p>
+<h4 id="example-response-200">Example response (200)</h4>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;581e2cf8-fe7f-4e72-898d-92512d9596f0&quot;,
+  &quot;title&quot;: &quot;Portal&quot;,
+  &quot;link&quot;: &quot;https://www.unibe.ch/unibe/portal/content/e681&quot;,
+  &quot;subCategories&quot;: [
+    {
+      &quot;id&quot;: &quot;cba8131b-1c7d-4992-82c5-ddfb283fd854&quot;,
+      &quot;title&quot;: &quot;Theologische Fakultät&quot;,
+      &quot;link&quot;: &quot;https://www.theol.unibe.ch/unibe/portal/fak_theologie/content/e650015&quot;,
+      &quot;subCategories&quot;: [
+        //...
+      ]
+    },
+    [
+      //...
+    ]
+  ]
+}
+</code></pre>
+<h3 id="get-categories-for-events">Get categories for events</h3>
+<h4 id="http-request_1">HTTP REQUEST</h4>
+<p><code>GET /v2/announcements/categories/events</code></p>
+<h4 id="example-response-200_1">Example response (200)</h4>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;581e2cf8-fe7f-4e72-898d-92512d9596f0&quot;,
+  &quot;title&quot;: &quot;Agenda&quot;,
+  &quot;link&quot;: &quot;https://agenda.unibe.ch&quot;,
+  &quot;subCategories&quot;: [
+    {
+      &quot;id&quot;: &quot;cba8131b-1c7d-4992-82c5-ddfb283fd854&quot;,
+      &quot;title&quot;: &quot;Theologische Fakultät&quot;,
+      &quot;link&quot;: &quot;https://www.theol.unibe.ch/unibe/portal/fak_theologie/content/e650015&quot;,
+      &quot;subCategories&quot;: [
+        //...
+      ]
+    },
+    [
+      //...
+    ]
+  ]
+}
+</code></pre>
+<h2 id="news-events">News &amp; Events</h2>
+<h3 id="news-resource">News resource</h3>
+<table>
+<thead>
+<tr>
+<th align="right">Field</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right"><code>title</code><br><em>string</em></td>
+<td align="left"> News title</td>
+</tr>
+<tr>
+<td align="right"><code>imageUrl</code> <br> <em>string, optional</em></td>
+<td align="left">News cover image</td>
+</tr>
+<tr>
+<td align="right"><code>publishedAt</code><br> <em>timestamp</em></td>
+<td align="left">Publish date</td>
+</tr>
+<tr>
+<td align="right"><code>link</code> <br> <em>string</em></td>
+<td align="left">Link to news item</td>
+</tr>
+<tr>
+<td align="right"><code>categoryLink</code><br> <em>string</em></td>
+<td align="left">Link to the category of news item</td>
+</tr>
+<tr>
+<td align="right"><code>content</code><br> <em>string</em></td>
+<td align="left">Content of news item</td>
+</tr>
+</tbody>
+</table>
+<h3 id="eventextrainfo-resource">EventExtraInfo resource</h3>
+<table>
+<thead>
+<tr>
+<th align="right">Field</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right"><code>building</code><br><em>string, optional</em></td>
+<td align="left">Building where event may happen.</td>
+</tr>
+<tr>
+<td align="right"><code>location</code> <br> <em>string, optional</em></td>
+<td align="left">Address of event</td>
+</tr>
+<tr>
+<td align="right"><code>room</code><br> <em>string, optional</em></td>
+<td align="left">Room of event</td>
+</tr>
+<tr>
+<td align="right"><code>speakers</code><br> <em>string, optional</em></td>
+<td align="left">Speakers of event</td>
+</tr>
+</tbody>
+</table>
+<h3 id="event-resource">Event resource</h3>
+<table>
+<thead>
+<tr>
+<th align="right">Field</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right"><code>title</code><br><em>string</em></td>
+<td align="left">Event title</td>
+</tr>
+<tr>
+<td align="right"><code>imageUrl</code> <br> <em>string, optional</em></td>
+<td align="left">Event cover image</td>
+</tr>
+<tr>
+<td align="right"><code>startAt</code><br> <em>timestamp</em></td>
+<td align="left">Start date</td>
+</tr>
+<tr>
+<td align="right"><code>endAt</code><br> <em>timestamp</em></td>
+<td align="left">End date</td>
+</tr>
+<tr>
+<td align="right"><code>extraInfo</code><br> <em>EventExtraInfo</em></td>
+<td align="left">More information about the event</td>
+</tr>
+<tr>
+<td align="right"><code>link</code> <br> <em>string</em></td>
+<td align="left">Link to event</td>
+</tr>
+<tr>
+<td align="right"><code>categoryLink</code><br> <em>string</em></td>
+<td align="left">Link to the category of event</td>
+</tr>
+<tr>
+<td align="right"><code>topic</code><br> <em>string, optional</em></td>
+<td align="left">Topic of event item</td>
+</tr>
+</tbody>
+</table>
+<h3 id="get-news-of-categories">Get news of categories</h3>
+<h4 id="http-request_2">HTTP REQUEST</h4>
+<p><code>GET /v2/announcements/news</code></p>
+<h4 id="arguments_1">ARGUMENTS</h4>
+<table>
+<thead>
+<tr>
+<th align="left">Parameter</th>
+<th align="left">Type</th>
+<th align="left">Required</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>categories</code></td>
+<td align="left">[string]</td>
+<td align="left">Required</td>
+<td align="left">Array of category ids (UUIDs)</td>
+</tr>
+<tr>
+<td align="left"><code>publishedBeforAt</code></td>
+<td align="left">timestamp </td>
+<td align="left">Required</td>
+<td align="left">Show news published before this timestamp</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Arguments for pagination apply too!</strong></p>
+<h4 id="example-response-200_2">Example response (200)</h4>
+<pre><code class="language-json">{
+  &quot;offset&quot;: 5,
+  &quot;limit&quot;: 10,
+  &quot;total&quot;: 20,
+  &quot;data&quot;: [
+    {
+      &quot;title&quot;: &quot;Wartungsarbeiten der Webseiten der UB Bern&quot;,
+      &quot;image_url&quot;: &quot;https://www.unibe.ch/unibe/portal/content/e681/e1087345/ub_alert1_ger.jpg&quot;,
+      &quot;published_at&quot;: &quot;2021-06-09T15:34:42+02:00&quot;,
+      &quot;link&quot;: &quot;https://www.unibe.ch/universitaet/dienstleistungen/universitaetsbibliothek/index_ger.html&quot;,
+      &quot;category_link&quot;: &quot;https://www.unibe.ch/unibe/portal/content/e681&quot;,
+      &quot;content&quot;: &quot;Wegen Wartungsarbeiten am Dienstag, 15.06.2021 von 7:00 bis 9:00 können die Webseiten der Universitätsbibliothek Bern in diesem Zeitfenster kurzzeitig nicht erreichbar sein.&quot;
+    }
+    //...
+  ]
+}
+</code></pre>
+<h3 id="get-events-of-categories">Get events of categories</h3>
+<h4 id="http-request_3">HTTP REQUEST</h4>
+<p><code>GET /v2/announcements/events</code></p>
+<h4 id="arguments_2">ARGUMENTS</h4>
+<table>
+<thead>
+<tr>
+<th align="left">Parameter</th>
+<th align="left">Type</th>
+<th align="left">Required</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>categories</code></td>
+<td align="left">[string]</td>
+<td align="left">Required</td>
+<td align="left">Array of category ids (UUIDs)</td>
+</tr>
+<tr>
+<td align="left"><code>startAfterAt</code></td>
+<td align="left">timestamp </td>
+<td align="left">Required</td>
+<td align="left">Show events after this timestamp</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Arguments for pagination apply too!</strong></p>
+<h4 id="example-response-200_3">Example response (200)</h4>
+<pre><code class="language-json">{
+  &quot;offset&quot;: 5,
+  &quot;limit&quot;: 10,
+  &quot;total&quot;: 20,
+  &quot;data&quot;: [
+    {
+      &quot;title&quot;: &quot;MIC Research Day 2021&quot;,
+      &quot;image_url&quot;: &quot;https://www.unibe.ch/unibe/portal/content/e681/e1087345/ub_alert1_ger.jpg&quot;,
+      &quot;start_at&quot;: &quot;2021-07-07T12:00&quot;,
+      &quot;end_at&quot;: &quot;2021-07-07T18:00&quot;,
+      &quot;extra_info&quot;: {
+        &quot;building&quot;: &quot;UniS, Schanzeneckstrasse 1&quot;,
+        &quot;location&quot;: &quot;3012 Bern&quot;,
+        &quot;room&quot;: &quot;Vorlesungsraum S003&quot;
+      },
+      &quot;link&quot;: &quot;https://www.mic.unibe.ch…ts/mic_research_day_2021&quot;,
+      &quot;category_link&quot;: &quot;https://agenda.unibe.ch&quot;,
+      &quot;topic&quot;: &quot;Event – Microscopy Imaging Center&quot;
+    }
+    //...
+  ]
+}
+</code></pre>
+
+  
+
+<!-- taken from
+https://github.com/squidfunk/mkdocs-material/blob/master/src/partials/source-file.html -->
+
+<hr />
+<div class="md-source-file">
+<small>
+
+    <!-- mkdocs-git-revision-date-localized-plugin -->
+    
+    Last update:
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime">2022-12-07 18:23:06</span>
+    
+        <br />
+        Created:
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_datetime">2022-12-07 18:23:06</span>
+    
+
+    <!-- mkdocs-git-revision-date-plugin -->
+    
+</small>
+</div>
+
+
+
+
+
+                
+
+  
+    <div class="md-source-date">
+      <small>
+          Authors: <span class='git-page-authors git-authors'><a href='mailto:not.committed.yet'>Not Committed Yet</a></span>
+      </small>
+    </div>
+  
+
+              </article>
+            </div>
+          
+          
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Home
+            </div>
+          </div>
+        </a>
+      
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2020-2022 University of Bern, IT Services Department, Applications & Service Management
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate"], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+    
+    
+  </body>
+</html>

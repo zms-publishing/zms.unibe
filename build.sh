@@ -22,9 +22,9 @@ fi
 BRANCH=$1
 
 # TODO: muss aus git flow kommen
-VERSION="3.0.0dev"
+VERSION="3.0.0"
 VERSION_TAG=""
-if [[ ${BRANCH} = "master" ]] ; then
+if [[ ${BRANCH} = "master" || ${BRANCH} = "main" ]] ; then
     VERSION_TAG=${VERSION}
 elif [[ ${BRANCH} =~ ^release\/.* ]] ; then
     VERSION_TAG=rc-${VERSION}
