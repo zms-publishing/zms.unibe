@@ -27,7 +27,7 @@ app.include_router(mobileapp.router)
 app.include_router(zmsobjects.router)
 
 
-@app.get("/", include_in_schema=False)
+@app.get("/v3", include_in_schema=False)
 def redirect_docs():
     return RedirectResponse("/v3/docs")
 
