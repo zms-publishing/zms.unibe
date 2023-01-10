@@ -43,7 +43,7 @@ def get_content(
             raise HTTPException(status_code=404, detail="Item not found")
     else:
         for item in path.split('/'):
-            if item.strip() in ('', 'portal'):  # TODO: handle portal properly - avoid export of whole site by overriding deep
+            if item.strip() in ('', 'uniintern', 'portal'):  # TODO: handle portal properly - avoid export of whole site by overriding deep
                 continue
             if item not in zodb:
                 raise HTTPException(status_code=404, detail="Item not found")

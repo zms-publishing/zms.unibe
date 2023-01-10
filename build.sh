@@ -26,6 +26,10 @@ VERSION="3.0.0"
 VERSION_TAG=""
 if [[ ${BRANCH} = "master" || ${BRANCH} = "main" ]] ; then
     VERSION_TAG=${VERSION}
+elif [[ ${BRANCH} = "release/3.0.x" ]] ; then
+    VERSION_TAG=${VERSION}  # build PROD-v3 from release-branch, because PROD-v2 is build from master
+elif [[ ${BRANCH} = "develop" ]] ; then
+    VERSION_TAG=rc-${VERSION}  # build TEST-v3 from develop-branch, because release-branch is used for PROD
 elif [[ ${BRANCH} =~ ^release\/.* ]] ; then
     VERSION_TAG=rc-${VERSION}
 else

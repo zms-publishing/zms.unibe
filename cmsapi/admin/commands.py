@@ -11,7 +11,7 @@ from ..models.uniaktuell import UniaktuellArticle
 from ..models.mediareleases import MediaRelease
 from .agendas import _fetch_agenda_data, _fetch_status_messages
 from .newsevents import _store_newsevents_data
-from .zmsobjects import _iterate_content_objects
+from .mappings import _iterate_content_objects
 
 
 def init_tables(models, *args, _all=False):
