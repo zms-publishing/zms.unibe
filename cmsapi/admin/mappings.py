@@ -15,7 +15,7 @@ def _iterate_content_objects(query, model):
             for sql_attr, zms_attr in {**ZMSBase.get_attr_mappings(), **model.get_attr_mappings()}.items():
                 attrs[sql_attr] = get_attr_value(sql_attr, zms_attr, x.getObject(), model)
         except Exception as e:
-            debug(x.get_uid)
+            debug(x.get_uid, x.getPath(), x.id, x.meta_id)
             traceback.print_exc()
             continue
         rtn.append(
