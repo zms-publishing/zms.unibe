@@ -2,18 +2,18 @@
 
 # Project information
 site_name: CMSAPI v3 - Documentation
-#site_url: https://squidfunk.github.io/mkdocs-material/
+site_url: https://api.cms.test.unibe.ch/v3
 site_author: Christian Meier
 site_description: >-
-  Create a branded static site from a set of Markdown files to host the
-  documentation of your Open Source or commercial project
+  Python-based REST API for retrieving, analyzing and consolidating content
+  published in UniBE-CMS and other information systems.
 
 # Repository
-#repo_name: zms-publishing/ZMS
-#repo_url: https://github.com/zms-publishing/ZMS
+repo_name: idasm-unibe-ch/unibe-cmsapi
+repo_url: https://github.com/idasm-unibe-ch/unibe-cmsapi
 
 # Copyright
-copyright: Copyright &copy; 2020-2022 University of Bern, IT Services Department, Applications & Service Management
+copyright: Copyright &copy; 2020-2023 University of Bern, IT Services Department, Applications & Service Management
 
 theme:
   name: material
@@ -26,6 +26,28 @@ theme:
     - navigation.expand
     - navigation.top
     - toc.integrate
+    - content.tabs.link
+    - content.code.annotate
+
+extra_css:
+  - overrides/extra.css
+
+markdown_extensions:
+  - admonition
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.tabbed:
+      alternate_style: true
 
 plugins:
   - search
@@ -37,16 +59,16 @@ plugins:
         locale: en
         fallback_to_build_date: false
         enable_creation_date: true
-        exclude:
-            - index.md
+#        exclude:
+#            - index.md
         enabled: true
   - git-authors:
         show_contribution: true
         show_line_count: true
         count_empty_lines: true
         fallback_to_empty: false
-        exclude:
-            - index.md
+#        exclude:
+#            - index.md
         enabled: true
 #  - git-committers
 
@@ -57,5 +79,6 @@ plugins:
 # Page tree
 nav:
   - Home: index.md
-  - Draft: newsevents-api-draft.md
-
+  - Examples: examples.md
+  - Drafts:
+    - News/Events: newsevents-api-draft.md
