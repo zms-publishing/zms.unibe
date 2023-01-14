@@ -3,7 +3,7 @@ from uuid import UUID
 from .zmsobjects import ZMSBase
 
 
-class MobileApp(ZMSBase, table=True):
+class ServiceLink(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
     meta_id: str
     title_de: str

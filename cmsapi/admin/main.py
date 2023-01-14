@@ -7,7 +7,7 @@ from ..models.zmsobjects import ZMSSite, ZMSDataTable, ZMSFormulator
 from ..models.teaserelement2022 import TeaserElement2022
 from ..models.newsbox import NewsBox
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
-from ..models.mobileapp import MobileApp
+from ..models.servicelinks import ServiceLink
 from ..models.newsevents import StatusMessage
 from ..models.uniaktuell import UniaktuellArticle
 from ..models.mediareleases import MediaRelease
@@ -24,7 +24,7 @@ MODELS_AVAILABLE = {
     'AgendaPortal': AgendaPortal,
     'AgendaLibraryDE': AgendaLibraryDE,
     'AgendaLibraryEN': AgendaLibraryEN,
-    'MobileApp': MobileApp,
+    'ServiceLink': ServiceLink,
     'StatusMessage': StatusMessage,
     'UniaktuellArticle': UniaktuellArticle,
     'MediaRelease': MediaRelease,
@@ -32,7 +32,7 @@ MODELS_AVAILABLE = {
 
 
 def main(command: str = typer.Argument(None, help='init | update'),
-         feature: str = typer.Argument(None, help='NewsEvents | StatusMessages | MobileApp'),
+         feature: str = typer.Argument(None, help='NewsEvents | StatusMessages | ServiceLinks'),
          metaobj: list[str] = typer.Option([], help=' | '.join(MODELS_AVAILABLE.keys())+' | all')):
 
     _all = False  # drop and create all tables
@@ -52,8 +52,8 @@ def main(command: str = typer.Argument(None, help='init | update'),
     if feature == 'Announcements':
         models = (ZMSSite, StatusMessage, UniaktuellArticle, MediaRelease)
 
-    if feature == 'MobileApp':
-        models = (ZMSSite, MobileApp, )
+    if feature == 'ServiceLinks':
+        models = (ZMSSite, ServiceLink, )
 
     t0 = time.time()
 

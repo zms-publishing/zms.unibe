@@ -5,7 +5,7 @@ from devtools import debug
 from ..models.zmsobjects import ZMSSite
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.newsevents import StatusMessage
-from ..models.mobileapp import MobileApp
+from ..models.servicelinks import ServiceLink
 from ..models.newsbox import NewsBox
 from ..models.uniaktuell import UniaktuellArticle
 from ..models.mediareleases import MediaRelease
@@ -50,7 +50,7 @@ def update_tables(models, *args):
             else:
                 if not inspect(sqlengine).has_table(model.__table__):
                     model.__table__.create(sqlengine)
-                if model == MobileApp:
+                if model == ServiceLink:
                     query = zmsindex({'path': '/unibe/uniapp/content/'})
                 elif model == NewsBox:
                     query = zmsindex({'path': '/unibe/portal/unibiblio/content', 'meta_id': 'newsbox'})

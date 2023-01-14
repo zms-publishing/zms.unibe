@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 from .metadata import cmsapi_tags
-from .routers import newsevents, zmsobjects, zmscontent, mobileapp, uniaktuell, mediareleases
+from .routers import newsevents, zmsobjects, zmscontent, servicelinks, uniaktuell, mediareleases
 
 app = FastAPI(title="CMSAPI v3",
               version="3.0.0",
@@ -37,7 +37,7 @@ app.mount("/v3/docs", StaticFiles(directory=f"{os.path.abspath(os.path.dirname(_
 app.include_router(newsevents.router)
 app.include_router(uniaktuell.router)
 app.include_router(mediareleases.router)
-app.include_router(mobileapp.router)
+app.include_router(servicelinks.router)
 app.include_router(zmsobjects.router)
 app.include_router(zmscontent.router)
 
