@@ -112,7 +112,7 @@ async def get_app_indexaz(
 @router.get("/locations", summary='Locations', response_model=list[schema.ServiceLink])
 async def get_app_locations(
         lang: Lang = Lang.de):
-    return _retrieve_service_links(lang, UUID('1c0a8927-bfb4-4215-a8fd-c41bba079d21'))
+    return _retrieve_service_links(Lang.de, UUID('1c0a8927-bfb4-4215-a8fd-c41bba079d21'))
 
 
 @router.get("/privacypolicy", summary='Privacy Policy', response_model=list[schema.ServiceLink])
