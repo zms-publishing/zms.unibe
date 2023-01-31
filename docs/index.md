@@ -13,9 +13,9 @@ The implementation of a RESTful API for UniBE CMS relies on the [FastAPI](https:
 
 Additionally, CMSAPI makes use of [SQLModel](https://sqlmodel.tiangolo.com) to implement the object relational mapping, [Typer](https://typer.tiangolo.com) for the CLI admin tool, and is served by [Uvicorn](https://www.uvicorn.org) in testing and production deployments.
 
-This [presentation (see pdf)](img/CMSAPI-v3.pdf) gives an overview of the background and objectives:
+These presentations provide an overview of the [background and objectives](img/CMSAPI-v3.pdf) as well as the [decoupled CMS architecture](img/CMSAPI-v3-Architecture.pdf):
 
-[![CMSAPI-v3.png](img/CMSAPI-v3.png)](img/CMSAPI-v3.pdf) 
+[![CMSAPI-v3.png](img/CMSAPI-v3.png)](img/CMSAPI-v3.pdf) [![CMSAPI-v3-Architecture.png](img/CMSAPI-v3-Architecture.png)](img/CMSAPI-v3-Architecture.pdf) 
 
 ## Objectives
 
@@ -23,7 +23,7 @@ The CMSAPI serves to decouple the established and solid backend content manageme
 
 JavaScript-based frontend technologies are a highly dynamic environment with exciting hype cycles of constant rise and fall — naming [Angular](https://angular.io), [React](https://reactjs.org), [Vue](https://vuejs.org) or [Svelte](https://svelte.dev).
 
-The same applies to native app development with Swift, Objective-C, Java, Kotlin for the mobile operating systems iOS and Android or SDKs such as [Flutter](https://flutter.dev/) using Dart programming language for the development of cross-platform apps.
+The same applies to native app development with Swift, Objective-C, Java, Kotlin for the mobile operating systems iOS and Android or SDKs such as [Flutter](https://flutter.dev/) using Dart programming language for the development of cross-platform apps. [Flet](https://flet.dev) enables developers to easily build realtime web, mobile and desktop apps in [Python](https://flet.dev/docs/guides/python/getting-started/) without frontend experience — under the hood Flutter is used.
 
 !!! note "Decouple frontend from backend development"
 
