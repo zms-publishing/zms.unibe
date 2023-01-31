@@ -1,7 +1,7 @@
 import uvicorn
 import os
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -45,6 +45,11 @@ app.include_router(zmscontent.router)
 @app.get("/v3", include_in_schema=False)
 def redirect_docs():
     return RedirectResponse("/v3/docs")
+
+
+@app.get("/v3/healthcheck", include_in_schema=False)
+def check_health():
+    return PlainTextResponse("OK", 200)
 
 
 if __name__ == '__main__':

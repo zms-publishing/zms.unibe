@@ -19,7 +19,7 @@
         <link rel="next" href="examples/">
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.2">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.8">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.f56500e0.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.0d440cfe.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.2505c338.min.css">
@@ -143,7 +143,7 @@
           <div class="md-search-result__meta">
             Initializing search
           </div>
-          <ol class="md-search-result__list"></ol>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
       </div>
     </div>
@@ -276,7 +276,7 @@
   
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
         
@@ -368,17 +368,20 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+        
+      
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
       
       
       
-      
-        <label class="md-nav__link" for="__nav_3">
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
           Drafts
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Drafts" data-md-level="1">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
           Drafts
@@ -437,12 +440,12 @@
 <h2 id="overview">Overview</h2>
 <p>The implementation of a RESTful API for UniBE CMS relies on the <a href="https://fastapi.tiangolo.com">FastAPI</a> Library. This should enable a more lightweight Python development mode alongside the historically grown <a href="https://github.com/zopefoundation/Zope">Zope</a> stack<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
 <p>Additionally, CMSAPI makes use of <a href="https://sqlmodel.tiangolo.com">SQLModel</a> to implement the object relational mapping, <a href="https://typer.tiangolo.com">Typer</a> for the CLI admin tool, and is served by <a href="https://www.uvicorn.org">Uvicorn</a> in testing and production deployments.</p>
-<p>This <a href="img/CMSAPI-v3.pdf">presentation (see pdf)</a> gives an overview of the background and objectives:</p>
-<p><a href="img/CMSAPI-v3.pdf"><img alt="CMSAPI-v3.png" src="img/CMSAPI-v3.png" /></a> </p>
+<p>These presentations provide an overview of the <a href="img/CMSAPI-v3.pdf">background and objectives</a> as well as the <a href="img/CMSAPI-v3-Architecture.pdf">decoupled CMS architecture</a>:</p>
+<p><a href="img/CMSAPI-v3.pdf"><img alt="CMSAPI-v3.png" src="img/CMSAPI-v3.png" /></a> <a href="img/CMSAPI-v3-Architecture.pdf"><img alt="CMSAPI-v3-Architecture.png" src="img/CMSAPI-v3-Architecture.png" /></a> </p>
 <h2 id="objectives">Objectives</h2>
 <p>The CMSAPI serves to decouple the established and solid backend content management system ZMS from frontend <a href="https://web.dev/learn/">web development</a> (Single-page apps, Progressive web apps, Mobile apps native, hybrid, etc.), which is nowadays extremely volatile compared to the backend.</p>
 <p>JavaScript-based frontend technologies are a highly dynamic environment with exciting hype cycles of constant rise and fall — naming <a href="https://angular.io">Angular</a>, <a href="https://reactjs.org">React</a>, <a href="https://vuejs.org">Vue</a> or <a href="https://svelte.dev">Svelte</a>.</p>
-<p>The same applies to native app development with Swift, Objective-C, Java, Kotlin for the mobile operating systems iOS and Android or SDKs such as <a href="https://flutter.dev/">Flutter</a> using Dart programming language for the development of cross-platform apps.</p>
+<p>The same applies to native app development with Swift, Objective-C, Java, Kotlin for the mobile operating systems iOS and Android or SDKs such as <a href="https://flutter.dev/">Flutter</a> using Dart programming language for the development of cross-platform apps. <a href="https://flet.dev">Flet</a> enables developers to easily build realtime web, mobile and desktop apps in <a href="https://flet.dev/docs/guides/python/getting-started/">Python</a> without frontend experience — under the hood Flutter is used.</p>
 <div class="admonition note">
 <p class="admonition-title">Decouple frontend from backend development</p>
 <p>Basically, the over decades proven mechanisms of the backend <strong>CMS Template Engine<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></strong> should be <em>"preserved"</em> from <em>"overwhelming"</em> frontend logic.</p>
@@ -557,7 +560,7 @@ https://github.com/squidfunk/mkdocs-material/blob/master/src/partials/source-fil
   
     <div class="md-source-date">
       <small>
-          Authors: <span class='git-page-authors git-authors'><a href='mailto:christian.meier@unibe.ch'>Christian Meier</a></span>
+          Authors: <span class='git-page-authors git-authors'><a href='mailto:christian.meier@unibe.ch'>Christian Meier</a> (97.0%), <a href='mailto:not.committed.yet'>Not Committed Yet</a> (3.0%)</span>
       </small>
     </div>
   
@@ -604,10 +607,10 @@ https://github.com/squidfunk/mkdocs-material/blob/master/src/partials/source-fil
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "content.tabs.link", "content.code.annotate"], "search": "assets/javascripts/workers/search.12658920.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "content.tabs.link", "content.code.annotate"], "search": "assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.5cf534bf.min.js"></script>
+      <script src="assets/javascripts/bundle.a00a7c5e.min.js"></script>
       
     
   </body>
