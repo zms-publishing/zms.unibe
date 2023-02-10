@@ -63,13 +63,17 @@ def update_tables(models, *args):
                     query += zmsindex({'path': '/unibe/portal/fak_humanwis/content', 'meta_id': 'newsbox'})
                     query += zmsindex({'path': '/unibe/portal/fak_naturwis/content', 'meta_id': 'newsbox'})
                 elif model == UniaktuellArticle:
-                    query = zmsindex({'path': '/unibe/portal/uni_aktuell/content/e1162347',  # 2022
+                    query = zmsindex({'path': '/unibe/portal/uni_aktuell/content/e1325567',  # 2023
                                       'meta_id': 'UniaktuellArticle'})
-                    query += zmsindex({'path': '/unibe/portal/uni_aktuell/content/e1036084',  # 2021
+                    query += zmsindex({'path': '/unibe/portal/uni_aktuell/content/e1325606',  # 2022
+                                       'meta_id': 'UniaktuellArticle'})
+                    query += zmsindex({'path': '/unibe/portal/uni_aktuell/content/e1327025',  # 2021
                                        'meta_id': 'UniaktuellArticle'})
                 elif model == MediaRelease:
-                    query = zmsindex({'path': '/unibe/portal/content/e796/e803/e59463/e805/e1160710/e1162114',  # 2022
+                    query = zmsindex({'path': '/unibe/portal/content/e796/e803/e59463/e805/e1311044/e1311045',  # 2023
                                       'meta_id': 'media_news'})
+                    query += zmsindex({'path': '/unibe/portal/content/e796/e803/e59463/e805/e1160710/e1162114',  # 2022
+                                       'meta_id': 'media_news'})
                     query += zmsindex({'path': '/unibe/portal/content/e796/e803/e59463/e805/e1027714/e1029489',  # 2021
                                        'meta_id': 'media_news'})
                 else:
