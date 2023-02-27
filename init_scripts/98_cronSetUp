@@ -2,6 +2,7 @@
 
 if [ "$RUN_CRONJOBS" == true ] ; then
   # echo "*   *   *   *   *   run-parts /etc/periodic/1min" >> /etc/crontabs/root
+  echo "5   18   *   *   1-5   run-parts /etc/periodic/afterwork" >> /etc/crontabs/root
   echo "50   7-17/2   *   *   1-5   run-parts /etc/periodic/officehours" >> /etc/crontabs/root
   crontab -l
   crond -f -l 8

@@ -32,7 +32,7 @@ MODELS_AVAILABLE = {
 
 
 def main(command: str = typer.Argument(None, help='init | update'),
-         feature: str = typer.Argument(None, help='NewsEvents | StatusMessages | ServiceLinks'),
+         feature: str = typer.Argument(None, help='NewsEvents | NewsBoxes | Announcements | ServiceLinks'),
          metaobj: list[str] = typer.Option([], help=' | '.join(MODELS_AVAILABLE.keys())+' | all')):
 
     _all = False  # drop and create all tables
@@ -47,13 +47,16 @@ def main(command: str = typer.Argument(None, help='init | update'),
             raise typer.Abort()
 
     if feature == 'NewsEvents':  # this Argument overrides any individually set Options via --metaobj
-        models = (ZMSSite, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN, TeaserElement2022, NewsBox)
+        models = (ZMSSite, TeaserElement2022, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN, StatusMessage, )
+
+    if feature == 'NewsBoxes':
+        models = (NewsBox, )
 
     if feature == 'Announcements':
-        models = (ZMSSite, StatusMessage, UniaktuellArticle, MediaRelease)
+        models = (UniaktuellArticle, MediaRelease, )
 
     if feature == 'ServiceLinks':
-        models = (ZMSSite, ServiceLink, )
+        models = (ServiceLink, )
 
     t0 = time.time()
 

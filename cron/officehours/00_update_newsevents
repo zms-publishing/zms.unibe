@@ -1,0 +1,8 @@
+#!/bin/bash
+
+now=$(date)
+echo $now cmsadm update NewsEvents
+echo "==========================================================================" >> /app/log/api-cron.log
+echo $now >> /app/log/api-cron.log
+echo "--------------------------------------------------------------------------" >> /app/log/api-cron.log
+/app/bin/python -m cmsapi.admin.main update NewsEvents >> /app/log/api-cron.log
