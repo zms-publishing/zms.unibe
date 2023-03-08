@@ -2,7 +2,7 @@
 
 # Project information
 site_name: CMSAPI v3 - Documentation
-site_url: https://api.cms.test.unibe.ch/v3
+site_url: https://api.cms.test.unibe.ch/v3  # NOTE: /v3 is added as path in docker container automatically
 site_author: Christian Meier
 site_description: >-
   Python-based REST API for retrieving, analyzing and consolidating content

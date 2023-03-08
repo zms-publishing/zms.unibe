@@ -9,7 +9,6 @@ networks:
   cms_network:
 
 services:
-
   api:
     image: ep-devops.id.unibe.ch:5000/id/unibe-cmsapi-v3:local
     deploy:

@@ -1,6 +1,7 @@
 import time
 from sqlmodel import SQLModel, Session, select, inspect
 from devtools import debug
+from pathlib import Path
 
 from ..models.zmsobjects import ZMSSite
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
@@ -54,14 +55,8 @@ def update_tables(models, *args):
                     query = zmsindex({'path': '/unibe/uniapp/content/'})
                 elif model == NewsBox:
                     query = zmsindex({'path': '/unibe/portal/unibiblio/content', 'meta_id': 'newsbox'})
-                    query += zmsindex({'path': '/unibe/portal/fak_theologie/content', 'meta_id': 'newsbox'})
-                    query += zmsindex({'path': '/unibe/portal/fak_rechtwis/content', 'meta_id': 'newsbox'})
-                    query += zmsindex({'path': '/unibe/portal/fak_wiso/content', 'meta_id': 'newsbox'})
-                    query += zmsindex({'path': '/unibe/portal/fak_medizin/content', 'meta_id': 'newsbox'})
-                    query += zmsindex({'path': '/unibe/portal/fak_vetmedizin/content', 'meta_id': 'newsbox'})
-                    query += zmsindex({'path': '/unibe/portal/fak_historisch/content', 'meta_id': 'newsbox'})
-                    query += zmsindex({'path': '/unibe/portal/fak_humanwis/content', 'meta_id': 'newsbox'})
-                    query += zmsindex({'path': '/unibe/portal/fak_naturwis/content', 'meta_id': 'newsbox'})
+                    for newscontainer in open(f'{Path( __file__ ).parent.absolute()}/newsbox_all_active_filtered.csv'):
+                        query += zmsindex({'path': f'{newscontainer.strip()}', 'meta_id': 'newsbox'})
                 elif model == UniaktuellArticle:
                     query = zmsindex({'path': '/unibe/portal/uni_aktuell/content/e1325567',  # 2023
                                       'meta_id': 'UniaktuellArticle'})
