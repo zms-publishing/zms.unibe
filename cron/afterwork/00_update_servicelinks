@@ -2,7 +2,7 @@
 
 now=$(date)
 echo $now cmsadm update ServiceLinks
-echo "==========================================================================" >> /app/log/api-cron.log
-echo $now >> /app/log/api-cron.log
-echo "--------------------------------------------------------------------------" >> /app/log/api-cron.log
-/app/bin/python -m cmsapi.admin.main update ServiceLinks >> /app/log/api-cron.log
+echo "==========================================================================" >> $VENV_HOME/log/api-cron.log
+echo $now >> $VENV_HOME/log/api-cron.log
+echo "--------------------------------------------------------------------------" >> $VENV_HOME/log/api-cron.log
+$VENV_HOME/bin/python -m cmsapi.admin.main update ServiceLinks &>> $VENV_HOME/log/api-cron.log

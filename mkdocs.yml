@@ -57,7 +57,8 @@ plugins:
         custom_format: "%d. %B %Y"
         timezone: Europe/Zurich
         locale: en
-        fallback_to_build_date: false
+        # Fallback for git as submodule
+        fallback_to_build_date: true
         enable_creation_date: true
 #        exclude:
 #            - index.md
@@ -66,7 +67,8 @@ plugins:
         show_contribution: true
         show_line_count: true
         count_empty_lines: true
-        fallback_to_empty: false
+        # Fallback for git as submodule
+        fallback_to_empty: true
 #        exclude:
 #            - index.md
         enabled: true
