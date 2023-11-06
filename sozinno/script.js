@@ -61,9 +61,9 @@ columnDefs: [
 // BO processCustomJS
 function processCustomJS(table) {
     $('#e937688 tbody').on('click', 'td', function () {
-        var tr = $(this).closest('tr');
+        var tr = this.closest('tr');
         var row = table.row(tr);
-        if ($(this).context.cellIndex == 1 || $(this).context.cellIndex == 2) {
+        if (this.cellIndex == 1 || this.cellIndex == 2) {
             title = row.data()['Titel'];
             body = row.data()['Beschrieb'] + '<br /><br />';
             support = '<strong>Finanzielle Unterstützung:</strong> ' + row.data()['FinanzielleUnterstuetzung'] + '<br />';
@@ -84,9 +84,9 @@ function processCustomJS(table) {
         }
     });
     $('#e937688 tbody').on('mouseover', 'td', function () {
-        var tr = $(this).closest('tr');
+        var tr = this.closest('tr');
         var row = table.row(tr);
-        if ($(this).context.cellIndex == 1 || $(this).context.cellIndex == 2) {
+        if (this.cellIndex == 1 || this.cellIndex == 2) {
             $(this).css('cursor', 'pointer');
         }
     });
