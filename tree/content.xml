@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <ZMSDataTable uid="uid:8449d57c-917c-4338-93ae-de22348f30d2" id="e935619" id_prefix="e">
+    <attr_dc_coverage>global.ger</attr_dc_coverage>
+    <created_uid>ADMbi18e080</created_uid>
+    <created_dt>
+<![CDATA[2020/02/25 14:23:32]]></created_dt>
+    <change_uid><lang id="ger">tmeyer</lang><lang id="fra">momueller</lang><lang id="ita">momueller</lang><lang id="eng">momueller</lang></change_uid>
+    <change_dt><lang id="ger">
+<![CDATA[2023/10/26 14:56:07]]></lang><lang id="fra">
+<![CDATA[2020/03/26 13:42:23]]></lang><lang id="ita">
+<![CDATA[2020/03/26 15:22:04]]></lang><lang id="eng">
+<![CDATA[2020/03/26 13:42:07]]></lang></change_dt>
+    <active><lang id="ger">1</lang><lang id="fra">1</lang><lang id="ita">1</lang><lang id="eng">1</lang></active>
+    <datatype>json</datatype>
+    <dataremote>1</dataremote>
+    <dataurl><lang id="ger">https://boris.unibe.ch/cgi/exportview/projectitem_id/1036/JSON_Citation/export.json</lang></dataurl>
+    <datafile><lang id="ger">
+<data content_type="application/json" filename="BORIS_export_2020-12-10_ger.json"></data></lang></datafile>
+    <obfuscate_emails><lang id="ger">0</lang><lang id="fra">0</lang><lang id="ita">0</lang><lang id="eng">0</lang></obfuscate_emails>
+    <_datafilecached><lang id="ger">
+<data content_type="application/json" filename="2023-10-26T1456070200_ger.json"></data></lang></_datafilecached>
+    <_datalastupdated>
+<![CDATA[2023/10/26 14:56:07]]></_datalastupdated>
+    <colstable><lang id="ger">Publication
+Year
+Language
+Type</lang><lang id="fra">Publication
+Year
+Language
+Type</lang><lang id="ita">Publication
+Year
+Language
+Type</lang><lang id="eng">Publication
+Year
+Language
+Type</lang></colstable>
+    <colsdata><lang id="ger"><![CDATA[// BO columns
+columns: [
+    {
+        data: null,
+        render: function (data, type, row) {
+            let cit = row.citation.text;
+            let uri = row.uri;
+            let str = cit.toString();
+            try {
+                let reg = new RegExp('<(http[s]?:\/\/)?([^\/\s]+\/)(?<doi>.*)>', 'g');
+                let res = str.matchAll(reg);
+                for (let r of res) {
+                    let grp = r.groups;
+                    let url = r[0];
+                    str = str.replace(url, '');
+                    str = str.replace(grp.doi, '[<a href="' + url.slice(1, -1) + '" target="_blank">doi/' + grp.doi + '</a>]');
+                }
+            }
+            catch(err) {
+                console.log('RegExp Lookbehind Assertions are only supported in latest versions of Chrome and Safari - but not Firefox (see https://stackoverflow.com/a/49816860).')
+            }
+            str = str + ' [<a href="' + uri + '" target="_blank">boris/' + row.eprintid + '</a>]';
+            return str;
+        }
+    },
+    {
+        data: "date",
+        render: function (data, type, row) {
+            return data.toString().substring(0, 4);
+        }
+    },
+    {
+        data: "citation.lang",
+    },
+    {
+        data: "type",
+        render: function (data, type, row) {
+            return '<span style="text-transform: capitalize;">' + data.toString().replace('_', ' ') + '</span>';
+        }
+    }
+
+],
+order: [[ 1, "desc" ]], // order by year descending
+asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+    
+}
+// EO processCustomJS]]></lang><lang id="fra"><![CDATA[// BO columns
+columns: [
+    {
+        data: null,
+        render: function (data, type, row) {
+            let cit = row.citation.text;
+            let uri = row.uri;
+            let str = cit.toString();
+            try {
+                let reg = new RegExp('<(http[s]?:\/\/)?([^\/\s]+\/)(?<doi>.*)>', 'g');
+                let res = str.matchAll(reg);
+                for (let r of res) {
+                    let grp = r.groups;
+                    let url = r[0];
+                    str = str.replace(url, '');
+                    str = str.replace(grp.doi, '[<a href="' + url.slice(1, -1) + '" target="_blank">doi/' + grp.doi + '</a>]');
+                }
+            }
+            catch(err) {
+                console.log('RegExp Lookbehind Assertions are only supported in latest versions of Chrome and Safari - but not Firefox (see https://stackoverflow.com/a/49816860).')
+            }
+            str = str + ' [<a href="' + uri + '" target="_blank">boris/' + row.eprintid + '</a>]';
+            return str;
+        }
+    },
+    {
+        data: "date",
+        render: function (data, type, row) {
+            return data.toString().substring(0, 4);
+        }
+    },
+    {
+        data: "citation.lang",
+    },
+    {
+        data: "type",
+        render: function (data, type, row) {
+            return '<span style="text-transform: capitalize;">' + data.toString().replace('_', ' ') + '</span>';
+        }
+    }
+
+],
+order: [[ 1, "desc" ]], // order by year descending
+asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+    
+}
+// EO processCustomJS]]></lang><lang id="ita"><![CDATA[// BO columns
+columns: [
+    {
+        data: null,
+        render: function (data, type, row) {
+            let cit = row.citation.text;
+            let uri = row.uri;
+            let str = cit.toString();
+            try {
+                let reg = new RegExp('<(http[s]?:\/\/)?([^\/\s]+\/)(?<doi>.*)>', 'g');
+                let res = str.matchAll(reg);
+                for (let r of res) {
+                    let grp = r.groups;
+                    let url = r[0];
+                    str = str.replace(url, '');
+                    str = str.replace(grp.doi, '[<a href="' + url.slice(1, -1) + '" target="_blank">doi/' + grp.doi + '</a>]');
+                }
+            }
+            catch(err) {
+                console.log('RegExp Lookbehind Assertions are only supported in latest versions of Chrome and Safari - but not Firefox (see https://stackoverflow.com/a/49816860).')
+            }
+            str = str + ' [<a href="' + uri + '" target="_blank">boris/' + row.eprintid + '</a>]';
+            return str;
+        }
+    },
+    {
+        data: "date",
+        render: function (data, type, row) {
+            return data.toString().substring(0, 4);
+        }
+    },
+    {
+        data: "citation.lang",
+    },
+    {
+        data: "type",
+        render: function (data, type, row) {
+            return '<span style="text-transform: capitalize;">' + data.toString().replace('_', ' ') + '</span>';
+        }
+    }
+
+],
+order: [[ 1, "desc" ]], // order by year descending
+asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+    
+}
+// EO processCustomJS]]></lang><lang id="eng"><![CDATA[// BO columns
+columns: [
+    {
+        data: null,
+        render: function (data, type, row) {
+            let cit = row.citation.text;
+            let uri = row.uri;
+            let str = cit.toString();
+            try {
+                let reg = new RegExp('<(http[s]?:\/\/)?([^\/\s]+\/)(?<doi>.*)>', 'g');
+                let res = str.matchAll(reg);
+                for (let r of res) {
+                    let grp = r.groups;
+                    let url = r[0];
+                    str = str.replace(url, '');
+                    str = str.replace(grp.doi, '[<a href="' + url.slice(1, -1) + '" target="_blank">doi/' + grp.doi + '</a>]');
+                }
+            }
+            catch(err) {
+                console.log('RegExp Lookbehind Assertions are only supported in latest versions of Chrome and Safari - but not Firefox (see https://stackoverflow.com/a/49816860).')
+            }
+            str = str + ' [<a href="' + uri + '" target="_blank">boris/' + row.eprintid + '</a>]';
+            return str;
+        }
+    },
+    {
+        data: "date",
+        render: function (data, type, row) {
+            return data.toString().substring(0, 4);
+        }
+    },
+    {
+        data: "citation.lang",
+    },
+    {
+        data: "type",
+        render: function (data, type, row) {
+            return '<span style="text-transform: capitalize;">' + data.toString().replace('_', ' ') + '</span>';
+        }
+    }
+
+],
+order: [[ 1, "desc" ]], // order by year descending
+asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+    
+}
+// EO processCustomJS]]></lang></colsdata>
+    <attr_dc_type_layout>3-09-0</attr_dc_type_layout>
+  </ZMSDataTable>
