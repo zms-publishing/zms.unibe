@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <ZMSDataTable uid="uid:6eac0b07-56e9-4211-85e9-e5c4c08ca2a4" id="e1209417" id_prefix="e">
+    <attr_dc_coverage>global.ger</attr_dc_coverage>
+    <created_uid>bi18e080</created_uid>
+    <created_dt>
+<![CDATA[2022/04/14 18:50:22]]></created_dt>
+    <change_uid><lang id="ger">bi18e080</lang></change_uid>
+    <change_dt><lang id="ger">
+<![CDATA[2022/08/09 08:55:21]]></lang></change_dt>
+    <active><lang id="ger">1</lang><lang id="fra">0</lang><lang id="eng">0</lang></active>
+    <datatype>csv</datatype>
+    <dataremote>1</dataremote>
+    <dataurl><lang id="ger">{$uid:88581863-6b80-4191-a0fa-773ba72ffacb}</lang></dataurl>
+    <obfuscate_emails><lang id="ger">0</lang><lang id="fra">0</lang><lang id="eng">0</lang></obfuscate_emails>
+    <_datafilecached><lang id="ger">
+<data content_type="text/csv" filename="2022-08-09T0855210200_ger.csv"></data></lang></_datafilecached>
+    <_datalastupdated>
+<![CDATA[2022/08/09 08:55:21]]></_datalastupdated>
+    <colstable><lang id="ger"><![CDATA[ICD10 code
+Author
+Year
+Title
+Trial design
+Comparator
+Sample Size]]></lang></colstable>
+    <colsdata><lang id="ger"><![CDATA[<script>
+$(function () {
+
+    class Popup {
+
+        constructor() {
+            this._popup = document.getElementById("popup");
+            this._title = document.getElementById("datatableModalTitle");
+            this._author = document.getElementById("popupAuthor");
+            this._icd = document.getElementById("popupICD10");
+            this._trialDesign = document.getElementById("popupTrialDesign");
+            this._comparator = document.getElementById("popupComparator");
+            this._sampleSize = document.getElementById("popupSampleSize");
+            this._peerReview = document.getElementById("popupPeerReview");
+
+            this._journal = document.getElementById("popupJournal");
+            this._volume = document.getElementById("popupVolume");
+            this._issue = document.getElementById("popupIssue");
+            this._pages = document.getElementById("popupPages");
+
+            this._expander = document.getElementById("popupExpander");
+            this._prev = document.getElementById("popupPrev");
+            this._next = document.getElementById("popupNext");
+
+            // This index DOES NOT refer to the visual index.
+            this._index = null;
+            this._api = null;
+
+            document.getElementById("popupMore").addEventListener("click", () => {
+                this._expander.classList.toggle("expanded");
+            });
+            this._prev.addEventListener("click", () => {
+                let indexes = this.indexes();
+                let current = indexes.indexOf(this._index);
+
+                this.show(current - 1, indexes);
+            });
+            this._next.addEventListener("click", () => {
+                let indexes = this.indexes();
+                let current = indexes.indexOf(this._index);
+
+                this.show(current + 1, indexes);
+            });
+        }
+
+        show(pos, indexes, navbutton=true) {
+            let index = indexes[pos];
+            let data = this._api.row(index).data();
+
+            this._index = index;
+            this._title.innerHTML = data.Title;
+            this._author.innerHTML = data.Author;
+            this._icd.innerHTML = data.ICD10;
+            this._trialDesign.innerHTML = data.TrialDesign;
+            this._comparator.innerHTML = data.Comparator;
+            this._sampleSize.innerHTML = data.SampleSize;
+            this._peerReview.innerHTML = data.PeerReview;
+
+            this._journal.innerHTML = data.JournalLong;
+            this._volume.innerHTML = data.Volume;
+            this._issue.innerHTML = data.Issue;
+            this._pages.innerHTML = data.Pages;
+
+            this.updateNavButtons(pos, indexes);
+            this._expander.classList.toggle("expanded", false);
+            this._popup.classList.toggle("visible", true);
+            if (!navbutton) {  // do not close modal dialog on prev/next button
+                $('#datatableModalPopup').modal('toggle');
+            }
+        }
+
+        indexes() {
+            return this._api.rows(null, {pages: 'all', search: 'applied', order: 'current'}).indexes();
+        }
+
+        updateNavButtons(pos, indexes) {
+            this._prev.disabled = pos === 0;
+            this._next.disabled = pos === indexes.length - 1;
+        }
+
+        setApi(api) {
+            this._api = api;
+        }
+
+        handleClick(index) {
+            let indexes = this.indexes();
+            let selected = indexes.indexOf(index);
+
+            this.show(selected, indexes, false);
+        }
+
+        handleDraw() {
+            if (this._index !== null) {
+                let indexes = this.indexes();
+                let pos = indexes.indexOf(this._index);
+
+                this.updateNavButtons(pos, indexes);
+            }
+        }
+    }
+
+    let popup = new Popup();
+
+    function createDataTableFromCSV(data) {
+
+        let api = $("#%s").DataTable({
+            data: data,
+            dom: 'fltipB',
+            buttons: [
+                'copy', 'csv'
+            ],
+            columns: [
+                {data: "ICD10"},
+                {data: "Author"},
+                {data: "Year"},
+                {data: "Title"},
+                {data: "TrialDesign"},
+                {data: "Comparator"},
+                {data: "SampleSize"},
+            ],
+            createdRow: (row, data, index) => row.addEventListener("click", () => popup.handleClick(index)),
+            drawCallback: () => popup.handleDraw(),
+        });
+        popup.setApi(api);
+    }
+
+    Papa.parse('%s', {
+        download: true,
+        header: true,
+        skipEmptyLines: 'greedy',
+        complete: function(results, file) {
+        	createDataTableFromCSV(results.data);
+        }
+    });
+
+});
+</script>
+
+<style>
+.popup {
+    display: none;
+}
+.popup.visible {
+    display: block;
+}
+
+.expander {
+    display: none;
+}
+.expander.expanded {
+    display: block;
+}
+.ZMSDataTable {
+    cursor: pointer;
+}
+.dt-buttons {
+    display: none;
+}
+</style>
+
+<!-- Modal -->
+<div class="modal fade" id="datatableModalPopup" tabindex="-1" role="dialog" aria-labelledby="datatableModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="datatableModalTitle">Modal title</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="datatableModalBody">
+        <div id="popup" class="popup">
+            <p id="popupAuthor"></p>
+            <table>
+            <tr>
+                <th>ICD10 Code:</th>
+                <td id="popupICD10"></td>
+            </tr>
+            <tr>
+                <th>Trial Design:</th>
+                <td id="popupTrialDesign"></td>
+            </tr>
+            <tr>
+                <th>Comparator:</th>
+                <td id="popupComparator"></td>
+            </tr>
+            <tr>
+                <th>Sample Size:</th>
+                <td id="popupSampleSize"></td>
+            </tr>
+            <tr>
+                <th>Peer Review:</th>
+                <td id="popupPeerReview"></td>
+            </tr>
+            </table>
+            <table id="popupExpander" class="expander">
+            <tr>
+                <th>Journal:</th>
+                <td id="popupJournal"></td>
+            </tr>
+            <tr>
+                <th>Volume:</th>
+                <td id="popupVolume"></td>
+            </tr>
+            <tr>
+                <th>Issue:</th>
+                <td id="popupIssue"></td>
+            </tr>
+            <tr>
+                <th>Pages:</th>
+                <td id="popupPages"></td>
+            </tr>
+            </table>
+            <button id="popupMore">More</button>
+            <button id="popupPrev">
+                <!-- REPLACE WITH ACTUAL ICON -->
+                <svg width="16" height="16">
+                    <line x1="2" y1="8" x2="14" y2="8" stroke="black" stroke-width="2"/>
+                    <line x1="2" y1="8" x2="8" y2="2" stroke="black" stroke-width="2"/>
+                    <line x1="2" y1="8" x2="8" y2="14" stroke="black" stroke-width="2"/>
+                </svg>
+            </button>
+            <button id="popupNext">
+                <!-- REPLACE WITH ACTUAL ICON -->
+                <svg width="16" height="16">
+                    <line x1="2" y1="8" x2="14" y2="8" stroke="black" stroke-width="2"/>
+                    <line x1="14" y1="8" x2="8" y2="2" stroke="black" stroke-width="2"/>
+                    <line x1="14" y1="8" x2="8" y2="14" stroke="black" stroke-width="2"/>
+                </svg>
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>]]></lang><lang id="fra"><![CDATA[// BO columns
+paging: true,
+scrollX: true,
+//scrollY: 300,
+//scrollCollapse: true,
+//order: [[ 1, "desc" ]], // order column descending
+//asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+columns: [],
+responsive: false, /*{
+	details: {
+		renderer: function(api, rowIdx) {
+            // Select hidden columns for the given row
+            var data = api.cells(rowIdx, ':hidden').eq(0).map(function(cell) {
+                var header = $(api.column(cell.column).header());
+                return '<tr>'+
+                        '<td>'+
+                            header.text() + ':' +
+                        '</td> ' +
+                        '<td>' +
+                            api.cell(cell).data() +
+                        '</td>' +
+                    '</tr>';
+            }).toArray().join('');
+
+            return data ? $('<table/>').append(data) : false;
+        }
+	}
+},*/
+// https://datatables.net/examples/api/multi_filter_select.html
+/*initComplete: function () {
+    i = 0;
+    this.api().columns().every(function() {
+        var column = this;
+        var column_filter_for = [3, 4];
+        if (column_filter_for.includes(i)) {
+            var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()) )
+                .on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append('<option value="'+d+'">'+d+'</option>')
+            } );
+        }
+        else {
+            column.text = '';
+        }
+        i++;
+    } );
+},*/
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+
+}
+// EO processCustomJS]]></lang><lang id="eng"><![CDATA[// BO columns
+paging: true,
+scrollX: true,
+//scrollY: 300,
+//scrollCollapse: true,
+//order: [[ 1, "desc" ]], // order column descending
+//asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+columns: [],
+responsive: false, /*{
+	details: {
+		renderer: function(api, rowIdx) {
+            // Select hidden columns for the given row
+            var data = api.cells(rowIdx, ':hidden').eq(0).map(function(cell) {
+                var header = $(api.column(cell.column).header());
+                return '<tr>'+
+                        '<td>'+
+                            header.text() + ':' +
+                        '</td> ' +
+                        '<td>' +
+                            api.cell(cell).data() +
+                        '</td>' +
+                    '</tr>';
+            }).toArray().join('');
+
+            return data ? $('<table/>').append(data) : false;
+        }
+	}
+},*/
+// https://datatables.net/examples/api/multi_filter_select.html
+/*initComplete: function () {
+    i = 0;
+    this.api().columns().every(function() {
+        var column = this;
+        var column_filter_for = [3, 4];
+        if (column_filter_for.includes(i)) {
+            var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()) )
+                .on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append('<option value="'+d+'">'+d+'</option>')
+            } );
+        }
+        else {
+            column.text = '';
+        }
+        i++;
+    } );
+},*/
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+
+}
+// EO processCustomJS]]></lang></colsdata>
+    <attr_dc_type_layout>0-12-0</attr_dc_type_layout>
+  </ZMSDataTable>
