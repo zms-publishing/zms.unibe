@@ -258,6 +258,9 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
             return len(obj.getPath().split('/'))-2  # calculate for a ZMSSite at content level
         return level
 
+    if zms_attr == "obj.getSortId()":
+        return obj.getSortId()
+
     if zms_attr == "obj.getPath()":
         return obj.getPath()
 
