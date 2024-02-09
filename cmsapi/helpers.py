@@ -5,6 +5,7 @@ import pytz
 import sys
 import os
 import io
+import re
 import xmltodict
 
 from anytree import Node, RenderTree
@@ -282,8 +283,11 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         value = 'https://www.unibe.ch' + value.getHref(REQUEST={'lang': lang})
 
     if value is not None and isinstance(value, str) and value.startswith('{$uid:'):
+        lang_target = lang
+        if ';lang=' in value:
+            lang_target = re.sub(r'{\$uid:(.*);lang=(\w*)}', r'\2', value)
         value = strip_cmstest(
-            obj.getLinkObj(value).getHref2IndexHtmlInContext(None, REQUEST={'lang': lang, 'ZMS_CONTEXT_URL': True}))
+            obj.getLinkObj(value).getHref2IndexHtmlInContext(None, REQUEST={'lang': lang_target, 'ZMS_CONTEXT_URL': True}))
 
     if zms_attr == 'active':
         value = value and obj.isTranslated(REQUEST={'lang': lang}, lang=lang)
