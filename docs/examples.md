@@ -180,7 +180,7 @@ The ZMS Content endpoint provides instant retrival of content stored in ZODB by 
 
 It utilizes the ZMS default XML export function `xml = zodb.toXml(deep=True|False)`. The boolean parameter `deep` controls the processing of children in the content tree.
 
-The default XML response is automatically converted into JSON using [**xmltodict** Python library](https://github.com/thoughtnirvana/xmldict) `xmltodict.parse(xml)`.
+The default XML response is automatically converted into JSON using [**xmltodict** Python library](https://github.com/martinblech/xmltodict) `xmltodict.parse(xml)`.
 
 !!! warning "Caveat"
 

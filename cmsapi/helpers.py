@@ -17,10 +17,10 @@ from datetime import datetime
 from Products.zms import _blobfields
 
 PATH = os.path.abspath(os.path.dirname(__file__))
-PATH = PATH.startswith('/app') and PATH + '/..' or PATH + '/../../unibe-cms'
+PATH = PATH.startswith('/app') and PATH + '/..' or PATH + '/../../..'
 
-ZMS_METAS_PATH = f'{PATH}/frontend/ZMSModels/*/*/metaobj_manager/__metas__.py'
-ZMS_MODEL_PATH = f'{PATH}/frontend/ZMSModels/*/*/metaobj_manager/*/*/__init__.py'
+ZMS_METAS_PATH = f'{PATH}/frontend/zms/models/*/*/metaobj_manager/__metas__.py'
+ZMS_MODEL_PATH = f'{PATH}/frontend/zms/models/*/*/metaobj_manager/*/*/__init__.py'
 ZMS_METAS_ATTR = {}
 ZMS_MODEL_ATTR = {}
 

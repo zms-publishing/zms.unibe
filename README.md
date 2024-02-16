@@ -14,18 +14,12 @@ Additionally CMSAPI makes use of ~~Flasgger to generate the documentation~~ [SQL
 
 [PyCharm](https://www.jetbrains.com/pycharm/) is the recommended IDE for local development. First the desired Python version has to be installed for your system. Second an isolated Python virtual environment has to be created. Third the needed software stack has to be installed and setup.
 
-Assuming the `unibe-cmsapi` repository has been cloned and a Python virtual environment named `venvpy310-cmsapi` has been created in parallel, the installation steps are:
-
-    (venvpy310-cmsapi) $ bin/pip install -U pip wheel setuptools
-    
-    (venvpy310-cmsapi) $ bin/pip install Zope[wsgi]==5.5.2 \
-                        -e ../unibe-cmsapi/zms-headless \
-                        -c https://zopefoundation.github.io/Zope/releases/5.5.2/constraints.txt
-
-    (venvpy310-cmsapi) $ bin/pip install \
-                        -r ../unibe-cmsapi/requirements-fastapi.txt \
-                        -c ../unibe-cmsapi/constraints-fastapi.txt \
-                        -c https://zopefoundation.github.io/Zope/releases/5.5.2/constraints.txt
+    $ app/bin/pip install \
+        -e ../unibe-cms/backend/'zope[wsgi]' \
+        -c ../unibe-cms/backend/zope/constraints.txt \
+        -e zms-headless \
+        -r requirements.txt \
+        -c constraints.txt
 
 A sample run configuration:
 
