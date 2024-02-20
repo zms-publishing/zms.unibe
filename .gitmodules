@@ -1,4 +1,4 @@
 [submodule "zms-headless"]
 	path = zms-headless
-	url = git@github.com:idasm-unibe-ch/zms-fastapi.git
+	url = git@github.com:zms-publishing/ZMS.git
 	branch = unibe/headless
