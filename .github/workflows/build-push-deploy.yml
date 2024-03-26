@@ -1,0 +1,32 @@
+name: Build, push and deploy Docker image
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+
+jobs:
+  # This job is needed because we cannot access the env context in jobs.<job_id>.with
+  extract-environment:
+    runs-on: self-hosted
+    env:
+      ENVIRONMENT: ${{ (github.ref_type == 'tag' && 'testing') || (github.ref_name == 'main' && 'development') }}
+    outputs:
+      environment: ${{ steps.extract-environment.outputs.environment}}
+    steps:
+      - name: Extract environment
+        id: extract-environment
+        run: echo "environment=${ENVIRONMENT}" >> $GITHUB_OUTPUT
+  call-build-and-push-workflow:
+    needs: extract-environment
+    uses: idasm-unibe-ch/reusable-workflows/.github/workflows/build-and-push.yml@v1.0.0
+    with:
+      additional-docker-tags: ${{ needs.extract-environment.outputs.environment }}
+  call-deploy-workflow:
+    needs:
+      - extract-environment
+      - call-build-and-push-workflow
+    uses: ./github/workflows/deploy.yml
+    with:
+      environment: ${{ needs.extract-environment.outputs.environment }}

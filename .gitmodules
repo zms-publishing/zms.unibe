@@ -2,3 +2,7 @@
 	path = zms-headless
 	url = git@github.com:zms-publishing/ZMS.git
 	branch = unibe/headless
+[submodule "zms-base"]
+	path = zms-base
+	url = git@github.com:idasm-unibe-ch/zms-base.git
+	branch = main
