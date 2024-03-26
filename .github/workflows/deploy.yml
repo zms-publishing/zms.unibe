@@ -1,0 +1,19 @@
+name: Deploy Docker image
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "The job environment"
+        required: true
+        type: string
+jobs:
+  deploy-image:
+    runs-on: self-hosted
+    environment: ${{ inputs.environment }}
+    env:
+      PORTAINER_WEBHOOK_URL: ${{ vars.PORTAINER_WEBHOOK_URL }}
+      IMAGE_TAG: ${{ inputs.environment }}
+    steps:
+      - name: Call Portainer webhook URL
+        run: |
+          curl -X POST ${PORTAINER_WEBHOOK_URL}?tag=${IMAGE_TAG}
