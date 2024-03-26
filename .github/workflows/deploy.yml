@@ -8,6 +8,7 @@ on:
         type: string
 jobs:
   deploy-image:
+    if: ${{ ! vars.SKIP_DEPLOYMENT }}
     runs-on: self-hosted
     environment: ${{ inputs.environment }}
     strategy:
