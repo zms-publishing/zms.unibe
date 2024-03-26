@@ -23,6 +23,8 @@ jobs:
     uses: idasm-unibe-ch/reusable-workflows/.github/workflows/build-and-push.yml@v1.0.0
     with:
       additional-docker-tags: ${{ needs.extract-environment.outputs.environment }}
+    secrets:
+      PAT: ${{ secrets.PAT }}
   call-deploy-workflow:
     needs:
       - extract-environment
