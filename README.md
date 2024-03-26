@@ -7,8 +7,7 @@ Additionally CMSAPI makes use of ~~Flasgger to generate the documentation~~ [SQL
 ## Codebase
 
 **REST-API Repositories**
-* Internal Master: https://id-code.unibe.ch/projects/IDCMS/repos/unibe-cmsapi/browse (for deployments)
-* External Mirror: https://github.com/id-unibe-ch/unibe-cmsapi (for contributions)
+* https://github.com/idasm-unibe-ch/zms-fastapi
 
 ## Local container environment
 
