@@ -10,8 +10,11 @@ jobs:
   deploy-image:
     runs-on: self-hosted
     environment: ${{ inputs.environment }}
+    strategy:
+      matrix:
+        portainer-webhook-url: ${{ fromJSON(vars.PORTAINER_WEBHOOK_URLS) }}
     env:
-      PORTAINER_WEBHOOK_URL: ${{ vars.PORTAINER_WEBHOOK_URL }}
+      PORTAINER_WEBHOOK_URL: ${{ matrix.portainer-webhook-url }}
       IMAGE_TAG: ${{ inputs.environment }}
     steps:
       - name: Call Portainer webhook URL
