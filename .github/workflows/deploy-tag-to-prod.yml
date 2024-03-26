@@ -26,6 +26,6 @@ jobs:
     if: ${{ github.ref_type == 'tag' }}
     needs:
       - retag-and-push
-    uses: ./github/workflows/deploy.yml
+    uses: ./.github/workflows/deploy.yml
     with:
       environment: production

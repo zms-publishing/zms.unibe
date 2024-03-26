@@ -27,6 +27,6 @@ jobs:
     needs:
       - extract-environment
       - call-build-and-push-workflow
-    uses: ./github/workflows/deploy.yml
+    uses: ./.github/workflows/deploy.yml
     with:
       environment: ${{ needs.extract-environment.outputs.environment }}
