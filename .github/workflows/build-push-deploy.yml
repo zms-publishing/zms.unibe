@@ -26,7 +26,6 @@ jobs:
     secrets:
       PAT: ${{ secrets.PAT }}
   call-deploy-workflow:
-    if: ${{ ! vars.SKIP_DEPLOYMENT }}
     needs:
       - extract-environment
       - call-build-and-push-workflow
