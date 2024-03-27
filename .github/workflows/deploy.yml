@@ -9,7 +9,6 @@ on:
 jobs:
   deploy-image:
     runs-on: self-hosted
-    if: ${{ vars.SKIP_DEPLOYMENT == '' }}
     environment: ${{ inputs.environment }}
     strategy:
       matrix:

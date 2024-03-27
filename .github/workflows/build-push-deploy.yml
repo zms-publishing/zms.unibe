@@ -14,10 +14,13 @@ jobs:
       ENVIRONMENT: ${{ (github.ref_type == 'tag' && 'testing') || (github.ref_name == 'main' && 'development') }}
     outputs:
       environment: ${{ steps.extract-environment.outputs.environment}}
+      skip-deployment-var-key: ${{ steps.extract-environment.outputs.skip-deployment-var-key }}
     steps:
       - name: Extract environment
         id: extract-environment
-        run: echo "environment=${ENVIRONMENT}" >> $GITHUB_OUTPUT
+        run: |
+          echo "environment=${ENVIRONMENT}" >> $GITHUB_OUTPUT
+          echo "skip-deployment-var-key=SKIP_DEPLOYMENT_${ENVIRONMENT@U}" >> $GITHUB_OUTPUT
   call-build-and-push-workflow:
     needs: extract-environment
     uses: idasm-unibe-ch/reusable-workflows/.github/workflows/build-and-push.yml@v1.0.0
@@ -26,6 +29,7 @@ jobs:
     secrets:
       PAT: ${{ secrets.PAT }}
   call-deploy-workflow:
+    if: ${{ vars[needs.extract-environment.outputs.skip-deployment-var-key] == '' }}
     needs:
       - extract-environment
       - call-build-and-push-workflow
