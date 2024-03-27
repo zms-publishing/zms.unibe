@@ -17,6 +17,6 @@ jobs:
       - name: Call Portainer webhook URL
         if: ${{ env.PORTAINER_WEBHOOK_URLS != '' }}
         run: |
-          echo $PORTAINER_WEBHOOK_URLS | jq -c '.[]' | while read i; do
+          echo $PORTAINER_WEBHOOK_URLS | jq -c -r '.[]' | while read i; do
             curl -X POST ${i}?tag=${IMAGE_TAG}
           done
