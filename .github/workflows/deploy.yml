@@ -10,14 +10,13 @@ jobs:
   deploy-image:
     runs-on: self-hosted
     environment: ${{ inputs.environment }}
-    strategy:
-      matrix:
-        portainer-webhook-url: ${{ fromJSON(vars.PORTAINER_WEBHOOK_URLS || '["none"]') }}
     env:
-      PORTAINER_WEBHOOK_URL: ${{ matrix.portainer-webhook-url }}
+      PORTAINER_WEBHOOK_URLS: ${{ vars.PORTAINER_WEBHOOK_URLS }}
       IMAGE_TAG: ${{ inputs.environment }}
     steps:
       - name: Call Portainer webhook URL
-        if: ${{ startsWith(env.PORTAINER_WEBHOOK_URL, 'http') }}
+        if: ${{ env.PORTAINER_WEBHOOK_URLS != '' }}
         run: |
-          curl -X POST ${PORTAINER_WEBHOOK_URL}?tag=${IMAGE_TAG}
+          echo $PORTAINER_WEBHOOK_URLS | jq -c '.[]' | while read i; do
+            curl -X POST ${i}?tag=${IMAGE_TAG}
+          done
