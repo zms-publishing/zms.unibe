@@ -20,7 +20,7 @@ jobs:
         id: extract-environment
         run: |
           echo "environment=${ENVIRONMENT}" >> $GITHUB_OUTPUT
-          echo "skip-deployment-var-key=SKIP_DEPLOYMENT_${ENVIRONMENT@U}" >> $GITHUB_OUTPUT
+          echo "skip-deployment-var-key=SKIP_DEPLOYMENT_${ENVIRONMENT^^}" >> $GITHUB_OUTPUT
   call-build-and-push-workflow:
     needs: extract-environment
     uses: idasm-unibe-ch/reusable-workflows/.github/workflows/build-and-push.yml@v1.0.0
