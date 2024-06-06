@@ -16,7 +16,7 @@ class MediaRelease(BaseModel):
     section: Section
 
     dataSource: str                 # ZMS path
-    dataLevel: str                  # ZMS getlevel
+    dataLevel: int                  # ZMS getlevel
     dataUuid: UUID                  # ZMS uuid
 
 

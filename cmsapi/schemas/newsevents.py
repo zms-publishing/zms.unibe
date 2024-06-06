@@ -31,7 +31,8 @@ class News(BaseModel):              # TEASER ELEMENT 2022
     section: Section
 
     dataSource: str                 # ZMS path
-    dataLevel: str                  # ZMS getlevel
+    dataLevel: int                  # ZMS getlevel
+    dataSort: int                   # ZMS getSortId
     dataUuid: UUID                  # ZMS uuid
 
 
@@ -58,7 +59,7 @@ class Event(BaseModel):             # TEASER ELEMENT 2022   AGENDA PORTAL       
     section: Section
 
     dataSource: str                 # ZMS getPath           agenda.unibe.ch/agenda.json     https://agenda.ub.unibe.ch/.
-    dataLevel: str                  # ZMS getlevel          1                               1
+    dataLevel: int                  # ZMS getlevel          1                               1
     dataUuid: UUID | None           # ZMS uuid              -                               -
 
 
@@ -81,7 +82,7 @@ class StatusMessage(BaseModel):
     section: Section                # "type": "WARTUNG",
 
     dataSource: str
-    dataLevel: str
+    dataLevel: int
     dataUuid: UUID | None
 
 

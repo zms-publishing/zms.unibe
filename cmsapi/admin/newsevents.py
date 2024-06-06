@@ -29,6 +29,7 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         obj.type = 'event'
         obj.path = 'agenda_portal'
         obj.level = 1
+        obj.sort_id = 1
         obj.start_dt = res.json_datum_zeit_start
         obj.end_dt = res.json_datum_zeit_end > res.json_datum_zeit_start and \
                      res.json_datum_zeit_end or \
@@ -59,6 +60,7 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         obj.type = 'event'
         obj.path = 'agenda_portal'
         obj.level = 1
+        obj.sort_id = 1
         obj.start_dt = res.json_datum_zeit_start
         obj.end_dt = res.json_datum_zeit_end > res.json_datum_zeit_start and \
                      res.json_datum_zeit_end or \
@@ -89,6 +91,7 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         obj.type = 'event'
         obj.path = 'agenda_library'
         obj.level = 1
+        obj.sort_id = 1
         obj.start_dt = res.startsAt
         obj.end_dt = res.endsAt > res.startsAt and \
                      res.endsAt or \
@@ -117,6 +120,7 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         obj.type = 'event'
         obj.path = 'agenda_library'
         obj.level = 1
+        obj.sort_id = 1
         obj.start_dt = res.startsAt
         obj.end_dt = res.endsAt > res.startsAt and \
                      res.endsAt or \
@@ -168,6 +172,7 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         obj.type = res.type
         obj.path = res.path
         obj.level = obj_level
+        obj.sort_id = res.sort_id
         obj.start_dt = res.start_dt
         obj.end_dt = res.end_dt > res.start_dt and \
                      res.end_dt or \
@@ -230,6 +235,7 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         obj.type = res.type
         obj.path = res.path
         obj.level = obj_level
+        obj.sort_id = res.sort_id
         obj.start_dt = res.start_dt
         obj.end_dt = res.end_dt
 

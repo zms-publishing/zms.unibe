@@ -47,11 +47,8 @@ async def get_news(
                      where(not_(ZMSSite.path.contains('/zms_schulung'))).
                      where(not_(NewsEvents.path.contains('/trashcan'))).
                      where(or_(sections is None and True or (NewsEvents.site_uuid == section for section in sections))).
-                     # order_by(NewsEvents.level).
-                     order_by(get_attr_by_lang(lang,
-                                               de=NewsEvents.lastmod_dt_de,
-                                               en=NewsEvents.lastmod_dt_en,
-                                               fr=NewsEvents.lastmod_dt_fr).desc()).
+                     order_by(NewsEvents.level).
+                     order_by(NewsEvents.sort_id).
                      order_by(ZMSSite.type)]
 
         results = session.exec(statement[0].offset(offset).limit(limit))
@@ -97,6 +94,7 @@ async def get_news(
                 'section': section,
                 'dataSource': res.NewsEvents.path,
                 'dataLevel': res.NewsEvents.level,
+                'dataSort': res.NewsEvents.sort_id,
                 'dataUuid': res.NewsEvents.uuid,
             }))
 

@@ -5,11 +5,11 @@ from fastapi.responses import RedirectResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-from .metadata import cmsapi_tags
-from .routers import newsevents, zmsobjects, zmscontent, servicelinks, uniaktuell, mediareleases
+from cmsapi.metadata import cmsapi_tags
+from cmsapi.routers import newsevents, zmsobjects, zmscontent, servicelinks, uniaktuell, mediareleases
 
 app = FastAPI(title="CMSAPI v3",
-              version="3.0.1",
+              version="3.1.0",
               description="Python-based REST API for retrieving, analyzing and consolidating content "
                           "published in UniBE-CMS and other information systems.",
               docs_url="/v3/swagger",
