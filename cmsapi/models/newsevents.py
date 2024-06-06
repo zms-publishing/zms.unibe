@@ -21,6 +21,7 @@ class NewsEvents(SQLModel, table=True):  # intermediate consolidation of Agendas
     path: str
     level: int
     sort_id: int
+    sort_id_parent: int
     start_dt: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     end_dt: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     location_de: str | None

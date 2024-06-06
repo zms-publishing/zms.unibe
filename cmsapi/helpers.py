@@ -262,6 +262,12 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
     if zms_attr == "obj.getSortId()":
         return obj.getSortId()
 
+    if zms_attr == "obj.getParentNode().getSortId()":
+        if obj.getLevel() > 0:
+            return obj.getParentNode().getSortId()
+        else:
+            return 0
+
     if zms_attr == "obj.getPath()":
         return obj.getPath()
 
