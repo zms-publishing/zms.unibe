@@ -33,6 +33,7 @@ class News(BaseModel):              # TEASER ELEMENT 2022
     dataSource: str                 # ZMS path
     dataLevel: int                  # ZMS getlevel
     dataSort: int                   # ZMS getSortId
+    dataSortParent: int             # ZMS getSortId of enclosing container
     dataUuid: UUID                  # ZMS uuid
 
 

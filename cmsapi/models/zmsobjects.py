@@ -21,6 +21,7 @@ class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inheri
     lastmod_dt_de: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     lastmod_dt_en: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     lastmod_dt_fr: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    sort_id_parent: int
     sort_id: int
     level: int
     path: str
@@ -46,6 +47,7 @@ class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inheri
             'lastmod_dt_de':    'change_dt_ger',
             'lastmod_dt_en':    'change_dt_eng',
             'lastmod_dt_fr':    'change_dt_fra',
+            'sort_id_parent':   'obj.getParentNode().getSortId()',
             'sort_id':          'obj.getSortId()',
             'level':            'obj.getLevel()',
             'path':             'obj.getPath()',

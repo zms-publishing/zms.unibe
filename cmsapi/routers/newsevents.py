@@ -48,6 +48,7 @@ async def get_news(
                      where(not_(NewsEvents.path.contains('/trashcan'))).
                      where(or_(sections is None and True or (NewsEvents.site_uuid == section for section in sections))).
                      order_by(NewsEvents.level).
+                     order_by(NewsEvents.sort_id_parent).
                      order_by(NewsEvents.sort_id).
                      order_by(ZMSSite.type)]
 
@@ -95,6 +96,7 @@ async def get_news(
                 'dataSource': res.NewsEvents.path,
                 'dataLevel': res.NewsEvents.level,
                 'dataSort': res.NewsEvents.sort_id,
+                'dataSortParent': res.NewsEvents.sort_id_parent,
                 'dataUuid': res.NewsEvents.uuid,
             }))
 
