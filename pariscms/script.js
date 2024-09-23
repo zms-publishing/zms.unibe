@@ -14,7 +14,7 @@ function dataToRows(array) {
     array.forEach(institute => {
         institute.members.forEach(member => {
             entities.push({
-                department: `${institute.name} (${institute.externId})`,
+                department: `${institute.name}`,
                 member: {
                     firstname: member.firstname,
                     lastname: member.lastname,
