@@ -25,7 +25,7 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
  && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
 # We use relative copy commands because WORKDIR is set to $APP_HOME in zms-base image
-COPY --chown=$USERNAME:$GROUPNAME zms-headless zms-headless
+COPY --chown=$USERNAME:$GROUPNAME zms-core zms-core
 COPY --chown=$USERNAME:$GROUPNAME requirements.txt requirements.txt
 COPY --chown=$USERNAME:$GROUPNAME constraints.txt constraints.txt
 

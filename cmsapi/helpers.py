@@ -7,6 +7,7 @@ import os
 import io
 import re
 import xmltodict
+import time
 
 from anytree import Node, RenderTree
 from anytree.exporter import JsonExporter, DictExporter
@@ -16,6 +17,7 @@ from uuid import UUID
 from enum import Enum
 from datetime import datetime
 from Products.zms import _blobfields
+from zope.globalrequest import setRequest
 
 PATH = os.path.abspath(os.path.dirname(__file__))
 PATH = PATH.startswith('/app') and PATH + '/..' or PATH + '/../../..'
@@ -24,6 +26,36 @@ ZMS_METAS_PATH = f'{PATH}/frontend/zms/models/*/*/metaobj_manager/__metas__.py'
 ZMS_MODEL_PATH = f'{PATH}/frontend/zms/models/*/*/metaobj_manager/*/*/__init__.py'
 ZMS_METAS_ATTR = {}
 ZMS_MODEL_ATTR = {}
+
+def create_headless_http_request():
+    """
+    Returns a ZPublisher.HTTPRequest object to be used in headless mode.
+    """
+    # Measure time for exection.
+    import logging
+    LOGGER = logging.getLogger('create_headless_http_request')
+    start_time = time.time()
+    # Imports.  
+    from io import BytesIO
+    from ZPublisher.HTTPRequest import HTTPRequest
+    from ZPublisher.HTTPResponse import HTTPResponse
+
+    env = {}
+    env.setdefault('SERVER_NAME', 'nohost')
+    env.setdefault('SERVER_PORT', '80')
+    resp = HTTPResponse(stdout=BytesIO)
+
+    # Print execution time.
+    LOGGER.log(logging.INFO, 'Execution time create_headless_http_request(): %s' % (time.time() - start_time))
+
+    return HTTPRequest(stdin=BytesIO, environ=env, response=resp)
+
+headless_http_request = create_headless_http_request()
+# Set defaults
+headless_http_request.set('ZMS_CONTEXT_URL', True)
+# Set headless_http_request via zope.globalrequest.setRequest.
+# The ZMS uses the zope.globalrequest.getRequest as a fallback.
+setRequest(headless_http_request)
 
 
 class Lang(str, Enum):
@@ -235,8 +267,9 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
             lang = 'eng'
         if sql_attr.endswith('_fr'):
             lang = 'fra'
+        headless_http_request.set('lang', lang)
         return strip_cmstest(
-            obj.getHref2IndexHtmlInContext(None, REQUEST={'lang': lang, 'ZMS_CONTEXT_URL': True}))
+            obj.getHref2IndexHtmlInContext(None, REQUEST=headless_http_request))
 
     if zms_attr == 'obj.getParentNode().attr("title")':
         if sql_attr.endswith('_de'):
@@ -245,10 +278,11 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
             lang = 'eng'
         if sql_attr.endswith('_fr'):
             lang = 'fra'
+        headless_http_request.set('lang', lang)
         if obj.getLevel() > 0:
-            return obj.getParentNode().attr("title", REQUEST={'lang': lang})
+            return obj.getParentNode().attr("title", REQUEST=headless_http_request)
         else:
-            return obj.attr("title", REQUEST={'lang': lang})
+            return obj.attr("title", REQUEST=headless_http_request)
 
     if zms_attr == 'obj.meta_id':
         return obj.meta_id
@@ -282,22 +316,24 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
 
     if zms_attr == "obj.getConfProperty('UniBE.Alias')":
         return obj.getConfProperty('UniBE.Alias')
-
-    value = obj.attr(zms_attr, REQUEST={'lang': lang})
+    
+    headless_http_request.set('lang', lang)
+    value = obj.attr(zms_attr, REQUEST=headless_http_request)
 
     if value is not None and (isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile)):
-        value = 'https://www.unibe.ch' + value.getHref(REQUEST={'lang': lang})
+        value = 'https://www.unibe.ch' + value.getHref(REQUEST=headless_http_request)
 
     if value is not None and isinstance(value, str) and value.startswith('{$uid:'):
         lang_target = lang
         if ';lang=' in value:
             lang_target = re.sub(r'{\$uid:(.*);lang=(\w*)}', r'\2', value)
+        headless_http_request.set('lang', lang_target)
         value = strip_cmstest(
-            obj.getLinkObj(value).getHref2IndexHtmlInContext(None, REQUEST={'lang': lang_target, 'ZMS_CONTEXT_URL': True}))
+            obj.getLinkObj(value).getHref2IndexHtmlInContext(None, REQUEST=headless_http_request))
 
     if zms_attr == 'active':
-        value = value and obj.isTranslated(REQUEST={'lang': lang}, lang=lang)
-        value = value and len(list(filter(lambda x: not x.isActive(REQUEST={'lang': lang}),
+        value = value and obj.isTranslated(REQUEST=headless_http_request, lang=lang)
+        value = value and len(list(filter(lambda x: not x.isActive(REQUEST=headless_http_request),
                                           obj.breadcrumbs_obj_path(portalMaster=False)))) == 0
 
     if sql_attr in get_datetime_props(cls):

@@ -16,4 +16,4 @@ anytree             # https://anytree.readthedocs.io
 ics                 # https://github.com/ics-py/ics-py
 xmltodict           # https://github.com/martinblech/xmltodict
 
-file:///app/zms-headless
+file:///app/zms-core

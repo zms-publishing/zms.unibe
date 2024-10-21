@@ -39,7 +39,7 @@ Docker compose runs the following containers:
     $ app/bin/pip install \
         Zope[wsgi]==5.8.6 \
         -c https://zopefoundation.github.io/Zope/releases/5.8.6/constraints.txt \
-        -e zms-headless \
+        -e zms-core \
         -r requirements.txt \
         -c constraints.txt
 
