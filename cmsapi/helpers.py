@@ -244,6 +244,18 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         zms_attr = zms_attr[:-4]
     else:
         lang = 'ger'
+        
+    # headless_http_request.set('lang', lang)
+    # 
+    # if zms_attr == '_datafilecached':
+    #     import requests
+    #     href = obj.attr('_datafilecached').getHref(REQUEST=headless_http_request)
+    #     href = f'http://127.0.0.1:8080{href}'
+    #     try:
+    #         json = requests.get(href).json()
+    #     except:
+    #         json = None
+    #     return str(json)
 
     if zms_attr == 'obj._uid':
         return obj._uid

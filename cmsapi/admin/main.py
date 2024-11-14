@@ -3,8 +3,8 @@ import typer
 
 from .db import connect_db
 from .commands import init_tables, update_tables
-from ..models.zmsobjects import ZMSSite, ZMSDataTable, ZMSFormulator
-from ..models.teaserelement2022 import TeaserElement2022
+from ..models.zmsobjects import *
+from ..models.teaserelement2022 import TeaserContainer2022, TeaserElement2022
 from ..models.newsbox import NewsBox
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.servicelinks import ServiceLink
@@ -17,8 +17,13 @@ from ..models.mediareleases import MediaRelease
 
 MODELS_AVAILABLE = {
     'ZMSSite': ZMSSite,
-    # 'ZMSDataTable': ZMSDataTable,
-    # 'ZMSFormulator': ZMSFormulator,
+    'ZMSBoris': ZMSBoris,
+    'ZMSDataTable': ZMSDataTable,
+    'ZMSFormulator': ZMSFormulator,
+    'ZMSFolder': ZMSFolder,
+    'ZMSGraphic': ZMSGraphic,
+    'ZMSDocument': ZMSDocument,
+    'TeaserContainer2022': TeaserContainer2022,
     'TeaserElement2022': TeaserElement2022,
     'NewsBox': NewsBox,
     'AgendaPortal': AgendaPortal,
@@ -28,6 +33,9 @@ MODELS_AVAILABLE = {
     'StatusMessage': StatusMessage,
     'UniaktuellArticle': UniaktuellArticle,
     'MediaRelease': MediaRelease,
+    'TwoCols': TwoCols,
+    'ContentTabs': ContentTabs,
+    'InfoBox': InfoBox,
 }
 
 

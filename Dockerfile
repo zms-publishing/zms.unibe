@@ -39,6 +39,7 @@ COPY --chown=$USERNAME:$GROUPNAME cmsapi cmsapi
 COPY --chown=$USERNAME:$GROUPNAME site site
 COPY --chown=$USERNAME:$GROUPNAME cron/afterwork /etc/periodic/afterwork
 COPY --chown=$USERNAME:$GROUPNAME cron/officehours /etc/periodic/officehours
+COPY --chown=$USERNAME:$GROUPNAME cron/weekly /etc/periodic/weekly
 COPY --chown=$USERNAME:$GROUPNAME init_scripts $ENTRYPOINT_SCRIPTS
 
 # Run with restricted user
