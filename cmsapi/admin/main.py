@@ -36,6 +36,11 @@ MODELS_AVAILABLE = {
     'TwoCols': TwoCols,
     'ContentTabs': ContentTabs,
     'InfoBox': InfoBox,
+    'Person': Person,
+    'ContactBoxSection': ContactBoxSection,
+    'ContactBox': ContactBox,
+    'TeamSection': TeamSection,
+    'Team': Team,
 }
 
 

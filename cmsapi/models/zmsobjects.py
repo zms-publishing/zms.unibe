@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field, Column, DateTime, JSON
-from sqlalchemy.dialects.postgresql import JSONB
+#from sqlalchemy.dialects.postgresql import JSONB
 from datetime import datetime
 from uuid import UUID
 
@@ -82,8 +82,8 @@ class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?meta
             'title_de':         'title_ger',
             'title_en':         'title_eng',
             'title_fr':         'title_fra',
-            'domain':           "obj.getConfProperty('UniBE.Server')",
-            'alias':            "obj.getConfProperty('UniBE.Alias')",
+            'domain':           'obj.getConfProperty(UniBE.Server)',
+            'alias':            'obj.getConfProperty(UniBE.Alias)',
             'level':            'obj.getLevel()',
             'path':             'obj.getPath()',
             'type':             'obj.getType()',
@@ -270,6 +270,7 @@ class TwoCols(ZMSBase, table=True):
             'title_fr':         'title_fra',
         }
 
+
 class ContentTabs(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
     layout: str | None
@@ -286,6 +287,7 @@ class ContentTabs(ZMSBase, table=True):
             'layout':           'attr_dc_type_layout',
             'orientation':      'orientation',
         }
+
 
 class InfoBox(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
@@ -324,4 +326,132 @@ class InfoBox(ZMSBase, table=True):
             'copyright_en':     'captionaddon_eng',   
             'copyright_fr':     'captionaddon_fra',
             'layout':           'attr_dc_type_layout',
+        }
+
+    
+class Person(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    lastname: str | None
+    firstname: str | None
+    honorificSuffix: str | None
+    position_de: str | None
+    position_en: str | None
+    position_fr: str | None
+    department_de: str | None
+    department_en: str | None
+    department_fr: str | None
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'person'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'lastname':         'lastname',
+            'firstname':        'firstname',
+            'honorificSuffix':  'honorificSuffix',
+            'position_de':      'position_ger',
+            'position_en':      'position_eng',
+            'position_fr':      'position_fra',
+            'department_de':    'department_ger',
+            'department_en':    'department_eng',
+            'department_fr':    'department_fra',
+        }
+
+
+class ContactBoxSection(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    intersection_title_de: str | None
+    intersection_title_en: str | None
+    intersection_title_fr: str | None
+    interpara_title_de: str | None
+    interpara_title_en: str | None
+    interpara_title_fr: str | None
+    contactbox_uuid: UUID
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'contactboxsection'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'intersection_title_de':      'intersection_title_ger',
+            'intersection_title_en':      'intersection_title_eng',
+            'intersection_title_fr':      'intersection_title_fra',
+            'interpara_title_de':         'interpara_title_ger',
+            'interpara_title_en':         'interpara_title_eng',
+            'interpara_title_fr':         'interpara_title_fra',
+            'contactbox_uuid':            'obj.getParentNode()._uid',
+        }
+
+
+class ContactBox(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    titlealt_de: str | None
+    titlealt_en: str | None
+    titlealt_fr: str | None
+    title_de: str | None
+    title_en: str | None
+    title_fr: str | None
+    sections: int
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'contactbox'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'titlealt_de':      'titlealt_ger',
+            'titlealt_en':      'titlealt_eng',
+            'titlealt_fr':      'titlealt_fra',
+            'title_de':         'title_ger',
+            'title_en':         'title_eng',
+            'title_fr':         'title_fra',
+            'sections':         'obj.getObjChildren(sections)',
+        }
+
+
+class TeamSection(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    title_de: str | None
+    title_en: str | None
+    title_fr: str | None
+    team_uuid: UUID | None
+    persons: int
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'teamsection'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'title_de':         'title_ger',
+            'title_en':         'title_eng',
+            'title_fr':         'title_fra',
+            'team_uuid':        'obj.getParentNode()._uid',
+            'persons':          'obj.getObjChildren(person)',
+        }
+
+
+class Team(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    sections: int
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'team'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'sections':          'obj.getObjChildren(teamsection)',
         }

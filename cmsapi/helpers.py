@@ -233,20 +233,28 @@ def get_datetime_props(cls):
 
 def get_attr_value(sql_attr, zms_attr, obj, cls):
 
-    if sql_attr.endswith('_de') and zms_attr.endswith('_ger'):
+    if zms_attr[-4:] in ('_ger', '_eng', '_fra'):
+        zms_attr = zms_attr[:-4]
+
+    if sql_attr.endswith('_de'):
         lang = 'ger'
-        zms_attr = zms_attr[:-4]
-    elif sql_attr.endswith('_en') and zms_attr.endswith('_eng'):
+    elif sql_attr.endswith('_en'):
         lang = 'eng'
-        zms_attr = zms_attr[:-4]
-    elif sql_attr.endswith('_fr') and zms_attr.endswith('_fra'):
+    elif sql_attr.endswith('_fr'):
         lang = 'fra'
-        zms_attr = zms_attr[:-4]
     else:
         lang = 'ger'
         
-    # headless_http_request.set('lang', lang)
-    # 
+    headless_http_request.set('lang', lang)
+
+    # extract parameter between parenthesis in zms_attr
+    param = None
+    regex = re.search(pattern=r'\((.+)\)', string=zms_attr)
+    if regex is not None:
+        res = regex.groups()
+        if type(res) is tuple and len(res) > 0:
+            param = res[0]
+        
     # if zms_attr == '_datafilecached':
     #     import requests
     #     href = obj.attr('_datafilecached').getHref(REQUEST=headless_http_request)
@@ -256,6 +264,18 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
     #     except:
     #         json = None
     #     return str(json)
+
+    if 'obj.getObjChildren' in zms_attr:
+        if param is not None:
+            return len(obj.getObjChildren(id=param, REQUEST=headless_http_request))
+        else:
+            return 0
+
+    if 'obj.getConfProperty' in zms_attr:
+        if param is not None:
+            return obj.getConfProperty(key=param)
+        else:
+            return ''
 
     if zms_attr == 'obj._uid':
         return obj._uid
@@ -273,24 +293,10 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         return getattr(obj.getHome().aq_parent, 'content', obj.getHome().content)._uid
 
     if zms_attr == 'obj.getHref2IndexHtmlInContext()':
-        if sql_attr.endswith('_de'):
-            lang = 'ger'
-        if sql_attr.endswith('_en'):
-            lang = 'eng'
-        if sql_attr.endswith('_fr'):
-            lang = 'fra'
-        headless_http_request.set('lang', lang)
         return strip_cmstest(
             obj.getHref2IndexHtmlInContext(None, REQUEST=headless_http_request))
 
-    if zms_attr == 'obj.getParentNode().attr("title")':
-        if sql_attr.endswith('_de'):
-            lang = 'ger'
-        if sql_attr.endswith('_en'):
-            lang = 'eng'
-        if sql_attr.endswith('_fr'):
-            lang = 'fra'
-        headless_http_request.set('lang', lang)
+    if zms_attr == 'obj.getParentNode().title':
         if obj.getLevel() > 0:
             return obj.getParentNode().attr("title", REQUEST=headless_http_request)
         else:
@@ -323,13 +329,6 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         else:
             return obj.attr("attr_dc_type")  # TODO: handle multilang if needed - for ZMSSite not necessary
 
-    if zms_attr == "obj.getConfProperty('UniBE.Server')":
-        return obj.getConfProperty('UniBE.Server')
-
-    if zms_attr == "obj.getConfProperty('UniBE.Alias')":
-        return obj.getConfProperty('UniBE.Alias')
-    
-    headless_http_request.set('lang', lang)
     value = obj.attr(zms_attr, REQUEST=headless_http_request)
 
     if value is not None and (isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile)):
@@ -342,6 +341,7 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         headless_http_request.set('lang', lang_target)
         value = strip_cmstest(
             obj.getLinkObj(value).getHref2IndexHtmlInContext(None, REQUEST=headless_http_request))
+        headless_http_request.set('lang', lang)
 
     if zms_attr == 'active':
         value = value and obj.isTranslated(REQUEST=headless_http_request, lang=lang)

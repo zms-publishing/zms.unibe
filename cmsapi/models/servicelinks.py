@@ -47,7 +47,7 @@ class ServiceLink(ZMSBase, table=True):
             'url_en':           'file_eng',
             'url_fr':           'file_fra',
             'parent_uuid':      'obj.getParentNode()._uid',
-            'parent_title_de':  'obj.getParentNode().attr("title")',
-            'parent_title_en':  'obj.getParentNode().attr("title")',
-            'parent_title_fr':  'obj.getParentNode().attr("title")',
+            'parent_title_de':  'obj.getParentNode().title_ger',
+            'parent_title_en':  'obj.getParentNode().title_eng',
+            'parent_title_fr':  'obj.getParentNode().title_fra',
         }

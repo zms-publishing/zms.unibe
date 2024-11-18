@@ -11,6 +11,11 @@ $VENV_HOME/bin/python -m cmsapi.admin.main update \
   --metaobj TwoCols \
   --metaobj TeaserContainer2022 \
   --metaobj ZMSGraphic \
+  --metaobj Person \
+  --metaobj ContactBoxSection \
+  --metaobj ContactBox \
+  --metaobj TeamSection \
+  --metaobj Team \
   &>> $VENV_HOME/log/api-cron.log
 
 
