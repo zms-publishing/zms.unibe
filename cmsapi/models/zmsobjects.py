@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field, Column, DateTime, JSON
+from sqlmodel import SQLModel, Field, Column, DateTime, Date, Time, JSON
 #from sqlalchemy.dialects.postgresql import JSONB
 from datetime import datetime
 from uuid import UUID
@@ -6,7 +6,7 @@ from uuid import UUID
 
 class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inherit
     uuid: UUID = Field(primary_key=True)
-    site_uuid: UUID = Field(foreign_key="zmssite.uuid")
+    site_uuid: UUID #= Field(foreign_key="zmssite.uuid")
     active_de: bool
     active_en: bool
     active_fr: bool
@@ -33,9 +33,9 @@ class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inheri
             # sql_attr          # zms_attr
             'uuid':             'obj._uid',
             'site_uuid':        'obj.getDocumentElement()._uid',
-            'active_de':        'active_ger',
-            'active_en':        'active_eng',
-            'active_fr':        'active_fra',
+            'active_de':        'obj.isActivatedByCheckboxAndTimeline()',
+            'active_en':        'obj.isActivatedByCheckboxAndTimeline()',
+            'active_fr':        'obj.isActivatedByCheckboxAndTimeline()',
             'active_start_de':  'attr_active_start_ger',
             'active_start_en':  'attr_active_start_eng',
             'active_start_fr':  'attr_active_start_fra',
@@ -91,7 +91,7 @@ class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?meta
         }
 
 
-class ZMSFolder(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/models?metaobj=ZMSFolder&types=%2A
+class ZMSFolder(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
     title_de: str
     title_en: str
@@ -113,7 +113,7 @@ class ZMSFolder(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/mode
         }
 
 
-class ZMSDocument(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/models?metaobj=ZMSDocument&types=%2A
+class ZMSDocument(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
     title_de: str
     title_en: str
@@ -135,11 +135,12 @@ class ZMSDocument(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/mo
         }
 
 
-class ZMSFormulator(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/models?metaobj=ZMSFormulator&types=%2A
+class ZMSFormulator(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
     title_de: str
     title_en: str
     title_fr: str
+    items: int | None
 
     @staticmethod
     def get_zms_metaid():
@@ -152,7 +153,16 @@ class ZMSFormulator(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/
             'title_de':         'title_ger',
             'title_en':         'title_eng',
             'title_fr':         'title_fra',
+            'items':            'obj.getObjChildren(formulatorItems)',
         }
+
+
+# TODO: ZMSLinkContainer (25)
+# TODO: ZMSLinkElement (31.238)
+
+
+# TODO: linkcontainer (10.022)
+# TODO: linkelement (76.096)
 
 
 class ZMSBoris(ZMSBase, table=True):
@@ -179,7 +189,7 @@ class ZMSBoris(ZMSBase, table=True):
         }
 
 
-class ZMSDataTable(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/models?metaobj=ZMSDataTable&types=%2A
+class ZMSDataTable(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
     dataurl: str | None
 
@@ -195,6 +205,32 @@ class ZMSDataTable(ZMSBase, table=True):  # TODO: http://localhost:5003/v3/zms/m
         }
 
 
+class ZMSTable(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    caption_de: str | None
+    caption_en: str | None
+    caption_fr: str | None
+    descr_de: str | None
+    descr_en: str | None
+    descr_fr: str | None
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'ZMSTable'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'caption_de':          'caption_ger',
+            'caption_en':          'caption_eng',
+            'caption_fr':          'caption_fra',
+            'descr_de':            'attr_dc_description_ger',
+            'descr_en':            'attr_dc_description_eng',
+            'descr_fr':            'attr_dc_description_fra',
+        }
+
+
 class ZMSGraphic(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
     img_de: str | None
@@ -206,6 +242,15 @@ class ZMSGraphic(ZMSBase, table=True):
     imgsuperres_de: str | None
     imgsuperres_en: str | None
     imgsuperres_fr: str | None
+    img_size_de: int | None
+    img_size_en: int | None
+    img_size_fr: int | None
+    imghires_size_de: int | None
+    imghires_size_en: int | None
+    imghires_size_fr: int | None
+    imgsuperres_size_de: int | None
+    imgsuperres_size_en: int | None
+    imgsuperres_size_fr: int | None
     img_attrs_spec: str | None
     attr_url_de: str | None
     attr_url_en: str | None
@@ -238,6 +283,15 @@ class ZMSGraphic(ZMSBase, table=True):
             'imgsuperres_de':   'imgsuperres_ger',
             'imgsuperres_en':   'imgsuperres_eng',
             'imgsuperres_fr':   'imgsuperres_fra',
+            'img_size_de':      'img_ger',
+            'img_size_en':      'img_eng',
+            'img_size_fr':      'img_fra',
+            'imghires_size_de': 'imghires_ger',
+            'imghires_size_en': 'imghires_eng',
+            'imghires_size_fr': 'imghires_fra',
+            'imgsuperres_size_de': 'imgsuperres_ger',
+            'imgsuperres_size_en': 'imgsuperres_eng',
+            'imgsuperres_size_fr': 'imgsuperres_fra',
             'img_attrs_spec':   'img_attrs_spec',
             'attr_url_de':      'attr_url_ger',
             'attr_url_en':      'attr_url_eng',
@@ -248,6 +302,52 @@ class ZMSGraphic(ZMSBase, table=True):
             'captionaddon_de':  'captionaddon_ger',
             'captionaddon_en':  'captionaddon_eng',
             'captionaddon_fr':  'captionaddon_fra',
+        }
+
+
+class ZMSFile(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    title_de: str | None
+    title_en: str | None
+    title_fr: str | None
+    file_de: str | None
+    file_en: str | None
+    file_fr: str | None
+    file_size_de: int | None
+    file_size_en: int | None
+    file_size_fr: int | None
+    filetype: str
+    descr_de: str | None
+    descr_en: str | None
+    descr_fr: str | None
+    amount_de: str | None
+    amount_en: str | None
+    amount_fr: str | None
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'ZMSFile'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'title_de':         'title_ger',
+            'title_en':         'title_eng',
+            'title_fr':         'title_fra',
+            'file_de':          'file_ger',
+            'file_en':          'file_eng',
+            'file_fr':          'file_fra',
+            'file_size_de':     'file_ger',
+            'file_size_en':     'file_eng',
+            'file_size_fr':     'file_fra', 
+            'filetype':         'filetype',
+            'descr_de':         'attr_dc_description_ger',
+            'descr_en':         'attr_dc_description_eng',
+            'descr_fr':         'attr_dc_description_fra',
+            'amount_de':        'amount_ger',
+            'amount_en':        'amount_eng',
+            'amount_fr':        'amount_fra',
         }
 
 
@@ -289,6 +389,30 @@ class ContentTabs(ZMSBase, table=True):
         }
 
 
+class ContentPane(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    title_de: str | None
+    title_en: str | None
+    title_fr: str | None
+    elements: int | None
+    contenttabs_uuid: UUID
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'contentpane'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'title_de':         'title_ger',
+            'title_en':         'title_eng',
+            'title_fr':         'title_fra',
+            'elements':         'obj.getObjChildren(e)',
+            'contenttabs_uuid': 'obj.getParentNode()._uid',
+        }
+
+
 class InfoBox(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
     title_de: str | None
@@ -326,6 +450,34 @@ class InfoBox(ZMSBase, table=True):
             'copyright_en':     'captionaddon_eng',   
             'copyright_fr':     'captionaddon_fra',
             'layout':           'attr_dc_type_layout',
+        }
+
+
+class AlertBox(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    type: str | None
+    text_de: str | None
+    text_en: str | None
+    text_fr: str | None
+    url_de: str | None
+    url_en: str | None
+    url_fr: str | None
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'alertbox'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'type':             'alerttype',
+            'text_de':          'text_ger',
+            'text_en':          'text_eng',
+            'text_fr':          'text_fra',
+            'url_de':           'attr_url_ger',
+            'url_en':           'attr_url_eng',
+            'url_fr':           'attr_url_fra',
         }
 
     
@@ -453,5 +605,171 @@ class Team(ZMSBase, table=True):
     def get_attr_mappings():
         return {
             # sql_attr          # zms_attr
-            'sections':          'obj.getObjChildren(teamsection)',
+            'sections':         'obj.getObjChildren(teamsection)',
+        }
+
+
+class UniBEFactsheet(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    title_de: str | None
+    title_en: str | None
+    title_fr: str | None
+    descr_de: str | None
+    descr_en: str | None
+    descr_fr: str | None
+    titleimg_de: str | None
+    titleimg_en: str | None
+    titleimg_fr: str | None
+    titleimg_size_de: str | None
+    titleimg_size_en: str | None
+    titleimg_size_fr: str | None
+    elements: int
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'UniBEFactsheet'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'title_de':         'title_ger',
+            'title_en':         'title_eng',
+            'title_fr':         'title_fra',
+            'descr_de':         'attr_dc_description_ger',
+            'descr_en':         'attr_dc_description_eng',
+            'descr_fr':         'attr_dc_description_fra',
+            'titleimg_de':      'titleimage_ger',
+            'titleimg_en':      'titleimage_eng',
+            'titleimg_fr':      'titleimage_fra',
+            'titleimg_size_de': 'titleimage_ger',
+            'titleimg_size_en': 'titleimage_eng',
+            'titleimg_size_fr': 'titleimage_fra',
+            'elements':         'obj.getObjChildren(e)',
+        }
+
+
+class UniBEEvent(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    title_de: str | None
+    title_en: str | None
+    title_fr: str | None
+    teaser_de: str | None
+    teaser_en: str | None
+    teaser_fr: str | None
+    img_de: str | None
+    img_en: str | None
+    img_fr: str | None
+    img_size_de: int | None
+    img_size_en: int | None
+    img_size_fr: int | None
+    start_at_date: datetime | None = Field(sa_column=Column(Date(), nullable=True))
+    start_at_time: datetime | None = Field(sa_column=Column(Time(timezone=False), nullable=True))
+    end_at_date: datetime | None = Field(sa_column=Column(Date(), nullable=True))
+    end_at_time: datetime | None = Field(sa_column=Column(Time(timezone=False), nullable=True))
+    elements: int
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'UniBEEvent'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'title_de':         'title_ger',
+            'title_en':         'title_eng',
+            'title_fr':         'title_fra',
+            'teaser_de':        'eventTeaser_ger',
+            'teaser_en':        'eventTeaser_eng',
+            'teaser_fr':        'eventTeaser_fra',
+            'img_de':           'eventBild_ger',
+            'img_en':           'eventBild_eng',
+            'img_fr':           'eventBild_fra',
+            'img_size_de':      'eventBild_ger',
+            'img_size_en':      'eventBild_eng',
+            'img_size_fr':      'eventBild_fra',
+            'start_at_date':    'eventStart',
+            'start_at_time':    'eventStarttime',
+            'end_at_date':      'eventEnd',
+            'end_at_time':      'eventEndtime',
+            'elements':         'obj.getObjChildren(e)',
+        }
+
+
+class WeiterbildungStudiengang(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    title_de: str | None
+    title_en: str | None
+    title_fr: str | None
+    category: str | None
+    subject_de: str | None
+    subject_en: str | None
+    subject_fr: str | None
+    descr_de: str | None
+    descr_en: str | None
+    descr_fr: str | None
+    img: str | None
+    img_size: int | None
+    titleimg_de: str | None
+    titleimg_en: str | None
+    titleimg_fr: str | None
+    titleimg_size_de: str | None
+    titleimg_size_en: str | None
+    titleimg_size_fr: str | None
+    elements: int
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'weiterbildung_studiengang'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'title_de':         'title_ger',
+            'title_en':         'title_eng',
+            'title_fr':         'title_fra',
+            'category':         'rubrik',
+            'subject_de':       'attr_dc_subject_ger',
+            'subject_en':       'attr_dc_subject_eng',
+            'subject_fr':       'attr_dc_subject_fra',
+            'descr_de':         'attr_dc_description_ger',
+            'descr_en':         'attr_dc_description_eng',
+            'descr_fr':         'attr_dc_description_fra',
+            'img':              'article_teaserbild',
+            'img_size':         'article_teaserbild',
+            'titleimg_de':      'titleimage_ger',
+            'titleimg_en':      'titleimage_eng',
+            'titleimg_fr':      'titleimage_fra',
+            'titleimg_size_de': 'titleimage_ger',
+            'titleimg_size_en': 'titleimage_eng',
+            'titleimg_size_fr': 'titleimage_fra',
+            'elements':         'obj.getObjChildren(e)',
+        }
+
+
+class CodeBlock(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    code_de: str | None
+    code_en: str | None
+    code_fr: str | None
+    render_as_newscontainer_de: bool
+    render_as_newscontainer_en: bool
+    render_as_newscontainer_fr: bool
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'codeblock'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'code_de':          'obj.getObjAttrValue(text)',
+            'code_en':          'obj.getObjAttrValue(text)',
+            'code_fr':          'obj.getObjAttrValue(text)',
+            'render_as_newscontainer_de': 'render_as_newscontainer_ger',
+            'render_as_newscontainer_en': 'render_as_newscontainer_eng',
+            'render_as_newscontainer_fr': 'render_as_newscontainer_fra',
         }

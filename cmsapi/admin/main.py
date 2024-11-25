@@ -4,8 +4,8 @@ import typer
 from .db import connect_db
 from .commands import init_tables, update_tables
 from ..models.zmsobjects import *
-from ..models.teaserelement2022 import TeaserContainer2022, TeaserElement2022
-from ..models.newsbox import NewsBox
+from ..models.teaserelement2022 import TeaserContainer2022, TeaserElement2022, Hero2022, Hero
+from ..models.newsbox import NewsBox, NewsContainer
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.servicelinks import ServiceLink
 from ..models.newsevents import StatusMessage
@@ -23,8 +23,13 @@ MODELS_AVAILABLE = {
     'ZMSFolder': ZMSFolder,
     'ZMSGraphic': ZMSGraphic,
     'ZMSDocument': ZMSDocument,
+    'ZMSFile': ZMSFile,
+    'ZMSTable': ZMSTable,
     'TeaserContainer2022': TeaserContainer2022,
     'TeaserElement2022': TeaserElement2022,
+    'Hero2022': Hero2022,
+    'Hero': Hero,
+    'NewsContainer': NewsContainer,
     'NewsBox': NewsBox,
     'AgendaPortal': AgendaPortal,
     'AgendaLibraryDE': AgendaLibraryDE,
@@ -35,12 +40,18 @@ MODELS_AVAILABLE = {
     'MediaRelease': MediaRelease,
     'TwoCols': TwoCols,
     'ContentTabs': ContentTabs,
+    'ContentPane': ContentPane,
+    'AlertBox': AlertBox,
     'InfoBox': InfoBox,
     'Person': Person,
     'ContactBoxSection': ContactBoxSection,
     'ContactBox': ContactBox,
     'TeamSection': TeamSection,
     'Team': Team,
+    'WeiterbildungStudiengang': WeiterbildungStudiengang,
+    'UniBEFactsheet': UniBEFactsheet,
+    'UniBEEvent': UniBEEvent,
+    'CodeBlock': CodeBlock,
 }
 
 
@@ -63,7 +74,7 @@ def main(command: str = typer.Argument(None, help='init | update'),
         models = (ZMSSite, TeaserElement2022, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN, StatusMessage, )
 
     if feature == 'NewsBoxes':
-        models = (NewsBox, )
+        models = (Newscontainer, NewsBox, )
 
     if feature == 'Announcements':
         models = (UniaktuellArticle, MediaRelease, )
@@ -83,7 +94,7 @@ def main(command: str = typer.Argument(None, help='init | update'),
     t1 = time.time()
     ts = t1-t0
     print('--------------------------------------------------------------------------')
-    print('PROCESSING TIME', ts/60 > 1 and f': {ts/60} min' or f': {ts} sec')
+    print('PROCESSING TIME', f'{ts:.3f} sec', f'= {ts/60:.2f} min')
     print('==========================================================================')
 
 

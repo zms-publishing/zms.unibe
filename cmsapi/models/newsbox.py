@@ -1,7 +1,30 @@
 from sqlmodel import Field, Column, DateTime
 from datetime import datetime
+from uuid import UUID
 
 from .zmsobjects import ZMSBase
+
+
+class NewsContainer(ZMSBase, table=True):
+    __table_args__ = {'extend_existing': True}
+    title_de: str
+    title_en: str
+    title_fr: str
+    type: str | None
+
+    @staticmethod
+    def get_zms_metaid():
+        return 'newscontainer'
+
+    @staticmethod
+    def get_attr_mappings():
+        return {
+            # sql_attr          # zms_attr
+            'title_de':         'title_ger',
+            'title_en':         'title_eng',
+            'title_fr':         'title_fra',
+            'type':             'boxtype',
+        }
 
 
 class NewsBox(ZMSBase, table=True):
@@ -22,6 +45,7 @@ class NewsBox(ZMSBase, table=True):
     url_de: str | None
     url_en: str | None
     url_fr: str | None
+    container_uuid: UUID #= Field(foreign_key="newscontainer.uuid")
 
     @staticmethod
     def get_zms_metaid():
@@ -37,6 +61,7 @@ class NewsBox(ZMSBase, table=True):
             'type':             'boxtype',
             'img':              'img',
             'start_dt':         'attr_event_start',
+            'end_dt':           'attr_event_end',
             'text_de':          'text_ger',
             'text_en':          'text_eng',
             'text_fr':          'text_fra',
@@ -46,4 +71,5 @@ class NewsBox(ZMSBase, table=True):
             'url_de':           'attr_url_ger',
             'url_en':           'attr_url_eng',
             'url_fr':           'attr_url_fra',
+            'container_uuid':   'obj.getParentNode()._uid',
         }

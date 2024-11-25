@@ -35,8 +35,11 @@ def _fetch_agenda_data(session, sqlengine):
             AgendaPortal.__table__.drop(sqlengine)
         AgendaPortal.__table__.create(sqlengine)
         for item in agenda_portal:
-            item['json_datum_zeit_start'] = local_timezone(datetime.fromisoformat(item['json_datum_zeit_start']))
-            item['json_datum_zeit_end'] = local_timezone(datetime.fromisoformat(item['json_datum_zeit_end']))
+            try:
+                item['json_datum_zeit_start'] = local_timezone(datetime.fromisoformat(item['json_datum_zeit_start']))
+                item['json_datum_zeit_end'] = local_timezone(datetime.fromisoformat(item['json_datum_zeit_end']))
+            except (ValueError, TypeError):
+                continue
             session.add(AgendaPortal.parse_obj(item))
         session.commit()
 

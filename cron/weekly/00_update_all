@@ -1,0 +1,8 @@
+#!/bin/bash
+
+now=$(date)
+echo "$now cmsadm update --metaobj all"
+echo "==========================================================================" >> $VENV_HOME/log/api-cron.log
+echo $now >> $VENV_HOME/log/api-cron.log
+echo "--------------------------------------------------------------------------" >> $VENV_HOME/log/api-cron.log
+$VENV_HOME/bin/python -m cmsapi.admin.main update --metaobj all &>> $VENV_HOME/log/api-cron.log

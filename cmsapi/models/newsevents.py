@@ -6,7 +6,7 @@ from datetime import datetime
 class NewsEvents(SQLModel, table=True):  # intermediate consolidation of Agendas, NewsBox, TeaserElement2022 for queries
     __table_args__ = {'extend_existing': True}
     uuid: UUID = Field(primary_key=True)
-    site_uuid: UUID = Field(foreign_key="zmssite.uuid")
+    site_uuid: UUID #= Field(foreign_key="zmssite.uuid")
     active_de: bool
     active_en: bool
     active_fr: bool

@@ -44,6 +44,8 @@ def update_tables(models, *args):
             print('--------------------------------------------------------------------------')
             print('Process', model)
 
+            uuids_all = []
+            
             if model in (AgendaPortal, AgendaLibraryDE, AgendaLibraryEN):
                 _fetch_agenda_data(session, sqlengine)
             elif model == StatusMessage:
@@ -103,7 +105,7 @@ def update_tables(models, *args):
             t1 = time.time()
             ts = t1 - t0
             print('--------------------------------------------------------------------------')
-            print(model.__name__, ts / 60 > 1 and f': {ts / 60} min' or f': {ts} sec')
+            print(model.__name__, f'({len(uuids_all):,})', f'{ts:.3f} sec', f'= {ts/60:.2f} min')
 
         # refresh intermediate NewsEvents table consolidating data sources for queries
         _store_newsevents_data(session, sqlengine)

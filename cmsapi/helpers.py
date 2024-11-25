@@ -247,6 +247,26 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         
     headless_http_request.set('lang', lang)
 
+    value = obj.attr(zms_attr, REQUEST=headless_http_request)
+    
+    if sql_attr in get_datetime_props(cls):
+        try:
+            return pytz.timezone('Europe/Zurich').localize(datetime(*value[:6]))
+        except (ValueError, TypeError):
+            return datetime(1970, 1, 1)
+    
+    if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
+        if '_size' in sql_attr:
+            return value.get_size()
+        return 'https://www.unibe.ch' + value.getHref(REQUEST=headless_http_request)
+    
+    if isinstance(value, str) and value.startswith('{$uid:'):
+        lang_target = lang
+        if ';lang=' in value:
+            lang_target = re.sub(r'{\$uid:(.*);lang=(\w*)}', r'\2', value)
+        headless_http_request.set('lang', lang_target)
+        return strip_cmstest(obj.getLinkObj(value).getHref2IndexHtmlInContext(None, REQUEST=headless_http_request))
+
     # extract parameter between parenthesis in zms_attr
     param = None
     regex = re.search(pattern=r'\((.+)\)', string=zms_attr)
@@ -270,6 +290,13 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
             return len(obj.getObjChildren(id=param, REQUEST=headless_http_request))
         else:
             return 0
+
+    if 'obj.getObjAttrValue' in zms_attr:
+        if param is not None:
+            attr = obj.getObjAttr(param)
+            return obj.getObjAttrValue(attr, REQUEST=headless_http_request)
+        else:
+            return ''            
 
     if 'obj.getConfProperty' in zms_attr:
         if param is not None:
@@ -329,30 +356,16 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         else:
             return obj.attr("attr_dc_type")  # TODO: handle multilang if needed - for ZMSSite not necessary
 
-    value = obj.attr(zms_attr, REQUEST=headless_http_request)
-
-    if value is not None and (isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile)):
-        value = 'https://www.unibe.ch' + value.getHref(REQUEST=headless_http_request)
-
-    if value is not None and isinstance(value, str) and value.startswith('{$uid:'):
-        lang_target = lang
-        if ';lang=' in value:
-            lang_target = re.sub(r'{\$uid:(.*);lang=(\w*)}', r'\2', value)
-        headless_http_request.set('lang', lang_target)
-        value = strip_cmstest(
-            obj.getLinkObj(value).getHref2IndexHtmlInContext(None, REQUEST=headless_http_request))
-        headless_http_request.set('lang', lang)
-
-    if zms_attr == 'active':
-        value = value and obj.isTranslated(REQUEST=headless_http_request, lang=lang)
-        value = value and len(list(filter(lambda x: not x.isActive(REQUEST=headless_http_request),
-                                          obj.breadcrumbs_obj_path(portalMaster=False)))) == 0
-
-    if sql_attr in get_datetime_props(cls):
-        value = value is not None and pytz.timezone('Europe/Zurich').localize(datetime(*value[:6]))
+    if zms_attr == 'obj.isActivatedByCheckboxAndTimeline()':
+        # ZMSObject.isVisible() traversing object's hierarchy up to root node and checks if
+        # - object is translated
+        # - object has been committed
+        # - object is not in trashcan
+        # - object is activated -> ('active' is True) AND ('attr_active_start' < NOW < 'attr_active_end')
+        return len(list(filter(lambda x: not x.isVisible(REQUEST=headless_http_request), 
+                               obj.breadcrumbs_obj_path(portalMaster=False)))) == 0
 
     return value
-
 
 def local_timezone(dt):
     return dt.astimezone(pytz.timezone('Europe/Zurich'))

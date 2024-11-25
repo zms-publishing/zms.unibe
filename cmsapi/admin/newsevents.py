@@ -243,7 +243,9 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         obj.sort_id = res.sort_id
         obj.sort_id_parent = res.sort_id_parent
         obj.start_dt = res.start_dt
-        obj.end_dt = res.end_dt
+        obj.end_dt = res.end_dt > res.start_dt and \
+                     res.end_dt or \
+                     res.start_dt  # to filter out outdated Events - see where(NewsEvents.end_dt > datetime.utcnow())
 
         obj.url_de = res.url_de
         obj.url_en = res.url_en
