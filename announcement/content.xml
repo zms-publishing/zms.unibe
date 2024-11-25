@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <ZMSDataTable id="e1222429" id_prefix="e">
+  <ZMSDataTable uid="uid:5a7dca8c-ed4f-4f1e-b510-d4c876f39da1" id="e1222429" id_prefix="e">
     <attr_dc_coverage>global.ger</attr_dc_coverage>
     <created_uid>cmeier</created_uid>
     <created_dt>
 <![CDATA[2022/05/18 11:14:14]]></created_dt>
-    <change_uid><lang id="spa">cmeier</lang><lang id="fra">cmeier</lang><lang id="eng">cmeier</lang><lang id="ger">deploy</lang><lang id="ita">cmeier</lang><lang id="cat">cmeier</lang><lang id="ukr">cmeier</lang></change_uid>
+    <change_uid><lang id="spa">cmeier</lang><lang id="fra">cmeier</lang><lang id="eng">cmeier</lang><lang id="ger">cmeier</lang><lang id="ita">cmeier</lang><lang id="cat">cmeier</lang><lang id="ukr">cmeier</lang></change_uid>
     <change_dt><lang id="spa">
 <![CDATA[2022/05/18 11:14:14]]></lang><lang id="fra">
 <![CDATA[2022/05/18 11:14:14]]></lang><lang id="eng">
 <![CDATA[2022/05/18 11:14:14]]></lang><lang id="ger">
-<![CDATA[2022/05/19 18:30:01]]></lang><lang id="ita">
+<![CDATA[2024/11/25 12:08:49]]></lang><lang id="ita">
 <![CDATA[2022/05/18 11:14:14]]></lang><lang id="cat">
 <![CDATA[2022/05/18 11:14:14]]></lang><lang id="ukr">
 <![CDATA[2022/05/18 11:14:14]]></lang></change_dt>
     <active><lang id="spa">0</lang><lang id="fra">0</lang><lang id="eng">0</lang><lang id="ger">1</lang><lang id="ita">0</lang><lang id="cat">1</lang><lang id="ukr">1</lang></active>
     <datatype>json</datatype>
     <dataremote>1</dataremote>
-    <dataurl><lang id="ger">https://api.epc.unibe.ch/announcements/api/ServiceAnnouncements?includeArchivedSince=2020-01-01</lang></dataurl>
+    <dataurl><lang id="ger">https://icc.unibe.ch/announcements-ws/api/ServiceAnnouncements?includeArchivedSince=2024-01-01</lang></dataurl>
     <obfuscate_emails><lang id="spa">0</lang><lang id="fra">0</lang><lang id="eng">0</lang><lang id="ger">0</lang><lang id="ita">0</lang><lang id="cat">0</lang><lang id="ukr">0</lang></obfuscate_emails>
     <_datafilecached><lang id="ger">
-<data content_type="application/json" filename="2022-05-19T1830010200_ger.json"></data></lang></_datafilecached>
+<data content_type="application/json" filename="2024-11-25T1208490100_ger.json"></data></lang></_datafilecached>
     <_datalastupdated>
-<![CDATA[2022/05/19 18:30:01]]></_datalastupdated>
+<![CDATA[2024/11/25 12:08:49]]></_datalastupdated>
     <datawebservice>announcements-ws</datawebservice>
-    <datahealthcheck>https://api.epc.unibe.ch/announcements/actuator/health</datahealthcheck>
+    <datahealthcheck>https://icc.unibe.ch/announcements-ws/actuator/health</datahealthcheck>
     <colstable><lang id="ger">Wann
 Beginn
 Ende
@@ -448,11 +448,13 @@ $(function () {
             },
         });
         
+        /*
         // onPageLoad: nur aktuelle Meldungen
         table
             .column("timeSpan:name")
             .search(1, false, false, false)
             .draw();
+        */
         
         let checkboxes = $("#filter input[type=checkbox]");
 
@@ -531,7 +533,7 @@ table.dataTable.display tbody td:nth-child(1) {
 </style>
 
 <form id="filter">
-    <label><input type="checkbox" value="1" checked="checked"> nur aktuelle Meldungen</label>
+    <label><input type="checkbox" value="1"> nur aktuelle Meldungen</label>
     <label><input type="checkbox" value="2"> nur anstehende Meldungen</label>
     <label><input type="checkbox" value="3"> nur vergangene Meldungen</label>
 </form>]]></lang><lang id="ita"><![CDATA[// BO columns

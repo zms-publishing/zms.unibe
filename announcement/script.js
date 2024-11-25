@@ -112,7 +112,7 @@ function linkify(inputText) {
     var replacedText, replacePattern1, replacePattern2, replacePattern3;
 
     // URLs starting with http://, https://, or ftp://
-    replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+    replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%%?=~_|!:,.;]*[-A-Z0-9+&@#\/%%=~_|])/gim;
     replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>');
 
     // URLs starting with "www." (without // before it, or it'd re-link the ones done above).
@@ -129,12 +129,8 @@ function linkify(inputText) {
 // This class should be modified/replaced for CMS.
 class PopUp {
     constructor() {
-        this._subject = document.getElementById("detailSubject");
-        this._description = document.getElementById("detailDescription");
-        this._type = document.getElementById("detailType");
-        this._begin = document.getElementById("detailBegin");
-        this._end = document.getElementById("detailEnd");
-        this._service = document.getElementById("detailService");
+        this._subject = document.getElementById("datatableModalTitle");
+        this._description = document.getElementById("datatableModalBody");
     }
 
     set announcement(announcement) {
@@ -157,26 +153,27 @@ $(document).ready(() => {
     let assignClickListener = (row, announcement) => {
         row.addEventListener("click", () => {
             popup.announcement = announcement;
+            $('#datatableModal').modal('toggle');
         });
     };
 
-    let table = $("#table").DataTable({
+    let table = $("#%s").DataTable({ // datatableID will be inserted on rendering
         processing: true,
-        ajax: {url: "data.json", dataSrc: convert,
+        ajax: {url: "%s", dataSrc: convert, // datafileURL will be inserted on rendering
             error: function (xhr, error, code) {
                 console.log(xhr);
                 console.log(xhr.status);
                 console.log(code);
                 if (xhr.status === 404) {
-                    // window.location.reload(); // force reload if outdated datafileURL is cached by browser
+                    window.location.reload(); // force reload if outdated datafileURL is cached by browser
                 }
             }
         },
         columns: [
-            {data: "timeSpan", name: "timeSpan", width: "10%"},
-            {data: "begin", width: "15%"},
-            {data: "end", width: "15%"},
-            {data: "description", width: "50%",
+            {data: "timeSpan", name: "timeSpan", width: "10%%"},
+            {data: "begin", width: "15%%"},
+            {data: "end", width: "15%%"},
+            {data: "description", width: "50%%",
                 render: function (data, type, row) {
                     if (data.toString().length>100) {
                         return '<strong>' + row['subject'] + '</strong><br />' + data.toString().substring(0, 100) + '...';
@@ -187,7 +184,7 @@ $(document).ready(() => {
 
                 }
             },
-            {data: "type", width: "10%"}
+            {data: "type", width: "10%%"}
         ],
         columnDefs: [
             {render: renderTimeSpan, targets: 0},
@@ -232,7 +229,15 @@ $(document).ready(() => {
         },
     });
 
-    let checkboxes = $("#form input[type=checkbox]");
+    /*
+    // onPageLoad: nur aktuelle Meldungen
+    table
+        .column("timeSpan:name")
+        .search(1, false, false, false)
+        .draw();
+    */
+
+    let checkboxes = $("#filter input[type=checkbox]");
 
     checkboxes.change(function () {
         let changedBox = this;
@@ -254,4 +259,14 @@ $(document).ready(() => {
             .search(term, false, false, false)
             .draw();
     });
+
+    $('.dataTables_filter > label > input').attr("placeholder", "Volltextsuche");
+
+    $('#e1222429 tbody').on('mouseover', 'td', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row(tr);
+        if ($(this).context.cellIndex == 1 || $(this).context.cellIndex == 2  || $(this).context.cellIndex == 3  || $(this).context.cellIndex == 4) {
+            $(this).css('cursor', 'pointer');
+    }
+});
 });
