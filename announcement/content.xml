@@ -484,7 +484,7 @@ $(function () {
         $('#e1222429 tbody').on('mouseover', 'td', function () {
             var tr = $(this).closest('tr');
             var row = table.row(tr);
-            if ($(this).context.cellIndex == 1 || $(this).context.cellIndex == 2  || $(this).context.cellIndex == 3  || $(this).context.cellIndex == 4) {
+            if (this.cellIndex == 1 || this.cellIndex == 2  || this.cellIndex == 3  || this.cellIndex == 4) {
                 $(this).css('cursor', 'pointer');
         }
     });
