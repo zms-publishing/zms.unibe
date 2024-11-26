@@ -311,7 +311,7 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         return obj.getDocumentElement()._uid
 
     if zms_attr == 'obj.getParentNode()._uid':
-        if obj.getLevel() > 0:
+        if obj.getLevel() > 0 and 'trashcan' not in obj.getParentNode().getId():
             return obj.getParentNode()._uid
         else:
             return obj._uid
@@ -324,7 +324,7 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
             obj.getHref2IndexHtmlInContext(None, REQUEST=headless_http_request))
 
     if zms_attr == 'obj.getParentNode().title':
-        if obj.getLevel() > 0:
+        if obj.getLevel() > 0 and 'trashcan' not in obj.getParentNode().getId():
             return obj.getParentNode().attr("title", REQUEST=headless_http_request)
         else:
             return obj.attr("title", REQUEST=headless_http_request)
@@ -342,7 +342,7 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         return obj.getSortId()
 
     if zms_attr == "obj.getParentNode().getSortId()":
-        if obj.getLevel() > 0:
+        if obj.getLevel() > 0 and 'trashcan' not in obj.getParentNode().getId():
             return obj.getParentNode().getSortId()
         else:
             return 0

@@ -74,7 +74,7 @@ def main(command: str = typer.Argument(None, help='init | update'),
         models = (ZMSSite, TeaserElement2022, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN, StatusMessage, )
 
     if feature == 'NewsBoxes':
-        models = (Newscontainer, NewsBox, )
+        models = (NewsContainer, NewsBox, )
 
     if feature == 'Announcements':
         models = (UniaktuellArticle, MediaRelease, )
