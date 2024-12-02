@@ -69,6 +69,7 @@ class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?meta
     level: int
     path: str
     type: str
+    theme: str
     parent_uuid: UUID
 
     @staticmethod
@@ -87,6 +88,7 @@ class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?meta
             'level':            'obj.getLevel()',
             'path':             'obj.getPath()',
             'type':             'obj.getType()',
+            'theme':            'obj.getConfProperty(ZMS.theme)',
             'parent_uuid':      'obj.getParentHome()._uid'
         }
 

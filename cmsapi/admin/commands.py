@@ -3,7 +3,6 @@ from sqlmodel import SQLModel, Session, select, inspect
 from devtools import debug
 from pathlib import Path
 
-from ..models.zmsobjects import ZMSSite
 from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.newsevents import StatusMessage
 from ..models.servicelinks import ServiceLink
@@ -19,17 +18,17 @@ def init_tables(models, *args, _all=False):
 
     zmsindex, sqlengine = args
 
-    for model in models:
-        if model == ZMSSite:
-            if _all:
-                SQLModel.metadata.drop_all(sqlengine)
-            SQLModel.metadata.create_all(sqlengine)
-            update_tables((ZMSSite,), *args)
-        else:
+    if _all:
+        SQLModel.metadata.drop_all(sqlengine)
+        SQLModel.metadata.create_all(sqlengine)
+    else:
+        for model in models:
             if inspect(sqlengine).has_table(model.__table__):
                 model.__table__.drop(sqlengine)
-            model.__table__.create(sqlengine)
-            update_tables((model,), *args)
+                model.__table__.create(sqlengine)
+    
+    for model in models:
+        update_tables((model,), *args)
 
 
 def update_tables(models, *args):
