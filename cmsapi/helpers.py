@@ -350,6 +350,10 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
     if zms_attr == "obj.getPath()":
         return obj.getPath()
 
+    if zms_attr == "obj.getCount()":
+        # handled for ZMSSite.count_objs in commands.update_tables()
+        return
+
     if zms_attr == "obj.getType()":
         if '/unibiblio' in obj.getPath():
             return 'Library'  # overwrite deprecated type "Uniaktuell" of UB (Library)

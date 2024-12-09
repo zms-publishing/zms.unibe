@@ -9,6 +9,7 @@ from ..models.servicelinks import ServiceLink
 from ..models.newsbox import NewsBox
 from ..models.uniaktuell import UniaktuellArticle
 from ..models.mediareleases import MediaRelease
+from ..models.zmsobjects import ZMSSite
 from .agendas import _fetch_agenda_data, _fetch_status_messages
 from .newsevents import _store_newsevents_data
 from .mappings import _iterate_content_objects
@@ -44,6 +45,7 @@ def update_tables(models, *args):
             print('Process', model)
 
             uuids_all = []
+            count_objs = {}
             
             if model in (AgendaPortal, AgendaLibraryDE, AgendaLibraryEN):
                 _fetch_agenda_data(session, sqlengine)
@@ -72,12 +74,16 @@ def update_tables(models, *args):
                                        'meta_id': 'media_news'})
                     query += zmsindex({'path': '/unibe/portal/content/e796/e803/e59463/e805/e1027714/e1029489',  # 2021
                                        'meta_id': 'media_news'})
+                elif model == ZMSSite:
+                    query = zmsindex({'meta_id': 'ZMS'})
+                    for site in query:
+                        count_objs[site] = len(zmsindex({'path': site.getPath()}))
                 else:
                     query = zmsindex({'meta_id': model.get_zms_metaid()})  # TODO: optimize retrieval for 1000+ objects
 
                 uuids_new = []
 
-                for obj in _iterate_content_objects(query, model):
+                for obj in _iterate_content_objects(query, model, count_objs):
                     statement = select(model).where(model.uuid == obj.uuid)
                     results = session.exec(statement)
                     row = results.first()
