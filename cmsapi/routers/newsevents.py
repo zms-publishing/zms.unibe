@@ -334,7 +334,7 @@ async def get_sections(
 
 @router.get("/statusmessages", summary='IT Status messages', response_model=schema.StatusMessageResponse,
             description='IT Status messages from '
-                        '<a href="http://id.unibe.ch/statusmeldungen" target="_blank">id.unibe.ch/statusmeldungen</a>')
+                        '<a href="https://id.unibe.ch/statusmeldungen" target="_blank">id.unibe.ch/statusmeldungen</a>')
 async def get_statusmessages(
         start_after: datetime | None = Query(None, description='Filter by start after (UTC)'),
         end_before: datetime | None = Query(None, description='Filter by end before (UTC)'),
@@ -360,7 +360,7 @@ async def get_statusmessages(
             section = schema.Section(
                 type=res.type,
                 title='IT Services',
-                domain='http://id.unibe.ch/statusmeldungen',
+                domain='https://id.unibe.ch/statusmeldungen',
                 path=None,
                 uuid=None
             )
