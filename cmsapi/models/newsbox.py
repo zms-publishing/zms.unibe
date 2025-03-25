@@ -45,7 +45,7 @@ class NewsBox(ZMSBase, table=True):
     url_de: str | None
     url_en: str | None
     url_fr: str | None
-    container_uuid: UUID #= Field(foreign_key="newscontainer.uuid")
+    container_uuid: UUID = Field(foreign_key="newscontainer.uuid")
 
     @staticmethod
     def get_zms_metaid():

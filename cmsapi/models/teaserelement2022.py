@@ -56,7 +56,7 @@ class TeaserElement2022(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
     img_alt_en: str | None
     img_alt_fr: str | None
 
-    container_uuid: UUID #= Field(foreign_key="teasercontainer.uuid")
+    container_uuid: UUID = Field(foreign_key="teasercontainer.uuid")
 
     @staticmethod
     def get_zms_metaid():

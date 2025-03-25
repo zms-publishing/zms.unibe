@@ -6,7 +6,7 @@ from uuid import UUID
 
 class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inherit
     uuid: UUID = Field(primary_key=True)
-    site_uuid: UUID #= Field(foreign_key="zmssite.uuid")
+    site_uuid: UUID = Field(foreign_key="zmssite.uuid")
     active_de: bool
     active_en: bool
     active_fr: bool
