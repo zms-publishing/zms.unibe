@@ -6,6 +6,8 @@ from fastapi import APIRouter, Response, HTTPException
 from uuid import UUID
 from enum import Enum
 from devtools import debug
+from zope.globalrequest import setRequest
+from ..helpers import create_headless_http_request
 
 ZODB_STORAGE = os.getenv('ZODB_STORAGE', 'zeo://127.0.0.1:8000?storage=main')
 
@@ -33,6 +35,13 @@ def get_content(
     root = connection.root()
     zmsindex = root['Application']['unibe']['zcatalog_index']  # TODO: make flexible - e.g. use myzmsx instead of unibe
     zodb = root['Application']
+
+    headless_http_request = create_headless_http_request()  # TODO: refactor to use in helpers instead of duplicate
+    # Set defaults
+    headless_http_request.set('ZMS_CONTEXT_URL', True)
+    # Set headless_http_request via zope.globalrequest.setRequest.
+    # The ZMS uses the zope.globalrequest.getRequest as a fallback.
+    setRequest(headless_http_request)
 
     if uuid is not None:
         try:
