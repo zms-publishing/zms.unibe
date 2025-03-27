@@ -274,16 +274,6 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         res = regex.groups()
         if type(res) is tuple and len(res) > 0:
             param = res[0]
-        
-    # if zms_attr == '_datafilecached':
-    #     import requests
-    #     href = obj.attr('_datafilecached').getHref(REQUEST=headless_http_request)
-    #     href = f'http://127.0.0.1:8080{href}'
-    #     try:
-    #         json = requests.get(href).json()
-    #     except:
-    #         json = None
-    #     return str(json)
 
     if 'obj.getObjChildren' in zms_attr:
         if param is not None:
@@ -306,6 +296,9 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
 
     if zms_attr == 'obj._uid':
         return obj._uid
+
+    if zms_attr == 'obj._datafilecached':
+        return obj.attr('_datafilecached').getData()
 
     if zms_attr == 'obj.getDocumentElement()._uid':
         return obj.getDocumentElement()._uid

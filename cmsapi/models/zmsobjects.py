@@ -185,11 +185,11 @@ class ZMSBoris(ZMSBase, table=True):
     def get_attr_mappings():
         return {
             # sql_attr          # zms_attr
-            'dataurl': 'dataurl',
-            'descr_de': 'attr_dc_description_ger',
-            'descr_en': 'attr_dc_description_eng',
-            'descr_fr': 'attr_dc_description_fra',
-            'boris_data': '_datafilecached',
+            'dataurl':          'dataurl',
+            'descr_de':         'attr_dc_description_ger',
+            'descr_en':         'attr_dc_description_eng',
+            'descr_fr':         'attr_dc_description_fra',
+            'boris_data':       'obj._datafilecached',
         }
 
 
