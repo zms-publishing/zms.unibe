@@ -71,7 +71,7 @@ def main(command: str = typer.Argument(None, help='init | update'),
             raise typer.Abort()
 
     if feature == 'NewsEvents':  # this Argument overrides any individually set Options via --metaobj
-        models = (ZMSSite, TeaserElement2022, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN, StatusMessage, )
+        models = (ZMSSite, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN, TeaserContainer2022, TeaserElement2022, StatusMessage, )
 
     if feature == 'NewsBoxes':
         models = (NewsContainer, NewsBox, )

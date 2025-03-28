@@ -7,6 +7,7 @@ from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.newsevents import StatusMessage
 from ..models.servicelinks import ServiceLink
 from ..models.newsbox import NewsBox
+from ..models.teaserelement2022 import TeaserElement2022
 from ..models.uniaktuell import UniaktuellArticle
 from ..models.mediareleases import MediaRelease
 from ..models.zmsobjects import ZMSSite
