@@ -393,7 +393,7 @@ The following examples provide use cases integrating two handy Python libraries:
     === "iCalendar"
 
         ``` hl_lines="1"
-        https://api.cms.test.unibe.ch/v3/events/calender.ics
+        https://api.cms.test.unibe.ch/v3/events/calendar.ics
         ```
     
         ![CMSAPI-v3-events-calendar.png](img%2FCMSAPI-v3-events-calendar.png)
