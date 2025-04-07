@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <title>Uni Bern Portal</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="theme-color" content="#f03">
+    <meta name="apple-mobile-web-app-status-bar-style" content="white-translucent">
+    <link rel="dns-prefetch preconnect" href="https://youtube.com">
+    <link rel="stylesheet" href="../../../web/estatico-handlebars/dist/assets/css/main.min.css">
+    <script src="../../../web/estatico-handlebars/dist/assets/js/head.min.js"></script>
+    <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.2.2/datatables.min.css" rel="stylesheet" integrity="sha384-EMec0P+bM7BzPRifh0Da2z4pEzNGzbb1pmzxZ/E0fZjPky+56QS2Y+x6U/00/L2z" crossorigin="anonymous">
+    <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.2.2/datatables.min.js" integrity="sha384-h+dgoYlXhgp1Rdr2BQORgRZ8uTV8KHpMEDxsAXD5RMRvytPCeeiubqmZx5ZIewmp" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+    <script src="script.js"></script>
+  </head>
+  <body class="skin-color-red" id="e001" data-estatico-src-tpl="layouts/layout_portal.hbs" data-mainnavsection="portal">
+    <div class="wrapper">
+      <header>
+        <div class="container">
+          <a href="../../../web/estatico-handlebars/dist/pages/portal-startseite/portal-startseite.html" title="Startseite Portal Universität Bern"><img class="site-logo" src="../../../web/estatico-handlebars/dist/assets/media/image/logo_unibern@2x.png" alt="Universität Bern" /></a>
+          <hr />
+          <!-- Hidden-Navigation -->
+          <nav class="nav-skip">
+            <ul>
+              <li><a id="homelink" accesskey="0" href="portal.html">Startseite</a></li>
+              <li><a accesskey="1" href="#nav-main">Menu</a></li>
+              <li><a accesskey="2" href="#content">Inhalt</a></li>
+              <li><a accesskey="3" href="#address">Kontakt</a></li>
+              <li><a accesskey="5" href="#site-search">Suche</a></li>
+              <li><a accesskey="6" href="#nav-lang">Sprachwahl</a></li>
+              <li><a accesskey="7" href="#nav-service">Wichtige Seiten</a></li>
+            </ul>
+          </nav>
+          <hr />
+        </div>
+        <!-- Hauptnavigation -->
+        <nav id="nav-main" class="nav-main nav-main-mobile">
+          <div class="container">
+            <h1 class="hidden-lg mobile-menu"><a href="#">Menu <span class="sr-only"> öffnen</span></a></h1>
+            <div class="view-container">
+              <div class="overall">
+                <div class="top-info">
+                  <ul>
+                    <li class="menu-close"><a href="#">Menu<span class="sr-only"> schliessen</span></a></li>
+                    <li class="back-info"><a href="portal.html">Startseite</a></li>
+                    <li class="toplevel-info"><a href="portal.html">Startseite</a></li>
+                  </ul>
+                </div>
+                <!-- Hauptbereiche -->
+                <ul class="level-1" role="tablist">
+                  <li><a href="#" id="mainnav-tab-1" role="tab" aria-controls="mainnav-panel-1">Aktuell</a></li>
+                  <li><a href="#" id="mainnav-tab-2" role="tab" aria-controls="mainnav-panel-2">Universität</a></li>
+                  <li><a href="#" id="mainnav-tab-3" role="tab" aria-controls="mainnav-panel-3">Studium</a></li><!-- @todo: add .active when on Bachelor page -->
+                  <li><a href="#" id="mainnav-tab-4" role="tab" aria-controls="mainnav-panel-4">Forschung</a></li>
+                  <li><a href="#" id="mainnav-tab-5" role="tab" aria-controls="mainnav-panel-5">Weiterbildung</a></li>
+                </ul>
+                <!-- Mega-Pulldown -->
+                <div class="mega-pd"></div>
+              </div>
+            </div>
+            <!-- Site-Suche -->
+            <div class="site-search hidden-lg">
+              <a href="#"><span class="hidden-xs hidden-sm">Suchen</span></a>
+              <div class="site-search-flyout">
+                <label for="form-site-search-mobile" class="sr-only">Suche</label>
+                <input id="form-site-search-mobile" type="text" name="site-search" class="form-control" />
+                <button class="btn">Suchen</button>
+              </div>
+            </div>
+            <!-- Site-Switch -->
+            <div id="site-switch" class="site-switch skin-goto-subsite">
+              <a href="#">Fakultäten<br />&amp; Institute</a>
+            </div>
+          </div>
+        </nav>
+      </header>
+      <main id="content">
+        <div class="container-fluid">
+          <div class="container">
+            <!-- Haupttitel -->
+            <h1 class="area-title">Veranstaltungskalender</h1>
+          </div>
+        </div>
+        <div class="container-fluid skin-bg-gray">
+          <div class="container">
+            <section class="row skin-gutter-wide search-form">
+              <form id="agenda-search" action="#" data-ajax-url="../../../web/estatico-handlebars/dist/data/ajax/ajax_agenda" method="post">
+                <div class="col-lg-4">
+                  <h2>Stichwortsuche</h2>
+                  <div class="form-wrapper">
+                    <label for="form-keyword" class="sr-only">Stichwort</label>
+                    <div class="input-group">
+                      <input type="text" name="keyword" id="form-keyword" class="form-control" />
+                      <span class="input-group-btn">
+                        <button class="btn btn-primary" type="submit">Suchen</button>
+                      </span>
+                    </div>
+                    <p class="help-block">z.B. Collegium Generale, Forschung</p>
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <h2>Ab Datum</h2>
+                  <div class="form-wrapper">
+                    <label for="form-date" class="sr-only">Suche nach Datum</label>
+                    <div class="input-group">
+                      <input type="text" name="date" id="form-date" class="form-control date-picker" />
+                      <span class="input-group-btn">
+                        <button class="btn btn-primary icon-calendar date-picker" data-datepicker-target="date" type="button">Kalender</button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </form>
+              <div class="col-lg-4">
+                <ul class="list-links">
+                  <li><a href="#" class="btn btn-default btn-lg">Neue Veranstaltung erfassen</a></li>
+                  <li class="gap"><a href="#">Richtlinien zur Erfassung einer Veranstaltung</a></li>
+                  <li><a href="#">UniBE als Tagungsort</a></li>
+                  <li><a href="#">Übersicht Veranstaltungsreihen</a></li>
+                </ul>
+              </div>
+            </section>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="container">
+            <h2 class="h1">Veranstaltungen ab 22. November 2015 <span class="sr-only">Anzahl Treffer: </span><span class="badge badge-header">8</span></h2>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="container">
+            
+            <table id="table">
+                <thead>
+                <tr>
+                    <td>Start</td>
+                    <td></td>
+                    <td>End</td>
+                    <td></td>
+                    <td>Subject</td>
+                    <td>Location</td>
+                    <td>Categories</td>
+                    <td>BodyPreview</td>
+                </tr>
+                </thead>
+            </table>
+            
+            <!--! Modal -->
+            <div class="modal fade" id="datatableModal" tabindex="-1" role="dialog" aria-labelledby="datatableModalCenterTitle" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title" id="datatableModalTitle">Modal title</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body" id="datatableModalBody"></div>
+                </div>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="container position-relative">
+            <section>
+              <div id="swipe-agenda" class="partial swipe row" data-partial-form="agenda-search" data-partial-period="2013-03">
+                <div class="swipe-wrap swipe-gray partial-wrap">
+                  <!-- Row 1 -->
+                  <a itemscope="itemscope" itemtype="http://schema.org/Event" itemprop="url" href="#" class="partial-item col-lg-8 col-sm-12">
+                    <article class="agenda-box agenda-big">
+                      <h3 itemprop="name">
+                        <small>Forum für Universität und Gesellschaft</small> Energie Schweiz: gestern und heute morgen
+                      </h3>
+                      <time itemprop="startDate" datetime="2014-07-20 09:00"><span class="day">20</span> Juli<span class="agenda-date-until">bis 30. Juli 2015</span><span class="agenda-time-range">10.30 - 16.30 Uhr</span></time>
+                    </article>
+                  </a>
+                  <!-- Row 2 -->
+                  <a itemscope="itemscope" itemtype="http://schema.org/Event" itemprop="url" href="#" class="partial-item col-lg-8 col-sm-12">
+                    <article class="agenda-box agenda-big">
+                      <h3 itemprop="name">
+                        <small>Berner Mittelalter Zentrum</small> Der Ratgeber und sein Herrscher: Wissensträger und Herrschaftsmodelle in vormoderner Literatur
+                      </h3>
+                      <time itemprop="startDate" datetime="2015-07-21 09:00"><span class="day">21</span> Juli<span class="agenda-date-until">bis 21. Juli 2015</span><span class="agenda-time-range">10.30 - 16.30 Uhr</span></time>
+                    </article>
+                  </a>
+                  <!-- Row 3 -->
+                  <a itemscope="itemscope" itemtype="http://schema.org/Event" itemprop="url" href="#" class="partial-item col-lg-8 col-sm-12">
+                    <article class="agenda-box agenda-big">
+                      <h3 itemprop="name">
+                        <small>Interdisziplinäre Vorlesungsreihe</small> Schlüsselkonzepte der Geistes- und Sozialwissenschaften
+                      </h3>
+                      <time itemprop="startDate" datetime="2015-08-30 09:00"><span class="day">30</span> August<span class="agenda-date-until">bis 30. August 2015</span><span class="agenda-time-range">11.30 - 14.30 Uhr</span></time>
+                    </article>
+                  </a>
+                  <!-- Row 4 -->
+                  <a itemscope="itemscope" itemtype="http://schema.org/Event" itemprop="url" href="#" class="partial-item col-lg-8 col-sm-12">
+                    <article class="agenda-box agenda-big">
+                      <h3 itemprop="name">
+                        <small>Benefri-Tagung zum Europarecht</small> Der Ratgeber und sein Herrscher: Wissensträger und Herrschaftsmodelle in vormoderner Literatur
+                      </h3>
+                      <time itemprop="startDate" datetime="2015-09-02 09:00"><span class="day">2</span> September<span class="agenda-time-range">14.00 Uhr</span></time>
+                    </article>
+                  </a>
+                  <!-- Row 5 -->
+                  <a itemscope="itemscope" itemtype="http://schema.org/Event" itemprop="url" href="#" class="partial-item col-lg-8 col-sm-12">
+                    <article class="agenda-box agenda-big">
+                      <h3 itemprop="name">
+                        <small>Forum Denkmalpflege</small> Die fetten Jahre sind vorbei &ndash; Krisenbewältigung in der Denkmalpflege
+                      </h3>
+                      <time itemprop="startDate" datetime="2015-10-02 09:00"><span class="day">2</span> Oktober<span class="agenda-time-range">10.00 - 18.00 Uhr</span></time>
+                    </article>
+                  </a>
+                  <!-- Row 6 -->
+                  <a itemscope itemtype="http://schema.org/Event" itemprop="url" href="#" class="partial-item col-lg-8 col-sm-12">
+                    <article class="agenda-box agenda-big">
+                      <h3 itemprop="name">
+                        <small>Literarische Lesungen des Collegium Generale</small> Reiseliteratur:&nbsp;Imperium
+                      </h3>
+                      <time itemprop="startDate" datetime="2014-07-24 09:00"><span class="day">24</span> Juli</time>
+                    </article>
+                  </a>
+                  <!-- Row 7 -->
+                  <a itemscope itemtype="http://schema.org/Event" itemprop="url" href="#" class="partial-item col-lg-8 col-sm-12">
+                    <article class="agenda-box agenda-big">
+                      <h3 itemprop="name">
+                        <small>Biochemie am Samstag</small> Eine Reise in die Welt des Nanometers &ndash; Elektrochemische Ansätze
+                      </h3>
+                      <time itemprop="startDate" datetime="2015-08-30 09:00"><span class="day">30</span> August<span class="agenda-date-until">bis 30. August 2015</span><span class="agenda-time-range">11.30 - 14.30 Uhr</span></time>
+                    </article>
+                  </a>
+                  <!-- Row 8 -->
+                  <a itemscope="itemscope" itemtype="http://schema.org/Event" itemprop="url" href="#" class="partial-item col-lg-8 col-sm-12">
+                    <article class="agenda-box agenda-big">
+                      <h3 itemprop="name">
+                        <small>Theologie am Samstag</small> Ikonen &ndash; bildliche Zugänge zu Gott
+                      </h3>
+                      <time itemprop="startDate" datetime="2015-08-30 09:00"><span class="day">30</span> August<span class="agenda-date-until">bis 30. August 2015</span><span class="agenda-time-range">11.30 - 14.30 Uhr</span></time>
+                    </article>
+                  </a>
+                  <!-- mobile-only-more -->
+                  <a href="#" class="partial-item partial-more visible-xs col-lg-3 col-md-4 col-sm-6" data-partial="#swipe-agenda">
+                    <article class="agenda-box">
+                      <small>Nächsten Monat anzeigen</small>
+                    </article>
+                  </a>
+                </div>
+                <p class="swipe-control" data-swipe="swipe-agenda">
+                  <a href="#" class="back" role="button"><span class="sr-only">Zurück</span></a>
+                  <a href="#" class="next" role="button"><span class="sr-only">Zurück</span></a>
+                </p>
+                <p class="agenda-button-more button-more button-clear">
+                  <a href="#" class="btn btn-default partial-more partial-agenda" data-linktextarchive="Nächsten Monat anzeigen" data-partial="#swipe-agenda">Nächsten Monat anzeigen</a>
+                </p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+    <a href="#" class="back-to-top"><span class="sr-only">Oben</span></a>
+    <!-- Fussbereich -->
+    <footer class="footer container-fluid">
+      <h2 class="sr-only">Weitere Informationen über diesen Webauftritt</h2>
+      <div class="container">
+        <!-- Service-Navigation -->
+        <div id="nav-service" class="footer-nav-search">
+          <nav class="nav-service">
+            <h3 class="sr-only">Wichtige Seiten</h3>
+            <ul>
+              <li><a href="#">Kontakt</a></li>
+              <li><a href="#">Lageplan</a></li>
+              <li><a href="#">Bibliothek</a></li>
+              <li><a href="#">Medien</a></li>
+              <li><a href="uniintern_start.html">Uni intern</a></li>
+            </ul>
+          </nav>
+          <!-- Sprachnavigation -->
+          <nav id="nav-lang" class="nav-lang">
+            <h3 class="hidden-lg">Sprachwahl</h3>
+            <ul>
+              <li><a href="#" class="active">DE</a></li>
+              <li><a href="#">FR</a></li>
+              <li><a href="#">IT</a></li>
+            </ul>
+          </nav>
+          <!-- Sitesuche -->
+          <form id="site-search" class="site-search form-inline" action="https://www.suche.unibe.ch/" method="get">
+            <h3 class="sr-only">Site-Suche</h3>
+            <label for="form-site-search">Suche</label>
+            <input id="form-site-search" type="text" name="eingabe" class="form-control" ../.. />
+            <button type="submit" class="btn">Suchen</button>
+          </form>
+        </div><!-- #nav-service end -->
+        <!-- Claim -->
+        <div class="claim">
+          <a href="#">
+            <img src="" alt="" />
+          </a>
+        </div>
+        <!-- Copyright, Legals und Adresse -->
+        <div class="legal row">
+          <div class="copy col-lg-8 col-md-8 col-sm-7 col-xs-12">
+            <h3 class="sr-only">Rechtliches und Impressum</h3>
+            <ul>
+              <li>&copy; 2023 Universität Bern</li>
+              <li><a href="#">Impressum</a></li>
+              <li><a href="#">Rechtliche Hinweise</a></li>
+            </ul>
+          </div>
+          <div id="address" itemscope="itemscope" itemtype="https://schema.org/Organization" class="col-lg-2 col-md-2 col-sm-3 col-xs-8">
+            <h3 class="sr-only">Unsere Adresse</h3>
+            <address class="hidden-md" itemprop="address" itemscope="itemscope" itemtype="https://schema.org/PostalAddress">
+              <span itemprop="name">Universität Bern</span><br />
+              <span itemprop="streetAddress">Hochschulstrasse 4</span><br />
+              <span itemprop="addressCountry">CH</span>-<span itemprop="postalCode">3012</span> <span itemprop="addressLocality">Bern</span>
+            </address>
+          </div>
+          <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4 footer-logo">
+            <img src="../../../web/estatico-handlebars/dist/assets/media/image/logo-unibern-footer.png" alt="Universität Bern" class="footer-logo-unibern" ../.. />
+          </div>
+        </div>
+        <!-- Partner -->
+        <div class="partner">
+          <h3 class="sr-only">Unsere Partner</h3>
+          <a href="#">
+            <img src="../../../web/estatico-handlebars/dist/assets/media/image/logo-swissuniversity-ch-footer.png" alt="Swiss Universities" class="footer-logo-swissuniversity" ../.. />
+          </a>
+          <a href="#">
+            <img src="../../../web/estatico-handlebars/dist/assets/media/image/logo-akkredrat_ger.png" alt="Akkreditierung" style="padding:0 1em;" />
+          </a>
+        </div>
+      </div>
+    </footer>
+    <!-- Root element of PhotoSwipe. Must have class pswp. -->
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="pswp__bg"></div>
+      <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides.
+          PhotoSwipe keeps only 3 of them in the DOM to save memory.
+          Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+          <div class="pswp__item"></div>
+          <div class="pswp__item"></div>
+          <div class="pswp__item"></div>
+        </div>
+        <div class="pswp__ui pswp__ui--hidden">
+          <div class="pswp__top-bar">
+            <div class="pswp__counter"></div>
+            <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+            <button class="pswp__button pswp__button--share" title="Share"></button>
+            <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+            <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+            <div class="pswp__preloader">
+              <div class="pswp__preloader__icn">
+                <div class="pswp__preloader__cut">
+                  <div class="pswp__preloader__donut"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+            <div class="pswp__share-tooltip"></div>
+          </div>
+          <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+          </button>
+          <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+          </button>
+          <div class="pswp__caption">
+            <div class="pswp__caption__center"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var unibe_settings = {
+        "de":
+        {
+          "defaultURL":
+          {
+            "portal": "http://localhost:9000/pages/portal-startseite/portal-startseite.html",
+            "subsite": "http://localhost:9000/pages/fakultaet-home/fakultaet-home.html"
+          },
+          "navPortalAjaxURL": "../../../web/estatico-handlebars/dist/data/ajax/nav_portal.html",
+          "navUniinternAjaxURL": "../../../web/estatico-handlebars/dist/data/ajax/nav_uniintern.html",
+          "facultySearchAjaxURL": "../../../web/estatico-handlebars/dist/data/ajax/suchtreffer_fakultaeten.html",
+          "ajaxSuffix": ".html"
+        },
+        "en":
+        {
+          "defaultURL":
+          {
+            "portal": "portal_eng.html",
+            "subsite": "fakultaeten_eng.html"
+          },
+          "navPortalAjaxURL": "../../../web/estatico-handlebars/dist/data/ajax/nav_portal_eng.html",
+          "navUniinternAjaxURL": "../../../web/estatico-handlebars/dist/data/ajax/nav_uniintern_eng.html",
+          "facultySearchAjaxURL": "../../../web/estatico-handlebars/dist/data/ajax/suchtreffer_fakultaeten_eng.html",
+          "ajaxSuffix": "_eng.html"
+        },
+        "fr":
+        {
+          "defaultURL":
+          {
+            "portal": "portal_fra.html",
+            "subsite": "fakultaeten_fra.html"
+          },
+          "navPortalAjaxURL": "../../../web/estatico-handlebars/dist/data/ajax/nav_portal_fra.html",
+          "navUniinternAjaxURL": "../../../web/estatico-handlebars/dist/data/ajax/nav_uniintern_fra.html",
+          "facultySearchAjaxURL": "../../../web/estatico-handlebars/dist/data/ajax/suchtreffer_fakultaeten_fra.html",
+          "ajaxSuffix": "_fra.html"
+        },
+        "it":
+        {
+          "defaultURL":
+          {
+            "portal": "portal_ita.html",
+            "subsite": "fakultaeten_ita.html"
+          },
+          "navPortalAjaxURL": "../../../web/estatico-handlebars/dist/data/ajax/nav_portal_ita.html",
+          "navUniinternAjaxURL": "../../../web/estatico-handlebars/dist/data/ajax/nav_uniintern_ita.html",
+          "facultySearchAjaxURL": "../../../web/estatico-handlebars/dist/data/ajax/suchtreffer_fakultaeten_ita.html",
+          "ajaxSuffix": "_ita.html"
+        }
+      };
+    </script>
+    <!--<script src="../../../web/estatico-handlebars/dist/assets/js/legacy/scripts.min.js"></script>-->
+    <!--<script defer src="../../../web/estatico-handlebars/dist/assets/js/vendors/photoswipe/photoswipe.min.js"></script>-->
+    <!--<script defer src="../../../web/estatico-handlebars/dist/assets/js/vendors/photoswipe/photoswipe-ui-default.min.js"></script>-->
+    <!--<script defer src="../../../web/estatico-handlebars/dist/assets/js/vendors/anime/anime.min.js"></script>-->
+    <!--<script defer src="../../../web/estatico-handlebars/dist/assets/js/vendors/scrollreveal/scrollreveal.js"></script>-->
+    <!--<script defer src="../../../web/estatico-handlebars/dist/assets/js/helpers/lightbox.js"></script>-->
+    <!--<script src="../../../web/estatico-handlebars/dist/assets/js/main.min.js"></script>-->
+    <!--<script defer src="../../../web/estatico-handlebars/dist/assets/js/helpers/toggle-toc.js"></script>-->
+    <!--<script defer src="../../../web/estatico-handlebars/dist/assets/js/helpers/motion.js"></script>-->
+    <!--<script defer src="../../../web/estatico-handlebars/dist/assets/js/helpers/pwa.js"></script>-->
+  </body>
+</html>
