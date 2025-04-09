@@ -56,11 +56,11 @@ class PopUp {
               <ul tal:condition="python:this.attr('dataurl')=='unibeagenda@engineerer.ch'">
               <li><a href="#" target="_blank"
                   tal:define="attachment_id python:'AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0A_iZhOlfb-UGQ3i66ewMG9QAAMK4KtAAAARIAEABSfkuR30dnQbt9Abbr3geI'"
-                  tal:attributes="href python:'ZMSAgenda_get_attachment?id='+attachment_id"
+                  tal:attributes="href python:'getAgendaAttachment?id='+attachment_id"
                   tal:content="python:OutlookConnector.run_asyncio(outlook.get_calendar_attachments(attachment_id))">foo.pdf</a></li>
               <li><a href="#" target="_blank"
                   tal:define="attachment_id python:'AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0A_iZhOlfb-UGQ3i66ewMG9QAAMK4KtAAAARIAEAAFFVWgL_vmR4sCmD7sgO0a'"
-                  tal:attributes="href python:'ZMSAgenda_get_attachment?id='+attachment_id"
+                  tal:attributes="href python:'getAgendaAttachment?id='+attachment_id"
                   tal:content="python:OutlookConnector.run_asyncio(outlook.get_calendar_attachments(attachment_id))">bar.pdf</a></li>
               </ul>`;
       }
