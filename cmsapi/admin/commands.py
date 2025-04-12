@@ -7,7 +7,6 @@ from ..models.agendas import AgendaPortal, AgendaLibraryDE, AgendaLibraryEN
 from ..models.newsevents import StatusMessage
 from ..models.servicelinks import ServiceLink
 from ..models.newsbox import NewsBox
-from ..models.teaserelement2022 import TeaserElement2022
 from ..models.uniaktuell import UniaktuellArticle
 from ..models.mediareleases import MediaRelease
 from ..models.zmsobjects import ZMSSite
@@ -45,7 +44,6 @@ def update_tables(models, *args):
             print('--------------------------------------------------------------------------')
             print('Process', model)
 
-            uuids_all = []
             count_objs = {}
             
             if model in (AgendaPortal, AgendaLibraryDE, AgendaLibraryEN):
@@ -82,36 +80,32 @@ def update_tables(models, *args):
                 else:
                     query = zmsindex({'meta_id': model.get_zms_metaid()})  # TODO: optimize retrieval for 1000+ objects
 
-                uuids_new = []
-
                 for obj in _iterate_content_objects(query, model, count_objs):
                     statement = select(model).where(model.uuid == obj.uuid)
                     results = session.exec(statement)
-                    row = results.first()
-                    if row is not None:
-                        session.delete(row)
-                    session.add(obj)
-                    uuids_new.append(obj.uuid)
-                session.commit()
+                    row = results.one_or_none()
+                    if row is None:
+                        # INSERT new obj
+                        try:
+                            session.add(obj)
+                            session.commit()
+                        except:
+                            session.rollback()
+                            debug(obj)  # outside the intended container to which the foreign key refers
+                    else:
+                        # UPDATE existing row
+                        row.sqlmodel_update(obj.model_dump())
+                        session.add(row)
+                        session.commit()
+                        session.refresh(row)
 
-                # delete rows with obsolete uuids
-                statement = select(model.uuid)
-                results = session.exec(statement)
-                uuids_all = results.all()
-                uuids_del = list(set(uuids_all)-set(uuids_new))
-                debug(uuids_del)
-                for uuid in uuids_del:
-                    statement = select(model).where(model.uuid == uuid)
-                    results = session.exec(statement)
-                    row = results.first()
-                    if row is not None:
-                        session.delete(row)
-                session.commit()
+            statement = select(model)
+            results = session.exec(statement)
 
             t1 = time.time()
             ts = t1 - t0
             print('--------------------------------------------------------------------------')
-            print(model.__name__, f'({len(uuids_all):,})', f'{ts:.3f} sec', f'= {ts/60:.2f} min')
+            print(model.__name__, f'({len(results.all()):,})', f'{ts:.3f} sec', f'= {ts/60:.2f} min')
 
         # refresh intermediate NewsEvents table consolidating data sources for queries
         _store_newsevents_data(session, sqlengine)
