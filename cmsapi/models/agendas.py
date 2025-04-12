@@ -5,7 +5,7 @@ from datetime import datetime
 
 class AgendaPortal(SQLModel, table=True):  # to import https://agenda.unibe.ch/agenda.json
     __table_args__ = {'extend_existing': True}
-    id: int = Field(primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     json_datum_zeit_start: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     json_datum_zeit_end: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     veranstaltung_zyklus: str
@@ -19,7 +19,7 @@ class AgendaPortal(SQLModel, table=True):  # to import https://agenda.unibe.ch/a
 
 class AgendaLibraryDE(SQLModel, table=True):  # to import https://agenda.ub.unibe.ch/de/api/event
     __table_args__ = {'extend_existing': True}
-    id: int = Field(primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     title: str
     eventType: str
     subjects: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
@@ -31,7 +31,7 @@ class AgendaLibraryDE(SQLModel, table=True):  # to import https://agenda.ub.unib
 
 class AgendaLibraryEN(SQLModel, table=True):  # to import https://agenda.ub.unibe.ch/en/api/event
     __table_args__ = {'extend_existing': True}
-    id: int = Field(primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     title: str
     eventType: str
     subjects: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))

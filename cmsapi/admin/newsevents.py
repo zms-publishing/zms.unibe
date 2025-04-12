@@ -10,12 +10,12 @@ from ..models.newsbox import NewsBox
 
 def _store_newsevents_data(session, sqlengine):  # fill intermediate table consolidating data sources for queries
 
-    if inspect(sqlengine).has_table(NewsEvents.__table__):
+    if inspect(sqlengine).has_table(NewsEvents.__name__.lower()):
         NewsEvents.__table__.drop(sqlengine)
     NewsEvents.__table__.create(sqlengine)
 
     # DATA SOURCE 1 ######################
-    if inspect(sqlengine).has_table(AgendaPortal.__table__):
+    if inspect(sqlengine).has_table(AgendaPortal.__name__.lower()):
         statement = select(AgendaPortal)  # DE
         results = session.exec(statement)
         for res in results.all():
@@ -48,7 +48,7 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         session.commit()
 
     # DATA SOURCE 2 ######################
-    if inspect(sqlengine).has_table(AgendaPortal.__table__):
+    if inspect(sqlengine).has_table(AgendaPortal.__name__.lower()):
         statement = select(AgendaPortal)  # EN (as copy of DE to show content without a multilang AgendaPortal)
         results = session.exec(statement)
         for res in results.all():
@@ -81,7 +81,7 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         session.commit()
 
     # DATA SOURCE 3 ###################
-    if inspect(sqlengine).has_table(AgendaLibraryDE.__table__):
+    if inspect(sqlengine).has_table(AgendaLibraryDE.__name__.lower()):
         statement = select(AgendaLibraryDE)
         results = session.exec(statement)
         for res in results.all():
@@ -112,7 +112,7 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         session.commit()
 
     # DATA SOURCE 4 ###################
-    if inspect(sqlengine).has_table(AgendaLibraryEN.__table__):
+    if inspect(sqlengine).has_table(AgendaLibraryEN.__name__.lower()):
         statement = select(AgendaLibraryEN)
         results = session.exec(statement)
         for res in results.all():
@@ -143,7 +143,7 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         session.commit()
 
     # DATA SOURCE 5 ######################
-    if inspect(sqlengine).has_table(TeaserElement2022.__table__):
+    if inspect(sqlengine).has_table(TeaserElement2022.__name__.lower()):
         statement = [select(TeaserElement2022).
                      where(or_(TeaserElement2022.active_de, TeaserElement2022.active_en, TeaserElement2022.active_fr)).
                      where(or_(TeaserElement2022.active_start_de <= datetime.utcnow(),
@@ -208,7 +208,7 @@ def _store_newsevents_data(session, sqlengine):  # fill intermediate table conso
         session.commit()
 
     # DATA SOURCE 6 ######################
-    if inspect(sqlengine).has_table(NewsBox.__table__):
+    if inspect(sqlengine).has_table(NewsBox.__name__.lower()):
         statement = [select(NewsBox).
                      where(or_(NewsBox.active_de, NewsBox.active_en, NewsBox.active_fr)).
                      where(or_(NewsBox.active_start_de <= datetime.utcnow(),

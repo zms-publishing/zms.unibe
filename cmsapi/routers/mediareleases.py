@@ -61,7 +61,7 @@ async def get_mediareleases(
                 uuid=res.ZMSSite.uuid
             )
 
-            data.append(schema.MediaRelease.parse_obj({
+            data.append(schema.MediaRelease.model_validate({
                 'title': get_attr_by_lang(lang,
                                           res.MediaRelease.title_de,
                                           res.MediaRelease.title_en,

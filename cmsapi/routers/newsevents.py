@@ -67,7 +67,7 @@ async def get_news(
                 uuid=res.ZMSSite.uuid
             )
 
-            data.append(schema.News.parse_obj({
+            data.append(schema.News.model_validate({
                 'date': local_timezone(get_attr_by_lang(lang,
                                                         de=res.NewsEvents.lastmod_dt_de,
                                                         en=res.NewsEvents.lastmod_dt_en,
@@ -182,7 +182,7 @@ async def get_events(
             section.type = 'Agenda Library'
             data_uuid = None
 
-        data.append(schema.Event.parse_obj({
+        data.append(schema.Event.model_validate({
             'start': local_timezone(res.NewsEvents.start_dt),
             'end': local_timezone(res.NewsEvents.end_dt),
             'title': get_attr_by_lang(lang,
@@ -313,7 +313,7 @@ async def get_sections(
         total = session.exec(statement[0])
 
         for res in results.all():
-            data.append(schema.Section.parse_obj({
+            data.append(schema.Section.model_validate({
                 'title': get_attr_by_lang(lang,
                                           de=res.ZMSSite.title_de,
                                           en=res.ZMSSite.title_en,
@@ -364,7 +364,7 @@ async def get_statusmessages(
                 path=None,
                 uuid=None
             )
-            data.append(schema.StatusMessage.parse_obj({
+            data.append(schema.StatusMessage.model_validate({
                 'title': res.subject,
                 'start': local_timezone(res.begin),
                 'end': res.end > local_timezone(datetime.fromisoformat('1970-01-01T00:00:00+00:00'))

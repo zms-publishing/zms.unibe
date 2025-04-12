@@ -4,7 +4,7 @@ from sqlmodel import create_engine
 from devtools import debug
 
 ZODB_STORAGE = os.getenv('ZODB_STORAGE', 'zeo://127.0.0.1:8000?storage=main')
-SQLDB_STORAGE = os.getenv('SQLDB_STORAGE', 'postgresql://127.0.0.1:5432/unibe_cmsapi')
+SQLDB_STORAGE = os.getenv('SQLDB_STORAGE', 'postgresql://127.0.0.1:5432/zms_fastapi')
 
 try:
     with open('/run/secrets/sqldb.credentials') as file:  # via Docker Swarm secrets config

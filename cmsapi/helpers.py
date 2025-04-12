@@ -226,8 +226,10 @@ def strip_cmstest(domain):
 def get_datetime_props(cls):
     props = []
     for key, val in cls.schema()['properties'].items():
-        if 'format' in val and val['format'] in ('date', 'date-time'):
-            props.append(key)
+        if 'anyOf' in val:
+            if ('format' in val['anyOf'][0] and val['anyOf'][0]['format'] 
+                in ('date', 'date-time')):
+                props.append(key)
     return props
 
 

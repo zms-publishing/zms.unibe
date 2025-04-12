@@ -25,7 +25,7 @@ def init_tables(models, *args, _all=False):
         SQLModel.metadata.create_all(sqlengine)
     else:
         for model in models:
-            if inspect(sqlengine).has_table(model.__table__):
+            if inspect(sqlengine).has_table(model.__name__.lower()):
                 model.__table__.drop(sqlengine)
                 model.__table__.create(sqlengine)
     
@@ -53,7 +53,7 @@ def update_tables(models, *args):
             elif model == StatusMessage:
                 _fetch_status_messages(session, sqlengine)
             else:
-                if not inspect(sqlengine).has_table(model.__table__):
+                if not inspect(sqlengine).has_table(model.__name__.lower()):
                     model.__table__.create(sqlengine)
                 if model == ServiceLink:
                     query = zmsindex({'path': '/unibe/uniapp/content/'})
