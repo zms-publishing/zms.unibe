@@ -80,6 +80,8 @@ def update_tables(models, *args):
                 else:
                     query = zmsindex({'meta_id': model.get_zms_metaid()})  # TODO: optimize retrieval for 1000+ objects
 
+                uuids_processed = []
+
                 for obj in _iterate_content_objects(query, model, count_objs):
                     statement = select(model).where(model.uuid == obj.uuid)
                     results = session.exec(statement)
@@ -89,12 +91,38 @@ def update_tables(models, *args):
                         try:
                             session.add(obj)
                             session.commit()
+                        # outside the intended container
+                        # to which the foreign key refers
                         except:
                             session.rollback()
-                            debug(obj)  # outside the intended container to which the foreign key refers
+                            debug(obj)
+                            continue
                     else:
                         # UPDATE existing row
                         row.sqlmodel_update(obj.model_dump())
+                        session.add(row)
+                        session.commit()
+                        session.refresh(row)
+
+                    uuids_processed.append(obj.uuid)
+
+                # UPDATE rows with obsolete uuids which are removed in ZODB
+                # SET these rows to active=False in all languages
+                # to avoid needed DELETE CASCADE which did not work with inheritance in models construction
+                # https://sqlmodel.tiangolo.com/tutorial/relationship-attributes/cascade-delete-relationships/
+                statement = select(model.uuid)
+                results = session.exec(statement)
+                uuids_existing = results.all()
+                uuids_obsolete = list(set(uuids_existing) - set(uuids_processed))
+                debug(uuids_obsolete)
+                for uuid in uuids_obsolete:
+                    statement = select(model).where(model.uuid == uuid)
+                    results = session.exec(statement)
+                    row = results.one_or_none()
+                    if row is not None:
+                        row.active_de = False
+                        row.active_en = False
+                        row.active_fr = False
                         session.add(row)
                         session.commit()
                         session.refresh(row)
