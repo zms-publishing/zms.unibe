@@ -300,7 +300,16 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         return obj._uid
 
     if zms_attr == 'obj._datafilecached':
-        return obj.attr('_datafilecached').getData()
+        import requests
+        host = os.getenv('HOST', 'http://127.0.0.1:8080')
+        href = obj.attr('_datafilecached').getHref(REQUEST=headless_http_request)
+        href = f'{host}{href}'  # TODO: set URL as env var
+        try:
+            json = requests.get(href).json()
+            return str(json)
+        except:
+            debug(href)
+        return
 
     if zms_attr == 'obj.getDocumentElement()._uid':
         return obj.getDocumentElement()._uid
