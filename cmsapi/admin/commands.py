@@ -11,7 +11,6 @@ from ..models.uniaktuell import UniaktuellArticle
 from ..models.mediareleases import MediaRelease
 from ..models.zmsobjects import ZMSSite
 from .agendas import _fetch_agenda_data, _fetch_status_messages
-from .newsevents import _store_newsevents_data
 from .mappings import _iterate_content_objects
 
 
@@ -134,6 +133,3 @@ def update_tables(models, *args):
             ts = t1 - t0
             print('--------------------------------------------------------------------------')
             print(model.__name__, f'({len(results.all()):,})', f'{ts:.3f} sec', f'= {ts/60:.2f} min')
-
-        # refresh intermediate NewsEvents table consolidating data sources for queries
-        _store_newsevents_data(session, sqlengine)

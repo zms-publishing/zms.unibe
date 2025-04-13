@@ -3,6 +3,7 @@ import typer
 
 from .db import connect_db
 from .commands import init_tables, update_tables
+from .newsevents import update_newsevents_table
 from ..models.zmsobjects import *
 from ..models.teaserelement2022 import TeaserContainer2022, TeaserElement2022, Hero2022, Hero
 from ..models.newsbox import NewsBox, NewsContainer
@@ -71,7 +72,8 @@ def main(command: str = typer.Argument(None, help='init | update'),
             raise typer.Abort()
 
     if feature == 'NewsEvents':  # this Argument overrides any individually set Options via --metaobj
-        models = (ZMSSite, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN, TeaserContainer2022, TeaserElement2022, StatusMessage, )
+                                 # AgendaPortal processes also AgendaLibraryDE and AgendaLibraryEN in _fetch_agenda_data
+        models = (ZMSSite, AgendaPortal, TeaserContainer2022, TeaserElement2022, StatusMessage, )
 
     if feature == 'NewsBoxes':
         models = (NewsContainer, NewsBox, )
@@ -90,6 +92,8 @@ def main(command: str = typer.Argument(None, help='init | update'),
         update_tables(models, *connect_db())
     else:
         raise typer.Abort()
+
+    update_newsevents_table(*connect_db())
 
     t1 = time.time()
     ts = t1-t0
