@@ -1,4 +1,5 @@
 import time
+import uuid
 from sqlmodel import SQLModel, Session, select, inspect
 from devtools import debug
 from pathlib import Path
@@ -103,28 +104,25 @@ def update_tables(models, *args):
                         session.commit()
                         session.refresh(row)
 
-                    uuids_processed.append(obj.uuid)
+                    uuids_processed.append(uuid.UUID(f'urn:uuid:{obj.uuid}'))
 
-                # UPDATE rows with obsolete uuids which are removed in ZODB
-                # SET these rows to active=False in all languages
-                # to avoid needed DELETE CASCADE which did not work with inheritance in models construction
+                # DELETE CASCADE rows with obsolete uuids which are removed from ZODB
+                # we define it for the foreign keys of models to set the PostgreSQL tables correctly
+                # we omit the Relationship(back_populates="...", cascade_delete=True) mentioned in the docs
+                # as we do not work the objects - we just want to auto-delete all referenced rows in SQL
                 # https://sqlmodel.tiangolo.com/tutorial/relationship-attributes/cascade-delete-relationships/
                 statement = select(model.uuid)
                 results = session.exec(statement)
                 uuids_existing = results.all()
                 uuids_obsolete = list(set(uuids_existing) - set(uuids_processed))
                 debug(uuids_obsolete)
-                for uuid in uuids_obsolete:
-                    statement = select(model).where(model.uuid == uuid)
+                for uid in uuids_obsolete:
+                    statement = select(model).where(model.uuid == uid)
                     results = session.exec(statement)
                     row = results.one_or_none()
                     if row is not None:
-                        row.active_de = False
-                        row.active_en = False
-                        row.active_fr = False
-                        session.add(row)
+                        session.delete(row)
                         session.commit()
-                        session.refresh(row)
 
             statement = select(model)
             results = session.exec(statement)
