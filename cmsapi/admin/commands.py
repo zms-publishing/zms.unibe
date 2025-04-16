@@ -99,10 +99,15 @@ def update_tables(models, *args):
                             continue
                     else:
                         # UPDATE existing row
-                        row.sqlmodel_update(obj.model_dump())
-                        session.add(row)
-                        session.commit()
-                        session.refresh(row)
+                        try:
+                            row.sqlmodel_update(obj.model_dump())
+                            session.add(row)
+                            session.commit()
+                            session.refresh(row)
+                        except:
+                            session.rollback()
+                            debug(row)
+                            continue
 
                     uuids_processed.append(uuid.UUID(f'urn:uuid:{obj.uuid}'))
 
