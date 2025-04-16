@@ -76,7 +76,7 @@ def _retrieve_service_links(lang, uuid):
                                                 en=res.parent_title_en,
                                                 fr=res.parent_title_fr).strip()
 
-            data.append(schema.ServiceLink.parse_obj({
+            data.append(schema.ServiceLink.model_validate({
                 'title': service_title,
                 'url': service_link,
                 'info': service_info,

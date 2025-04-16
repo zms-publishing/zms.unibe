@@ -6,22 +6,22 @@ from uuid import UUID
 
 class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inherit
     uuid: UUID = Field(primary_key=True)
-    site_uuid: UUID = Field(foreign_key="zmssite.uuid")
+    site_uuid: UUID = Field(foreign_key="zmssite.uuid", ondelete="CASCADE")
     active_de: bool
     active_en: bool
     active_fr: bool
-    active_start_de: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    active_start_en: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    active_start_fr: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    active_end_de: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    active_end_en: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    active_end_fr: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    created_dt_de: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    created_dt_en: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    created_dt_fr: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    lastmod_dt_de: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    lastmod_dt_en: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    lastmod_dt_fr: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    active_start_de: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
+    active_start_en: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
+    active_start_fr: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
+    active_end_de: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
+    active_end_en: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
+    active_end_fr: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
+    created_dt_de: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
+    created_dt_en: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
+    created_dt_fr: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
+    lastmod_dt_de: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
+    lastmod_dt_en: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
+    lastmod_dt_fr: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
     sort_id_parent: int
     sort_id: int
     level: int

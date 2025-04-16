@@ -3,6 +3,7 @@ import typer
 
 from .db import connect_db
 from .commands import init_tables, update_tables
+from .newsevents import update_newsevents_table
 from ..models.zmsobjects import *
 from ..models.teaserelement2022 import TeaserContainer2022, TeaserElement2022, Hero2022, Hero
 from ..models.newsbox import NewsBox, NewsContainer
@@ -20,11 +21,11 @@ MODELS_AVAILABLE = {
     'ZMSBoris': ZMSBoris,
     'ZMSDataTable': ZMSDataTable,
     'ZMSFormulator': ZMSFormulator,
-    'ZMSFolder': ZMSFolder,
-    'ZMSGraphic': ZMSGraphic,
-    'ZMSDocument': ZMSDocument,
-    'ZMSFile': ZMSFile,
-    'ZMSTable': ZMSTable,
+    #'ZMSFolder': ZMSFolder,
+    #'ZMSGraphic': ZMSGraphic,
+    #'ZMSDocument': ZMSDocument,
+    #'ZMSFile': ZMSFile,
+    #'ZMSTable': ZMSTable,
     'TeaserContainer2022': TeaserContainer2022,
     'TeaserElement2022': TeaserElement2022,
     'Hero2022': Hero2022,
@@ -32,24 +33,24 @@ MODELS_AVAILABLE = {
     'NewsContainer': NewsContainer,
     'NewsBox': NewsBox,
     'AgendaPortal': AgendaPortal,
-    'AgendaLibraryDE': AgendaLibraryDE,
-    'AgendaLibraryEN': AgendaLibraryEN,
+    #'AgendaLibraryDE': AgendaLibraryDE,
+    #'AgendaLibraryEN': AgendaLibraryEN,
     'ServiceLink': ServiceLink,
     'StatusMessage': StatusMessage,
     'UniaktuellArticle': UniaktuellArticle,
     'MediaRelease': MediaRelease,
-    'TwoCols': TwoCols,
-    'ContentTabs': ContentTabs,
-    'ContentPane': ContentPane,
-    'AlertBox': AlertBox,
-    'InfoBox': InfoBox,
-    'Person': Person,
-    'ContactBoxSection': ContactBoxSection,
-    'ContactBox': ContactBox,
-    'TeamSection': TeamSection,
-    'Team': Team,
-    'WeiterbildungStudiengang': WeiterbildungStudiengang,
-    'UniBEFactsheet': UniBEFactsheet,
+    #'TwoCols': TwoCols,
+    #'ContentTabs': ContentTabs,
+    #'ContentPane': ContentPane,
+    #'AlertBox': AlertBox,
+    #'InfoBox': InfoBox,
+    #'Person': Person,
+    #'ContactBoxSection': ContactBoxSection,
+    #'ContactBox': ContactBox,
+    #'TeamSection': TeamSection,
+    #'Team': Team,
+    #'WeiterbildungStudiengang': WeiterbildungStudiengang,
+    #'UniBEFactsheet': UniBEFactsheet,
     'UniBEEvent': UniBEEvent,
     'CodeBlock': CodeBlock,
 }
@@ -71,7 +72,8 @@ def main(command: str = typer.Argument(None, help='init | update'),
             raise typer.Abort()
 
     if feature == 'NewsEvents':  # this Argument overrides any individually set Options via --metaobj
-        models = (ZMSSite, AgendaPortal, AgendaLibraryDE, AgendaLibraryEN, TeaserContainer2022, TeaserElement2022, StatusMessage, )
+                                 # AgendaPortal processes also AgendaLibraryDE and AgendaLibraryEN in _fetch_agenda_data
+        models = (ZMSSite, AgendaPortal, TeaserContainer2022, TeaserElement2022, StatusMessage, )
 
     if feature == 'NewsBoxes':
         models = (NewsContainer, NewsBox, )
@@ -90,6 +92,8 @@ def main(command: str = typer.Argument(None, help='init | update'),
         update_tables(models, *connect_db())
     else:
         raise typer.Abort()
+
+    update_newsevents_table(*connect_db())
 
     t1 = time.time()
     ts = t1-t0

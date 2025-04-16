@@ -226,8 +226,10 @@ def strip_cmstest(domain):
 def get_datetime_props(cls):
     props = []
     for key, val in cls.schema()['properties'].items():
-        if 'format' in val and val['format'] in ('date', 'date-time'):
-            props.append(key)
+        if 'anyOf' in val:
+            if ('format' in val['anyOf'][0] and val['anyOf'][0]['format'] 
+                in ('date', 'date-time')):
+                props.append(key)
     return props
 
 
@@ -298,7 +300,16 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         return obj._uid
 
     if zms_attr == 'obj._datafilecached':
-        return obj.attr('_datafilecached').getData()
+        import requests
+        host = os.getenv('HOST', 'http://127.0.0.1:8080')
+        href = obj.attr('_datafilecached').getHref(REQUEST=headless_http_request)
+        href = f'{host}{href}'  # TODO: set URL as env var
+        try:
+            json = requests.get(href).json()
+            return str(json)
+        except:
+            debug(href)
+        return
 
     if zms_attr == 'obj.getDocumentElement()._uid':
         return obj.getDocumentElement()._uid

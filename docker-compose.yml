@@ -92,7 +92,7 @@ services:
       - fastapi_network
 
   postgres:
-    image: postgres:latest
+    image: postgres:14.7
     deploy:
       replicas: 1
       restart_policy:

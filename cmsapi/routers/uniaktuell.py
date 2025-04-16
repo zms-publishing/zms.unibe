@@ -70,7 +70,7 @@ async def get_uniaktuell(
                                                                      res.UniaktuellArticle.topics_en,
                                                                      res.UniaktuellArticle.topics_fr))]
 
-            data.append(schema.UniaktuellArticle.parse_obj({
+            data.append(schema.UniaktuellArticle.model_validate({
                 'title': get_attr_by_lang(lang,
                                           res.UniaktuellArticle.title_de,
                                           res.UniaktuellArticle.title_en,

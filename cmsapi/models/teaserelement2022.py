@@ -56,7 +56,7 @@ class TeaserElement2022(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
     img_alt_en: str | None
     img_alt_fr: str | None
 
-    container_uuid: UUID = Field(foreign_key="teasercontainer2022.uuid")
+    container_uuid: UUID = Field(foreign_key="teasercontainer2022.uuid", ondelete="CASCADE")
 
     @staticmethod
     def get_zms_metaid():
@@ -101,9 +101,10 @@ class TeaserElement2022(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
 class Hero2022(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
     img: str | None
-    img_size: int | None
-    file: str | None
-    file_size: int | None
+    img_size: str | None
+    video: str | None
+    video_size: int | None
+    overlay: bool
     img_alt_de: str | None
     img_alt_en: str | None
     img_alt_fr: str | None
@@ -133,8 +134,9 @@ class Hero2022(ZMSBase, table=True):
             # sql_attr          # zms_attr
             'img':              'img',
             'img_size':         'img',
-            'file':             'file',
-            'file_size':        'file',
+            'video':            'video',
+            'video_size':       'video',
+            'overlay':          'overlay',
             'img_alt_de':       'img_alt_ger',
             'img_alt_en':       'img_alt_eng',
             'img_alt_fr':       'img_alt_fra',

@@ -40,7 +40,7 @@ async def get_content_sites(
         results = session.exec(statement)
         rtn = []
         for res in results.all():
-            rtn.append(schema.ZMSSite.parse_obj({
+            rtn.append(schema.ZMSSite.model_validate({
                 'siteUuid': res.uuid,
                 'sitePath': res.path,
                 'siteType': res.type,
@@ -102,7 +102,7 @@ async def get_datatables(
         results = session.exec(statement)
         rtn = []
         for res in results.all():
-            rtn.append(schema.ZMSDataTable.parse_obj({
+            rtn.append(schema.ZMSDataTable.model_validate({
                 'datatablePath': res.ZMSDataTable.path,
                 'datatableSite': get_subdomain(res.ZMSSite.domain),
                 'datatableDomain': strip_cmstest(res.ZMSSite.domain),
