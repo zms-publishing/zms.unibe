@@ -9,7 +9,7 @@ from cmsapi.metadata import cmsapi_tags
 from cmsapi.routers import newsevents, zmsobjects, zmscontent, servicelinks, uniaktuell, mediareleases
 
 app = FastAPI(title="CMSAPI v3",
-              version="3.2.1",
+              version="3.2.2",
               description="Python-based REST API for retrieving, analyzing and consolidating content "
                           "published in UniBE-CMS and other information systems.",
               docs_url="/v3/swagger",

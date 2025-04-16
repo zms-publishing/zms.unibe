@@ -48,7 +48,7 @@ class Event(BaseModel):             # TEASER ELEMENT 2022   AGENDA PORTAL       
     title: str                      # title                 veranstaltung_titel             title
     start: datetime                 # event_date_start      json_datum_zeit_start           startsAt
     end: datetime | None            # event_date_end        json_datum_zeit_end             endsAt
-    location: str                   # event_location        veranstaltung_horsaal           venue
+    location: str | None            # event_location        veranstaltung_horsaal           venue
                                     #                       + veranstaltung_gebaude_adresse
                                     #                       + veranstaltung_ort
 
