@@ -1,8 +1,10 @@
+let unknownDateText = "";
+
 function renderDate(data, type, row) {
   let date = new Date(data);
   if (type === "display") {
       if (!date) {
-          return unknownText;
+          return unknownDateText;
       }
       return date.toLocaleDateString('de-CH', { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" });
   }
@@ -17,7 +19,7 @@ function renderTime(data, type, row) {
   if (type === "display") {
       if (!date || (date.getHours() === 0 && date.getMinutes() === 0)) {
           // No time or time is midnight
-          return unknownText;
+          return unknownDateText;
       }
       return date.toLocaleTimeString('de-CH', { hour: "2-digit", minute: "2-digit" });
   }
@@ -28,7 +30,7 @@ function renderTime(data, type, row) {
 }
 
 function renderLocation(data, type, row) {
-  let location = row.location.displayName;
+  let location = row; /*.location.displayName;*/
   try {
       if (row.location.address.street !== undefined) {
           location += '<br />' + row.location.address.street + 
@@ -48,8 +50,8 @@ class PopUp {
   }
 
   set modalwindow(details) {
-      this._subject.innerHTML = "BodyContent";
-      this._description.innerHTML = details.body.content;
+      this._subject.innerHTML = "Details";
+      this._description.innerHTML = details.eventInfos;
       if (this._description.innerHTML !== '') {
           this._description.innerHTML += 
               `<hr />
@@ -82,25 +84,52 @@ $(document).ready(() => {
   $("#table").DataTable({
       processing: true,
       ajax: {
-          url: 'http://localhost:63342/unibe-cms/frontend/zms/datatables/agenda/2025-04-06T11_05_35+02_00.json', 
+          url: 'http://localhost:63342/unibe-cms/frontend/zms/datatables/agenda/2025-04-20T12_36_15+02_00.json', 
           dataSrc: '', // read data from a plain array rather than an array in an object
           dataType: "json"
       },
       columns: [
-          {data: "start.dateTime", name: "start.dateTime", render: renderDate},
-          {data: "start.dateTime", name: "start.dateTime", render: renderTime},
-          {data: "end.dateTime", name: "end.dateTime", render: renderDate},
-          {data: "end.dateTime", name: "end.dateTime", render: renderTime},
-          {data: "subject", name: "subject"},
-          {data: "location", name: "location", render:renderLocation},
-          {data: "categories", name: "categories"},
-          {data: "bodyPreview", name: "bodyPreview"},
+            {data: "eventStart", name: "eventStart", render: renderDate},
+            {data: "eventStart", name: "eventStart", render: renderTime},
+            {data: "eventEnd", name: "eventEnd", render: renderDate},
+            {data: "eventEnd", name: "eventEnd", render: renderTime},
+            {data: "eventTitle", name: "eventTitle"},
+            {data: "eventTopics", name: "eventTopics"},
       ],
+      columnDefs: [
+            {orderable: false, targets: [1,3,5]}
+        ],
       autoWidth: false,
       createdRow: assignClickListener,
-      order: [[ 0, 'asc' ], [ 1, 'asc' ]],
+      order: [[ 0, 'asc' ], [ 4, 'asc' ]],
       ordering: true,
       asStripeClasses: [],        // disable zebra coloring of rows
       pageLength: 25,
+      initComplete: function () {
+            let i = 0;
+            this.api().columns().every(function() {
+                var column = this;
+                var column_filter_for = [5];
+                if (column_filter_for.includes(i)) {
+                    var select = $('<select><option value=""></option></select>')
+                        .appendTo( $(column.header()) )
+                        .on('change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex(
+                                $(this).val()
+                            );
+                            column
+                                .search( val ? '^'+val+'$' : '', true, false )
+                                .draw();
+                        } );
+                    column.data().unique().sort().each( function ( d, j ) {
+                        select.append('<option value="'+d+'">'+d+'</option>');
+                    } );
+                }
+                else {
+                    column.text = '';
+                }
+                i++;
+            });
+        },
   });
 });
