@@ -40,7 +40,16 @@ function renderLocation(data, type, row) {
   } catch (error) {
       
   }
-  return location;
+  return data;
+}
+
+function renderTopics(data, type, row) {
+    if (Array.isArray(data)) {
+        return data.join(', ');
+    }
+    else {
+        return ''
+    }
 }
 
 class PopUp {
@@ -84,7 +93,7 @@ $(document).ready(() => {
   $("#table").DataTable({
       processing: true,
       ajax: {
-          url: 'http://localhost:63342/unibe-cms/frontend/zms/datatables/agenda/2025-04-20T12_36_15+02_00.json', 
+          url: 'http://localhost:63342/unibe-cms/frontend/zms/datatables/agenda/2025-04-27T20_43_58+02_00.json', 
           dataSrc: '', // read data from a plain array rather than an array in an object
           dataType: "json"
       },
@@ -94,10 +103,11 @@ $(document).ready(() => {
             {data: "eventEnd", name: "eventEnd", render: renderDate},
             {data: "eventEnd", name: "eventEnd", render: renderTime},
             {data: "eventTitle", name: "eventTitle"},
-            {data: "eventTopics", name: "eventTopics"},
+            {data: "eventLocation", name: "eventLocation", render: renderLocation},
+            {data: "eventTopics", name: "eventTopics", render: renderTopics},
       ],
       columnDefs: [
-            {orderable: false, targets: [1,3,5]}
+            {orderable: false, targets: [1,3,6]}
         ],
       autoWidth: false,
       createdRow: assignClickListener,
@@ -109,7 +119,7 @@ $(document).ready(() => {
             let i = 0;
             this.api().columns().every(function() {
                 var column = this;
-                var column_filter_for = [5];
+                var column_filter_for = [6];
                 if (column_filter_for.includes(i)) {
                     var select = $('<select><option value=""></option></select>')
                         .appendTo( $(column.header()) )
@@ -118,12 +128,20 @@ $(document).ready(() => {
                                 $(this).val()
                             );
                             column
-                                .search( val ? '^'+val+'$' : '', true, false )
+                                .search( val ? val : '', true, false )
                                 .draw();
                         } );
-                    column.data().unique().sort().each( function ( d, j ) {
-                        select.append('<option value="'+d+'">'+d+'</option>');
-                    } );
+                    const labels = [];
+                    column.data().each(function (item) {
+                        if (Array.isArray(item)) {
+                            item.forEach(function (label) {
+                                if (!labels.includes(label)) {
+                                    labels.push(label);
+                                    select.append('<option value="'+label+'">'+label+'</option>');
+                                }
+                            });
+                        }
+                    });
                 }
                 else {
                     column.text = '';
