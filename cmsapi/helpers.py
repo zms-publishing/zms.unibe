@@ -8,6 +8,7 @@ import io
 import re
 import xmltodict
 import time
+import requests
 
 from anytree import Node, RenderTree
 from anytree.exporter import JsonExporter, DictExporter
@@ -223,6 +224,16 @@ def strip_cmstest(domain):
     return domain.replace('cmstest1.', '').replace('cmstest.', '').replace('cms.test.', '')
 
 
+def get_url_from_conf_or_env(obj):
+    if obj is None:
+        return ''
+    prot = obj.getAbsoluteHome().portal.content.getConfProperty('ASP.protocol')
+    host = obj.getAbsoluteHome().portal.content.getConfProperty('UniBE.Server')
+    # Overwrite by environment variable if set
+    # ZMS_URL=http://127.0.0.1:8080 -> e.g. on localhost
+    return os.getenv('ZMS_URL', f'{prot}://{host}')
+
+
 def get_datetime_props(cls):
     props = []
     for key, val in cls.schema()['properties'].items():
@@ -260,7 +271,7 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
     if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
         if '_size' in sql_attr:
             return value.get_size()
-        return 'https://www.unibe.ch' + value.getHref(REQUEST=headless_http_request)
+        return get_url_from_conf_or_env(obj) + value.getHref(REQUEST=headless_http_request)
     
     if isinstance(value, str) and value.startswith('{$uid:'):
         lang_target = lang
@@ -276,6 +287,8 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         res = regex.groups()
         if type(res) is tuple and len(res) > 0:
             param = res[0]
+            if param[-4:] in ('_ger', '_eng', '_fra'):
+                param = param[:-4]
 
     if 'obj.getObjChildren' in zms_attr:
         if param is not None:
@@ -296,32 +309,38 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         else:
             return ''
 
-    if zms_attr == 'obj._uid':
-        return obj._uid
+    if 'obj.getData' in zms_attr:
+        if param is not None:
+            value = obj.attr(param, REQUEST=headless_http_request)
+            if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
+                href = obj.attr(param, REQUEST=headless_http_request).getHref(REQUEST=headless_http_request)
+                href = f'{get_url_from_conf_or_env(obj)}{href}'
+                try:
+                    if href.endswith('.json'):
+                        json = requests.get(url=href, timeout=10).json()
+                        return str(json)
+                    else:
+                        text = requests.get(url=href, timeout=10).text
+                        return str(text)
+                except:
+                    debug(href)
+                    return None
+        return None
 
-    if zms_attr == 'obj._datafilecached':
-        import requests
-        host = os.getenv('HOST', 'http://127.0.0.1:8080')
-        href = obj.attr('_datafilecached').getHref(REQUEST=headless_http_request)
-        href = f'{host}{href}'  # TODO: set URL as env var
-        try:
-            json = requests.get(href).json()
-            return str(json)
-        except:
-            debug(href)
-        return
+    if zms_attr == 'obj._uid':
+        return UUID(f'urn:uuid:{obj._uid}')
 
     if zms_attr == 'obj.getDocumentElement()._uid':
-        return obj.getDocumentElement()._uid
+        return UUID(f'urn:uuid:{obj.getDocumentElement()._uid}')
 
     if zms_attr == 'obj.getParentNode()._uid':
         if obj.getLevel() > 0 and 'trashcan' not in obj.getParentNode().getId():
-            return obj.getParentNode()._uid
+            return UUID(f'urn:uuid:{obj.getParentNode()._uid}')
         else:
-            return obj._uid
+            return UUID(f'urn:uuid:{obj._uid}')
 
     if zms_attr == 'obj.getParentHome()._uid':
-        return getattr(obj.getHome().aq_parent, 'content', obj.getHome().content)._uid
+        return UUID(f'urn:uuid:{getattr(obj.getHome().aq_parent, "content", obj.getHome().content)._uid}')
 
     if zms_attr == 'obj.getHref2IndexHtmlInContext()':
         return strip_cmstest(
@@ -415,15 +434,17 @@ def get_uniaktuell_lang_str(lang, key):
 
 def get_sections_tree(data, lang):
 
-    root = Node(str(UUID('2780d477-f517-49bb-a0f4-c46b56eeaab2')),
-                title='UniBE')
+    root = Node(UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'),
+                title='UniBE',
+                path='/unibe/content',
+                uuid=UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'))
     nodes = {}
 
     # set nodes with parent == root
     for i, obj in enumerate(data):
-        if obj.parent_uuid == UUID('2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
-                obj.uuid != UUID('2780d477-f517-49bb-a0f4-c46b56eeaab2'):
-            nodes[obj.uuid] = Node(str(obj.uuid), parent=root,
+        if obj.parent_uuid == UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
+                obj.uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
+            nodes[obj.uuid] = Node(obj.uuid, parent=root,
                                    domain=strip_cmstest(obj.domain),
                                    title=get_attr_by_lang(lang,
                                                           de=obj.title_de,
@@ -435,9 +456,9 @@ def get_sections_tree(data, lang):
 
     # set nodes with parent != root
     for i, obj in enumerate(data):
-        if obj.parent_uuid != UUID('2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
-                obj.uuid != UUID('2780d477-f517-49bb-a0f4-c46b56eeaab2'):
-            nodes[obj.uuid] = Node(str(obj.uuid),
+        if obj.parent_uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
+                obj.uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
+            nodes[obj.uuid] = Node(obj.uuid,
                                    domain=strip_cmstest(obj.domain),
                                    title=get_attr_by_lang(lang,
                                                           de=obj.title_de,
@@ -447,10 +468,10 @@ def get_sections_tree(data, lang):
                                    path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
                                    uuid=obj.uuid)
 
-    # set parent nodes - prerequiste: order_by(model.ZMSSite.level) to process in hierachy
+    # set parent nodes - Prerequisite: order_by(ZMSSite.level) to process in hierarchy
     for i, obj in enumerate(data):
         if obj.parent_uuid in nodes.keys():
-            nodes[obj.uuid] = Node(str(obj.uuid), parent=nodes[obj.parent_uuid],
+            nodes[obj.uuid] = Node(obj.uuid, parent=nodes[obj.parent_uuid],
                                    domain=strip_cmstest(obj.domain),
                                    title=get_attr_by_lang(lang,
                                                           de=obj.title_de,
@@ -459,8 +480,8 @@ def get_sections_tree(data, lang):
                                    type=obj.type,
                                    path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
                                    uuid=obj.uuid)
-        elif obj.parent_uuid != UUID('2780d477-f517-49bb-a0f4-c46b56eeaab2'):
-            debug(obj.parent_uuid)
+        elif obj.parent_uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
+            debug(obj.parent_uuid, obj.uuid)
 
     for pre, fill, node in RenderTree(root):
         # print("%s%s" % (pre, node.title))

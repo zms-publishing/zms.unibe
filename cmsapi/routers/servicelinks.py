@@ -18,7 +18,7 @@ def _retrieve_service_links(lang, uuid):
 
     data = []
 
-    if uuid == UUID('1c0a8927-bfb4-4215-a8fd-c41bba079d21'):  # handle files if location
+    if uuid == UUID('urn:uuid:1c0a8927-bfb4-4215-a8fd-c41bba079d21'):  # handle files if location
         service_filter = ServiceLink.meta_id == 'ZMSFile'
     else:
         service_filter = ServiceLink.parent_uuid == uuid
@@ -70,7 +70,7 @@ def _retrieve_service_links(lang, uuid):
                                                 fr=res.keywords_fr).strip()
             service_info = service_info != '' and service_info or service_keywords
 
-            if uuid == UUID('1c0a8927-bfb4-4215-a8fd-c41bba079d21'):  # map attributes if location
+            if uuid == UUID('urn:uuid:1c0a8927-bfb4-4215-a8fd-c41bba079d21'):  # map attributes if location
                 service_info = get_attr_by_lang(lang,
                                                 de=res.parent_title_de,
                                                 en=res.parent_title_en,
@@ -94,34 +94,34 @@ def _retrieve_service_links(lang, uuid):
 @router.get("/contact", summary='Contact', response_model=list[schema.ServiceLink])
 async def get_app_contact(
         lang: Lang = Lang.de):
-    return _retrieve_service_links(lang, UUID('58115e60-e80b-44c1-9a7d-bc65a42c9d5a'))
+    return _retrieve_service_links(lang, UUID('urn:uuid:58115e60-e80b-44c1-9a7d-bc65a42c9d5a'))
 
 
 @router.get("/imprint", summary='Imprint', response_model=list[schema.ServiceLink])
 async def get_app_imprint(
         lang: Lang = Lang.de):
-    return _retrieve_service_links(lang, UUID('d15e37f5-b317-4b47-baf1-c203a34bd0ad'))
+    return _retrieve_service_links(lang, UUID('urn:uuid:d15e37f5-b317-4b47-baf1-c203a34bd0ad'))
 
 
 @router.get("/indexaz", summary='Index A-Z', response_model=list[schema.ServiceLink])
 async def get_app_indexaz(
         lang: Lang = Lang.de):
-    return _retrieve_service_links(lang, UUID('27bfdd98-c79b-4dd4-b69a-dd1bde958d0b'))
+    return _retrieve_service_links(lang, UUID('urn:uuid:27bfdd98-c79b-4dd4-b69a-dd1bde958d0b'))
 
 
 @router.get("/locations", summary='Locations', response_model=list[schema.ServiceLink])
 async def get_app_locations(
         lang: Lang = Lang.de):
-    return _retrieve_service_links(Lang.de, UUID('1c0a8927-bfb4-4215-a8fd-c41bba079d21'))
+    return _retrieve_service_links(Lang.de, UUID('urn:uuid:1c0a8927-bfb4-4215-a8fd-c41bba079d21'))
 
 
 @router.get("/privacypolicy", summary='Privacy Policy', response_model=list[schema.ServiceLink])
 async def get_app_privacypolicy(
         lang: Lang = Lang.de):
-    return _retrieve_service_links(lang, UUID('a7f29281-43e0-4607-871b-39e66204bb31'))
+    return _retrieve_service_links(lang, UUID('urn:uuid:a7f29281-43e0-4607-871b-39e66204bb31'))
 
 
 @router.get("/termsofservice", summary='Terms of Service', response_model=list[schema.ServiceLink])
 async def get_app_termsofservice(
         lang: Lang = Lang.de):
-    return _retrieve_service_links(lang, UUID('4b570198-0485-4f75-8242-9e5a7528351a'))
+    return _retrieve_service_links(lang, UUID('urn:uuid:4b570198-0485-4f75-8242-9e5a7528351a'))

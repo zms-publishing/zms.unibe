@@ -65,6 +65,7 @@ services:
       - RUN_CRONJOBS=false  # init_scripts startUp only in the dedicated admin container below
       - ZODB_STORAGE=zeo://zeo:8000?storage=main
       - SQLDB_STORAGE=postgresql://postgres:5432/zms_fastapi
+      - ZMS_URL=https://www.unibe.ch
     networks:
       - fastapi_network
 
@@ -88,6 +89,7 @@ services:
       - RUN_CRONJOBS=true  # init_scripts startUp in this dedicated admin container only
       - ZODB_STORAGE=zeo://zeo:8000?storage=main
       - SQLDB_STORAGE=postgresql://postgres:5432/zms_fastapi
+      - ZMS_URL=https://www.unibe.ch
     networks:
       - fastapi_network
 

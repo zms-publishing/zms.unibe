@@ -233,8 +233,8 @@ async def get_events_calendar(
         limit: int = 100):
 
     if sections is None:
-        sections = [UUID('9c92af4f-6e95-4391-86d5-76eb8ad48360'),  # UniBE Portal
-                    UUID('6f2a0c71-67cf-40db-bc36-8483471b1c32'),  # UniBE Library
+        sections = [UUID('urn:uuid:9c92af4f-6e95-4391-86d5-76eb8ad48360'),  # UniBE Portal
+                    UUID('urn:uuid:6f2a0c71-67cf-40db-bc36-8483471b1c32'),  # UniBE Library
                     ]
     if start_after is None:
         start_after = datetime.utcnow() - timedelta(days=30)  # fetch one month ago by default

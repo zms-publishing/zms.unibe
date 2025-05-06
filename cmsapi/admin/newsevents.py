@@ -26,7 +26,7 @@ def update_newsevents_table(*args):
             for res in results.all():
                 obj = NewsEvents()
                 obj.uuid = uuid4()  # temporary UUID until next import - for internal use only
-                obj.site_uuid = UUID('9c92af4f-6e95-4391-86d5-76eb8ad48360')  # UniBE Portal
+                obj.site_uuid = UUID('urn:uuid:9c92af4f-6e95-4391-86d5-76eb8ad48360')  # UniBE Portal
                 obj.active_de = True
                 obj.active_en = False
                 obj.active_fr = False
@@ -59,7 +59,7 @@ def update_newsevents_table(*args):
             for res in results.all():
                 obj = NewsEvents()
                 obj.uuid = uuid4()  # temporary UUID until next import - for internal use only
-                obj.site_uuid = UUID('9c92af4f-6e95-4391-86d5-76eb8ad48360')  # UniBE Portal
+                obj.site_uuid = UUID('urn:uuid:9c92af4f-6e95-4391-86d5-76eb8ad48360')  # UniBE Portal
                 obj.active_de = False
                 obj.active_en = True
                 obj.active_fr = False
@@ -92,7 +92,7 @@ def update_newsevents_table(*args):
             for res in results.all():
                 obj = NewsEvents()
                 obj.uuid = uuid4()  # temporary UUID until next import - for internal use only
-                obj.site_uuid = UUID('6f2a0c71-67cf-40db-bc36-8483471b1c32')  # UniBE Library
+                obj.site_uuid = UUID('urn:uuid:6f2a0c71-67cf-40db-bc36-8483471b1c32')  # UniBE Library
                 obj.active_de = True
                 obj.active_en = False
                 obj.active_fr = False
@@ -123,7 +123,7 @@ def update_newsevents_table(*args):
             for res in results.all():
                 obj = NewsEvents()
                 obj.uuid = uuid4()  # temporary UUID until next import - for internal use only
-                obj.site_uuid = UUID('6f2a0c71-67cf-40db-bc36-8483471b1c32')  # UniBE Library
+                obj.site_uuid = UUID('urn:uuid:6f2a0c71-67cf-40db-bc36-8483471b1c32')  # UniBE Library
                 obj.active_de = False
                 obj.active_en = True
                 obj.active_fr = False
@@ -165,7 +165,7 @@ def update_newsevents_table(*args):
                 if res.title_de == '&nbsp;' or res.title_en == '&nbsp;' or res.title_fr == '&nbsp;':
                     continue
         
-                if res.level == 2 and res.site_uuid == UUID('9c92af4f-6e95-4391-86d5-76eb8ad48360'):
+                if res.level == 2 and res.site_uuid == UUID('urn:uuid:9c92af4f-6e95-4391-86d5-76eb8ad48360'):
                     obj_level = 1  # rate UniBE Portal News higher - see order_by(NewsEvents.level) in routers/newsevents
                 else:
                     obj_level = res.level  # must always be >=2, because TeaserElement2022 are always be placed in a container
@@ -230,7 +230,7 @@ def update_newsevents_table(*args):
                 if res.title_de == '&nbsp;' or res.title_en == '&nbsp;' or res.title_fr == '&nbsp;':
                     continue
         
-                if res.level == 2 and res.site_uuid == UUID('9c92af4f-6e95-4391-86d5-76eb8ad48360'):
+                if res.level == 2 and res.site_uuid == UUID('urn:uuid:9c92af4f-6e95-4391-86d5-76eb8ad48360'):
                     obj_level = 1  # rate UniBE Portal News higher - see order_by(NewsEvents.level) in routers/newsevents
                 else:
                     obj_level = res.level  # must always be >=2, because TeaserElement2022 are always be placed in a container
