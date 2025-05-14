@@ -60,19 +60,11 @@ def update_tables(models, *args):
                     for newscontainer in open(f'{Path( __file__ ).parent.absolute()}/newsbox_all_active_filtered.csv'):
                         query += zmsindex({'path': f'{newscontainer.strip()}', 'meta_id': 'newsbox'})
                 elif model == UniaktuellArticle:
-                    query = zmsindex({'path': '/unibe/portal/uni_aktuell/content/e1325567',  # 2023
+                    query = zmsindex({'path': '/unibe/portal/uni_aktuell/content',
                                       'meta_id': 'UniaktuellArticle'})
-                    query += zmsindex({'path': '/unibe/portal/uni_aktuell/content/e1325606',  # 2022
-                                       'meta_id': 'UniaktuellArticle'})
-                    query += zmsindex({'path': '/unibe/portal/uni_aktuell/content/e1327025',  # 2021
-                                       'meta_id': 'UniaktuellArticle'})
                 elif model == MediaRelease:
-                    query = zmsindex({'path': '/unibe/portal/content/e796/e803/e59463/e805/e1311044/e1311045',  # 2023
+                    query = zmsindex({'path': '/unibe/portal/media_relations/content',
                                       'meta_id': 'media_news'})
-                    query += zmsindex({'path': '/unibe/portal/content/e796/e803/e59463/e805/e1160710/e1162114',  # 2022
-                                       'meta_id': 'media_news'})
-                    query += zmsindex({'path': '/unibe/portal/content/e796/e803/e59463/e805/e1027714/e1029489',  # 2021
-                                       'meta_id': 'media_news'})
                 elif model == ZMSSite:
                     query = zmsindex({'meta_id': 'ZMS'})
                     for site in query:

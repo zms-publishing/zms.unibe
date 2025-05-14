@@ -21,11 +21,11 @@ MODELS_AVAILABLE = {
     'ZMSBoris': ZMSBoris,
     'ZMSDataTable': ZMSDataTable,
     'ZMSFormulator': ZMSFormulator,
-    #'ZMSFolder': ZMSFolder,
-    #'ZMSGraphic': ZMSGraphic,
-    #'ZMSDocument': ZMSDocument,
-    #'ZMSFile': ZMSFile,
-    #'ZMSTable': ZMSTable,
+    'ZMSFolder': ZMSFolder,
+    'ZMSGraphic': ZMSGraphic,
+    'ZMSDocument': ZMSDocument,
+    'ZMSFile': ZMSFile,
+    'ZMSTable': ZMSTable,
     'TeaserContainer2022': TeaserContainer2022,
     'TeaserElement2022': TeaserElement2022,
     'Hero2022': Hero2022,
@@ -39,20 +39,21 @@ MODELS_AVAILABLE = {
     'StatusMessage': StatusMessage,
     'UniaktuellArticle': UniaktuellArticle,
     'MediaRelease': MediaRelease,
-    #'TwoCols': TwoCols,
-    #'ContentTabs': ContentTabs,
-    #'ContentPane': ContentPane,
-    #'AlertBox': AlertBox,
-    #'InfoBox': InfoBox,
-    #'Person': Person,
-    #'ContactBoxSection': ContactBoxSection,
-    #'ContactBox': ContactBox,
-    #'TeamSection': TeamSection,
-    #'Team': Team,
-    #'WeiterbildungStudiengang': WeiterbildungStudiengang,
-    #'UniBEFactsheet': UniBEFactsheet,
+    'TwoCols': TwoCols,
+    'ContentTabs': ContentTabs,
+    'ContentPane': ContentPane,
+    'AlertBox': AlertBox,
+    'InfoBox': InfoBox,
+    'Person': Person,
+    'ContactBoxSection': ContactBoxSection,
+    'ContactBox': ContactBox,
+    'TeamSection': TeamSection,
+    'Team': Team,
+    'WeiterbildungStudiengang': WeiterbildungStudiengang,
+    'UniBEFactsheet': UniBEFactsheet,
     'UniBEEvent': UniBEEvent,
     'CodeBlock': CodeBlock,
+    'ZMSTextarea': ZMSTextarea,
 }
 
 
@@ -93,7 +94,7 @@ def main(command: str = typer.Argument(None, help='init | update'),
     else:
         raise typer.Abort()
 
-    update_newsevents_table(*connect_db())
+    update_newsevents_table(*connect_db(verbose=False))
 
     t1 = time.time()
     ts = t1-t0

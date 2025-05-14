@@ -13,7 +13,7 @@ except FileNotFoundError:
     credentials = 'postgres:mysecretpassword'
 
 
-def connect_db():
+def connect_db(verbose=True):
 
     factory, dbargs = zodburi.resolve_uri(ZODB_STORAGE)
     connection = ZODB.connection(factory(), **dbargs)
@@ -26,8 +26,9 @@ def connect_db():
                               # echo=True
                               )
 
-    debug(ZODB_STORAGE, dbargs)
-    debug(sqlengine)
-    debug(zmsindex)
+    if verbose:
+        debug(ZODB_STORAGE, dbargs)
+        debug(sqlengine)
+        debug(zmsindex)
 
     return zmsindex, sqlengine
