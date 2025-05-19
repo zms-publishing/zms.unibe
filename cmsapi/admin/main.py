@@ -87,6 +87,8 @@ def main(command: str = typer.Argument(None, help='init | update'),
 
     t0 = time.time()
 
+    if len(models) == 0:
+        raise typer.Abort()
     if command == 'init':
         init_tables(models, *connect_db(), _all=_all)
     elif command == 'update':

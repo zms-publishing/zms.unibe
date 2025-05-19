@@ -74,6 +74,7 @@ class SiteType(str, Enum):
     Einrichtung = "Einrichtung"
     Microsite = "Microsite"
     Library = "Library"
+    Unisport = "Unisport"
 
 
 class AttrType(str, Enum):
@@ -379,7 +380,9 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
 
     if zms_attr == "obj.getType()":
         if '/unibiblio' in obj.getPath():
-            return 'Library'  # overwrite deprecated type "Uniaktuell" of UB (Library)
+            return SiteType.Library.value  # TODO: remove workaround to override type=Einrichtung
+        elif '/unisport' in obj.getPath():
+            return SiteType.Unisport.value  # TODO: remove workaround to override type=Einrichtung
         else:
             return obj.attr("attr_dc_type")  # TODO: handle multilang if needed - for ZMSSite not necessary
 

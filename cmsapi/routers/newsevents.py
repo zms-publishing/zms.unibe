@@ -248,7 +248,11 @@ async def get_events_calendar(
 async def get_sections(
         lang: Lang = Lang.de,
         tree: bool = False,
-        types: list[SiteType] = Query(['Fakultaet', 'Departement', 'Institut', 'Library']),
+        types: list[SiteType] = Query([SiteType.Fakultaet.value,
+                                       SiteType.Departement.value,
+                                       SiteType.Institut.value,
+                                       SiteType.Library.value,
+                                       SiteType.Unisport.value]),
         offset: int = 0,
         limit: int = 20):
 

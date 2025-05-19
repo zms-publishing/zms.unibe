@@ -9,7 +9,7 @@ zodburi             # https://docs.pylonsproject.org/projects/zodburi/en/latest/
 
 uvicorn[standard]   # https://www.uvicorn.org
 
-typer[all]          # https://typer.tiangolo.com
+typer               # https://typer.tiangolo.com
 devtools[pygments]  # https://python-devtools.helpmanual.io/usage/#usage-without-import
 
 anytree             # https://anytree.readthedocs.io

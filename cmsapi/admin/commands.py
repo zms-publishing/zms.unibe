@@ -87,7 +87,7 @@ def update_tables(models, *args):
                         # to which the foreign key refers
                         except:
                             session.rollback()
-                            debug(obj)
+                            #debug(obj)
                             continue
                     else:
                         # UPDATE existing row
@@ -98,7 +98,7 @@ def update_tables(models, *args):
                             session.refresh(row)
                         except:
                             session.rollback()
-                            debug(row)
+                            #debug(row)
                             continue
 
                     uuids_processed.append(uuid.UUID(f'urn:uuid:{obj.uuid}'))
