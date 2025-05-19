@@ -222,7 +222,7 @@ def get_subdomain(domain, reverse=False):
 def strip_cmstest(domain):
     if domain is None:
         return ''
-    return domain.replace('cmstest1.', '').replace('cmstest.', '').replace('cms.test.', '')
+    return domain.replace('cmstest1.', '').replace('cmstest.', '').replace('cms.test.', '').replace('cmsint.', '')
 
 
 def get_url_from_conf_or_env(obj):
@@ -232,7 +232,7 @@ def get_url_from_conf_or_env(obj):
     host = obj.getAbsoluteHome().portal.content.getConfProperty('UniBE.Server')
     # Overwrite by environment variable if set
     # ZMS_URL=http://127.0.0.1:8080 -> e.g. on localhost
-    return os.getenv('ZMS_URL', f'{prot}://{host}')
+    return os.getenv('ZMS_URL', f'{prot}://{strip_cmstest(host)}')
 
 
 def get_datetime_props(cls):
