@@ -18,9 +18,11 @@ Markdown
 pyScss
 xmltodict
 
-sqlalchemy==1.4.41
+#SQLAlchemy==1.4.41  # TODO: pinned for ZMSFormulator -> upgrade
+sqlmodel==0.0.24  # TODO: depends on SQLAlchemy<2.1.0 and >=2.0.14
+
 psycopg2
-Products.ZMySQLDA
+#Products.ZMySQLDA  # TODO: needed anymore...?!
 Products.ZSQLMethods
 
 Products.PluggableAuthService
