@@ -1,0 +1,39 @@
+# Python package requirements
+# by ZMS core library see zms-core/requirements*.txt
+
+# by UniBE-CMS customization layer
+requests
+requests-oauthlib
+
+opensearch-py
+rich
+pdfminer.six
+
+chardet
+ftfy
+
+beautifulsoup4
+lxml
+Markdown
+pyScss
+xmltodict
+
+sqlalchemy==1.4.41
+psycopg2
+Products.ZMySQLDA
+Products.ZSQLMethods
+
+Products.PluggableAuthService
+Products.PluginRegistry
+Products.mcdutils>=3.2
+
+zeo
+
+pydevd-pycharm~=251.23774.444  # Debugger for PyCharm 2025.1 built on April 15, 2025
+devtools
+
+load_dotenv
+pydantic==2.11.3
+
+azure-identity
+msgraph-sdk

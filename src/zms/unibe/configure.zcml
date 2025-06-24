@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    >
+
+  <configure
+      xmlns:cmf="http://namespaces.zope.org/cmf"
+      xmlns:zcml="http://namespaces.zope.org/zcml"
+      zcml:condition="installed Products.CMFCore"
+      >
+    <!-- invoked in etc/site.zcml by <include zcml:condition="installed zms.unibe" package="zms.unibe" />  -->
+    <!-- provokes loading of zms.unibe.__init.py__ to initialize patches and security assertions on zope startup -->
+    <cmf:registerDirectory name="assets" directory="../../../../frontend/web/estatico-handlebars/dist/assets" recursive="True" />
+
+  </configure>
+
+</configure>
