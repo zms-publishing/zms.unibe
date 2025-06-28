@@ -2,7 +2,7 @@ from sqlmodel import Field, Column, DateTime
 from datetime import datetime
 from uuid import UUID
 
-from ...zmsfoundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels import ZMSBase
 
 
 class NewsBox(ZMSBase, table=True):

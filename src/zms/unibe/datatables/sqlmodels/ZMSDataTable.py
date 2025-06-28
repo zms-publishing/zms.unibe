@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from ...zmsfoundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class ZMSDataTable(ZMSBase, table=True):

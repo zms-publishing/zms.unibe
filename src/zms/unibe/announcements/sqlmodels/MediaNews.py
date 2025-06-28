@@ -1,7 +1,7 @@
 from sqlmodel import Field, Column, DateTime
 from datetime import date
 
-from ...zmsfoundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class MediaNews(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=media_news&types=%2A

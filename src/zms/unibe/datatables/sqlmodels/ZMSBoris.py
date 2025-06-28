@@ -1,7 +1,7 @@
 from sqlmodel import Field, DateTime
 from datetime import datetime
 
-from ...zmsfoundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels import ZMSBase
 
 
 class ZMSBoris(ZMSBase, table=True):

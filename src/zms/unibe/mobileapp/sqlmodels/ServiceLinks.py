@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from ...zmsfoundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class ServiceLink(ZMSBase, table=True):

@@ -1,7 +1,7 @@
 from sqlmodel import Field, Column, DateTime
 from datetime import date
 
-from ...zmsfoundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=UniaktuellArticle&types=%2A

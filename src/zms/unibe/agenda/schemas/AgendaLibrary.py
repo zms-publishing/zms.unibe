@@ -1,6 +1,6 @@
 # TODO: Map items from UB-Agenda as Backend -> see schemas/README.md
 
-from ..helpers import local_timezone
+from zms.unibe.utils.helpers import local_timezone
 
 def mapping(item):
     event = {

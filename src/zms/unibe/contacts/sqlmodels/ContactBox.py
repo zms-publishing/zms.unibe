@@ -1,4 +1,4 @@
-from ...zmsfoundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels import ZMSBase
 
 
 class ContactBox(ZMSBase, table=True):

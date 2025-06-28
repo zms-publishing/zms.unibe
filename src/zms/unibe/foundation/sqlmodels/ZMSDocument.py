@@ -1,4 +1,4 @@
-from ZMSBase import ZMSBase
+from .ZMSBase import ZMSBase
 
 
 class ZMSDocument(ZMSBase, table=True):

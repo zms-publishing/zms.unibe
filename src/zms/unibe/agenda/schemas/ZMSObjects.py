@@ -3,7 +3,7 @@
 # TODO: Limit TeaserElement2022 to (teaser_type==event) from ZMS as Backend
 # TODO: Limit NewsBox to (boxtype==event) from ZMS as Backend
 
-from ..helpers import local_timezone
+from zms.unibe.utils.helpers import local_timezone
 
 def mapping(item, meta_id, lang, obj=None):
     if meta_id == 'ZMSAgendaRecordset':

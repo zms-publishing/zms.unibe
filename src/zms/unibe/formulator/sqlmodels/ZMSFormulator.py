@@ -1,4 +1,4 @@
-from ...zmsfoundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class ZMSFormulator(ZMSBase, table=True):

@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from ...zmsfoundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels import ZMSBase
 
 
 class ContactBoxSection(ZMSBase, table=True):

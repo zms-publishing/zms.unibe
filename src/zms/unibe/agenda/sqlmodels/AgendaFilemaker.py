@@ -2,7 +2,7 @@ from sqlmodel import SQLModel, Field, Column, DateTime
 from datetime import datetime
 
 
-class AgendaPortal(SQLModel, table=True):  # to import https://agenda.unibe.ch/agenda.json
+class AgendaFilemaker(SQLModel, table=True):  # to import https://agenda.unibe.ch/agenda.json
     __table_args__ = {'extend_existing': True}
     id: int | None = Field(default=None, primary_key=True)
     json_datum_zeit_start: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
