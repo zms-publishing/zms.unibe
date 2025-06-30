@@ -1,6 +1,7 @@
-from sqlmodel import SQLModel, Field, DateTime
 from datetime import datetime
 from uuid import UUID
+
+from sqlmodel import SQLModel, Field, DateTime
 
 
 class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inherit

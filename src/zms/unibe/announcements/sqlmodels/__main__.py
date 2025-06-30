@@ -1,11 +1,10 @@
 from pathlib import Path
 
-from zms.unibe.utils.zms2sql.tables import process_sql_updates
 from zms.unibe.utils.db import connect_zodb
-
-from .NewsContainer import NewsContainer
-from .NewsBox import NewsBox
+from zms.unibe.utils.zms2sql.tables import process_sql_updates
 from .MediaNews import MediaNews
+from .NewsBox import NewsBox
+from .NewsContainer import NewsContainer
 
 
 def update_newsboxes():

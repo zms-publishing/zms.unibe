@@ -290,7 +290,7 @@ def update_servicelinks():
 
     zmsindex = connect_zodb()
     zmsindex_result = zmsindex({'path': '/unibe/uniapp/content/'})
-    process_sql_updates(zmsindex_result, ServiceLink, verbose=True)
+    process_sql_updates(zmsindex_result, ServiceLink)
     
     
 def fetch_statusmessages():

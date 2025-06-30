@@ -1,23 +1,14 @@
-import glob
-import importlib.util
-import inspect
-import pytz
-import sys
-import os
 import io
-import re
-import xmltodict
 import time
-import requests
-
-from anytree import Node, RenderTree
-from anytree.exporter import JsonExporter, DictExporter
-from ics import Calendar, Event
-from devtools import debug
+from datetime import datetime
 from uuid import UUID
 
-from datetime import datetime
+import pytz
 from Products.zms import standard
+from anytree import Node, RenderTree
+from anytree.exporter import JsonExporter, DictExporter
+from devtools import debug
+from ics import Calendar, Event
 
 from .zms2sql.attributes import get_attr_by_lang, strip_cmstest
 

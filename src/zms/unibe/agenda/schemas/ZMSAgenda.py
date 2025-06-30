@@ -12,9 +12,10 @@
 # see overview of data mapping in
 # zms-addons/src/zms/unibe/agenda/schemas/README.md
 
-from pydantic import BaseModel
 from datetime import datetime
 from uuid import UUID
+
+from pydantic import BaseModel
 
 
 class Event(BaseModel):

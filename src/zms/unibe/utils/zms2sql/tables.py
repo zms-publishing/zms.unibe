@@ -1,10 +1,10 @@
 import time
 import uuid
+
 from devtools import debug
 from sqlmodel import SQLModel, Session, select, inspect
 
 from zms.unibe.utils.db import connect_sqldb
-
 from .mappings import map_obj_attributes
 
 

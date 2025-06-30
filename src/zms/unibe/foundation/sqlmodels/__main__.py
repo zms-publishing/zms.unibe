@@ -1,12 +1,11 @@
-from zms.unibe.utils.zms2sql.tables import process_sql_updates
 from zms.unibe.utils.db import connect_zodb
-
-from .ZMSSite import ZMSSite
+from zms.unibe.utils.zms2sql.tables import process_sql_updates
 from .CodeBlock import CodeBlock
 from .ZMSDocument import ZMSDocument
 from .ZMSFile import ZMSFile
 from .ZMSFolder import ZMSFolder
 from .ZMSGraphic import ZMSGraphic
+from .ZMSSite import ZMSSite
 from .ZMSTable import ZMSTable
 from .ZMSTextarea import ZMSTextarea
 

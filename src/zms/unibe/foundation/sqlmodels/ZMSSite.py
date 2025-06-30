@@ -1,5 +1,6 @@
-from sqlmodel import SQLModel, Field
 from uuid import UUID
+
+from sqlmodel import SQLModel, Field
 
 
 class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?metaobj=ZMS&types=%2A

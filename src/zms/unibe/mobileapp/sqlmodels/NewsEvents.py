@@ -1,6 +1,7 @@
-from sqlmodel import SQLModel, Field, Column, DateTime
-from uuid import UUID
 from datetime import datetime
+from uuid import UUID
+
+from sqlmodel import SQLModel, Field, Column, DateTime
 
 
 class NewsEvents(SQLModel, table=True):  # intermediate consolidation of Agendas, NewsBox, TeaserElement2022 for queries

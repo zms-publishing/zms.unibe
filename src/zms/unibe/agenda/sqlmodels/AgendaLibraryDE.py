@@ -1,6 +1,7 @@
-from sqlmodel import SQLModel, Field, Column, DateTime, String
-from sqlalchemy.dialects import postgresql
 from datetime import datetime
+
+from sqlalchemy.dialects import postgresql
+from sqlmodel import SQLModel, Field, Column, DateTime, String
 
 
 class AgendaLibraryDE(SQLModel, table=True):  # to import https://agenda.ub.unibe.ch/de/api/event

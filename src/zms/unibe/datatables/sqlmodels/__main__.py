@@ -1,8 +1,7 @@
-from zms.unibe.utils.zms2sql.tables import process_sql_updates
 from zms.unibe.utils.db import connect_zodb
-
-from .ZMSDataTable import ZMSDataTable
+from zms.unibe.utils.zms2sql.tables import process_sql_updates
 from .ZMSBoris import ZMSBoris
+from .ZMSDataTable import ZMSDataTable
 
 
 def update_datatables():

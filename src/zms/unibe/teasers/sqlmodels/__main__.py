@@ -1,6 +1,5 @@
-from zms.unibe.utils.zms2sql.tables import process_sql_updates
 from zms.unibe.utils.db import connect_zodb
-
+from zms.unibe.utils.zms2sql.tables import process_sql_updates
 from .TeaserContainer2022 import TeaserContainer2022
 from .TeaserElement2022 import TeaserElement2022
 

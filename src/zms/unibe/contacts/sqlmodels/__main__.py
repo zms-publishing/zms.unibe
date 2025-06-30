@@ -1,11 +1,10 @@
-from zms.unibe.utils.zms2sql.tables import process_sql_updates
 from zms.unibe.utils.db import connect_zodb
-
-from .ContactBoxSection import ContactBoxSection
+from zms.unibe.utils.zms2sql.tables import process_sql_updates
 from .ContactBox import ContactBox
-from .TeamSection import TeamSection
-from .Team import Team
+from .ContactBoxSection import ContactBoxSection
 from .Person import Person
+from .Team import Team
+from .TeamSection import TeamSection
 
 
 def update_contacts():

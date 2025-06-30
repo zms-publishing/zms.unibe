@@ -1,9 +1,9 @@
 import traceback
+
 from devtools import debug
 
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
 from zms.unibe.foundation.sqlmodels.ZMSSite import ZMSSite
-
 from .attributes import get_attr_value
 
 

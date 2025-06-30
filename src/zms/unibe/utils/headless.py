@@ -1,7 +1,8 @@
 from io import BytesIO
-from zope.globalrequest import setRequest
+
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
+from zope.globalrequest import setRequest
 
 
 def create_headless_http_request():

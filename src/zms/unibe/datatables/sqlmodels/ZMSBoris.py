@@ -1,5 +1,6 @@
-from sqlmodel import Field, DateTime
 from datetime import datetime
+
+from sqlmodel import Field, DateTime
 
 from ...foundation.sqlmodels import ZMSBase
 
