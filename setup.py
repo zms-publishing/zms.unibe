@@ -29,8 +29,8 @@ setup(
     author_email          = '',
     url                   = 'https://github.com/idasm-unibe-ch/zms-addons',
     download_url          = 'https://github.com/idasm-unibe-ch/zms-addons/releases',
-    # TODO: add to pip install -r requirements.txt instead here to choose between zms-addons and zms-fastapi
-    #install_requires      = open(os.path.join(setup_path, 'requirements.txt')).readlines(),
+    # TODO: add switch to choose between zms-addons and zms-fastapi
+    install_requires      = open(os.path.join(setup_path, 'requirements.txt')).readlines(),
     packages              = find_namespace_packages(where='src/', include=['zms.unibe']),
     package_dir           = {'': 'src'},
     package_data          = {'': ['*.zcml']},
