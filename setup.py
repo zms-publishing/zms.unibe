@@ -23,13 +23,12 @@ setup_path = os.path.dirname(__file__)
 setup(
     name                  = 'zms.unibe',
     description           = 'Addons package for ZMS at UniBE',
-    long_description      = 'Python-based extensions for and integrations with the ZMS content modelling and publishing system',
+    long_description      = 'Python-based extensions for and integrations with the ZMS publishing system',
     version               = '1.0.0a1',
     author                = 'University of Bern, IT Services',
     author_email          = '',
     url                   = 'https://github.com/idasm-unibe-ch/zms-addons',
     download_url          = 'https://github.com/idasm-unibe-ch/zms-addons/releases',
-    # TODO: add switch to choose between zms-addons and zms-fastapi
     install_requires      = open(os.path.join(setup_path, 'requirements.txt')).readlines(),
     packages              = find_namespace_packages(where='src/', include=['zms.unibe']),
     package_dir           = {'': 'src'},
@@ -37,8 +36,14 @@ setup(
     classifiers           = CLASSIFIERS,
     include_package_data  = True,
     zip_safe              = False,
-    extras_require        = {},
-    entry_points={
+    extras_require        = {
+        'fastapi': [
+            'FastAPI',              # https://fastapi.tiangolo.com
+            'uvicorn[standard]',    # https://www.uvicorn.org
+            'zodburi'               # https://docs.pylonsproject.org/projects/zodburi/en/latest/
+        ],
+    },
+    entry_points          = {
         'console_scripts': [
             'zms2sql-fetch-agendas = zms.unibe.agenda.sqlmodels.__main__:fetch_agendas',
             'zms2sql-fetch-statusmessages = zms.unibe.mobileapp.sqlmodels.__main__:fetch_statusmessages',

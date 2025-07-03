@@ -1,40 +1,27 @@
-# Python package requirements
-# by ZMS core library see zms-core/requirements*.txt
-
-# by UniBE-CMS customization layer
-requests
-requests-oauthlib
-
-opensearch-py
-rich
-pdfminer.six
-
-chardet
-ftfy
-
-beautifulsoup4
-lxml
-Markdown
-pyScss
-xmltodict
-
-SQLAlchemy<2.1.0,>=2.0.14
-
-psycopg2
-#Products.ZMySQLDA  # TODO: needed anymore...?!
-Products.ZSQLMethods
-
-Products.PluggableAuthService
-Products.PluginRegistry
-Products.mcdutils>=3.2
-
-zeo
-
-pydevd-pycharm~=251.23774.444  # Debugger for PyCharm 2025.1 built on April 15, 2025
-devtools
-
-load_dotenv
-pydantic==2.11.3
-
-azure-identity
-msgraph-sdk
+anytree                         # https://anytree.readthedocs.io
+azure-identity                  # https://pypi.org/project/azure-identity/
+beautifulsoup4                  # https://beautiful-soup-4.readthedocs.io/en/latest/
+chardet                         # https://github.com/chardet/chardet
+devtools[pygments]              # https://python-devtools.helpmanual.io/usage/#usage-without-import
+ftfy                            # https://github.com/rspeer/python-ftfy
+ics                             # https://github.com/ics-py/ics-py
+python-dotenv                   # https://github.com/theskumar/python-dotenv
+lxml                            # https://github.com/lxml/lxml
+Markdown                        # https://github.com/Python-Markdown/markdown
+msgraph-sdk                     # https://github.com/microsoftgraph/msgraph-sdk-python
+opensearch-py                   # https://github.com/opensearch-project/opensearch-py
+pdfminer.six                    # https://github.com/pdfminer/pdfminer.six
+Products.mcdutils>=3.2          # https://github.com/dataflake/Products.mcdutils
+Products.PluggableAuthService   # https://github.com/zopefoundation/Products.PluggableAuthService
+Products.PluginRegistry         # https://github.com/zopefoundation/Products.PluginRegistry
+Products.ZSQLMethods            # https://github.com/zopefoundation/Products.ZSQLMethods
+psycopg2                        # https://www.psycopg.org/docs/install.html#psycopg-vs-psycopg-binary
+pydantic                        # https://pydantic-docs.helpmanual.io
+pydevd-pycharm~=251.26927.74    # Debugger for PyCharm 2025.1.3 built on July 1, 2025
+requests                        # https://requests.readthedocs.io
+requests-oauthlib               # https://github.com/requests/requests-oauthlib
+rich                            # https://github.com/Textualize/rich
+SQLAlchemy                      # https://www.sqlalchemy.org/
+SQLModel                        # https://sqlmodel.tiangolo.com
+xmltodict                       # https://github.com/martinblech/xmltodict
+zeo                             # https://github.com/zopefoundation/ZEO
