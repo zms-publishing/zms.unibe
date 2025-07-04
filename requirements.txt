@@ -23,5 +23,6 @@ requests-oauthlib               # https://github.com/requests/requests-oauthlib
 rich                            # https://github.com/Textualize/rich
 SQLAlchemy                      # https://www.sqlalchemy.org/
 SQLModel                        # https://sqlmodel.tiangolo.com
+trio                            # https://github.com/python-trio/trio
 xmltodict                       # https://github.com/martinblech/xmltodict
 zeo                             # https://github.com/zopefoundation/ZEO
