@@ -40,7 +40,6 @@ setup(
         'fastapi': [
             'FastAPI',              # https://fastapi.tiangolo.com
             'uvicorn[standard]',    # https://www.uvicorn.org
-            'zodburi'               # https://docs.pylonsproject.org/projects/zodburi/en/latest/
         ],
     },
     entry_points          = {
@@ -64,27 +63,4 @@ setup(
             'zms2sql-update-layouts = zms.unibe.layouts.sqlmodels.__main__:update_layouts',
         ]
     }
-
-    # cron officehours
-    # - fetch-agendas
-    # - fetch-statusmessages
-    # - update-servicelinks
-    # - update-zmssites
-    # - update-teasers
-    # - update-newsevents
-    #
-    # cron daily
-    # - ... officehours?
-    # - update-newsboxes
-    # - update-newsevents
-    # - update-mediareleases
-    # - update-uniaktuell
-    #
-    # cron weekly
-    # - update-zmsobjects
-    # - update-datatables
-    # - update-formulator
-    # - update-contacts
-    # - update-layouts
-    #
 )

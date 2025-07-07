@@ -17,12 +17,13 @@ Products.PluginRegistry         # https://github.com/zopefoundation/Products.Plu
 Products.ZSQLMethods            # https://github.com/zopefoundation/Products.ZSQLMethods
 psycopg2                        # https://www.psycopg.org/docs/install.html#psycopg-vs-psycopg-binary
 pydantic                        # https://pydantic-docs.helpmanual.io
-pydevd-pycharm~=251.26927.74    # Debugger for PyCharm 2025.1.3 built on July 1, 2025
+pydevd-pycharm~=251.26927.74    # https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html -> Debugger for PyCharm 2025.1.3 built on July 1, 2025
 requests                        # https://requests.readthedocs.io
 requests-oauthlib               # https://github.com/requests/requests-oauthlib
 rich                            # https://github.com/Textualize/rich
 SQLAlchemy                      # https://www.sqlalchemy.org/
 SQLModel                        # https://sqlmodel.tiangolo.com
-trio                            # https://github.com/python-trio/trio
+trio                            # https://github.com/python-trio/trio -> see https://github.com/idasm-unibe-ch/zms-base/issues/5
 xmltodict                       # https://github.com/martinblech/xmltodict
 zeo                             # https://github.com/zopefoundation/ZEO
+zodburi                         # https://docs.pylonsproject.org/projects/zodburi/en/latest/
