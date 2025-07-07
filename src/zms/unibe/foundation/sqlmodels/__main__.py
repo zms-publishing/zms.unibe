@@ -28,26 +28,10 @@ def update_zmsobjects():
     
     zmsindex = connect_zodb()
 
-    zmsindex_result = zmsindex({'meta_id': CodeBlock.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, CodeBlock)
-    
-    zmsindex_result = zmsindex({'meta_id': ZMSDocument.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, ZMSDocument)
-    
-    zmsindex_result = zmsindex({'meta_id': ZMSFile.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, ZMSFile)
-    
-    zmsindex_result = zmsindex({'meta_id': ZMSFolder.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, ZMSFolder)
-    
-    zmsindex_result = zmsindex({'meta_id': ZMSGraphic.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, ZMSGraphic)
-    
-    zmsindex_result = zmsindex({'meta_id': ZMSTable.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, ZMSTable)
-    
-    zmsindex_result = zmsindex({'meta_id': ZMSTextarea.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, ZMSTextarea)
+    models = [CodeBlock, ZMSDocument, ZMSFile, ZMSFolder, ZMSGraphic, ZMSTable, ZMSTextarea]
+    for model in models:
+        zmsindex_result = zmsindex({'meta_id': model.get_zms_metaid()})
+        process_sql_updates(zmsindex_result, model)
     
     
 if __name__ == "__main__":

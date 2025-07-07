@@ -13,21 +13,8 @@ def update_layouts():
     
     zmsindex = connect_zodb()
     
-    zmsindex_result = zmsindex({'meta_id': ContentPane.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, ContentPane)
-    
-    zmsindex_result = zmsindex({'meta_id': ContentTabs.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, ContentTabs)
-    
-    zmsindex_result = zmsindex({'meta_id': TwoCols.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, TwoCols)
-    
-    zmsindex_result = zmsindex({'meta_id': UniBEEvent.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, UniBEEvent)
-    
-    zmsindex_result = zmsindex({'meta_id': UniBEFactsheet.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, UniBEFactsheet)
-    
-    zmsindex_result = zmsindex({'meta_id': WeiterbildungStudiengang.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, WeiterbildungStudiengang)
+    models = [ContentPane, ContentTabs, TwoCols, UniBEEvent, UniBEFactsheet, WeiterbildungStudiengang]
+    for model in models:
+        zmsindex_result = zmsindex({'meta_id': model.get_zms_metaid()})
+        process_sql_updates(zmsindex_result, model)
     

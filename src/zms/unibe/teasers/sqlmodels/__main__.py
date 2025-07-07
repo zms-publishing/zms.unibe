@@ -9,11 +9,10 @@ def update_teasers():
 
     zmsindex = connect_zodb()
 
-    zmsindex_result = zmsindex({'meta_id': TeaserContainer2022.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, TeaserContainer2022)
-    
-    zmsindex_result = zmsindex({'meta_id': TeaserElement2022.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, TeaserElement2022)
+    models = [TeaserContainer2022, TeaserElement2022]
+    for model in models:
+        zmsindex_result = zmsindex({'meta_id': model.get_zms_metaid()})
+        process_sql_updates(zmsindex_result, model)
 
 
 if __name__ == '__main__':

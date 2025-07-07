@@ -12,18 +12,8 @@ def update_contacts():
 
     zmsindex = connect_zodb()
 
-    zmsindex_result = zmsindex({'meta_id': ContactBoxSection.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, ContactBoxSection)
-    
-    zmsindex_result = zmsindex({'meta_id': ContactBox.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, ContactBox)
-    
-    zmsindex_result = zmsindex({'meta_id': TeamSection.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, TeamSection)
-    
-    zmsindex_result = zmsindex({'meta_id': Team.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, Team)
-    
-    zmsindex_result = zmsindex({'meta_id': Person.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, Person)
+    models = [ContactBoxSection, ContactBox, TeamSection, Team, Person]
+    for model in models:
+        zmsindex_result = zmsindex({'meta_id': model.get_zms_metaid()})
+        process_sql_updates(zmsindex_result, model)
 

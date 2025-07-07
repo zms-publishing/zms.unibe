@@ -9,9 +9,8 @@ def update_datatables():
 
     zmsindex = connect_zodb()
 
-    zmsindex_result = zmsindex({'meta_id': ZMSDataTable.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, ZMSDataTable)
-    
-    zmsindex_result = zmsindex({'meta_id': ZMSBoris.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, ZMSBoris)
+    models = [ZMSDataTable, ZMSBoris]
+    for model in models:
+        zmsindex_result = zmsindex({'meta_id': model.get_zms_metaid()})
+        process_sql_updates(zmsindex_result, model)
     
