@@ -1,3 +1,8 @@
 #!/bin/bash
 
-$VENV_HOME/bin/uvicorn cmsapi.main:app --host 0.0.0.0 --port 5003 --no-access-log
+
+if [ "$RUN_ZMSCONTENT" == true ]; then
+  $VENV_HOME/bin/uvicorn cmsapi.zmscontent.main:app --host 0.0.0.0 --port 5001 --no-access-log
+else
+  $VENV_HOME/bin/uvicorn cmsapi.mobileapp.main:app --host 0.0.0.0 --port 5003 --no-access-log
+fi

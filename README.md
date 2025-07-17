@@ -25,11 +25,12 @@ $ docker compose up
 Hint: Everytime you change the code you have to re-execute these commands. You can skip the `docker compose build zms-base` step if `zms-base` didn't change.
 
 Docker compose runs the following containers:
-- `api`: `zms-fastapi` container for API queries
-- `adm`: `zms-fastapi` container which runs cronjobs
-- `zeo`: ZMS data container
-- `postgres`: Database container used for API endpoints which contains structured data parsed from ZEO data.
-- `doc`: `mkdocs` container including API documentation
+- `mobileapp`: container(s) for API queries /v3 for unibe.app (aggregate and provide News, Events, Announcements and Service Links)
+- `zmscontent`: container(s) for API queries /v1 for unibe.ch (retrieve and analyze content objects published in UniBE-CMS)
+- `admin`: container which runs cronjobs for zms2sql
+- `zodb`: container for ZODB storing ZMS objects locally if not connected to a remote storage via ZEO
+- `postgresql`: container used for API endpoints which provides cached data via SQL mapped from ZODB
+- `docs`: `mkdocs` container including API documentation
 
 
 ## Local Development
