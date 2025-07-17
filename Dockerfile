@@ -27,8 +27,6 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
 # We use relative copy commands because WORKDIR is set to $APP_HOME in zms-base image
 COPY --chown=$USERNAME:$GROUPNAME zms-core zms-core
 COPY --chown=$USERNAME:$GROUPNAME zms-addons zms-addons
-COPY --chown=$USERNAME:$GROUPNAME requirements.txt requirements.txt
-COPY --chown=$USERNAME:$GROUPNAME constraints.txt constraints.txt
 
 RUN $VENV_HOME/bin/pip install ./zms-core -e ./'zms-addons[fastapi]' \
     -c ./zms-addons/constraints.txt \
