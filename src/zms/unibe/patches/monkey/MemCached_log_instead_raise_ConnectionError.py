@@ -1,6 +1,5 @@
 from Products.mcdutils.mapping import MemCacheMapping
 
-print('Monkeypatch: Products.mcdutils.mapping.MemCacheMapping.tpc_vote')
 """
 Avoid raise exception if Memcached connection fails and log instead
 - Connection errors suddenly occur only with cluster setup in Docker Swarm mode
@@ -13,13 +12,13 @@ https://docs.docker.com/network/overlay/#bypass-the-routing-mesh-for-a-swarm-ser
 https://news.ycombinator.com/item?id=25328865
 """
 
+print('Monkeypatch: Products.mcdutils.mapping.MemCacheMapping.tpc_vote')
 def tpc_vote(self, txn):
     """ See IDataManager.
     """
     server, key = self._p_proxy.client._get_server(self._p_key)
     if server is None:
         from Products.mcdutils import MemCacheError
-        # raise MemCacheError("Can't reach memcache server!")
         import logging
         LOGGER = logging.getLogger('Products.mcdutils')
         LOGGER.log(logging.ERROR, MemCacheError("Can't reach memcache server!"))
