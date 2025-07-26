@@ -1,5 +1,4 @@
-# Access Outlook in M365 cloud
-# see Working with calendars and events using the Microsoft Graph API
+# OutlookConnector accesses calendars and events using the Microsoft Graph API
 # https://learn.microsoft.com/en-us/graph/api/resources/calendar-overview?view=graph-rest-1.0
 
 import json

@@ -1,28 +1,25 @@
-# Aggregate events from different data sources
-# see implementation for unibe.app
-# https://github.com/idasm-unibe-ch/zms-fastapi/blob/main/cmsapi/admin/agendas.py
+# AgendaBridge aggregates events from different data sources
+# see also sqlmodels/__main__.py to store in PostgreSQL for unibe.app
 
 import asyncio
 import requests
 import json
+import logging
 
-from .OutlookConnector import OutlookConnector
-from .schemas import (
-    AgendaFilemaker, 
-    AgendaLibrary,
-    AgendaOutlook,
-    ZMSObjects,
-    ZMSAgenda,
-)
-from ..utils.helpers import DotDict
 from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
+from ZTUtils.Lazy import LazyMap
 from operator import attrgetter
+
+from ..utils.helpers import DotDict
+from .OutlookConnector import OutlookConnector
 
 
 print('Addon: zms.unibe.agenda.AgendaBridge')
 security = ModuleSecurityInfo('zms.unibe.agenda.AgendaBridge')  # allow module import in RestrictedPython
+
+LOGGER = logging.getLogger('ZMSAgenda')
 
 
 class AgendaBridge(ObjectManager):
@@ -31,13 +28,14 @@ class AgendaBridge(ObjectManager):
     def __init__(self, locale):
         self.events = []
         self.locale = locale
-    
+
     @security.public    
     def get_events(self, mode=None):
         array = [x.model_dump() for x in sorted(
             self.events,
             key=attrgetter('eventStartDateTime', 'eventEndDateTime')
         )]
+
         if mode == 'dict':
             return array
         elif mode == 'dotdict':
@@ -47,78 +45,73 @@ class AgendaBridge(ObjectManager):
         return self.events
 
     @security.public
-    def import_events_from_filemaker(self):
-        url = 'https://agenda.unibe.ch/agenda.json'
+    def import_events_from_url(self, url=None,
+                               schema_output=None, schema_input=None):
+        assert url is not None, 'url is required'
+        assert schema_output is not None, 'schema_output is required'
+        assert schema_input is not None, 'schema_input is required'
+
         response = requests.get(url=url)
         if response.status_code == 200:
-            agenda_filemaker = response.json()
+            agenda = response.json()
         else:
             raise ImportError(url)
-        if agenda_filemaker is not None:
-            for item in agenda_filemaker:
-                event = AgendaFilemaker.mapping(DotDict(item), self.locale)
+        if isinstance(agenda, dict) and 'events' in agenda.keys():
+            agenda = agenda['events']  # for library
+        if isinstance(agenda, list):
+            for item in agenda:
+                event = schema_input.mapping(DotDict(item),
+                                             self.locale)
                 if event is not None:
-                    self.events.append(ZMSAgenda.Event.model_validate(event))
+                    self.events.append(schema_output.model_validate(event))
         return None
 
     @security.public
-    def import_events_from_library(self):
-        url = f'https://agenda.ub.unibe.ch/{self.locale}/api/event?limit=100'
-        response = requests.get(url=url)
-        if response.status_code == 200:
-            agenda_library = response.json()
-        else:
-            raise ImportError(url)
-        if agenda_library is not None:
-            for item in agenda_library['events']:
-                event = AgendaLibrary.mapping(item)
-                if event is not None:
-                    self.events.append(ZMSAgenda.Event.model_validate(event))
-        return None
+    def import_events_from_outlook(self, account=None,
+                                   schema_output=None, schema_input=None):
+        assert account is not None, 'account is required'
+        assert schema_output is not None, 'schema_output is required'
+        assert schema_input is not None, 'schema_input is required'
 
-    @security.public
-    def import_events_from_outlook(self, account=None):
-        if account is not None:
-            outlook = OutlookConnector(account=account)
-            agenda_outlook = json.loads(asyncio.run(outlook.get_calendar_events()))
-            if agenda_outlook is not None:
-                for item in agenda_outlook:
-                    event = AgendaOutlook.mapping(item)
-                    if event is not None:
-                        self.events.append(ZMSAgenda.Event.model_validate(event))
+        outlook = OutlookConnector(account=account)
+        calendar = json.loads(asyncio.run(outlook.get_calendar_events()))
+        if isinstance(calendar, list):
+            for item in calendar:
+                event = schema_input.mapping(DotDict(item),
+                                             self.locale)
+                if event is not None:
+                    self.events.append(schema_output.model_validate(event))
         return None
     
     @security.public
-    def import_events_from_zms(self, zmsindex=None, path=None, lang=None, types=None):
-        if (zmsindex is not None and 
-                path is not None and 
-                lang is not None):
-            if isinstance(types, str):
-                types = [types]
-            if types is None or len(types) == 0:
-                return None
-            for meta_id in types:
-                agenda_objects = zmsindex({'meta_id': meta_id, 'path': path})
-                if agenda_objects is not None:
-                    for item in agenda_objects:
-                        event = ZMSObjects.mapping(item=item.getObject(),
-                                                   meta_id=meta_id,
-                                                   lang=lang)
-                        if event is not None:
-                            self.events.append(ZMSAgenda.Event.model_validate(event))
-        return None
+    def import_events_from_zms(self, context=None, lang=None, node=None, meta_id=None,
+                               schema_output=None, schema_input=None):
+        assert context is not None, 'context is required'
+        assert lang is not None, 'lang is required'
+        assert node is not None, 'node is required'
+        assert meta_id is not None, 'meta_id is required'
+        assert schema_output is not None, 'schema_output is required'
+        assert schema_input is not None, 'schema_input is required'
 
-    @security.public
-    def import_events_from_recordset(self, obj=None, lang=None):
-        if (hasattr(obj, 'agenda_recordset')
-                and obj.agenda_recordset.isMetaType('ZMSAgendaRecordset')):
-            for item in obj.agenda_recordset.attr('records'):
-                event = ZMSObjects.mapping(item, 
-                                           meta_id='ZMSAgendaRecordset', 
-                                           obj=obj, 
-                                           lang=lang)
-                if event is not None:
-                    self.events.append(ZMSAgenda.Event.model_validate(event))
+        if (meta_id == 'ZMSAgendaRecordset'
+            and hasattr(context, 'agenda_recordset')
+            and context.agenda_recordset.isMetaType('ZMSAgendaRecordset')):
+            items = context.agenda_recordset.attr('records')
+        else:
+            obj = context.getLinkObj(node)
+            items = context.zcatalog_index({'meta_id': meta_id, 'path': obj.getPath()}) if obj is not None else None
+        if isinstance(items, list) or isinstance(items, LazyMap):
+            for item in items:
+                try:
+                    event = schema_input.mapping(item, context,
+                                                 lang, self.locale)
+                    if event is not None:
+                        self.events.append(schema_output.model_validate(event))
+                except Exception as e:
+                    if isinstance(item, dict):
+                        LOGGER.error(f'Error importing event: {e}')
+                    else:
+                        LOGGER.error(f'Error importing event: {item.get_uid} {item.getPath()}')
         return None
 
     @security.public
