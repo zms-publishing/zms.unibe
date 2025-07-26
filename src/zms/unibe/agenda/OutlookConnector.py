@@ -5,6 +5,7 @@
 import json
 import requests
 import base64
+import logging
 from devtools import debug
 from dotenv import load_dotenv
 from azure.identity import EnvironmentCredential
@@ -18,6 +19,8 @@ from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurity
 
 print('Addon: zms.unibe.agenda.OutlookConnector')
 security = ModuleSecurityInfo('zms.unibe.agenda.OutlookConnector')  # allow module import in RestrictedPython
+
+LOGGER = logging.getLogger('OutlookConnector')
 
 load_dotenv()
 
@@ -45,16 +48,21 @@ class OutlookConnector(ObjectManager):
             'Prefer': 'IdType="ImmutableId",'  # https://learn.microsoft.com/en-us/graph/outlook-immutable-id
                       'outlook.timezone="Europe/Berlin"',  # https://learn.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-1.0&tabs=http#support-various-time-zones
         }
+        # /calendar/events?$top=100
+        # /calendar/events?mailboxlocation=resource
+        # /calendarView?startDateTime=2023-07-26T00:00:00Z&endDateTime=2023-07-27T00:00:00Z
         response = requests.get(url=f"https://graph.microsoft.com/v1.0/users/{self.account}/calendar/events?$top=100",
                                 headers=headers)
         response_json = response.json()
-        
+
         if "value" in response_json:
             return json.dumps(response_json["value"], indent=4, sort_keys=True)
-        
+
+        LOGGER.log(logging.ERROR, response_json)
         raise ValueError(response_json)
 
-    async def get_calendar_attachments(self, attachment_id, raw_data=False):
+    @security.public
+    async def get_calendar_attachments(self, attachment_id=None, raw_data=False):
         # TODO: remove hardcoded form POC -> implement this feature 
         query_params = AttachmentsRequestBuilder.AttachmentsRequestBuilderGetQueryParameters(
             select=["id", "contentType", "name", "size", "lastModifiedDateTime"],
@@ -63,11 +71,11 @@ class OutlookConnector(ObjectManager):
             query_parameters=query_params,
         )
         debug(await self.graph_client.users.by_user_id(self.account).events.by_event_id(
-            'AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0A_iZhOlfb-UGQ3i66ewMG9QAAMK4KtAAA').attachments.get(
+            'AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0A3NJhpCaVKU2JrM7AyoUylgAAAABPoQAA').attachments.get(
             request_configuration=request_config))
 
         data = await self.graph_client.users.by_user_id(self.account).events.by_event_id(
-            'AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0A_iZhOlfb-UGQ3i66ewMG9QAAMK4KtAAA').attachments.by_attachment_id(
+            'AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0A3NJhpCaVKU2JrM7AyoUylgAAAABPoQAA').attachments.by_attachment_id(
             attachment_id).get()
         if raw_data:
             # https://stackoverflow.com/questions/76705913/download-raw-content-of-email-attachment-using-microsoft-graph-sdk
