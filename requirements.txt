@@ -1,5 +1,6 @@
 anytree                         # https://anytree.readthedocs.io
 azure-identity                  # https://pypi.org/project/azure-identity/
+babel                           # https://github.com/python-babel/babel
 beautifulsoup4                  # https://beautiful-soup-4.readthedocs.io/en/latest/
 chardet                         # https://github.com/chardet/chardet
 devtools[pygments]              # https://python-devtools.helpmanual.io/usage/#usage-without-import

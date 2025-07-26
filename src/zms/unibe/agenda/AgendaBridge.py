@@ -14,6 +14,7 @@ from .schemas import (
     ZMSObjects,
     ZMSAgenda,
 )
+from ..utils.helpers import DotDict
 from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
@@ -27,50 +28,52 @@ security = ModuleSecurityInfo('zms.unibe.agenda.AgendaBridge')  # allow module i
 class AgendaBridge(ObjectManager):
     security = ClassSecurityInfo()  # control access to class methods in RestrictedPython
     
-    def __init__(self):
+    def __init__(self, locale):
         self.events = []
+        self.locale = locale
     
     @security.public    
-    def get_events(self, fmt=None):
-        if fmt == 'json':
-            return json.dumps([x.model_dump() for x in sorted(
-                self.events,
-                key=attrgetter('eventStart', 'eventEnd')
-            )], indent=4, sort_keys=True, default=str)
+    def get_events(self, mode=None):
+        array = [x.model_dump() for x in sorted(
+            self.events,
+            key=attrgetter('eventStartDateTime', 'eventEndDateTime')
+        )]
+        if mode == 'dict':
+            return array
+        elif mode == 'dotdict':
+            return [DotDict(x) for x in array]
+        elif mode == 'json':
+            return json.dumps(array, indent=4, sort_keys=True, default=str)
         return self.events
 
     @security.public
     def import_events_from_filemaker(self):
-        # TODO: Remove this legacy bridge by phasing out FileMaker as Backend
-        response = requests.get(url='https://agenda.unibe.ch/agenda.json')
+        url = 'https://agenda.unibe.ch/agenda.json'
+        response = requests.get(url=url)
         if response.status_code == 200:
             agenda_filemaker = response.json()
         else:
-            raise ImportError
+            raise ImportError(url)
         if agenda_filemaker is not None:
             for item in agenda_filemaker:
-                event = AgendaFilemaker.mapping(item)
+                event = AgendaFilemaker.mapping(DotDict(item), self.locale)
                 if event is not None:
                     self.events.append(ZMSAgenda.Event.model_validate(event))
         return None
 
     @security.public
-    def import_events_from_library(self, lang=None):
-        if lang is not None:
-            agenda_library_url = {
-                'ger': 'https://agenda.ub.unibe.ch/de/api/event?limit=100',
-                'eng': 'https://agenda.ub.unibe.ch/en/api/event?limit=100',
-            }
-            response = requests.get(url=agenda_library_url[lang])
-            if response.status_code == 200:
-                agenda_library = response.json()
-            else:
-                raise ImportError
-            if agenda_library is not None:
-                for item in agenda_library['events']:
-                    event = AgendaLibrary.mapping(item)
-                    if event is not None:
-                        self.events.append(ZMSAgenda.Event.model_validate(event))
+    def import_events_from_library(self):
+        url = f'https://agenda.ub.unibe.ch/{self.locale}/api/event?limit=100'
+        response = requests.get(url=url)
+        if response.status_code == 200:
+            agenda_library = response.json()
+        else:
+            raise ImportError(url)
+        if agenda_library is not None:
+            for item in agenda_library['events']:
+                event = AgendaLibrary.mapping(item)
+                if event is not None:
+                    self.events.append(ZMSAgenda.Event.model_validate(event))
         return None
 
     @security.public

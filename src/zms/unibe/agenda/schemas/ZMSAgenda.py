@@ -1,16 +1,18 @@
-# Provide data in frontends of unibe.ch
+# ZMSAgenda Data Schema
 #
-# for users/visitors (web) -> layout/design
-# unibe-cms/frontend/web/estatico-handlebars/src/pages/portal-vk
-# unibe-cms/frontend/web/estatico-handlebars/src/pages/portal-vk-v1
-# unibe-cms/frontend/web/estatico-handlebars/src/pages/portal-vk-v2
-# unibe-cms/frontend/zms/datatables/agenda
+# see mapping overview of different data sources
+# unibe-cms/backend/zms-addons/src/zms/unibe/agenda/schemas/README.md
 #
-# for editors/managers (zmi) -> edit/manage
+# Frontend functionality -> layout/design -> frontend for users/visitors (web)
+# http://localhost:9000/pages/portal-agenda/portal-agenda.html
+# unibe-cms/frontend/web/estatico-handlebars/src/modules/agenda/agenda.hbs
+# unibe-cms/frontend/web/estatico-handlebars/src/modules/date_badge/date_badge.hbs
+#
+# Backend functionality -> edit/manage -> frontend for editors/managers (zmi)
+# unibe-cms/backend/zms-addons/src/zms/unibe/agenda
 # unibe-cms/frontend/zms/models/unibe/metaobj_manager/ch.unibe.datatable/ZMSAgenda
-#
-# see overview of data mapping in
-# zms-addons/src/zms/unibe/agenda/schemas/README.md
+# unibe-cms/frontend/zms/models/unibe/metaobj_manager/ch.unibe.datatable/ZMSAgenda/agenda.zpt
+
 
 from datetime import datetime
 from uuid import UUID
@@ -19,15 +21,24 @@ from pydantic import BaseModel
 
 
 class Event(BaseModel):
+    eventId: UUID | None
+    eventSource: str
     eventTitle: str
-    eventStart: datetime
-    eventEnd: datetime | None
+
+    eventStartDateTime: datetime
+    eventStartDate: str
+    eventStartTime: str
+    eventStartDay: int
+    eventStartDayWeek: str
+
+    eventEndDateTime: datetime | None
+    eventEndDate: str | None
+    eventEndTime: str | None
+    eventEndDay: int | None
+    eventEndDayWeek: str | None
+
     eventLocation: str | None
-    
     eventTopics: list | None
     eventInfos: str | None
     eventImage: str | None
     eventUrl: str | None
-    
-    eventSource: str
-    eventId: UUID | None
