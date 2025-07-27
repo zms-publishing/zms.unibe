@@ -16,6 +16,8 @@ from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
 
+from zms.unibe.utils.helpers import DotDict
+
 print('Addon: zms.unibe.agenda.OutlookConnector')
 security = ModuleSecurityInfo('zms.unibe.agenda.OutlookConnector')  # allow module import in RestrictedPython
 
@@ -42,6 +44,25 @@ class OutlookConnector(ObjectManager):
         return access_token.token
 
     async def get_calendar_events(self):
+        """
+        Fetch calendar events of the set account.
+
+        The events retrieved are filtered to include either the events organized by
+        the set account or the events accepted by the set account following an invitation.
+
+        If the event is an invitation accepted by the set account, the organizer's name
+        is removed from the event subject.
+
+        The events are retrieved via the Microsoft Graph API using specific query parameters,
+        such as ensuring the correct timezone is applied and limiting the number of events.
+
+        Returns:
+            str: A JSON string containing the list of events filtered for the
+                 set account on specific criteria.
+
+        Raises:
+            ValueError: If the API response contains an error or invalid data.
+        """
         headers = {
             'Authorization': 'Bearer ' + await self.get_access_token(),
             'Prefer': 'IdType="ImmutableId",'  # https://learn.microsoft.com/en-us/graph/outlook-immutable-id
@@ -54,10 +75,27 @@ class OutlookConnector(ObjectManager):
                                 headers=headers)
         response_json = response.json()
 
+        return_json = []
+        # TODO: rewrite using https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http
+        # TODO: rewrite using https://learn.microsoft.com/en-us/graph/api/calendar-list-events?view=graph-rest-1.0&tabs=python
         if "value" in response_json:
-            return json.dumps(response_json["value"], indent=4, sort_keys=True)
+            data = response_json["value"]
+            for event in data:
+                event = DotDict(event)
+                if event.organizer.emailAddress.address == self.account:
+                    return_json.append(event)
+                    LOGGER.info(f"Found event: {event.subject}")
+                else:
+                    for attendee in event.attendees:
+                        attendee = DotDict(attendee)
+                        if attendee.emailAddress.address == self.account:
+                            if attendee.status.response == 'accepted':
+                                event.subject = event.subject.replace(event.organizer.emailAddress.name, '').strip()
+                                return_json.append(event)
+                                LOGGER.info(f"Found event: {event.subject}")
+            return json.dumps(return_json, indent=4, sort_keys=True)
 
-        LOGGER.log(logging.ERROR, response_json)
+        LOGGER.error(response_json)
         raise ValueError(response_json)
 
     @security.public
