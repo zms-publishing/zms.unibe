@@ -53,6 +53,8 @@ class OutlookConnector(ObjectManager):
         If the event is an invitation accepted by the set account, the organizer's name
         is removed from the event subject.
 
+        Events shown as tentative are not included in the result.
+
         The events are retrieved via the Microsoft Graph API using specific query parameters,
         such as ensuring the correct timezone is applied and limiting the number of events.
 
@@ -83,16 +85,16 @@ class OutlookConnector(ObjectManager):
             for event in data:
                 event = DotDict(event)
                 if event.organizer.emailAddress.address == self.account:
-                    return_json.append(event)
-                    LOGGER.info(f"Found event: {event.subject}")
+                    if event.showAs != 'tentative':
+                        return_json.append(event)
                 else:
                     for attendee in event.attendees:
                         attendee = DotDict(attendee)
                         if attendee.emailAddress.address == self.account:
                             if attendee.status.response == 'accepted':
                                 event.subject = event.subject.replace(event.organizer.emailAddress.name, '').strip()
-                                return_json.append(event)
-                                LOGGER.info(f"Found event: {event.subject}")
+                                if event.showAs != 'tentative':
+                                    return_json.append(event)
             return json.dumps(return_json, indent=4, sort_keys=True)
 
         LOGGER.error(response_json)
