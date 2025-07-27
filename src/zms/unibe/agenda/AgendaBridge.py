@@ -12,7 +12,7 @@ from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurity
 from ZTUtils.Lazy import LazyMap
 from operator import attrgetter
 
-from ..utils.helpers import DotDict
+from ..utils.helpers import DotDict, local_timezone
 from .OutlookConnector import OutlookConnector
 
 
@@ -30,11 +30,27 @@ class AgendaBridge(ObjectManager):
         self.locale = locale
 
     @security.public    
-    def get_events(self, mode=None):
+    def get_events(self, mode=None, start_date=None, categories=None):
         array = [x.model_dump() for x in sorted(
             self.events,
             key=attrgetter('eventStartDateTime', 'eventEndDateTime')
         )]
+
+        # filter out events before the given start_date
+        array = list(filter(lambda x: x.get('eventStartDateTime') >= local_timezone(start_date), array))
+
+        # filter out events without the given categories
+        if isinstance(categories, list) and len(categories) > 0:
+            prefix = 'ZMSAgenda.Category.'
+            array_filtered = []
+            for category in categories:
+                category = category.replace(prefix, '').replace('_', ' ')
+                array_tmp = list(filter(lambda x: category in (x.get('eventTopics')
+                                                               if x.get('eventTopics') is not None else []), array))
+                for item in array_tmp:
+                    if item not in array_filtered:
+                        array_filtered.append(item)
+            array = array_filtered
 
         if mode == 'dict':
             return array

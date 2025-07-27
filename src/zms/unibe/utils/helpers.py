@@ -35,7 +35,7 @@ class DotDict(dict):
 
 
 def local_timezone(dt=None):
-    if dt is None:
+    if dt is None or dt=='':
         dt = datetime.now()
     if isinstance(dt, time.struct_time):
         dt = standard.format_datetime_iso(dt)
