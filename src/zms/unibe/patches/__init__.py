@@ -8,5 +8,5 @@ try:
 
     # initialize security assertions on zope startup
     from zms.unibe.patches.security import assertations
-except:
-    print("ERROR on init monkey patches and security assertions in zms.unibe.patches")
+except Exception as e:
+    print("ERROR [zms.unibe.patches]:", e)

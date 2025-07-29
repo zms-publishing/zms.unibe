@@ -79,7 +79,7 @@ class OutlookConnector(ObjectManager):
         response = requests.get(url=f"https://graph.microsoft.com/v1.0"
                                     f"/users/{self.account}/calendarView"
                                     f"?startDateTime={local_timezone(start_date, tz='UTC').isoformat()[:-6]}"
-                                    f"&endDateTime={local_timezone(end_date, tz='UTC').isoformat()[:-6]}"
+                                    f"&endDateTime={local_timezone(end_date, tz='UTC', days_delta=1).isoformat()[:-6]}"
                                     f"&$top=100",
                                 headers=headers)
         response_json = response.json()
