@@ -25,9 +25,12 @@ LOGGER = logging.getLogger('ZMSAgenda')
 class AgendaBridge(ObjectManager):
     security = ClassSecurityInfo()  # control access to class methods in RestrictedPython
     
-    def __init__(self, locale):
+    def __init__(self, locale, start_date=None, end_date=None, hide_past=False):
         self.events = []
         self.locale = locale
+        self.start_date = local_timezone(start_date)
+        self.end_date = local_timezone(end_date)
+        self.hide_past = hide_past
 
     @security.public    
     def get_events(self, mode=None, start_date=None, categories=None):
@@ -35,9 +38,6 @@ class AgendaBridge(ObjectManager):
             self.events,
             key=attrgetter('eventStartDateTime', 'eventEndDateTime')
         )]
-
-        # filter out events before the given start_date
-        array = list(filter(lambda x: x.get('eventStartDateTime') >= local_timezone(start_date), array))
 
         # filter out events without the given categories
         if isinstance(categories, list) and len(categories) > 0:
@@ -90,7 +90,8 @@ class AgendaBridge(ObjectManager):
         assert schema_input is not None, 'schema_input is required'
 
         outlook = OutlookConnector(account=account)
-        calendar = json.loads(asyncio.run(outlook.get_calendar_events()))
+        calendar = json.loads(asyncio.run(outlook.get_calendar_events(start_date=self.start_date,
+                                                                      end_date=self.end_date)))
         if isinstance(calendar, list):
             for item in calendar:
                 event = schema_input.mapping(DotDict(item),

@@ -16,7 +16,7 @@ from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
 
-from zms.unibe.utils.helpers import DotDict
+from zms.unibe.utils.helpers import DotDict, local_timezone
 
 print('Addon: zms.unibe.agenda.OutlookConnector')
 security = ModuleSecurityInfo('zms.unibe.agenda.OutlookConnector')  # allow module import in RestrictedPython
@@ -43,9 +43,9 @@ class OutlookConnector(ObjectManager):
         
         return access_token.token
 
-    async def get_calendar_events(self):
+    async def get_calendar_events(self, start_date, end_date):
         """
-        Fetch calendar events of the set account.
+        Fetch calendar events of the set account in the given time range.
 
         The events retrieved are filtered to include either the events organized by
         the set account or the events accepted by the set account following an invitation.
@@ -72,8 +72,15 @@ class OutlookConnector(ObjectManager):
         }
         # /calendar/events?$top=100
         # /calendar/events?mailboxlocation=resource
-        # /calendarView?startDateTime=2023-07-26T00:00:00Z&endDateTime=2023-07-27T00:00:00Z
-        response = requests.get(url=f"https://graph.microsoft.com/v1.0/users/{self.account}/calendar/events?$top=100",
+        # /calendarView?startDateTime=2023-07-26T00:00:00Z&endDateTime=2026-07-27T00:00:00Z
+        # /calendarView -> max time range is 5 years
+        # /calendarView -> unfolds recurring event settings to multiple event occurrences in the set behaviour
+        # https://learn.microsoft.com/en-us/graph/api/user-list-calendarview?view=graph-rest-1.0&tabs=http
+        response = requests.get(url=f"https://graph.microsoft.com/v1.0"
+                                    f"/users/{self.account}/calendarView"
+                                    f"?startDateTime={local_timezone(start_date, tz='UTC').isoformat()[:-6]}"
+                                    f"&endDateTime={local_timezone(end_date, tz='UTC').isoformat()[:-6]}"
+                                    f"&$top=100",
                                 headers=headers)
         response_json = response.json()
 
@@ -102,7 +109,7 @@ class OutlookConnector(ObjectManager):
 
     @security.public
     async def get_calendar_attachments(self, attachment_id=None, raw_data=False):
-        # TODO: remove hardcoded form POC -> implement this feature 
+        # TODO: remove hardcoded from POC -> implement this feature
         query_params = AttachmentsRequestBuilder.AttachmentsRequestBuilderGetQueryParameters(
             select=["id", "contentType", "name", "size", "lastModifiedDateTime"],
         )
