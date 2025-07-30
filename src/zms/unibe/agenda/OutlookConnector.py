@@ -126,6 +126,8 @@ class OutlookConnector(ObjectManager):
         if raw_data:
             # https://stackoverflow.com/questions/76705913/download-raw-content-of-email-attachment-using-microsoft-graph-sdk
             return base64.urlsafe_b64decode(data.content_bytes)
+            #request.RESPONSE.setHeader('Content-Disposition', 'attachment;filename="test.pdf"')
+            #return run_asyncio(outlook.get_calendar_attachments(attachment_id=id, raw_data=True))
         else:
             return data.name
 

@@ -25,25 +25,25 @@ LOGGER = logging.getLogger('ZMSAgenda')
 class AgendaBridge(ObjectManager):
     security = ClassSecurityInfo()  # control access to class methods in RestrictedPython
     
-    def __init__(self, locale, start_date=None, end_date=None, hide_past=False):
+    def __init__(self, locale, start_date=None, end_date=None, categories=None):
         self.events = []
         self.locale = locale
         self.start_date = local_timezone(start_date)
         self.end_date = local_timezone(end_date)
-        self.hide_past = hide_past
+        self.categories = categories
 
     @security.public    
-    def get_events(self, mode=None, start_date=None, categories=None):
+    def get_events(self, mode=None, categories=None):
         array = [x.model_dump() for x in sorted(
             self.events,
             key=attrgetter('eventStartDateTime', 'eventEndDateTime')
         )]
 
         # filter out events without the given categories
-        if isinstance(categories, list) and len(categories) > 0:
+        if isinstance(self.categories, list) and len(self.categories) > 0:
             prefix = 'ZMSAgenda.Category.'
             array_filtered = []
-            for category in categories:
+            for category in self.categories:
                 category = category.replace(prefix, '').replace('_', ' ')
                 array_tmp = list(filter(lambda x: category in (x.get('eventTopics')
                                                                if x.get('eventTopics') is not None else []), array))
@@ -120,15 +120,15 @@ class AgendaBridge(ObjectManager):
         if isinstance(items, list) or isinstance(items, LazyMap):
             for item in items:
                 try:
-                    event = schema_input.mapping(item, context,
-                                                 lang, self.locale)
+                    event = schema_input.mapping(DotDict(item) if meta_id == 'ZMSAgendaRecordset' else item.getObject(),
+                                                 context, lang, self.locale)
                     if event is not None:
                         self.events.append(schema_output.model_validate(event))
                 except Exception as e:
                     if isinstance(item, dict):
                         LOGGER.error(f'Error importing event: {e}')
                     else:
-                        LOGGER.error(f'Error importing event: {item.get_uid} {item.getPath()}')
+                        LOGGER.error(f'Error importing event: {item.get_uid} {item.getPath()} {e}')
         return None
 
     @security.public
