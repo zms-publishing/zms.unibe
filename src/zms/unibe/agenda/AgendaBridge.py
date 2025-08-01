@@ -11,6 +11,7 @@ from AccessControl.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
 from ZTUtils.Lazy import LazyMap
 from operator import attrgetter
+from ics import Calendar, Event
 
 from ..utils.helpers import DotDict, local_timezone
 from .OutlookConnector import OutlookConnector
@@ -33,7 +34,7 @@ class AgendaBridge(ObjectManager):
         self.categories = categories
 
     @security.public    
-    def get_events(self, mode=None, categories=None):
+    def get_events(self, mode=None):
         array = [x.model_dump() for x in sorted(
             self.events,
             key=attrgetter('eventStartDateTime', 'eventEndDateTime')
@@ -135,6 +136,29 @@ class AgendaBridge(ObjectManager):
     def import_events_from_csv(self):
         # TODO: Get events from a CSV file (e.g. Excel)
         raise NotImplementedError
+
+    @staticmethod
+    @security.public
+    def get_calendar_ics(events=None):
+        assert isinstance(events, list), 'events are required as list'
+
+        calendar_ics = Calendar()
+        for event in events:
+            event_ics = Event()
+
+            begin = local_timezone(event.get('eventStartDateTime'))
+            end = local_timezone(event.get('eventEndDateTime'))
+
+            event_ics.name = event.get('eventTitle')
+            event_ics.begin = begin
+            event_ics.end = end if begin <= end else begin
+            event_ics.location = event.get('eventLocation')
+            event_ics.description = event.get('eventInfos')
+            event_ics.categories = event.get('eventTopics')
+            event_ics.url = event.get('eventUrl')
+
+            calendar_ics.events.add(event_ics)
+        return calendar_ics.serialize()
 
 
 # Apply security assertions by ClassSecurityInfo()
