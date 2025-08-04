@@ -95,7 +95,11 @@ class AgendaBridge(ObjectManager):
                                                                       end_date=self.end_date)))
         if isinstance(calendar, list):
             for item in calendar:
+                attachments = None
+                if item.get('hasAttachments'):
+                    attachments = outlook.get_event_attachments(event_id=item.get('id'))
                 event = schema_input.mapping(DotDict(item),
+                                             attachments,
                                              self.locale)
                 if event is not None:
                     self.events.append(schema_output.model_validate(event))

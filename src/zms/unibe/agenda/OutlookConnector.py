@@ -1,6 +1,7 @@
 # OutlookConnector accesses calendars and events using the Microsoft Graph API
 # https://learn.microsoft.com/en-us/graph/api/resources/calendar-overview?view=graph-rest-1.0
 
+import asyncio
 import json
 import requests
 import base64
@@ -108,28 +109,71 @@ class OutlookConnector(ObjectManager):
         raise ValueError(response_json)
 
     @security.public
-    async def get_calendar_attachments(self, attachment_id=None, raw_data=False):
-        # TODO: remove hardcoded from POC -> implement this feature
-        query_params = AttachmentsRequestBuilder.AttachmentsRequestBuilderGetQueryParameters(
-            select=["id", "contentType", "name", "size", "lastModifiedDateTime"],
-        )
-        request_config = RequestConfiguration(
-            query_parameters=query_params,
-        )
-        debug(await self.graph_client.users.by_user_id(self.account).events.by_event_id(
-            'AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0A3NJhpCaVKU2JrM7AyoUylgAAAABPoQAA').attachments.get(
-            request_configuration=request_config))
+    def get_event_attachments(self, event_id=None, attachment_id=None, decode_base64=False):
+        """
+        Retrieve event attachments and their data.
 
-        data = await self.graph_client.users.by_user_id(self.account).events.by_event_id(
-            'AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0A3NJhpCaVKU2JrM7AyoUylgAAAABPoQAA').attachments.by_attachment_id(
-            attachment_id).get()
-        if raw_data:
+        This method is designed to fetch attachments belonging to a specified event. If an attachment ID is not provided,
+        it retrieves a list of all available attachments for the given event. If an attachment ID is provided, it retrieves
+        the specific attachment's data. Attachments can also be optionally decoded from base64 format.
+
+        Parameters:
+            event_id: str
+                The ID of the event for which attachments are to be retrieved. This parameter is required.
+            attachment_id: Optional[str]
+                The ID of the specific attachment to retrieve. If not provided, all attachments for the
+                specified event will be retrieved.
+            decode_base64: bool
+                When True, the method will decode the content of the attachment from base64 format. Defaults to False.
+
+        Returns:
+            list | tuple
+                Returns a list of attachments for the event if no attachment ID is provided. Each attachment is
+                a dictionary containing details such as ID, content type, name, size, inline status, and last
+                modified time. If an attachment ID is specified, a tuple containing the attachment name and its
+                content (optionally decoded) is returned.
+
+        Raises:
+            AssertionError
+                Raised if the `event_id` parameter is not provided.
+        """
+        assert event_id is not None, 'event_id is required'
+
+        # retrieve available attachments of an event
+        if attachment_id is None:
+            attachment_list = []
+            query_params = AttachmentsRequestBuilder.AttachmentsRequestBuilderGetQueryParameters(
+                #select=["id", "content_id", "contentType", "name", "size", "isInline", "lastModifiedDateTime"],
+                # -> could not find a property named 'content_id' on type 'microsoft.graph.attachment'
+                # -> also 'cid' or 'contentId' or 'microsoft.graph.fileattachment/contentId' do not work
+            )
+            request_config = RequestConfiguration(
+                query_parameters=query_params,
+            )
+            attachments = asyncio.run(self.graph_client.users.by_user_id(self.account).events.by_event_id(
+                event_id).attachments.get(request_configuration=request_config))
+
+            for i, attachment in enumerate(attachments.value):
+                attachment_list.append(DotDict({
+                    'id': attachment.id,
+                    'contentId': attachment.content_id,  # TODO: needed to identify inline images by cid: to get bytes data...?!
+                    'contentType': attachment.content_type,
+                    'name': attachment.name,
+                    'size': attachment.size,
+                    "isInline": attachment.is_inline,
+                    'lastModifiedDateTime': attachment.last_modified_date_time,
+                }))
+            return attachment_list
+
+        # retrieve attachment data of an event
+        attachment_data = asyncio.run(self.graph_client.users.by_user_id(self.account).events.by_event_id(
+            event_id).attachments.by_attachment_id(
+            attachment_id).get())
+        if decode_base64:
             # https://stackoverflow.com/questions/76705913/download-raw-content-of-email-attachment-using-microsoft-graph-sdk
-            return base64.urlsafe_b64decode(data.content_bytes)
-            #request.RESPONSE.setHeader('Content-Disposition', 'attachment;filename="test.pdf"')
-            #return run_asyncio(outlook.get_calendar_attachments(attachment_id=id, raw_data=True))
+            return attachment_data.name, base64.urlsafe_b64decode(attachment_data.content_bytes)
         else:
-            return data.name
+            return attachment_data.name, attachment_data.content_bytes
 
 
 # Apply security assertions by ClassSecurityInfo()
