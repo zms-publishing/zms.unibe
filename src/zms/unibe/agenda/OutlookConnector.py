@@ -17,6 +17,7 @@ from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
 
+from Products.zms.standard import pybool
 from zms.unibe.utils.helpers import DotDict, local_timezone
 
 print('Addon: zms.unibe.agenda.OutlookConnector')
@@ -107,6 +108,35 @@ class OutlookConnector(ObjectManager):
 
         LOGGER.error(response_json)
         raise ValueError(response_json)
+
+    @security.public
+    def debug_calendar_events(self, start_date, end_date, events_endpoint=None,
+                                     event_id=None, attachment_id=None, decode_base64=False):
+        headers = {
+            'Authorization': 'Bearer ' + asyncio.run(self.get_access_token()),
+            'Prefer': 'IdType="ImmutableId",'  # https://learn.microsoft.com/en-us/graph/outlook-immutable-id
+                      'outlook.timezone="Europe/Berlin"',  # https://learn.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-1.0&tabs=http#support-various-time-zones
+        }
+        if pybool(events_endpoint):
+            response = requests.get(url=f"https://graph.microsoft.com/v1.0"
+                                        f"/users/{self.account}/events"
+                                        f"?$top=100",
+                                    headers=headers)
+            return json.dumps(response.json(), indent=4, sort_keys=True)
+
+        if event_id is not None:
+            rtn = self.get_event_attachments(event_id, attachment_id, decode_base64)
+            if isinstance(rtn, list):
+                return json.dumps(rtn, indent=4, sort_keys=True, default=str)
+            return rtn
+
+        response = requests.get(url=f"https://graph.microsoft.com/v1.0"
+                                    f"/users/{self.account}/calendarView"
+                                    f"?startDateTime={local_timezone(start_date, tz='UTC').isoformat()[:-6]}"
+                                    f"&endDateTime={local_timezone(end_date, tz='UTC', days_delta=1).isoformat()[:-6]}"
+                                    f"&$top=100",
+                                headers=headers)
+        return json.dumps(response.json(), indent=4, sort_keys=True)
 
     @security.public
     def get_event_attachments(self, event_id=None, attachment_id=None, decode_base64=False):
