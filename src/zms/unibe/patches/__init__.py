@@ -3,8 +3,8 @@
 
 try:
     # initialize monkey patches on zope startup
-    from zms.unibe.patches.monkey import getFuncDetails
-    from zms.unibe.patches.monkey import tcp_vote
+    from zms.unibe.patches.monkey import ExternalMethod_always_reloadIfChanged
+    from zms.unibe.patches.monkey import MemCached_log_instead_raise_ConnectionError
 
     # initialize security assertions on zope startup
     from zms.unibe.patches.security import assertations
