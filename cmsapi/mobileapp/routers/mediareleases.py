@@ -12,7 +12,7 @@ from ..schemas.newsevents import Section
 
 router = APIRouter(
     prefix="/v3",
-    tags=["UniBE News, Events and Announcements"])
+    tags=["UniBE Mobile App (unibe.app)"])
 
 
 @router.get("/mediareleases", summary='Media releases', response_model=schema.MediaReleaseResponse,

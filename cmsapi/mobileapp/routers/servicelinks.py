@@ -11,8 +11,7 @@ from ..schemas import servicelinks as schema
 
 router = APIRouter(
     prefix="/v3/app",
-    tags=["UniBE Mobile App Service Links"]
-)
+    tags=["UniBE Mobile App (unibe.app)"])
 
 
 def _retrieve_service_links(lang, uuid):

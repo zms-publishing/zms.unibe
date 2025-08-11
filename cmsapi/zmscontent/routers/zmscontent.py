@@ -15,10 +15,8 @@ from zms.unibe.utils.headless import create_headless_http_request
 ZODB_STORAGE = os.getenv('ZODB_STORAGE', 'zeo://127.0.0.1:8000?storage=main')
 
 router = APIRouter(
-    prefix="/v1/zms",
-    tags=["ZMS Content"],
-    include_in_schema=True
-)
+    prefix="/v3/zms",
+    tags=["UniBE Web CMS (unibe.ch)"])
 
 
 class ResponseData(str, Enum):

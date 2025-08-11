@@ -10,7 +10,7 @@ services:
     entrypoint: "bash -c"
     command: "exit 0"
 
-  zodb:
+  zeo:
     image: ghcr.io/idasm-unibe-ch/zms-base-zeo:local-fastapi
     init: true
     build:
@@ -37,7 +37,7 @@ services:
     networks:
       - fastapi_network
 
-  mobileapp:
+  api:
     image: ghcr.io/idasm-unibe-ch/zms-fastapi:local
     init: true
     build:
@@ -69,40 +69,7 @@ services:
     networks:
       - fastapi_network
 
-  zmscontent:
-    image: ghcr.io/idasm-unibe-ch/zms-fastapi:local
-    init: true
-    build:
-      context: .
-      args:
-        ZMS_BASE_VERSION: local-fastapi
-    depends_on:
-      - zms-base
-      - postgres
-      - zeo
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: 768M
-    ports:
-      - 5111:5001
-    volumes:
-      - ./docker/mounts/log:/app/zope/log
-    environment:
-      - PYTHONUNBUFFERED=true
-      - RUN_CRONJOBS=false  # init_scripts startUp only in the dedicated admin container below
-      - RUN_ZMSCONTENT=true
-      - ZODB_STORAGE=zeo://zeo:8000?storage=main
-      - SQLDB_STORAGE=postgresql://postgres:5432/zms_fastapi
-      - ZMS_URL=https://www.unibe.ch
-    networks:
-      - fastapi_network
-
-  admin:
+  adm:
     image: ghcr.io/idasm-unibe-ch/zms-fastapi:local
     init: true
     depends_on:
@@ -126,7 +93,7 @@ services:
     networks:
       - fastapi_network
 
-  postgresql:
+  postgres:
     image: postgres:14.7
     deploy:
       replicas: 1
@@ -146,7 +113,7 @@ services:
     networks:
       - fastapi_network
 
-  docs:
+  doc:
     image: squidfunk/mkdocs-material:local
     init: true
     build: ./docs

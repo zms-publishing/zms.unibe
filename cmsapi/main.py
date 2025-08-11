@@ -3,14 +3,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse, RedirectResponse
 
-from cmsapi.mobileapp.metadata import tags
+from cmsapi.metadata import tags
 from cmsapi.mobileapp.routers import newsevents, servicelinks, uniaktuell, mediareleases
+from cmsapi.zmscontent.routers import zmscontent, zmsobjects
 
-app = FastAPI(title="CMSAPI-v3 for unibe.app",
+app = FastAPI(title="CMSAPI-v3",
               version="3.3.0",
-              description="Python-based REST API for unibe.app "
-                          "to aggregate and provide "
-                          "News, Events, Announcements and Service Links.",
+              summary="Python-based REST API using ZMS headless mode at the University of Bern (UniBE)",
+              description="**zms-fastapi** is running on the **UniBE Web/Mobile Integration Platform** "
+                          "to connect with **unibe.app** and **unibe.ch**",
               docs_url="/v3/swagger",
               redoc_url="/v3/redoc",
               openapi_url="/v3/openapi.json",
@@ -30,10 +31,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# UniBE Mobile App (unibe.app)
 app.include_router(newsevents.router)
 app.include_router(uniaktuell.router)
 app.include_router(mediareleases.router)
 app.include_router(servicelinks.router)
+
+# UniBE Web CMS (unibe.ch)
+app.include_router(zmscontent.router)
+app.include_router(zmsobjects.router)
 
 
 @app.get("/v3", include_in_schema=False)

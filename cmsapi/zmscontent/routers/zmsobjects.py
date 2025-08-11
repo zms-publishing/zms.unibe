@@ -11,10 +11,8 @@ from zms.unibe.utils.zms2sql.attributes import Lang, get_attr_by_lang, strip_cms
 from ..schemas import zmsobjects as schema
 
 router = APIRouter(
-    prefix="/v1/zms",
-    tags=["ZMS Objects"],
-    include_in_schema=True
-)
+    prefix="/v3/zms",
+    tags=["UniBE Web CMS (unibe.ch)"])
 
 
 @router.get("/sites", summary='Content Sites', response_model=list[schema.ZMSSite])

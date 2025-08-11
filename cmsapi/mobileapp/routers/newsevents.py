@@ -15,7 +15,7 @@ from ..schemas import newsevents as schema
 
 router = APIRouter(
     prefix="/v3",
-    tags=["UniBE News, Events and Announcements"])
+    tags=["UniBE Mobile App (unibe.app)"])
 
 
 @router.get("/news", summary="News", response_model=schema.NewsResponse,
