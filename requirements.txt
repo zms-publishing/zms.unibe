@@ -3,7 +3,7 @@ azure-identity                  # https://pypi.org/project/azure-identity/
 babel                           # https://github.com/python-babel/babel
 beautifulsoup4                  # https://beautiful-soup-4.readthedocs.io/en/latest/
 chardet                         # https://github.com/chardet/chardet
-devtools[pygments]              # https://python-devtools.helpmanual.io/usage/#usage-without-import
+devtools                        # https://python-devtools.helpmanual.io/install/
 ftfy                            # https://github.com/rspeer/python-ftfy
 ics                             # https://github.com/ics-py/ics-py
 python-dotenv                   # https://github.com/theskumar/python-dotenv
@@ -18,7 +18,7 @@ Products.PluginRegistry         # https://github.com/zopefoundation/Products.Plu
 Products.ZSQLMethods            # https://github.com/zopefoundation/Products.ZSQLMethods
 psycopg2                        # https://www.psycopg.org/docs/install.html#psycopg-vs-psycopg-binary
 pydantic                        # https://pydantic-docs.helpmanual.io
-pydevd-pycharm~=251.26927.74    # https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html -> Debugger for PyCharm 2025.1.3 built on July 1, 2025
+pydevd-pycharm~=252.23892.515   # https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html -> Debugger for PyCharm 2025.2.0.1 built on August 11, 2025
 requests                        # https://requests.readthedocs.io
 requests-oauthlib               # https://github.com/requests/requests-oauthlib
 rich                            # https://github.com/Textualize/rich
