@@ -63,7 +63,7 @@ class AgendaBridge(ObjectManager):
 
     @security.public
     def import_events_from_url(self, url=None,
-                               schema_output=None, schema_input=None):
+                               schema_output=None, schema_input=None, response_dict_key='events'):
         assert url is not None, 'url is required'
         assert schema_output is not None, 'schema_output is required'
         assert schema_input is not None, 'schema_input is required'
@@ -73,8 +73,8 @@ class AgendaBridge(ObjectManager):
             agenda = response.json()
         else:
             raise ImportError(url)
-        if isinstance(agenda, dict) and 'events' in agenda.keys():
-            agenda = agenda['events']  # for library
+        if isinstance(agenda, dict) and response_dict_key in agenda.keys():
+            agenda = agenda[response_dict_key]  # response_dict_key='events' for AgendaLibrary
         if isinstance(agenda, list):
             for item in agenda:
                 event = schema_input.mapping(DotDict(item),
