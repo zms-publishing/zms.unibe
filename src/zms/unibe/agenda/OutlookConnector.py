@@ -1,10 +1,11 @@
-# Access Outlook in M365 cloud
-# see Working with calendars and events using the Microsoft Graph API
+# OutlookConnector accesses calendars and events using the Microsoft Graph API
 # https://learn.microsoft.com/en-us/graph/api/resources/calendar-overview?view=graph-rest-1.0
 
+import asyncio
 import json
 import requests
 import base64
+import logging
 from devtools import debug
 from dotenv import load_dotenv
 from azure.identity import EnvironmentCredential
@@ -16,8 +17,13 @@ from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
 
+from Products.zms.standard import pybool
+from zms.unibe.utils.helpers import DotDict, local_timezone
+
 print('Addon: zms.unibe.agenda.OutlookConnector')
 security = ModuleSecurityInfo('zms.unibe.agenda.OutlookConnector')  # allow module import in RestrictedPython
+
+LOGGER = logging.getLogger('OutlookConnector')
 
 load_dotenv()
 
@@ -39,41 +45,165 @@ class OutlookConnector(ObjectManager):
         
         return access_token.token
 
-    async def get_calendar_events(self):
+    async def get_calendar_events(self, start_date, end_date):
+        """
+        Fetch calendar events of the set account in the given time range.
+
+        The events retrieved are filtered to include either the events organized by
+        the set account or the events accepted by the set account following an invitation.
+
+        If the event is an invitation accepted by the set account, the organizer's name
+        is removed from the event subject.
+
+        Events shown as tentative are not included in the result.
+
+        The events are retrieved via the Microsoft Graph API using specific query parameters,
+        such as ensuring the correct timezone is applied and limiting the number of events.
+
+        Returns:
+            str: A JSON string containing the list of events filtered for the
+                 set account on specific criteria.
+
+        Raises:
+            ValueError: If the API response contains an error or invalid data.
+        """
         headers = {
             'Authorization': 'Bearer ' + await self.get_access_token(),
             'Prefer': 'IdType="ImmutableId",'  # https://learn.microsoft.com/en-us/graph/outlook-immutable-id
                       'outlook.timezone="Europe/Berlin"',  # https://learn.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-1.0&tabs=http#support-various-time-zones
         }
-        response = requests.get(url=f"https://graph.microsoft.com/v1.0/users/{self.account}/calendar/events?$top=100",
+        # /calendar/events?$top=100
+        # /calendar/events?mailboxlocation=resource
+        # /calendarView?startDateTime=2023-07-26T00:00:00Z&endDateTime=2026-07-27T00:00:00Z
+        # /calendarView -> max time range is 5 years
+        # /calendarView -> unfolds recurring event settings to multiple event occurrences in the set behaviour
+        # https://learn.microsoft.com/en-us/graph/api/user-list-calendarview?view=graph-rest-1.0&tabs=http
+        response = requests.get(url=f"https://graph.microsoft.com/v1.0"
+                                    f"/users/{self.account}/calendarView"
+                                    f"?startDateTime={local_timezone(start_date, tz='UTC').isoformat()[:-6]}"
+                                    f"&endDateTime={local_timezone(end_date, tz='UTC', days_delta=1).isoformat()[:-6]}"
+                                    f"&$top=100",
                                 headers=headers)
         response_json = response.json()
-        
+
+        return_json = []
+        # TODO: rewrite using https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http
+        # TODO: rewrite using https://learn.microsoft.com/en-us/graph/api/calendar-list-events?view=graph-rest-1.0&tabs=python
         if "value" in response_json:
-            return json.dumps(response_json["value"], indent=4, sort_keys=True)
-        
+            data = response_json["value"]
+            for event in data:
+                event = DotDict(event)
+                if event.organizer.emailAddress.address == self.account:
+                    if event.showAs != 'tentative':
+                        return_json.append(event)
+                else:
+                    for attendee in event.attendees:
+                        attendee = DotDict(attendee)
+                        if attendee.emailAddress.address == self.account:
+                            if attendee.status.response == 'accepted':
+                                event.subject = event.subject.replace(event.organizer.emailAddress.name, '').strip()
+                                if event.showAs != 'tentative':
+                                    return_json.append(event)
+            return json.dumps(return_json, indent=4, sort_keys=True)
+
+        LOGGER.error(response_json)
         raise ValueError(response_json)
 
-    async def get_calendar_attachments(self, attachment_id, raw_data=False):
-        # TODO: remove hardcoded form POC -> implement this feature 
-        query_params = AttachmentsRequestBuilder.AttachmentsRequestBuilderGetQueryParameters(
-            select=["id", "contentType", "name", "size", "lastModifiedDateTime"],
-        )
-        request_config = RequestConfiguration(
-            query_parameters=query_params,
-        )
-        debug(await self.graph_client.users.by_user_id(self.account).events.by_event_id(
-            'AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0A_iZhOlfb-UGQ3i66ewMG9QAAMK4KtAAA').attachments.get(
-            request_configuration=request_config))
+    @security.public
+    def debug_calendar_events(self, start_date, end_date, events_endpoint=None,
+                                     event_id=None, attachment_id=None, decode_base64=False):
+        headers = {
+            'Authorization': 'Bearer ' + asyncio.run(self.get_access_token()),
+            'Prefer': 'IdType="ImmutableId",'  # https://learn.microsoft.com/en-us/graph/outlook-immutable-id
+                      'outlook.timezone="Europe/Berlin"',  # https://learn.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-1.0&tabs=http#support-various-time-zones
+        }
+        if pybool(events_endpoint):
+            response = requests.get(url=f"https://graph.microsoft.com/v1.0"
+                                        f"/users/{self.account}/events"
+                                        f"?$top=100",
+                                    headers=headers)
+            return json.dumps(response.json(), indent=4, sort_keys=True)
 
-        data = await self.graph_client.users.by_user_id(self.account).events.by_event_id(
-            'AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0A_iZhOlfb-UGQ3i66ewMG9QAAMK4KtAAA').attachments.by_attachment_id(
-            attachment_id).get()
-        if raw_data:
+        if event_id is not None:
+            rtn = self.get_event_attachments(event_id, attachment_id, decode_base64)
+            if isinstance(rtn, list):
+                return json.dumps(rtn, indent=4, sort_keys=True, default=str)
+            return rtn
+
+        response = requests.get(url=f"https://graph.microsoft.com/v1.0"
+                                    f"/users/{self.account}/calendarView"
+                                    f"?startDateTime={local_timezone(start_date, tz='UTC').isoformat()[:-6]}"
+                                    f"&endDateTime={local_timezone(end_date, tz='UTC', days_delta=1).isoformat()[:-6]}"
+                                    f"&$top=100",
+                                headers=headers)
+        return json.dumps(response.json(), indent=4, sort_keys=True)
+
+    @security.public
+    def get_event_attachments(self, event_id=None, attachment_id=None, decode_base64=False):
+        """
+        Retrieve event attachments and their data.
+
+        This method is designed to fetch attachments belonging to a specified event. If an attachment ID is not provided,
+        it retrieves a list of all available attachments for the given event. If an attachment ID is provided, it retrieves
+        the specific attachment's data. Attachments can also be optionally decoded from base64 format.
+
+        Parameters:
+            event_id: str
+                The ID of the event for which attachments are to be retrieved. This parameter is required.
+            attachment_id: Optional[str]
+                The ID of the specific attachment to retrieve. If not provided, all attachments for the
+                specified event will be retrieved.
+            decode_base64: bool
+                When True, the method will decode the content of the attachment from base64 format. Defaults to False.
+
+        Returns:
+            list | tuple
+                Returns a list of attachments for the event if no attachment ID is provided. Each attachment is
+                a dictionary containing details such as ID, content type, name, size, inline status, and last
+                modified time. If an attachment ID is specified, a tuple containing the attachment name and its
+                content (optionally decoded) is returned.
+
+        Raises:
+            AssertionError
+                Raised if the `event_id` parameter is not provided.
+        """
+        assert event_id is not None, 'event_id is required'
+
+        # retrieve available attachments of an event
+        if attachment_id is None:
+            attachment_list = []
+            query_params = AttachmentsRequestBuilder.AttachmentsRequestBuilderGetQueryParameters(
+                #select=["id", "content_id", "contentType", "name", "size", "isInline", "lastModifiedDateTime"],
+                # -> could not find a property named 'content_id' on type 'microsoft.graph.attachment'
+                # -> also 'cid' or 'contentId' or 'microsoft.graph.fileattachment/contentId' do not work
+            )
+            request_config = RequestConfiguration(
+                query_parameters=query_params,
+            )
+            attachments = asyncio.run(self.graph_client.users.by_user_id(self.account).events.by_event_id(
+                event_id).attachments.get(request_configuration=request_config))
+
+            for i, attachment in enumerate(attachments.value):
+                attachment_list.append(DotDict({
+                    'id': attachment.id,
+                    'contentId': attachment.content_id,  # TODO: needed to identify inline images by cid: to get bytes data...?!
+                    'contentType': attachment.content_type,
+                    'name': attachment.name,
+                    'size': attachment.size,
+                    "isInline": attachment.is_inline,
+                    'lastModifiedDateTime': attachment.last_modified_date_time,
+                }))
+            return attachment_list
+
+        # retrieve attachment data of an event
+        attachment_data = asyncio.run(self.graph_client.users.by_user_id(self.account).events.by_event_id(
+            event_id).attachments.by_attachment_id(
+            attachment_id).get())
+        if decode_base64:
             # https://stackoverflow.com/questions/76705913/download-raw-content-of-email-attachment-using-microsoft-graph-sdk
-            return base64.urlsafe_b64decode(data.content_bytes)
+            return attachment_data.name, base64.urlsafe_b64decode(attachment_data.content_bytes)
         else:
-            return data.name
+            return attachment_data.name, attachment_data.content_bytes
 
 
 # Apply security assertions by ClassSecurityInfo()

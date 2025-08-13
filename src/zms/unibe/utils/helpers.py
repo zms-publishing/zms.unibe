@@ -1,9 +1,11 @@
 import io
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
+from DateTime import DateTime  # legacy Zope implementation, returned e.g. by ZopeTime()
 from uuid import UUID
 
 import pytz
+from AccessControl import ModuleSecurityInfo
 from Products.zms import standard
 from anytree import Node, RenderTree
 from anytree.exporter import JsonExporter, DictExporter
@@ -12,15 +14,48 @@ from ics import Calendar, Event
 
 from .zms2sql.attributes import get_attr_by_lang, strip_cmstest
 
+security = ModuleSecurityInfo('zms.unibe.utils.helpers.local_timezone')  # allow module import in RestrictedPython
 
-def local_timezone(dt=None):
+
+class DotDict(dict):
+    """
+    https://stackoverflow.com/questions/13520421/recursive-dotdict
+
+    a dictionary that supports dot notation
+    as well as dictionary access notation
+    usage: d = DotDict() or d = DotDict({'val1':'first'})
+    set attributes: d.val2 = 'second' or d['val2'] = 'second'
+    get attributes: d.val2 or d['val2']
+    """
+    __getattr__ = dict.__getitem__
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
+    def __init__(self, dct):
+        for key, value in dct.items():
+            if hasattr(value, 'keys'):
+                value = DotDict(value)
+            self[key] = value
+
+
+print('Addon: zms.unibe.utils.helpers.local_timezone')
+@security.public
+def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
     if dt is None:
         dt = datetime.now()
-    if isinstance(dt, time.struct_time):
+    elif isinstance(dt, time.struct_time):
         dt = standard.format_datetime_iso(dt)
-    if isinstance(dt, str):
-        dt = datetime.fromisoformat(dt)
-    return dt.astimezone(pytz.timezone('Europe/Zurich'))
+    elif isinstance(dt, DateTime):  # legacy Zope implementation, returned e.g. by ZopeTime()
+        dt = dt.ISO8601()
+    try:
+        if isinstance(dt, str):
+            dt = datetime.fromisoformat(dt)
+        elif isinstance(dt, int) or isinstance(dt, float):
+            dt = datetime.fromtimestamp(dt)
+    except (ValueError, TypeError):
+        dt = datetime.fromtimestamp(0)  # datetime.datetime(1970, 1, 1, 1, 0)
+    dt = dt + timedelta(days=days_delta)
+    return dt.astimezone(pytz.timezone(tz))
 
 
 def get_sections_tree(data, lang):
@@ -113,3 +148,8 @@ def generate_ics(lang, results):
         calendar.events.add(event)
 
     return io.StringIO(calendar.serialize())
+
+
+# Apply security assertions by ModuleSecurityInfo()
+# https://zope.readthedocs.io/en/latest/zdgbook/Security.html#external-modulesecurityinfo-declarations
+security.apply(globals())

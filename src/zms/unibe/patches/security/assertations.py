@@ -4,3 +4,5 @@
 
 from zms.unibe.agenda import OutlookConnector
 from zms.unibe.agenda import AgendaBridge
+
+from zms.unibe.utils import helpers
