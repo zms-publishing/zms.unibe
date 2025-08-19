@@ -1,4 +1,4 @@
-from ...foundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class TeaserContainer2022(ZMSBase, table=True):

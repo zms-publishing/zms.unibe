@@ -6,7 +6,9 @@ from sqlmodel import inspect, Session
 
 from zms.unibe.utils.db import connect_sqldb
 from zms.unibe.utils.helpers import local_timezone
-from . import AgendaFilemaker, AgendaLibraryDE, AgendaLibraryEN
+from .AgendaFilemaker import AgendaFilemaker
+from .AgendaLibraryDE import AgendaLibraryDE
+from .AgendaLibraryEN import AgendaLibraryEN
 
 
 def fetch_agendas():
