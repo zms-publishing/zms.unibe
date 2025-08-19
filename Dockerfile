@@ -1,5 +1,5 @@
 # Customize zms-base image version to support local builds
-ARG ZMS_BASE_VERSION=python3.11.1-zope5.8.6
+ARG ZMS_BASE_VERSION=python3.13.5-zope5.13
 
 FROM ghcr.io/idasm-unibe-ch/zms-base:$ZMS_BASE_VERSION
 
@@ -28,7 +28,9 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
 COPY --chown=$USERNAME:$GROUPNAME zms-core zms-core
 COPY --chown=$USERNAME:$GROUPNAME zms-addons zms-addons
 
-RUN $VENV_HOME/bin/pip install ./zms-core -e ./'zms-addons[fastapi]' \
+# TODO: Add pyproject.toml and switch PEP 420 native namespace https://github.com/idasm-unibe-ch/zms-base/issues/3
+RUN $VENV_HOME/bin/pip install ./zms-core --use-pep517 --config-settings editable_mode=compat \
+    -e ./'zms-addons[fastapi]' \
     -c ./zms-addons/constraints.txt \
     -c https://zopefoundation.github.io/Zope/releases/$ZOPE_VERSION/constraints.txt
 
