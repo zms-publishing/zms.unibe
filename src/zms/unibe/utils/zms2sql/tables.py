@@ -1,5 +1,6 @@
 import time
 import uuid
+import collections
 
 from devtools import debug
 from sqlmodel import SQLModel, Session, select, inspect
@@ -51,7 +52,8 @@ def process_sql_updates(zmsindex_result, model, count_objs=None, verbose=False):
                 # to which the foreign key refers
                 except:
                     session.rollback()
-                    # debug(obj)
+                    if verbose:
+                        debug(obj)
                     continue
             else:
                 # UPDATE existing row
@@ -62,7 +64,8 @@ def process_sql_updates(zmsindex_result, model, count_objs=None, verbose=False):
                     session.refresh(row)
                 except:
                     session.rollback()
-                    # debug(row)
+                    if verbose:
+                        debug(row)
                     continue
 
             uuids_processed.append(uuid.UUID(f'urn:uuid:{obj.uuid}'))
@@ -75,8 +78,13 @@ def process_sql_updates(zmsindex_result, model, count_objs=None, verbose=False):
         statement = select(model.uuid)
         results = session.exec(statement)
         uuids_existing = results.all()
+        if verbose:
+            uuids_duplicate = [item for item, count in collections.Counter(uuids_processed).items() if count > 1]
+            debug(uuids_duplicate)
+        # remove duplicates by using set()
         uuids_obsolete = list(set(uuids_existing) - set(uuids_processed))
-        debug(uuids_obsolete)
+        if verbose:
+            debug(uuids_obsolete)
         for uid in uuids_obsolete:
             statement = select(model).where(model.uuid == uid)
             results = session.exec(statement)
