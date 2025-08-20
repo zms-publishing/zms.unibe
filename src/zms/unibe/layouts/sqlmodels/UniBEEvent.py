@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlmodel import Field, Column, Date, Time
 
-from ...foundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class UniBEEvent(ZMSBase, table=True):

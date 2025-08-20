@@ -3,7 +3,7 @@ from uuid import UUID
 
 from sqlmodel import Field, Column, DateTime
 
-from ...foundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class NewsBox(ZMSBase, table=True):

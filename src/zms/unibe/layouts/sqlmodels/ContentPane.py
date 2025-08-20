@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from ...foundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class ContentPane(ZMSBase, table=True):
