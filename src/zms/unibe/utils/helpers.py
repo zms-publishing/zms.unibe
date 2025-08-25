@@ -55,7 +55,7 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
     except (ValueError, TypeError):
         dt = datetime.fromtimestamp(0)  # datetime.datetime(1970, 1, 1, 1, 0)
     dt = dt + timedelta(days=days_delta)
-    return dt.astimezone(pytz.timezone(tz))
+    return dt.astimezone(pytz.timezone(tz))  # TODO: return .isoformat()
 
 
 def get_sections_tree(data, lang):
