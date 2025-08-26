@@ -37,6 +37,10 @@ class ZMSSiteOverview(ObjectManager):
                 pass
 
         for path, site in self.sites_objs.items():
+            # TODO: introduce headless.REQUEST.set('lang', lang)
+            # TODO: to handle ZMSSite.PrimaryLanguage = eng etc. correctly
+            if not site.isActive({'lang': lang}):
+                continue
             site_xml_dict = xmltodict.parse(site.toXml(
                 REQUEST={"lang": lang},
                 deep=False,
@@ -51,7 +55,7 @@ class ZMSSiteOverview(ObjectManager):
                                                     for breadcrumb in site.breadcrumbs_obj_path()])
             self.sites_dict[path] = attributes
         
-        self.create_tree()
+        # self.create_tree()
         
     def create_tree(self):
 
