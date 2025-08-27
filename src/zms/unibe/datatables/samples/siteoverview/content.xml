@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <ZMSDataTable uid="uid:5e75c419-6887-4701-bac3-3b8563855f0e" id="e1723245" id_prefix="e">
+    <attr_dc_coverage>global.ger</attr_dc_coverage>
+    <created_uid>cmeier</created_uid>
+    <created_dt>
+2025-08-24T21:54:21+02:00</created_dt>
+    <change_uid><lang id="ger">cmeier</lang><lang id="fra">cmeier</lang><lang id="eng">cmeier</lang></change_uid>
+    <change_dt><lang id="ger">
+2025-08-27T18:18:06+02:00</lang><lang id="fra">
+2025-08-27T18:19:04+02:00</lang><lang id="eng">
+2025-08-27T18:18:52+02:00</lang></change_dt>
+    <active><lang id="ger">1</lang><lang id="fra">1</lang><lang id="ita">0</lang><lang id="eng">1</lang><lang id="spa">0</lang><lang id="cat">0</lang><lang id="ukr">0</lang></active>
+    <datatype>json</datatype>
+    <dataremote>1</dataremote>
+    <dataurl><lang id="ger">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json</lang><lang id="fra">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=fra</lang><lang id="eng">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=eng</lang></dataurl>
+    <obfuscate_emails><lang id="ger">0</lang><lang id="fra">0</lang><lang id="ita">0</lang><lang id="eng">0</lang><lang id="spa">0</lang><lang id="cat">0</lang><lang id="ukr">0</lang></obfuscate_emails>
+    <_datafilecached><lang id="ger">
+<data content_type="application/json" filename="2025-08-27T1753540200_ger.json"></data></lang><lang id="fra">
+<data content_type="application/json" filename="2025-08-27T1754350200_fra.json"></data></lang><lang id="eng">
+<data content_type="application/json" filename="2025-08-27T1755010200_eng.json"></data></lang></_datafilecached>
+    <_datalastupdated>
+2025-08-27T17:55:01+02:00</_datalastupdated>
+    <colstable><lang id="ger">Domain
+Aliases
+Site
+Type
+Workflow
+Comments
+ETracker</lang></colstable>
+    <colsdata><lang id="ger"><![CDATA[// BO columns
+paging: true,
+scrollX: true,
+//scrollY: 300,
+//scrollCollapse: true,
+order: [[2, "asc" ]], // order column descending
+"columnDefs": [
+    {
+        "orderable": false,
+        "targets": [3, 4],
+    },
+    {
+        width: 100,
+        targets: [3,4,6],
+    },
+    {
+        width: 300,
+        targets: [0],
+    },
+],
+//asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+// l - length changing input control
+// f - filtering input
+// t - The table!
+// i - Table information summary
+// p - pagination control
+// r - processing display element
+//dom: 'fltipr',
+dom: "<'row dom_wrapper fh-fixedHeader'fl>" +
+    "<'row'<'col-sm col-md'tr>>" +
+    "<'row'<'col-sm col-md'p><'col-sm col-md'>i>",
+pageLength: 20,
+lengthMenu: [[10, 20, 100, 250, 500, 1000], [10, 20, 100, 250, 500, 1000]],
+columns: [
+	{
+        data: null,
+        render: function (data, type, row) {
+            if (row.domain != null) {
+                return row.domain;
+            }
+            else if (row.server != null) {
+                return row.server;
+            }
+            else {
+                return '';
+            }
+        }
+	},
+	{
+        data: null,
+        render: function (data, type, row) {
+            if (row.aliases != null) {
+                return row.aliases;
+            }
+            else {
+                return '-';
+            }
+        }
+	},
+	{
+        data: null,
+        render: function (data, type, row) {
+            return '<a href="' + row.path + '/manage" target="_blank">' + row.breadcrumbs + '</a>';
+        }
+	},
+	{
+        data: null,
+        render: function (data, type, row) {
+            if (row.attr_dc_type != null) {
+                return row.attr_dc_type;
+            }
+            else {
+                return '-'
+            }
+        }
+	},
+	{
+        data: null,
+        render: function (data, type, row) {
+            if (row.workflow != null) {
+                return row.workflow;
+            }
+            else {
+                return '-';
+            }
+            if (row.workflow_nodes != null) {
+                return row.workflow_nodes;
+            }
+            else {
+                return '';
+            }
+        }
+	},
+/*	{
+        data: null,
+        render: function (data, type, row) {
+            if (row.robots != null) {
+                return row.robots;
+            }
+            else {
+                return '-';
+            }
+        }
+	},*/
+	{
+        data: null,
+        render: function (data, type, row) {
+            if (row.comments != null) {
+                return row.comments;
+            }
+            else {
+                return '-';
+            }
+        }
+	},
+	{
+        data: null,
+        render: function (data, type, row) {
+            if (row.etracker != null) {
+                return row.etracker;
+            }
+            else {
+                return '-';
+            }
+        }
+	},
+],
+responsive: false, /*{
+	details: {
+		renderer: function(api, rowIdx) {
+            // Select hidden columns for the given row
+            var data = api.cells(rowIdx, ':hidden').eq(0).map(function(cell) {
+                var header = $(api.column(cell.column).header());
+                return '<tr>'+
+                        '<td>'+
+                            header.text() + ':' +
+                        '</td> ' +
+                        '<td>' +
+                            api.cell(cell).data() +
+                        '</td>' +
+                    '</tr>';
+            }).toArray().join('');
+
+            return data ? $('<table/>').append(data) : false;
+        }
+	}
+},*/
+// https://datatables.net/examples/api/multi_filter_select.html
+initComplete: function () {
+    i = 0;
+    this.api().columns().every(function() {
+        var column = this;
+        var column_filter_for = [3, 4];
+        if (column_filter_for.includes(i)) {
+            var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.header()) )
+                .on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append('<option value="'+d+'">'+d+'</option>')
+            } );
+        }
+        else {
+            column.text = '';
+        }
+        i++;
+    } );
+},
+/* https://github.com/gyrocode/jquery-datatables-alphabetSearch
+alphabetSearch: {
+    column: 1
+}, */
+
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+
+}
+// EO processCustomJS]]></lang><lang id="ita"><![CDATA[// BO columns
+paging: true,
+scrollX: true,
+//scrollY: 300,
+//scrollCollapse: true,
+//order: [[ 1, "desc" ]], // order column descending
+//asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+columns: [],
+responsive: false, /*{
+	details: {
+		renderer: function(api, rowIdx) {
+            // Select hidden columns for the given row
+            var data = api.cells(rowIdx, ':hidden').eq(0).map(function(cell) {
+                var header = $(api.column(cell.column).header());
+                return '<tr>'+
+                        '<td>'+
+                            header.text() + ':' +
+                        '</td> ' +
+                        '<td>' +
+                            api.cell(cell).data() +
+                        '</td>' +
+                    '</tr>';
+            }).toArray().join('');
+
+            return data ? $('<table/>').append(data) : false;
+        }
+	}
+},*/
+// https://datatables.net/examples/api/multi_filter_select.html
+/*initComplete: function () {
+    i = 0;
+    this.api().columns().every(function() {
+        var column = this;
+        var column_filter_for = [3, 4];
+        if (column_filter_for.includes(i)) {
+            var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()) )
+                .on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append('<option value="'+d+'">'+d+'</option>')
+            } );
+        }
+        else {
+            column.text = '';
+        }
+        i++;
+    } );
+},*/
+/* https://github.com/gyrocode/jquery-datatables-alphabetSearch
+dom: 'Alfrtip',
+  alphabetSearch: {
+    column: 0
+},
+*/
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+
+}
+// EO processCustomJS]]></lang><lang id="spa"><![CDATA[// BO columns
+paging: true,
+scrollX: true,
+//scrollY: 300,
+//scrollCollapse: true,
+//order: [[ 1, "desc" ]], // order column descending
+//asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+columns: [],
+responsive: false, /*{
+	details: {
+		renderer: function(api, rowIdx) {
+            // Select hidden columns for the given row
+            var data = api.cells(rowIdx, ':hidden').eq(0).map(function(cell) {
+                var header = $(api.column(cell.column).header());
+                return '<tr>'+
+                        '<td>'+
+                            header.text() + ':' +
+                        '</td> ' +
+                        '<td>' +
+                            api.cell(cell).data() +
+                        '</td>' +
+                    '</tr>';
+            }).toArray().join('');
+
+            return data ? $('<table/>').append(data) : false;
+        }
+	}
+},*/
+// https://datatables.net/examples/api/multi_filter_select.html
+/*initComplete: function () {
+    i = 0;
+    this.api().columns().every(function() {
+        var column = this;
+        var column_filter_for = [3, 4];
+        if (column_filter_for.includes(i)) {
+            var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()) )
+                .on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append('<option value="'+d+'">'+d+'</option>')
+            } );
+        }
+        else {
+            column.text = '';
+        }
+        i++;
+    } );
+},*/
+/* https://github.com/gyrocode/jquery-datatables-alphabetSearch
+dom: 'Alfrtip',
+  alphabetSearch: {
+    column: 0
+},
+*/
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+
+}
+// EO processCustomJS]]></lang><lang id="cat"><![CDATA[// BO columns
+paging: true,
+scrollX: true,
+//scrollY: 300,
+//scrollCollapse: true,
+//order: [[ 1, "desc" ]], // order column descending
+//asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+columns: [],
+responsive: false, /*{
+	details: {
+		renderer: function(api, rowIdx) {
+            // Select hidden columns for the given row
+            var data = api.cells(rowIdx, ':hidden').eq(0).map(function(cell) {
+                var header = $(api.column(cell.column).header());
+                return '<tr>'+
+                        '<td>'+
+                            header.text() + ':' +
+                        '</td> ' +
+                        '<td>' +
+                            api.cell(cell).data() +
+                        '</td>' +
+                    '</tr>';
+            }).toArray().join('');
+
+            return data ? $('<table/>').append(data) : false;
+        }
+	}
+},*/
+// https://datatables.net/examples/api/multi_filter_select.html
+/*initComplete: function () {
+    i = 0;
+    this.api().columns().every(function() {
+        var column = this;
+        var column_filter_for = [3, 4];
+        if (column_filter_for.includes(i)) {
+            var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()) )
+                .on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append('<option value="'+d+'">'+d+'</option>')
+            } );
+        }
+        else {
+            column.text = '';
+        }
+        i++;
+    } );
+},*/
+/* https://github.com/gyrocode/jquery-datatables-alphabetSearch
+dom: 'Alfrtip',
+  alphabetSearch: {
+    column: 0
+},
+*/
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+
+}
+// EO processCustomJS]]></lang><lang id="ukr"><![CDATA[// BO columns
+paging: true,
+scrollX: true,
+//scrollY: 300,
+//scrollCollapse: true,
+//order: [[ 1, "desc" ]], // order column descending
+//asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+columns: [],
+responsive: false, /*{
+	details: {
+		renderer: function(api, rowIdx) {
+            // Select hidden columns for the given row
+            var data = api.cells(rowIdx, ':hidden').eq(0).map(function(cell) {
+                var header = $(api.column(cell.column).header());
+                return '<tr>'+
+                        '<td>'+
+                            header.text() + ':' +
+                        '</td> ' +
+                        '<td>' +
+                            api.cell(cell).data() +
+                        '</td>' +
+                    '</tr>';
+            }).toArray().join('');
+
+            return data ? $('<table/>').append(data) : false;
+        }
+	}
+},*/
+// https://datatables.net/examples/api/multi_filter_select.html
+/*initComplete: function () {
+    i = 0;
+    this.api().columns().every(function() {
+        var column = this;
+        var column_filter_for = [3, 4];
+        if (column_filter_for.includes(i)) {
+            var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()) )
+                .on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append('<option value="'+d+'">'+d+'</option>')
+            } );
+        }
+        else {
+            column.text = '';
+        }
+        i++;
+    } );
+},*/
+/* https://github.com/gyrocode/jquery-datatables-alphabetSearch
+dom: 'Alfrtip',
+  alphabetSearch: {
+    column: 0
+},
+*/
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+
+}
+// EO processCustomJS]]></lang></colsdata>
+  </ZMSDataTable>

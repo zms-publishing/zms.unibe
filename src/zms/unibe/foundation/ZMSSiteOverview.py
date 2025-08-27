@@ -8,16 +8,16 @@ from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
 
-print('Addon: zms.unibe.foundation.ZMSSiteOverview')
-security = ModuleSecurityInfo('zms.unibe.foundation.ZMSSiteOverview')  # allow module import in RestrictedPython
+print("Addon: zms.unibe.foundation.ZMSSiteOverview")
+security = ModuleSecurityInfo("zms.unibe.foundation.ZMSSiteOverview")  # allow module import in RestrictedPython
 
-LOGGER = logging.getLogger('ZMSSiteOverview')
+LOGGER = logging.getLogger("ZMSSiteOverview")
 
 
 class ZMSSiteOverview(ObjectManager):
     security = ClassSecurityInfo()  # control access to class methods in RestrictedPython
 
-    def __init__(self, context, lang='ger'):
+    def __init__(self, context, lang="ger"):
         
         self.sites_objs = {}
         self.sites_dict = {}
@@ -33,13 +33,13 @@ class ZMSSiteOverview(ObjectManager):
                 self.sites_objs[site.getPath()] = site.getObject()
                 self.sites_path.append(site.getPath())
             except:
-                LOGGER.error(f'Error processing site: {site.get_uid} {site.getPath()}')
+                LOGGER.error(f"Error processing site: {site.get_uid} {site.getPath()}")
                 pass
 
         for path, site in self.sites_objs.items():
-            # TODO: introduce headless.REQUEST.set('lang', lang)
+            # TODO: introduce headless.REQUEST.set("lang", lang)
             # TODO: to handle ZMSSite.PrimaryLanguage = eng etc. correctly
-            if not site.isActive({'lang': lang}):
+            if not site.isActive({"lang": lang}):
                 continue
             site_xml_dict = xmltodict.parse(site.toXml(
                 REQUEST={"lang": lang},
@@ -48,10 +48,17 @@ class ZMSSiteOverview(ObjectManager):
                 multilang=False,
             ))
             attributes = site_xml_dict["ZMS"]
+            attributes["protocol"] = site.getConfProperty("ASP.protocol", "http")
             attributes["domain"] = site.getConfProperty("ASP.ip_or_domain")
-            attributes["protocol"] = site.getConfProperty('ASP.protocol', 'http')
+            attributes["server"] = site.getConfProperty("UniBE.Server")
+            attributes["aliases"] = site.getConfProperty("UniBE.Alias")
+            attributes["comments"] = site.getConfProperty("UniBE.Comment")
+            attributes["robots"] = site.getConfProperty("UniBE.Robots")
+            attributes["etracker"] = site.getConfProperty("eTracker-Testaccount")
+            attributes["workflow"] = not site.getAutocommit()
+            attributes["workflow_nodes"] = site.operator_getattr(site.getWorkflowManager(), "nodes")
             attributes["path"] = path
-            attributes["breadcrumbs"] = ' > '.join([breadcrumb.getTitle({'lang':lang})
+            attributes["breadcrumbs"] = " > ".join([breadcrumb.getTitle({"lang":lang})
                                                     for breadcrumb in site.breadcrumbs_obj_path()])
             self.sites_dict[path] = attributes
         
@@ -86,7 +93,7 @@ class ZMSSiteOverview(ObjectManager):
     @security.public
     def render_tree(self):
         
-        print(RenderTree(self.tree_root).by_attr('name'))
+        print(RenderTree(self.tree_root).by_attr("name"))
 
     @security.public
     def get_tree_json(self):
