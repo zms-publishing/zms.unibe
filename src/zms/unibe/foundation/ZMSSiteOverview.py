@@ -55,8 +55,11 @@ class ZMSSiteOverview(ObjectManager):
             attributes["comments"] = site.getConfProperty("UniBE.Comment")
             attributes["robots"] = site.getConfProperty("UniBE.Robots")
             attributes["etracker"] = site.getConfProperty("eTracker-Testaccount")
-            attributes["workflow"] = not site.getAutocommit()
-            attributes["workflow_nodes"] = site.operator_getattr(site.getWorkflowManager(), "nodes")
+            attributes["workflow"] = not site.getWorkflowManager().getAutocommit()
+            try:
+                attributes["workflow_nodes"] = site.getWorkflowManager().getNodes()
+            except AttributeError:
+                attributes["workflow_nodes"] = ""
             attributes["path"] = path
             attributes["breadcrumbs"] = " > ".join([breadcrumb.getTitle({"lang":lang})
                                                     for breadcrumb in site.breadcrumbs_obj_path()])
