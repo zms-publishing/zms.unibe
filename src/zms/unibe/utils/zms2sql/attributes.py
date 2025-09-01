@@ -10,8 +10,6 @@ import xmltodict
 from Products.zms import _blobfields
 from devtools import debug
 
-from ..headless import headless_http_request
-
 
 class Lang(str, Enum):
     de = 'de'
@@ -116,9 +114,10 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
     else:
         lang = 'ger'
 
-    headless_http_request.set('lang', lang)
+    request = obj.REQUEST
+    request.set('lang', lang)
 
-    value = obj.attr(zms_attr, REQUEST=headless_http_request)
+    value = obj.attr(zms_attr)
 
     if sql_attr in get_datetime_props(cls):
         try:
@@ -129,14 +128,14 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
     if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
         if '_size' in sql_attr:
             return value.get_size()
-        return get_url_from_conf_or_env(obj) + value.getHref(REQUEST=headless_http_request)
+        return get_url_from_conf_or_env(obj) + value.getHref(REQUEST=request)
 
     if isinstance(value, str) and value.startswith('{$uid:'):
         lang_target = lang
         if ';lang=' in value:
             lang_target = re.sub(r'{\$uid:(.*);lang=(\w*)}', r'\2', value)
-        headless_http_request.set('lang', lang_target)
-        return strip_cmstest(obj.getLinkObj(value).getHref2IndexHtmlInContext(None, REQUEST=headless_http_request))
+        request.set('lang', lang_target)
+        return strip_cmstest(obj.getLinkObj(value).getHref2IndexHtmlInContext(None, REQUEST=request))
 
     # extract parameter between parenthesis in zms_attr
     param = None
@@ -150,14 +149,14 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
 
     if 'obj.getObjChildren' in zms_attr:
         if param is not None:
-            return len(obj.getObjChildren(id=param, REQUEST=headless_http_request))
+            return len(obj.getObjChildren(id=param, REQUEST=request))
         else:
             return 0
 
     if 'obj.getObjAttrValue' in zms_attr:
         if param is not None:
             attr = obj.getObjAttr(param)
-            return obj.getObjAttrValue(attr, REQUEST=headless_http_request)
+            return obj.getObjAttrValue(attr, REQUEST=request)
         else:
             return ''
 
@@ -169,9 +168,9 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
 
     if 'obj.getData' in zms_attr:
         if param is not None:
-            value = obj.attr(param, REQUEST=headless_http_request)
+            value = obj.attr(param)
             if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
-                href = obj.attr(param, REQUEST=headless_http_request).getHref(REQUEST=headless_http_request)
+                href = obj.attr(param).getHref(REQUEST=request)
                 href = f'{get_url_from_conf_or_env(obj)}{href}'
                 try:
                     if href.endswith('.json'):
@@ -202,13 +201,13 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
 
     if zms_attr == 'obj.getHref2IndexHtmlInContext()':
         return strip_cmstest(
-            obj.getHref2IndexHtmlInContext(None, REQUEST=headless_http_request))
+            obj.getHref2IndexHtmlInContext(None, REQUEST=request))
 
     if zms_attr == 'obj.getParentNode().title':
         if obj.getLevel() > 0 and 'trashcan' not in obj.getParentNode().getId():
-            return obj.getParentNode().attr("title", REQUEST=headless_http_request)
+            return obj.getParentNode().attr("title")
         else:
-            return obj.attr("title", REQUEST=headless_http_request)
+            return obj.attr("title")
 
     if zms_attr == 'obj.meta_id':
         return obj.meta_id
@@ -232,8 +231,9 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         return obj.getPath()
 
     if zms_attr == "obj.getCount()":
-        # handled for ZMSSite.count_objs in commands.update_tables()
-        return
+        zmsindex = obj.getZMSIndex()
+        zcatalog = zmsindex.get_catalog()
+        return len(zcatalog({'path': obj.getPath()}))
 
     if zms_attr == "obj.getType()":
         if '/unibiblio' in obj.getPath():
@@ -249,7 +249,7 @@ def get_attr_value(sql_attr, zms_attr, obj, cls):
         # - object has been committed
         # - object is not in trashcan
         # - object is activated -> ('active' is True) AND ('attr_active_start' < NOW < 'attr_active_end')
-        return len(list(filter(lambda x: not x.isVisible(REQUEST=headless_http_request),
+        return len(list(filter(lambda x: not x.isVisible(REQUEST=request),
                                obj.breadcrumbs_obj_path(portalMaster=False)))) == 0
 
     return value

@@ -24,7 +24,7 @@ def drop_create_sql_tables(model):
                 model.__table__.create(sqlengine)
 
 
-def process_sql_updates(zmsindex_result, model, count_objs=None, verbose=False):
+def process_sql_updates(zmsindex_result, model, verbose=False):
     
     sqlengine = connect_sqldb(verbose=verbose)
 
@@ -39,7 +39,7 @@ def process_sql_updates(zmsindex_result, model, count_objs=None, verbose=False):
         if not inspect(sqlengine).has_table(model.__name__.lower()):
             model.__table__.create(sqlengine)
 
-        for obj in map_obj_attributes(zmsindex_result, model, count_objs, verbose=verbose):
+        for obj in map_obj_attributes(zmsindex_result, model, verbose=verbose):
             statement = select(model).where(model.uuid == obj.uuid)
             results = session.exec(statement)
             row = results.one_or_none()

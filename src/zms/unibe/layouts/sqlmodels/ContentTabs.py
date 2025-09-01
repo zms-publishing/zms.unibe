@@ -7,8 +7,8 @@ class ContentTabs(ZMSBase, table=True):
     orientation: str | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'contenttabs'
+    def get_zms_catalog_query():
+        return {'meta_id': 'contenttabs'}
 
     @staticmethod
     def get_attr_mappings():

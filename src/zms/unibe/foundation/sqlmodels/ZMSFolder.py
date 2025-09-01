@@ -9,8 +9,8 @@ class ZMSFolder(ZMSBase, table=True):
     type: str
 
     @staticmethod
-    def get_zms_metaid():
-        return 'ZMSFolder'
+    def get_zms_catalog_query():
+        return {'meta_id': 'ZMSFolder'}
 
     @staticmethod
     def get_attr_mappings():

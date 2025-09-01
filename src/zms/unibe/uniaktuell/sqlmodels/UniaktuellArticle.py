@@ -30,8 +30,11 @@ class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
     url_fr: str | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'UniaktuellArticle'
+    def get_zms_catalog_query():
+        return {
+            'path': '/unibe/portal/uni_aktuell/content',
+            'meta_id': 'UniaktuellArticle'
+        }
 
     @staticmethod
     def get_attr_mappings():

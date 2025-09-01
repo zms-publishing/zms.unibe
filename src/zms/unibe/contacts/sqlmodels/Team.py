@@ -6,8 +6,8 @@ class Team(ZMSBase, table=True):
     sections: int
 
     @staticmethod
-    def get_zms_metaid():
-        return 'team'
+    def get_zms_catalog_query():
+        return {'meta_id': 'team'}
 
     @staticmethod
     def get_attr_mappings():

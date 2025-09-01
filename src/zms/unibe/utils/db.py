@@ -1,7 +1,5 @@
 import os
 
-import ZODB
-import zodburi
 from devtools import debug
 from sqlmodel import create_engine
 
@@ -30,17 +28,3 @@ def connect_sqldb(verbose=False):
         debug(sqlengine)
         
     return sqlengine
-
-
-def connect_zodb(verbose=False):
-
-    factory, dbargs = zodburi.resolve_uri(ZODB_STORAGE)
-    connection = ZODB.connection(factory(), **dbargs)
-    root = connection.root()
-    zmsindex = root['Application']['unibe']['zcatalog_index']
-
-    if verbose:
-        debug(ZODB_STORAGE, dbargs)
-        debug(zmsindex)
-
-    return zmsindex

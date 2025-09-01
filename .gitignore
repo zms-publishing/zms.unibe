@@ -5,3 +5,5 @@
 data.json
 data.csv
 /build
+__pycache__/
+.DS_Store

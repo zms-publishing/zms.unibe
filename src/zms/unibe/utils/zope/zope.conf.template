@@ -1,0 +1,23 @@
+%define INSTANCE /app/zope
+%define ZEO_URL {{ ZEO_URL }}
+
+instancehome $INSTANCE
+
+%import ZEO
+
+<zodb_db main>
+    <clientstorage>
+        server $ZEO_URL
+        storage main
+    </clientstorage>
+    mount-point /
+</zodb_db>
+
+<zodb_db temporary>
+    <clientstorage>
+        server $ZEO_URL
+        storage temporary
+    </clientstorage>
+    container-class Products.TemporaryFolder.TemporaryContainer
+    mount-point /temp_folder
+</zodb_db>

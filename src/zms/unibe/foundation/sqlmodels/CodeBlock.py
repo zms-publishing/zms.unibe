@@ -11,8 +11,8 @@ class CodeBlock(ZMSBase, table=True):
     render_as_newscontainer_fr: bool
 
     @staticmethod
-    def get_zms_metaid():
-        return 'codeblock'
+    def get_zms_catalog_query():
+        return {'meta_id': 'codeblock'}
 
     @staticmethod
     def get_attr_mappings():
