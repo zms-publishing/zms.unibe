@@ -8,7 +8,7 @@ from Zope2.Startup.run import make_wsgi_app
 from zope.globalrequest import setRequest
 
 zope_conf_path = pathlib.Path(__file__).parent.joinpath('zope.conf').resolve()
-_zope_initialized = 0
+_zope_initialized = False
 
 def create_zope_app_context():
     """
@@ -29,7 +29,7 @@ def create_zope_app_context():
         if not zope_conf_path.is_file():
             setup_conf()
         make_wsgi_app({}, zope_conf_path.as_posix())
-        _zope_initialized = 1
+        _zope_initialized = True
     # Create new DB connection: app = connection.root()['Application'] (OFS.Application.Application)
     app = Zope2.app()
     # Add an HTTPRequest at app.REQUEST
