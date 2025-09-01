@@ -12,9 +12,9 @@ from zms.unibe.agenda.sqlmodels.AgendaLibraryEN import AgendaLibraryEN
 from zms.unibe.teasers.sqlmodels.TeaserElement2022 import TeaserElement2022
 from zms.unibe.announcements.sqlmodels.NewsBox import NewsBox
 from zms.unibe.mobileapp.sqlmodels.ServiceLinks import ServiceLink
-from zms.unibe.utils.db import connect_sqldb, connect_zodb
+from zms.unibe.utils.db import connect_sqldb
 from zms.unibe.utils.helpers import local_timezone
-from zms.unibe.utils.zms2sql.tables import process_sql_updates
+from zms.unibe.utils.zms2sql.zms2sql import zms2sql
 from .NewsEvents import NewsEvents
 from .StatusMessages import StatusMessage
 
@@ -288,12 +288,8 @@ def update_newsevents():
             session.commit()
 
 
-def update_servicelinks():
-    print("update_servicelinks")
-
-    zmsindex = connect_zodb()
-    zmsindex_result = zmsindex({'path': '/unibe/uniapp/content/'})
-    process_sql_updates(zmsindex_result, ServiceLink)
+def update_servicelinks(zms_context):
+    zms2sql([ServiceLink], zms_context)
     
     
 def fetch_statusmessages():
@@ -323,10 +319,3 @@ def fetch_statusmessages():
                 item['end'] = item['end'] is not None and local_timezone(datetime.fromisoformat(item['end'])) or None
                 session.add(StatusMessage.model_validate(item))
             session.commit()
-        
-
-if __name__ == "__main__":
-    update_newsevents()
-    update_servicelinks()
-    fetch_statusmessages()
-    

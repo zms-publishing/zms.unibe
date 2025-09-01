@@ -10,8 +10,8 @@ class ZMSTextarea(ZMSBase, table=True):
     layout: str | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'ZMSTextarea'
+    def get_zms_catalog_query():
+        return {'meta_id': 'ZMSTextarea'}
 
     @staticmethod
     def get_attr_mappings():

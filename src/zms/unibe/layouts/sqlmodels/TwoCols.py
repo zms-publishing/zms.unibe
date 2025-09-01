@@ -8,8 +8,8 @@ class TwoCols(ZMSBase, table=True):
     title_fr: str | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'twocols'
+    def get_zms_catalog_query():
+        return {'meta_id': 'twocols'}
 
     @staticmethod
     def get_attr_mappings():

@@ -9,8 +9,8 @@ class ZMSFormulator(ZMSBase, table=True):
     items: int | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'ZMSFormulator'
+    def get_zms_catalog_query():
+        return {'meta_id': 'ZMSFormulator'}
 
     @staticmethod
     def get_attr_mappings():

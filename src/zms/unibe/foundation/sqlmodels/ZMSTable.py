@@ -11,8 +11,8 @@ class ZMSTable(ZMSBase, table=True):
     descr_fr: str | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'ZMSTable'
+    def get_zms_catalog_query():
+        return {'meta_id': 'ZMSTable'}
 
     @staticmethod
     def get_attr_mappings():

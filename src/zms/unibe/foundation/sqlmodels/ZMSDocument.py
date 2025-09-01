@@ -9,8 +9,8 @@ class ZMSDocument(ZMSBase, table=True):
     type: str
 
     @staticmethod
-    def get_zms_metaid():
-        return 'ZMSDocument'
+    def get_zms_catalog_query():
+        return {'meta_id': 'ZMSDocument'}
 
     @staticmethod
     def get_attr_mappings():

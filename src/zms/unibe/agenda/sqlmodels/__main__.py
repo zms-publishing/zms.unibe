@@ -69,8 +69,4 @@ def fetch_agendas():
             item['endsAt'] = local_timezone(datetime.fromisoformat(item['endsAt']))
             session.add(AgendaLibraryEN.model_validate(item))
         session.commit()
-
-
-if __name__ == "__main__":
-    fetch_agendas()
     

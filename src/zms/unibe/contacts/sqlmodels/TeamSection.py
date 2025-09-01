@@ -12,8 +12,8 @@ class TeamSection(ZMSBase, table=True):
     persons: int
 
     @staticmethod
-    def get_zms_metaid():
-        return 'teamsection'
+    def get_zms_catalog_query():
+        return {'meta_id': 'teamsection'}
 
     @staticmethod
     def get_attr_mappings():

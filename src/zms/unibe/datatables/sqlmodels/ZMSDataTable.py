@@ -23,8 +23,8 @@ class ZMSDataTable(ZMSBase, table=True):
     lastupdate: datetime | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'ZMSDataTable'
+    def get_zms_catalog_query():
+        return {'meta_id': 'ZMSDataTable'}
 
     @staticmethod
     def get_attr_mappings():

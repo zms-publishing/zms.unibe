@@ -33,8 +33,8 @@ class ZMSGraphic(ZMSBase, table=True):
     captionaddon_fr: str | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'ZMSGraphic'
+    def get_zms_catalog_query():
+        return {'meta_id': 'ZMSGraphic'}
 
     @staticmethod
     def get_attr_mappings():

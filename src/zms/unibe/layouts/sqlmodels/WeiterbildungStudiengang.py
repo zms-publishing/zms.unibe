@@ -24,8 +24,8 @@ class WeiterbildungStudiengang(ZMSBase, table=True):
     elements: int
 
     @staticmethod
-    def get_zms_metaid():
-        return 'weiterbildung_studiengang'
+    def get_zms_catalog_query():
+        return {'meta_id': 'weiterbildung_studiengang'}
 
     @staticmethod
     def get_attr_mappings():

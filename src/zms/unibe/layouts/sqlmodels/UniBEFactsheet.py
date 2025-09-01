@@ -18,8 +18,8 @@ class UniBEFactsheet(ZMSBase, table=True):
     elements: int
 
     @staticmethod
-    def get_zms_metaid():
-        return 'UniBEFactsheet'
+    def get_zms_catalog_query():
+        return {'meta_id': 'UniBEFactsheet'}
 
     @staticmethod
     def get_attr_mappings():

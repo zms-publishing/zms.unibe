@@ -12,8 +12,8 @@ class ContentPane(ZMSBase, table=True):
     contenttabs_uuid: UUID
 
     @staticmethod
-    def get_zms_metaid():
-        return 'contentpane'
+    def get_zms_catalog_query():
+        return {'meta_id': 'contentpane'}
 
     @staticmethod
     def get_attr_mappings():

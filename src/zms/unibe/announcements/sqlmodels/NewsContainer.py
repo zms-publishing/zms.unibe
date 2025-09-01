@@ -9,8 +9,8 @@ class NewsContainer(ZMSBase, table=True):
     type: str | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'newscontainer'
+    def get_zms_catalog_query():
+        return {'meta_id': 'newscontainer'}
 
     @staticmethod
     def get_attr_mappings():

@@ -22,8 +22,8 @@ class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?meta
     parent_uuid: UUID
 
     @staticmethod
-    def get_zms_metaid():
-        return 'ZMS'
+    def get_zms_catalog_query():
+        return {'meta_id': 'ZMS'}
 
     @staticmethod
     def get_attr_mappings():
