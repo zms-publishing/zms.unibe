@@ -37,12 +37,12 @@ class ZMSSiteOverview(ObjectManager):
                 pass
 
         for path, site in self.sites_objs.items():
-            # TODO: introduce headless.REQUEST.set("lang", lang)
-            # TODO: to handle ZMSSite.PrimaryLanguage = eng etc. correctly
-            if not site.isActive({"lang": lang}):
+            context.REQUEST.set("lang", lang)
+            if (not site.isActive(context.REQUEST) 
+                    or lang not in site.getLanguages()):
                 continue
             site_xml_dict = xmltodict.parse(site.toXml(
-                REQUEST={"lang": lang},
+                REQUEST=context.REQUEST,
                 deep=False,
                 data2hex=False,
                 multilang=False,
@@ -61,8 +61,14 @@ class ZMSSiteOverview(ObjectManager):
             except AttributeError:
                 attributes["workflow_nodes"] = ""
             attributes["path"] = path
-            attributes["breadcrumbs"] = " > ".join([breadcrumb.getTitle({"lang":lang})
-                                                    for breadcrumb in site.breadcrumbs_obj_path()])
+            breadcrumbs = []
+            for breadcrumb in site.breadcrumbs_obj_path():
+                if lang not in breadcrumb.getLanguages():
+                    context.REQUEST.set('lang', breadcrumb.getPrimaryLanguage())
+                breadcrumbs.append(breadcrumb.getTitle(context.REQUEST))
+                context.REQUEST.set('lang', lang)
+            attributes["breadcrumbs"] = " > ".join(breadcrumbs)
+            attributes["languages"] = site.getLanguages()
             self.sites_dict[path] = attributes
         
         # self.create_tree()
@@ -88,10 +94,12 @@ class ZMSSiteOverview(ObjectManager):
                                             dict=self.sites_dict[key+"/content"],
                                             )
     @security.public
-    def get_sites(self):
+    def get_sites(self, mode='json'):
         
-        return json.dumps([sites for sites in self.sites_dict.values()],
-                          indent=4, sort_keys=False)
+        sites = [sites for sites in self.sites_dict.values()]
+        if mode == 'json':
+            return json.dumps(sites, indent=4, sort_keys=False)
+        return sites
 
     @security.public
     def render_tree(self):

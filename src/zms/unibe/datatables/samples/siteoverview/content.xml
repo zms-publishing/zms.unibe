@@ -6,28 +6,28 @@
 2025-08-24T21:54:21+02:00</created_dt>
     <change_uid><lang id="ger">cmeier</lang><lang id="fra">cmeier</lang><lang id="ita">cmeier</lang><lang id="eng">cmeier</lang><lang id="spa">cmeier</lang><lang id="cat">cmeier</lang><lang id="ukr">cmeier</lang></change_uid>
     <change_dt><lang id="ger">
-2025-08-31T23:23:09+02:00</lang><lang id="fra">
-2025-08-31T23:24:08+02:00</lang><lang id="ita">
-2025-08-31T23:24:13+02:00</lang><lang id="eng">
-2025-08-31T23:24:00+02:00</lang><lang id="spa">
-2025-08-31T23:24:04+02:00</lang><lang id="cat">
-2025-08-31T23:23:55+02:00</lang><lang id="ukr">
-2025-08-31T23:24:18+02:00</lang></change_dt>
+2025-09-05T10:13:06+02:00</lang><lang id="fra">
+2025-09-05T10:20:51+02:00</lang><lang id="ita">
+2025-09-05T10:20:57+02:00</lang><lang id="eng">
+2025-09-05T10:20:29+02:00</lang><lang id="spa">
+2025-09-05T10:20:43+02:00</lang><lang id="cat">
+2025-09-05T10:20:37+02:00</lang><lang id="ukr">
+2025-09-05T10:21:03+02:00</lang></change_dt>
     <active><lang id="ger">1</lang><lang id="fra">1</lang><lang id="ita">1</lang><lang id="eng">1</lang><lang id="spa">1</lang><lang id="cat">1</lang><lang id="ukr">1</lang></active>
     <datatype>json</datatype>
     <dataremote>1</dataremote>
     <dataurl><lang id="ger">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=ger</lang><lang id="fra">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=fra</lang><lang id="ita">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=ita</lang><lang id="eng">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=eng</lang><lang id="spa">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=spa</lang><lang id="cat">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=cat</lang><lang id="ukr">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=ukr</lang></dataurl>
     <obfuscate_emails><lang id="ger">0</lang><lang id="fra">0</lang><lang id="ita">0</lang><lang id="eng">0</lang><lang id="spa">0</lang><lang id="cat">0</lang><lang id="ukr">0</lang></obfuscate_emails>
     <_datafilecached><lang id="ger">
-<data content_type="application/json" filename="2025-08-31T2312520200_ger.json"></data></lang><lang id="fra">
-<data content_type="application/json" filename="2025-08-31T2313240200_fra.json"></data></lang><lang id="ita">
-<data content_type="application/json" filename="2025-08-31T2313520200_ita.json"></data></lang><lang id="eng">
-<data content_type="application/json" filename="2025-08-31T2314240200_eng.json"></data></lang><lang id="spa">
-<data content_type="application/json" filename="2025-08-31T2314360200_spa.json"></data></lang><lang id="cat">
-<data content_type="application/json" filename="2025-08-31T2314410200_cat.json"></data></lang><lang id="ukr">
-<data content_type="application/json" filename="2025-08-31T2314440200_ukr.json"></data></lang></_datafilecached>
+<data content_type="application/json" filename="2025-09-05T1005540200_ger.json"></data></lang><lang id="fra">
+<data content_type="application/json" filename="2025-09-05T1006470200_fra.json"></data></lang><lang id="ita">
+<data content_type="application/json" filename="2025-09-05T1007160200_ita.json"></data></lang><lang id="eng">
+<data content_type="application/json" filename="2025-09-05T1007490200_eng.json"></data></lang><lang id="spa">
+<data content_type="application/json" filename="2025-09-05T1008010200_spa.json"></data></lang><lang id="cat">
+<data content_type="application/json" filename="2025-09-05T1008030200_cat.json"></data></lang><lang id="ukr">
+<data content_type="application/json" filename="2025-09-05T1008040200_ukr.json"></data></lang></_datafilecached>
     <_datalastupdated>
-2025-08-31T23:14:44+02:00</_datalastupdated>
+2025-09-05T10:08:04+02:00</_datalastupdated>
     <colstable><lang id="ger">Domain
 Aliases
 Site
@@ -287,6 +287,7 @@ function processCustomJS(table) {
             if (subject == null) {
                 subject = 'n/a';
             }
+            languages = row.data()['languages'];
             protocol = row.data()['protocol'];
             if (protocol == null) {
                 protocol = 'n/a';
@@ -336,12 +337,14 @@ function processCustomJS(table) {
                 '<p><strong>Description:</strong> '+descr+'</p>'+
                 '<p><strong>Keywoords:</strong> '+subject+'</p>'+
                 '<p><strong>Comments:</strong> '+comments+'</p>'+
+                '<p><strong>Languages:</strong> <code>'+languages+'</code></p>'+
                 '<p><strong>ETracker:</strong> <code>'+etracker+'</code></p>'+
                 '<p><strong>'+workflow+':</strong> <code>'+workflow_nodes+'</code></p>'+
                 '<p><strong>Protocol:</strong> <code>'+protocol+'</code></p>'+
                 '<p><strong>Domain:</strong> <code>'+domain+'</code></p>'+
                 '<p><strong>Aliases:</strong> <code>'+aliases+'</code></p>'+
-                '<p><a href="'+row.data()['path']+'/manage_customize?lang='+getZMILang()+'#Custom" target="_blank" class="btn btn-light" style="border:1px solid #aaa;">Edit</a> '+
+                '<p><a href="'+row.data()['path']+'/manage_users?lang='+getZMILang()+'" target="_blank" class="btn btn-light" style="border:1px solid #aaa;">Users</a> '+
+                '<a href="'+row.data()['path']+'/manage_customize?lang='+getZMILang()+'#Custom" target="_blank" class="btn btn-light" style="border:1px solid #aaa;">Settings</a> '+
                 '<a href="'+row.data()['path']+'/manage_executeMetacmd?id=manage_activatePub&lang='+getZMILang()+'" target="_blank" class="btn btn-primary">Activate</a> '+
                 '<a href="'+row.data()['path']+'/manage_executeMetacmd?id=manage_deactivatePub&lang='+getZMILang()+'" target="_blank" class="btn btn-danger">Deactivate</a></p>'
             );
