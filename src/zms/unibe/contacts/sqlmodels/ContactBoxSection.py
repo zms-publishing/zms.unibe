@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from ...foundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class ContactBoxSection(ZMSBase, table=True):
@@ -14,8 +14,8 @@ class ContactBoxSection(ZMSBase, table=True):
     contactbox_uuid: UUID
 
     @staticmethod
-    def get_zms_metaid():
-        return 'contactboxsection'
+    def get_zms_catalog_query():
+        return {'meta_id': 'contactboxsection'}
 
     @staticmethod
     def get_attr_mappings():

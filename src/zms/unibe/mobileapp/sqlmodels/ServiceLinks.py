@@ -27,6 +27,10 @@ class ServiceLink(ZMSBase, table=True):
     parent_title_fr: str
 
     @staticmethod
+    def get_zms_catalog_query():
+        return {'path': '/unibe/uniapp/content/'}
+
+    @staticmethod
     def get_attr_mappings():
         return {
             # sql_attr          # zms_attr

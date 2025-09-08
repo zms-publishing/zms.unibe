@@ -1,4 +1,5 @@
 import time
+import uuid
 from datetime import datetime
 
 import requests
@@ -8,10 +9,12 @@ from sqlmodel import Session, inspect, select, or_
 from zms.unibe.agenda.sqlmodels.AgendaFilemaker import AgendaFilemaker
 from zms.unibe.agenda.sqlmodels.AgendaLibraryDE import AgendaLibraryDE
 from zms.unibe.agenda.sqlmodels.AgendaLibraryEN import AgendaLibraryEN
+from zms.unibe.teasers.sqlmodels.TeaserElement2022 import TeaserElement2022
+from zms.unibe.announcements.sqlmodels.NewsBox import NewsBox
 from zms.unibe.mobileapp.sqlmodels.ServiceLinks import ServiceLink
-from zms.unibe.utils.db import connect_sqldb, connect_zodb
+from zms.unibe.utils.db import connect_sqldb
 from zms.unibe.utils.helpers import local_timezone
-from zms.unibe.utils.zms2sql.tables import process_sql_updates
+from zms.unibe.utils.zms2sql.zms2sql import zms2sql
 from .NewsEvents import NewsEvents
 from .StatusMessages import StatusMessage
 
@@ -34,8 +37,8 @@ def update_newsevents():
             results = session.exec(statement)
             for res in results.all():
                 obj = NewsEvents()
-                obj.uuid = uuid4()  # temporary UUID until next import - for internal use only
-                obj.site_uuid = UUID('urn:uuid:9c92af4f-6e95-4391-86d5-76eb8ad48360')  # UniBE Portal
+                obj.uuid = uuid.uuid4()  # temporary UUID until next import - for internal use only
+                obj.site_uuid = uuid.UUID('urn:uuid:9c92af4f-6e95-4391-86d5-76eb8ad48360')  # UniBE Portal
                 obj.active_de = True
                 obj.active_en = False
                 obj.active_fr = False
@@ -62,13 +65,13 @@ def update_newsevents():
             session.commit()
 
         # DATA SOURCE 2 ######################
-        if inspect(sqlengine).has_table(AgendaPortal.__name__.lower()):
+        if inspect(sqlengine).has_table(AgendaFilemaker.__name__.lower()):
             statement = select(AgendaFilemaker)  # EN (as copy of DE to show content without a multilang AgendaPortal)
             results = session.exec(statement)
             for res in results.all():
                 obj = NewsEvents()
-                obj.uuid = uuid4()  # temporary UUID until next import - for internal use only
-                obj.site_uuid = UUID('urn:uuid:9c92af4f-6e95-4391-86d5-76eb8ad48360')  # UniBE Portal
+                obj.uuid = uuid.uuid4()  # temporary UUID until next import - for internal use only
+                obj.site_uuid = uuid.UUID('urn:uuid:9c92af4f-6e95-4391-86d5-76eb8ad48360')  # UniBE Portal
                 obj.active_de = False
                 obj.active_en = True
                 obj.active_fr = False
@@ -100,8 +103,8 @@ def update_newsevents():
             results = session.exec(statement)
             for res in results.all():
                 obj = NewsEvents()
-                obj.uuid = uuid4()  # temporary UUID until next import - for internal use only
-                obj.site_uuid = UUID('urn:uuid:6f2a0c71-67cf-40db-bc36-8483471b1c32')  # UniBE Library
+                obj.uuid = uuid.uuid4()  # temporary UUID until next import - for internal use only
+                obj.site_uuid = uuid.UUID('urn:uuid:6f2a0c71-67cf-40db-bc36-8483471b1c32')  # UniBE Library
                 obj.active_de = True
                 obj.active_en = False
                 obj.active_fr = False
@@ -131,8 +134,8 @@ def update_newsevents():
             results = session.exec(statement)
             for res in results.all():
                 obj = NewsEvents()
-                obj.uuid = uuid4()  # temporary UUID until next import - for internal use only
-                obj.site_uuid = UUID('urn:uuid:6f2a0c71-67cf-40db-bc36-8483471b1c32')  # UniBE Library
+                obj.uuid = uuid.uuid4()  # temporary UUID until next import - for internal use only
+                obj.site_uuid = uuid.UUID('urn:uuid:6f2a0c71-67cf-40db-bc36-8483471b1c32')  # UniBE Library
                 obj.active_de = False
                 obj.active_en = True
                 obj.active_fr = False
@@ -175,7 +178,7 @@ def update_newsevents():
                 if res.title_de == '&nbsp;' or res.title_en == '&nbsp;' or res.title_fr == '&nbsp;':
                     continue
 
-                if res.level == 2 and res.site_uuid == UUID('urn:uuid:9c92af4f-6e95-4391-86d5-76eb8ad48360'):
+                if res.level == 2 and res.site_uuid == uuid.UUID('urn:uuid:9c92af4f-6e95-4391-86d5-76eb8ad48360'):
                     obj_level = 1  # rate UniBE Portal News higher - see order_by(NewsEvents.level) in routers/newsevents
                 else:
                     obj_level = res.level  # must always be >=2, because TeaserElement2022 are always be placed in a container
@@ -240,7 +243,7 @@ def update_newsevents():
                 if res.title_de == '&nbsp;' or res.title_en == '&nbsp;' or res.title_fr == '&nbsp;':
                     continue
 
-                if res.level == 2 and res.site_uuid == UUID('urn:uuid:9c92af4f-6e95-4391-86d5-76eb8ad48360'):
+                if res.level == 2 and res.site_uuid == uuid.UUID('urn:uuid:9c92af4f-6e95-4391-86d5-76eb8ad48360'):
                     obj_level = 1  # rate UniBE Portal News higher - see order_by(NewsEvents.level) in routers/newsevents
                 else:
                     obj_level = res.level  # must always be >=2, because TeaserElement2022 are always be placed in a container
@@ -285,12 +288,8 @@ def update_newsevents():
             session.commit()
 
 
-def update_servicelinks():
-    print("update_servicelinks")
-
-    zmsindex = connect_zodb()
-    zmsindex_result = zmsindex({'path': '/unibe/uniapp/content/'})
-    process_sql_updates(zmsindex_result, ServiceLink)
+def update_servicelinks(zms_context):
+    zms2sql([ServiceLink], zms_context)
     
     
 def fetch_statusmessages():
@@ -320,10 +319,3 @@ def fetch_statusmessages():
                 item['end'] = item['end'] is not None and local_timezone(datetime.fromisoformat(item['end'])) or None
                 session.add(StatusMessage.model_validate(item))
             session.commit()
-        
-
-if __name__ == "__main__":
-    update_newsevents()
-    update_servicelinks()
-    fetch_statusmessages()
-    

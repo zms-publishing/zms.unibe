@@ -8,5 +8,13 @@ try:
 
     # initialize security assertions on zope startup
     from zms.unibe.patches.security import assertations
+
+    from App.config import getConfiguration
+    if getConfiguration().debug_mode:
+        # allow debugging in Restricted Python
+        print("DEBUG MODE in Restricted Python: import pdb; pdb.set_trace()")
+        from AccessControl import allow_module
+        allow_module('pdb')
+    
 except Exception as e:
     print("ERROR [zms.unibe.patches]:", e)

@@ -3,7 +3,7 @@ from uuid import UUID
 
 from sqlmodel import Field, Column, DateTime
 
-from ...foundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class NewsBox(ZMSBase, table=True):
@@ -27,8 +27,8 @@ class NewsBox(ZMSBase, table=True):
     container_uuid: UUID = Field(foreign_key="newscontainer.uuid", ondelete="CASCADE")
 
     @staticmethod
-    def get_zms_metaid():
-        return 'newsbox'
+    def get_zms_catalog_query():
+        return {'meta_id': 'newsbox'}
 
     @staticmethod
     def get_attr_mappings():

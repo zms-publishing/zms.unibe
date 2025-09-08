@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlmodel import Field, Column, Date, Time
 
-from ...foundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class UniBEEvent(ZMSBase, table=True):
@@ -26,8 +26,8 @@ class UniBEEvent(ZMSBase, table=True):
     elements: int
 
     @staticmethod
-    def get_zms_metaid():
-        return 'UniBEEvent'
+    def get_zms_catalog_query():
+        return {'meta_id': 'UniBEEvent'}
 
     @staticmethod
     def get_attr_mappings():

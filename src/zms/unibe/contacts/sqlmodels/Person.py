@@ -1,4 +1,4 @@
-from ...foundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class Person(ZMSBase, table=True):
@@ -14,8 +14,8 @@ class Person(ZMSBase, table=True):
     department_fr: str | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'person'
+    def get_zms_catalog_query():
+        return {'meta_id': 'person'}
 
     @staticmethod
     def get_attr_mappings():

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlmodel import Field, DateTime
 
-from ...foundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class ZMSBoris(ZMSBase, table=True):
@@ -15,8 +15,8 @@ class ZMSBoris(ZMSBase, table=True):
     lastupdate: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
 
     @staticmethod
-    def get_zms_metaid():
-        return 'ZMSBoris'
+    def get_zms_catalog_query():
+        return {'meta_id': 'ZMSBoris'}
 
     @staticmethod
     def get_attr_mappings():

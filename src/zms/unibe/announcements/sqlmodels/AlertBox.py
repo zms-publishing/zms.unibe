@@ -1,4 +1,4 @@
-from ...foundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class AlertBox(ZMSBase, table=True):
@@ -12,8 +12,8 @@ class AlertBox(ZMSBase, table=True):
     url_fr: str | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'alertbox'
+    def get_zms_catalog_query():
+        return {'meta_id': 'alertbox'}
 
     @staticmethod
     def get_attr_mappings():

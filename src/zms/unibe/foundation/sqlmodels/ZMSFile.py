@@ -21,8 +21,8 @@ class ZMSFile(ZMSBase, table=True):
     amount_fr: str | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'ZMSFile'
+    def get_zms_catalog_query():
+        return {'meta_id': 'ZMSFile'}
 
     @staticmethod
     def get_attr_mappings():

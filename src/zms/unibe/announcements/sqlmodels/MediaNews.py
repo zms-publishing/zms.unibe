@@ -27,8 +27,11 @@ class MediaNews(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?met
     url_fr: str | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'media_news'
+    def get_zms_catalog_query():
+        return {
+            'path': '/unibe/portal/media_relations/content',
+            'meta_id': 'media_news'
+        }
 
     @staticmethod
     def get_attr_mappings():

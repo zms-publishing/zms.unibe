@@ -28,8 +28,8 @@ class Hero2022(ZMSBase, table=True):
     url_text_fr: str | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'hero_2022'
+    def get_zms_catalog_query():
+        return {'meta_id': 'hero_2022'}
 
     @staticmethod
     def get_attr_mappings():

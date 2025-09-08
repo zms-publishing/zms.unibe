@@ -1,4 +1,4 @@
-from ...foundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class ContactBox(ZMSBase, table=True):
@@ -12,8 +12,8 @@ class ContactBox(ZMSBase, table=True):
     sections: int
 
     @staticmethod
-    def get_zms_metaid():
-        return 'contactbox'
+    def get_zms_catalog_query():
+        return {'meta_id': 'contactbox'}
 
     @staticmethod
     def get_attr_mappings():

@@ -1,13 +1,6 @@
-from zms.unibe.utils.db import connect_zodb
-from zms.unibe.utils.zms2sql.tables import process_sql_updates
+from zms.unibe.utils.zms2sql.zms2sql import zms2sql
 from .ZMSFormulator import ZMSFormulator
 
 
-def update_formulator():
-    print("update_formulator")
-
-    zmsindex = connect_zodb()
-
-    zmsindex_result = zmsindex({'meta_id': ZMSFormulator.get_zms_metaid()})
-    process_sql_updates(zmsindex_result, ZMSFormulator)
-    
+def update_formulator(zms_context):
+    zms2sql([ZMSFormulator], zms_context)

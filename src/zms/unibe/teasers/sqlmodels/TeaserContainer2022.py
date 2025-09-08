@@ -1,4 +1,4 @@
-from ...foundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class TeaserContainer2022(ZMSBase, table=True):
@@ -9,8 +9,8 @@ class TeaserContainer2022(ZMSBase, table=True):
     layout: str
 
     @staticmethod
-    def get_zms_metaid():
-        return 'teaser_container_2022'
+    def get_zms_catalog_query():
+        return {'meta_id': 'teaser_container_2022'}
 
     @staticmethod
     def get_attr_mappings():

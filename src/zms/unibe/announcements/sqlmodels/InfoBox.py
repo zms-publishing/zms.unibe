@@ -1,4 +1,4 @@
-from ...foundation.sqlmodels import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class InfoBox(ZMSBase, table=True):
@@ -18,8 +18,8 @@ class InfoBox(ZMSBase, table=True):
     layout: str | None
 
     @staticmethod
-    def get_zms_metaid():
-        return 'infobox'
+    def get_zms_catalog_query():
+        return {'meta_id': 'infobox'}
 
     @staticmethod
     def get_attr_mappings():
