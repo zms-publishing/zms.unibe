@@ -5,13 +5,12 @@ from fastapi.responses import PlainTextResponse, RedirectResponse
 
 from cmsapi.metadata import tags
 from cmsapi.mobileapp.routers import newsevents, servicelinks, uniaktuell, mediareleases
-from cmsapi.zmscontent.routers import zmscontent, zmsobjects
+from cmsapi.zmscontent.routers import objects, labels
 
 app = FastAPI(title="CMSAPI-v3",
-              version="3.3.0",
-              summary="Python-based REST API using ZMS headless mode at the University of Bern (UniBE)",
-              description="**zms-fastapi** is running on the **UniBE Web/Mobile Integration Platform** "
-                          "to connect with **unibe.app** and **unibe.ch**",
+              version="3.3.0dev",
+              summary="Python-based REST API to connect ZMS with unibe.app and unibe.ch",
+              description="**zms-fastapi** is running on the **UniBE Web/Mobile Integration Platform**",
               docs_url="/v3/swagger",
               redoc_url="/v3/redoc",
               openapi_url="/v3/openapi.json",
@@ -38,8 +37,8 @@ app.include_router(mediareleases.router)
 app.include_router(servicelinks.router)
 
 # UniBE Web CMS (unibe.ch)
-app.include_router(zmscontent.router)
-app.include_router(zmsobjects.router)
+app.include_router(labels.router)
+app.include_router(objects.router)
 
 
 @app.get("/v3", include_in_schema=False)
