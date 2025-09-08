@@ -14,7 +14,7 @@ from zms.unibe.announcements.sqlmodels.NewsBox import NewsBox
 from zms.unibe.mobileapp.sqlmodels.ServiceLinks import ServiceLink
 from zms.unibe.utils.db import connect_sqldb
 from zms.unibe.utils.helpers import local_timezone
-from zms.unibe.utils.zms2sql.zms2sql import zms2sql
+from zms.unibe.utils.db import zms2sql
 from .NewsEvents import NewsEvents
 from .StatusMessages import StatusMessage
 

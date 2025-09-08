@@ -44,7 +44,7 @@ setup(
     },
     entry_points          = {
         'console_scripts': [
-            'zms2sql = zms.unibe.utils.zms2sql.zms2sql_cli:main'
+            'zms2sql = zms.unibe.utils.zms2sql.cli:main'
         ]
     }
 )

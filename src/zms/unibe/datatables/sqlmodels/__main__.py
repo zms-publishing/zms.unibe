@@ -1,4 +1,4 @@
-from zms.unibe.utils.zms2sql.zms2sql import zms2sql
+from zms.unibe.utils.db import zms2sql
 from .ZMSBoris import ZMSBoris
 from .ZMSDataTable import ZMSDataTable
 

@@ -9,7 +9,7 @@ from zms.unibe.datatables.sqlmodels.__main__ import update_datatables
 from zms.unibe.formulator.sqlmodels.__main__ import update_formulator
 from zms.unibe.contacts.sqlmodels.__main__ import update_contacts
 from zms.unibe.layouts.sqlmodels.__main__ import update_layouts
-from zms.unibe.utils.zope.zope_context import create_zope_app_context
+from zms.unibe.utils.zope.context import create_zope_app_context
 
 AVAILABLE_COMMANDS = {
     'fetch-agendas': fetch_agendas,
