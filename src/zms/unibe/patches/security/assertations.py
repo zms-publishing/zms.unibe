@@ -5,4 +5,6 @@
 from zms.unibe.agenda import OutlookConnector
 from zms.unibe.agenda import AgendaBridge
 
+from zms.unibe.foundation import ZMSSiteOverview
+
 from zms.unibe.utils import helpers

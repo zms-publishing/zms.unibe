@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <ZMSDataTable uid="uid:5e75c419-6887-4701-bac3-3b8563855f0e" id="e1723245" id_prefix="e">
+    <attr_dc_coverage>global.ger</attr_dc_coverage>
+    <created_uid>cmeier</created_uid>
+    <created_dt>
+2025-08-24T21:54:21+02:00</created_dt>
+    <change_uid><lang id="ger">cmeier</lang><lang id="fra">cmeier</lang><lang id="ita">cmeier</lang><lang id="eng">cmeier</lang><lang id="spa">cmeier</lang><lang id="cat">cmeier</lang><lang id="ukr">cmeier</lang></change_uid>
+    <change_dt><lang id="ger">
+2025-09-05T10:13:06+02:00</lang><lang id="fra">
+2025-09-05T10:20:51+02:00</lang><lang id="ita">
+2025-09-05T10:20:57+02:00</lang><lang id="eng">
+2025-09-05T10:20:29+02:00</lang><lang id="spa">
+2025-09-05T10:20:43+02:00</lang><lang id="cat">
+2025-09-05T10:20:37+02:00</lang><lang id="ukr">
+2025-09-05T10:21:03+02:00</lang></change_dt>
+    <active><lang id="ger">1</lang><lang id="fra">1</lang><lang id="ita">1</lang><lang id="eng">1</lang><lang id="spa">1</lang><lang id="cat">1</lang><lang id="ukr">1</lang></active>
+    <datatype>json</datatype>
+    <dataremote>1</dataremote>
+    <dataurl><lang id="ger">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=ger</lang><lang id="fra">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=fra</lang><lang id="ita">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=ita</lang><lang id="eng">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=eng</lang><lang id="spa">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=spa</lang><lang id="cat">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=cat</lang><lang id="ukr">http://localhost:8081/unibe/content/e1723246/zms_site_overview.json?lang=ukr</lang></dataurl>
+    <obfuscate_emails><lang id="ger">0</lang><lang id="fra">0</lang><lang id="ita">0</lang><lang id="eng">0</lang><lang id="spa">0</lang><lang id="cat">0</lang><lang id="ukr">0</lang></obfuscate_emails>
+    <_datafilecached><lang id="ger">
+<data content_type="application/json" filename="2025-09-05T1005540200_ger.json"></data></lang><lang id="fra">
+<data content_type="application/json" filename="2025-09-05T1006470200_fra.json"></data></lang><lang id="ita">
+<data content_type="application/json" filename="2025-09-05T1007160200_ita.json"></data></lang><lang id="eng">
+<data content_type="application/json" filename="2025-09-05T1007490200_eng.json"></data></lang><lang id="spa">
+<data content_type="application/json" filename="2025-09-05T1008010200_spa.json"></data></lang><lang id="cat">
+<data content_type="application/json" filename="2025-09-05T1008030200_cat.json"></data></lang><lang id="ukr">
+<data content_type="application/json" filename="2025-09-05T1008040200_ukr.json"></data></lang></_datafilecached>
+    <_datalastupdated>
+2025-09-05T10:08:04+02:00</_datalastupdated>
+    <colstable><lang id="ger">Domain
+Aliases
+Site
+Type
+Protocol
+Workflow
+Comments
+ETracker</lang><lang id="fra">Domain
+Aliases
+Site
+Type
+Protocol
+Workflow
+Comments
+ETracker</lang><lang id="ita">Domain
+Aliases
+Site
+Type
+Protocol
+Workflow
+Comments
+ETracker</lang><lang id="eng">Domain
+Aliases
+Site
+Type
+Protocol
+Workflow
+Comments
+ETracker</lang><lang id="spa">Domain
+Aliases
+Site
+Type
+Protocol
+Workflow
+Comments
+ETracker</lang><lang id="cat">Domain
+Aliases
+Site
+Type
+Protocol
+Workflow
+Comments
+ETracker</lang><lang id="ukr">Domain
+Aliases
+Site
+Type
+Protocol
+Workflow
+Comments
+ETracker</lang></colstable>
+    <colsdata><lang id="ger"><![CDATA[// BO columns
+paging: true,
+scrollX: true,
+//scrollY: 300,
+//scrollCollapse: true,
+pageLength: 20,
+lengthMenu: [[10, 20, 100, 250, 500, 1000], [10, 20, 100, 250, 500, 1000]],
+layout: {
+    topStart: {
+        search: {
+            placeholder: 'Type search here',
+        },
+    },
+    topEnd: 'info',
+    bottomStart: 'paging',
+    bottomEnd: 'pageLength',
+},
+order: [[2, "asc" ]], // order column descending
+"columnDefs": [
+    {
+        "orderable": false,
+        "targets": [3, 4, 5],
+    },
+    {
+        width: 100,
+        targets: [3, 4, 5, 6],
+    },
+    {
+        width: 300,
+        targets: [0],
+    },
+],
+//asStripeClasses: [] // disable zebra coloring of rows
+//bSortClasses: false // disable coloring of sorted column
+columns: [
+	{
+        data: null,
+        render: function (data, type, row) {
+            if (row.domain != null) {
+                return row.domain;
+            }
+            else if (row.server != null) {
+                return row.server;
+            }
+            else {
+                return '';
+            }
+        }
+	},
+	{
+        data: null,
+        render: function (data, type, row) {
+            if (row.aliases != null) {
+                return row.aliases;
+            }
+            else {
+                return '-';
+            }
+        }
+	},
+	{
+        data: null,
+        render: function (data, type, row) {
+            return '<a href="' + row.path + '/manage?lang='+getZMILang()+'" target="_blank">' + row.breadcrumbs + '</a>';
+        }
+	},
+	{
+        data: null,
+        render: function (data, type, row) {
+            if (row.attr_dc_type != null) {
+                return row.attr_dc_type;
+            }
+            else {
+                return '-'
+            }
+        }
+	},
+	{
+        data: null,
+        render: function (data, type, row) {
+            if (row.protocol != null) {
+                return row.protocol;
+            }
+            else {
+                return '-';
+            }
+        }
+	},
+	{
+        data: null,
+        render: function (data, type, row) {
+            if (row.workflow) {
+                return true;
+            }
+            else {
+                return false;
+
+            }
+        }
+	},
+	{
+        data: null,
+        render: function (data, type, row) {
+            if (row.comments != null) {
+                return row.comments;
+            }
+            else {
+                return '-';
+            }
+        }
+	},
+	{
+        data: null,
+        render: function (data, type, row) {
+            if (row.etracker != null) {
+                return row.etracker;
+            }
+            else {
+                return '-';
+            }
+        }
+	},
+],
+responsive: false, /*{
+	details: {
+		renderer: function(api, rowIdx) {
+            // Select hidden columns for the given row
+            var data = api.cells(rowIdx, ':hidden').eq(0).map(function(cell) {
+                var header = $(api.column(cell.column).header());
+                return '<tr>'+
+                        '<td>'+
+                            header.text() + ':' +
+                        '</td> ' +
+                        '<td>' +
+                            api.cell(cell).data() +
+                        '</td>' +
+                    '</tr>';
+            }).toArray().join('');
+
+            return data ? $('<table/>').append(data) : false;
+        }
+	}
+},*/
+// https://datatables.net/examples/api/multi_filter_select.html
+initComplete: function () {
+    i = 0;
+    this.api().columns().every(function() {
+        var column = this;
+        var column_filter_for = [3, 4, 5];
+        if (i==3) {
+            key = 'attr_dc_type';
+        }
+        if (i==4) {
+            key = 'protocol';
+        }
+        if (i==5) {
+            key = 'workflow';
+        }
+        if (column_filter_for.includes(i)) {
+            var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.header()) )
+                .on('change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+            var myArray = new Array();
+            column.data().each( function ( d, j ) {
+                if (d[key] !== undefined) {
+                    myArray.push(d[key]);
+                }
+            } );
+            let unique = [...new Set(myArray)];
+            unique.sort().forEach( function ( d, j ) {
+                select.append('<option value="'+d+'">'+d+'</option>')
+            } );
+        }
+        else {
+            column.text = '';
+        }
+        i++;
+    } );
+},
+/* https://github.com/gyrocode/jquery-datatables-alphabetSearch
+alphabetSearch: {
+    column: 1
+}, */
+
+// EO columns
+
+// BO processCustomJS
+function processCustomJS(table) {
+    
+    $('#e1723245 tbody').on('click', 'td', function () {
+        var tr = this.closest('tr');
+        var row = table.row(tr);
+        if (this.cellIndex == 0 || this.cellIndex == 1 || this.cellIndex == 2 || this.cellIndex == 3 || this.cellIndex == 4 || this.cellIndex == 5) {
+            title = row.data()['title'];
+            descr = row.data()['attr_dc_description'];
+            if (descr == null) {
+                descr = 'n/a';
+            }
+            subject = row.data()['attr_dc_subject'];
+            if (subject == null) {
+                subject = 'n/a';
+            }
+            languages = row.data()['languages'];
+            protocol = row.data()['protocol'];
+            if (protocol == null) {
+                protocol = 'n/a';
+            }
+            workflow = row.data()['workflow'];
+            if (workflow == true) {
+                workflow = '<a href="'+row.data()['path']+'/workflow_manager/manage_main?lang='+getZMILang()+'" target="_blank">Workflow</a>';
+                workflow_nodes = row.data()['workflow_nodes'];
+            }
+            else {
+                workflow = 'Workflow';
+                workflow_nodes = 'n/a';
+            }
+            comments = row.data()['comments'];
+            if (comments == null) {
+                comments = 'n/a';
+            }
+            etracker = row.data()['etracker'];
+            if (etracker == null) {
+                etracker = 'n/a';
+            }
+            domain = row.data()['domain'];
+            server = row.data()['server'];
+            aliases = row.data()['aliases'];
+            if (domain == null) {
+                domain = 'n/a';
+            }
+            if (server == null) {
+                domain = 'n/a';
+            }
+            else {
+                domain = server;
+            }
+            if (aliases == null) {
+                aliases = 'n/a';
+            }
+            titleimg = row.data()['titleimage'];
+            if (titleimg != null) {
+                titleimg = '<p><img src="https://edit.cms.unibe.ch'+row.data()['path']+'/'+titleimg['data']['@filename']+'" width="50%" /></p>';
+            }
+            else {
+                titleimg = '';
+            }
+            $('#datatableModalTitle').text(title);
+            $('#datatableModalBody').html(
+                titleimg+
+                '<p><strong>Description:</strong> '+descr+'</p>'+
+                '<p><strong>Keywoords:</strong> '+subject+'</p>'+
+                '<p><strong>Comments:</strong> '+comments+'</p>'+
+                '<p><strong>Languages:</strong> <code>'+languages+'</code></p>'+
+                '<p><strong>ETracker:</strong> <code>'+etracker+'</code></p>'+
+                '<p><strong>'+workflow+':</strong> <code>'+workflow_nodes+'</code></p>'+
+                '<p><strong>Protocol:</strong> <code>'+protocol+'</code></p>'+
+                '<p><strong>Domain:</strong> <code>'+domain+'</code></p>'+
+                '<p><strong>Aliases:</strong> <code>'+aliases+'</code></p>'+
+                '<p><a href="'+row.data()['path']+'/manage_users?lang='+getZMILang()+'" target="_blank" class="btn btn-light" style="border:1px solid #aaa;">Users</a> '+
+                '<a href="'+row.data()['path']+'/manage_customize?lang='+getZMILang()+'#Custom" target="_blank" class="btn btn-light" style="border:1px solid #aaa;">Settings</a> '+
+                '<a href="'+row.data()['path']+'/manage_executeMetacmd?id=manage_activatePub&lang='+getZMILang()+'" target="_blank" class="btn btn-primary">Activate</a> '+
+                '<a href="'+row.data()['path']+'/manage_executeMetacmd?id=manage_deactivatePub&lang='+getZMILang()+'" target="_blank" class="btn btn-danger">Deactivate</a></p>'
+            );
+            $('#datatableModal').modal('toggle');
+        }
+    });
+    $('#e1723245 tbody').on('mouseover', 'td', function () {
+        var tr = this.closest('tr');
+        var row = table.row(tr);
+        if (this.cellIndex == 0 || this.cellIndex == 1 || this.cellIndex == 2 || this.cellIndex == 3 || this.cellIndex == 4 || this.cellIndex == 5) {
+            $(this).css('cursor', 'pointer');
+        }
+    });
+
+}
+// EO processCustomJS]]></lang></colsdata>
+  </ZMSDataTable>
