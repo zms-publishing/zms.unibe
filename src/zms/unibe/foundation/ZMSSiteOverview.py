@@ -17,7 +17,9 @@ LOGGER = logging.getLogger("ZMSSiteOverview")
 class ZMSSiteOverview(ObjectManager):
     security = ClassSecurityInfo()  # control access to class methods in RestrictedPython
 
-    def __init__(self, context, lang="ger"):
+    def __init__(self, context, lang=None):
+        
+        lang = lang or context.REQUEST.get("lang", context.getPrimaryLanguage())
         
         self.sites_objs = {}
         self.sites_dict = {}
