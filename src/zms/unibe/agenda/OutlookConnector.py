@@ -125,10 +125,16 @@ class OutlookConnector(ObjectManager):
             return json.dumps(response.json(), indent=4, sort_keys=True)
 
         if event_id is not None:
-            rtn = self.get_event_attachments(event_id, attachment_id, decode_base64)
-            if isinstance(rtn, list):
-                return json.dumps(rtn, indent=4, sort_keys=True, default=str)
-            return rtn
+            if attachment_id is not None:
+                rtn = self.get_event_attachments(event_id, attachment_id, decode_base64)
+                if isinstance(rtn, list):
+                    return json.dumps(rtn, indent=4, sort_keys=True, default=str)
+                return rtn
+            else:
+                response = requests.get(url=f"https://graph.microsoft.com/v1.0"
+                                            f"/users/{self.account}/events/{event_id}",
+                                        headers=headers)
+                return json.dumps(response.json(), indent=4, sort_keys=True)
 
         response = requests.get(url=f"https://graph.microsoft.com/v1.0"
                                     f"/users/{self.account}/calendarView"
