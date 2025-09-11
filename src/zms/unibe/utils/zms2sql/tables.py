@@ -1,12 +1,12 @@
 import time
 import uuid
 import collections
+import traceback
 
 from devtools import debug
 from sqlmodel import SQLModel, Session, select, inspect
 
 from zms.unibe.utils.db import connect_sqldb
-from .mappings import map_obj_attributes
 
 
 def drop_create_sql_tables(model):
@@ -24,7 +24,7 @@ def drop_create_sql_tables(model):
                 model.__table__.create(sqlengine)
 
 
-def process_sql_updates(zmsindex_result, model, verbose=False):
+def process_sql_updates(zmsindex_result, model, verbose=True):
     
     sqlengine = connect_sqldb(verbose=verbose)
 
@@ -39,7 +39,15 @@ def process_sql_updates(zmsindex_result, model, verbose=False):
         if not inspect(sqlengine).has_table(model.__name__.lower()):
             model.__table__.create(sqlengine)
 
-        for obj in map_obj_attributes(zmsindex_result, model, verbose=verbose):
+        for index_obj in zmsindex_result:
+            try:
+                zms_obj = index_obj.getObject()
+                obj = model.from_zms_obj(zms_obj)
+            except Exception as e:
+                if verbose:
+                    debug(index_obj.get_uid, index_obj.getPath(), index_obj.id, index_obj.meta_id)
+                    traceback.print_exc()
+                continue
             statement = select(model).where(model.uuid == obj.uuid)
             results = session.exec(statement)
             row = results.one_or_none()

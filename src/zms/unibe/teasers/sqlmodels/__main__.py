@@ -1,4 +1,4 @@
-from zms.unibe.utils.db import zms2sql
+from zms.unibe.utils.zms2sql import zms2sql
 from .TeaserContainer2022 import TeaserContainer2022
 from .TeaserElement2022 import TeaserElement2022
 

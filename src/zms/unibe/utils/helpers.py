@@ -1,4 +1,6 @@
 import io
+import os
+import re
 import time
 from datetime import datetime, timedelta
 from DateTime import DateTime  # legacy Zope implementation, returned e.g. by ZopeTime()
@@ -6,13 +8,13 @@ from uuid import UUID
 
 import pytz
 from AccessControl import ModuleSecurityInfo
-from Products.zms import standard
+from Products.zms import standard, _blobfields
 from anytree import Node, RenderTree
 from anytree.exporter import JsonExporter, DictExporter
 from devtools import debug
 from ics import Calendar, Event
 
-from .zms2sql.attributes import get_attr_by_lang, strip_cmstest
+from .enums import SiteType
 
 security = ModuleSecurityInfo('zms.unibe.utils.helpers.local_timezone')  # allow module import in RestrictedPython
 
@@ -148,6 +150,118 @@ def generate_ics(lang, results):
         calendar.events.add(event)
 
     return io.StringIO(calendar.serialize())
+
+
+def get_attr(obj, attr, lang):
+    request = obj.REQUEST
+    request.set('lang', lang)
+    return obj.attr(attr)
+
+
+def get_level(obj):
+    level = obj.getLevel()
+    if level == 0:
+        return len(obj.getPath().split('/')) - 2  # calculate for a ZMSSite at content level
+    return level
+
+
+def get_type(obj):
+    if '/unibiblio' in obj.getPath():
+        return SiteType.Library.value  # TODO: remove workaround to override type=Einrichtung
+    elif '/unisport' in obj.getPath():
+        return SiteType.Unisport.value  # TODO: remove workaround to override type=Einrichtung
+    else:
+        return obj.attr("attr_dc_type")  # TODO: handle multilang if needed - for ZMSSite not necessary
+
+
+def get_parent_home_uuid(obj):
+    return parse_uuid(getattr(obj.getHome().aq_parent, "content", obj.getHome().content)._uid)
+
+
+def get_parent_node_uuid(obj):
+    if obj.getLevel() > 0 and 'trashcan' not in obj.getParentNode().getId():
+        return parse_uuid(obj.getParentNode()._uid)
+    else:
+        return parse_uuid(obj._uid)
+
+
+def get_parent_node_sort_id(obj):
+    if obj.getLevel() > 0 and 'trashcan' not in obj.getParentNode().getId():
+        return obj.getParentNode().getSortId()
+    else:
+        return 0
+
+
+def get_children_count(obj):
+    return len(obj.zcatalog_index({'path': obj.getPath()}))
+
+
+def parse_uuid(uuid):
+    return UUID(f'urn:uuid:{uuid}')
+
+
+def parse_datetime(value):
+    try:
+        return pytz.timezone('Europe/Zurich').localize(datetime(*value[:6]))
+    except (ValueError, TypeError):
+        return datetime(1970, 1, 1)
+
+
+def is_activated_by_checkbox_and_timeline(obj, lang):
+    # ZMSObject.isVisible() traversing object's hierarchy up to root node and checks if
+    # - object is translated
+    # - object has been committed
+    # - object is not in trashcan
+    # - object is activated -> ('active' is True) AND ('attr_active_start' < NOW < 'attr_active_end')
+    request = obj.REQUEST
+    request.set('lang', lang)
+    return len(list(filter(lambda x: not x.isVisible(REQUEST=request),
+                           obj.breadcrumbs_obj_path(portalMaster=False)))) == 0
+
+
+def get_url(obj, attr, lang):
+    request = obj.REQUEST
+    request.set('lang', lang)
+    value = obj.attr(attr)
+
+    if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
+        return get_url_from_conf_or_env(obj) + value.getHref(REQUEST=request)
+
+    if isinstance(value, str) and value.startswith('{$uid:'):
+        lang_target = lang
+        if ';lang=' in value:
+            lang_target = re.sub(r'{\$uid:(.*);lang=(\w*)}', r'\2', value)
+        request.set('lang', lang_target)
+        return strip_cmstest(obj.getLinkObj(value).getHref2IndexHtmlInContext(None, REQUEST=request))
+    
+    return value
+
+
+def get_url_from_conf_or_env(obj):
+    if obj is None:
+        return ''
+    prot = obj.getAbsoluteHome().portal.content.getConfProperty('ASP.protocol')
+    host = obj.getAbsoluteHome().portal.content.getConfProperty('UniBE.Server')
+    # Overwrite by environment variable if set
+    # ZMS_URL=http://127.0.0.1:8080 -> e.g. on localhost
+    return os.getenv('ZMS_URL', f'{prot}://{strip_cmstest(host)}')
+
+
+def strip_cmstest(domain):
+    if domain is None:
+        return ''
+    return domain.replace('cmstest1.', '').replace('cmstest.', '').replace('cms.test.', '').replace('cmsint.', '')
+
+
+def get_attr_by_lang(lang, de, en, fr):
+    if lang == 'de':
+        return de
+    elif lang == 'en':
+        return en
+    elif lang == 'fr':
+        return fr
+    else:
+        return None
 
 
 # Apply security assertions by ModuleSecurityInfo()

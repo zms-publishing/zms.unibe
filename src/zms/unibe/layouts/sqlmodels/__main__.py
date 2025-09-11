@@ -1,4 +1,4 @@
-from zms.unibe.utils.db import zms2sql
+from zms.unibe.utils.zms2sql import zms2sql
 from .ContentPane import ContentPane
 from .ContentTabs import ContentTabs
 from .TwoCols import TwoCols

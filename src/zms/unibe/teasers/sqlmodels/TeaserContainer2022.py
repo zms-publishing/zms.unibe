@@ -1,4 +1,5 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr
 
 
 class TeaserContainer2022(ZMSBase, table=True):
@@ -12,12 +13,14 @@ class TeaserContainer2022(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'teaser_container_2022'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        dict = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'title_de':         'title_ger',
-            'title_en':         'title_eng',
-            'title_fr':         'title_fra',
-            'layout':           'layout',
+            'title_de':         get_attr(obj, 'title', 'ger'),
+            'title_en':         get_attr(obj, 'title', 'eng'),
+            'title_fr':         get_attr(obj, 'title', 'fra'),
+            'layout':           obj.attr('layout'),
         }
+        return cls.model_validate(dict)
