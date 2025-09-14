@@ -1,4 +1,5 @@
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_url, get_size
 
 
 class UniBEFactsheet(ZMSBase, table=True):
@@ -21,21 +22,23 @@ class UniBEFactsheet(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'UniBEFactsheet'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'title_de':         'title_ger',
-            'title_en':         'title_eng',
-            'title_fr':         'title_fra',
-            'descr_de':         'attr_dc_description_ger',
-            'descr_en':         'attr_dc_description_eng',
-            'descr_fr':         'attr_dc_description_fra',
-            'titleimg_de':      'titleimage_ger',
-            'titleimg_en':      'titleimage_eng',
-            'titleimg_fr':      'titleimage_fra',
-            'titleimg_size_de': 'titleimage_ger',
-            'titleimg_size_en': 'titleimage_eng',
-            'titleimg_size_fr': 'titleimage_fra',
-            'elements':         'obj.getObjChildren(e)',
+            'title_de':         get_attr(obj, 'title', 'ger'),
+            'title_en':         get_attr(obj, 'title', 'eng'),
+            'title_fr':         get_attr(obj, 'title', 'fra'),
+            'descr_de':         get_attr(obj, 'attr_dc_description', 'ger'),
+            'descr_en':         get_attr(obj, 'attr_dc_description', 'eng'),
+            'descr_fr':         get_attr(obj, 'attr_dc_description', 'fra'),
+            'titleimg_de':      get_url(obj, 'titleimage', 'ger'),
+            'titleimg_en':      get_url(obj, 'titleimage', 'eng'),
+            'titleimg_fr':      get_url(obj, 'titleimage', 'fra'),
+            'titleimg_size_de': get_size(obj, 'titleimage', 'ger'),
+            'titleimg_size_en': get_size(obj, 'titleimage', 'eng'),
+            'titleimg_size_fr': get_size(obj, 'titleimage', 'fra'),
+            'elements':         obj.getObjChildren('e'),  # TODO: check this - or use get_children_count(obj)?
         }
+        return cls.model_validate(mapping)

@@ -1,4 +1,4 @@
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
 from zms.unibe.utils.helpers import get_attr
 
 
@@ -15,7 +15,7 @@ class TeaserContainer2022(ZMSBase, table=True):
 
     @classmethod
     def from_zms_obj(cls, obj):
-        dict = {
+        mapping = {
             **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
             'title_de':         get_attr(obj, 'title', 'ger'),
@@ -23,4 +23,4 @@ class TeaserContainer2022(ZMSBase, table=True):
             'title_fr':         get_attr(obj, 'title', 'fra'),
             'layout':           obj.attr('layout'),
         }
-        return cls.model_validate(dict)
+        return cls.model_validate(mapping)

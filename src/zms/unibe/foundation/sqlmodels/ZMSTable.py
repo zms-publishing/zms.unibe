@@ -1,4 +1,5 @@
-from .ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr
 
 
 class ZMSTable(ZMSBase, table=True):
@@ -14,14 +15,16 @@ class ZMSTable(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'ZMSTable'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'caption_de':          'caption_ger',
-            'caption_en':          'caption_eng',
-            'caption_fr':          'caption_fra',
-            'descr_de':            'attr_dc_description_ger',
-            'descr_en':            'attr_dc_description_eng',
-            'descr_fr':            'attr_dc_description_fra',
+            'caption_de':          get_attr(obj, 'caption', 'ger'),
+            'caption_en':          get_attr(obj, 'caption', 'eng'),
+            'caption_fr':          get_attr(obj, 'caption', 'fra'),
+            'descr_de':            get_attr(obj, 'attr_dc_description', 'ger'),
+            'descr_en':            get_attr(obj, 'attr_dc_description', 'eng'),
+            'descr_fr':            get_attr(obj, 'attr_dc_description', 'fra'),
         }
+        return cls.model_validate(mapping)

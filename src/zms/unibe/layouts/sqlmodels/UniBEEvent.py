@@ -1,8 +1,7 @@
 from datetime import datetime
-
 from sqlmodel import Field, Column, Date, Time
-
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_url, get_size, parse_datetime
 
 
 class UniBEEvent(ZMSBase, table=True):
@@ -29,25 +28,27 @@ class UniBEEvent(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'UniBEEvent'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'title_de':         'title_ger',
-            'title_en':         'title_eng',
-            'title_fr':         'title_fra',
-            'teaser_de':        'eventTeaser_ger',
-            'teaser_en':        'eventTeaser_eng',
-            'teaser_fr':        'eventTeaser_fra',
-            'img_de':           'eventBild_ger',
-            'img_en':           'eventBild_eng',
-            'img_fr':           'eventBild_fra',
-            'img_size_de':      'eventBild_ger',
-            'img_size_en':      'eventBild_eng',
-            'img_size_fr':      'eventBild_fra',
-            'start_at_date':    'eventStart',
-            'start_at_time':    'eventStarttime',
-            'end_at_date':      'eventEnd',
-            'end_at_time':      'eventEndtime',
-            'elements':         'obj.getObjChildren(e)',
+            'title_de':         get_attr(obj, 'title', 'ger'),
+            'title_en':         get_attr(obj, 'title', 'eng'),
+            'title_fr':         get_attr(obj, 'title', 'fra'),
+            'teaser_de':        get_attr(obj, 'eventTeaser', 'ger'),
+            'teaser_en':        get_attr(obj, 'eventTeaser', 'eng'),
+            'teaser_fr':        get_attr(obj, 'eventTeaser', 'fra'),
+            'img_de':           get_url(obj, 'eventBild', 'ger'),
+            'img_en':           get_url(obj, 'eventBild', 'eng'),
+            'img_fr':           get_url(obj, 'eventBild', 'fra'),
+            'img_size_de':      get_size(obj, 'eventBild', 'ger'),
+            'img_size_en':      get_size(obj, 'eventBild', 'eng'),
+            'img_size_fr':      get_size(obj, 'eventBild', 'fra'),
+            'start_at_date':    parse_datetime(obj.attr('eventStart')),
+            'start_at_time':    parse_datetime(obj.attr('eventStarttime')),
+            'end_at_date':      parse_datetime(obj.attr('eventEnd')),
+            'end_at_time':      parse_datetime(obj.attr('eventEndtime')),
+            'elements':         obj.getObjChildren('e'),  # TODO: check this - or use get_children_count(obj)?
         }
+        return cls.model_validate(mapping)

@@ -1,9 +1,14 @@
 from datetime import datetime
 from uuid import UUID
-
 from sqlmodel import SQLModel, Field, DateTime
-from zms.unibe.utils.helpers import parse_uuid, is_activated_by_checkbox_and_timeline, \
-    parse_datetime, get_attr, get_parent_node_sort_id, get_level
+from zms.unibe.utils.helpers import (
+    get_attr,
+    get_level,
+    get_parent_node_sort_id,
+    is_activated_by_checkbox_and_timeline,
+    parse_datetime,
+    parse_uuid,
+)
 
 
 class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inherit

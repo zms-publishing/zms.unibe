@@ -1,8 +1,7 @@
 from datetime import datetime
-
 from sqlmodel import Field, DateTime
-
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_url
 
 
 class ZMSBoris(ZMSBase, table=True):
@@ -18,15 +17,16 @@ class ZMSBoris(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'ZMSBoris'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'dataurl':          'dataurl',
-            'descr_de':         'attr_dc_description_ger',
-            'descr_en':         'attr_dc_description_eng',
-            'descr_fr':         'attr_dc_description_fra',
-            'boris_data':       'obj.getData(_datafilecached)',
-            'lastupdate':       '_datalastupdated',
+            'dataurl':          get_url(obj, 'dataurl'),
+            'descr_de':         get_attr(obj, 'attr_dc_description', 'ger'),
+            'descr_en':         get_attr(obj, 'attr_dc_description', 'eng'),
+            'descr_fr':         get_attr(obj, 'attr_dc_description', 'fra'),
+            'boris_data':       'obj.getData(_datafilecached)',  # TODO: retrieve _datafilecached in common helper function
+            'lastupdate':       obj.attr('_datalastupdated'),
         }
-
+        return cls.model_validate(mapping)

@@ -3,7 +3,7 @@ from uuid import UUID
 
 from sqlmodel import Field, Column, DateTime
 
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
 from zms.unibe.utils.helpers import get_attr, parse_datetime, get_url, get_parent_node_uuid
 
 
@@ -45,7 +45,7 @@ class TeaserElement2022(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
 
     @classmethod
     def from_zms_obj(cls, obj):
-        dict = {
+        mapping = {
             **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
             'title_de':         get_attr(obj, 'title', 'ger'),
@@ -78,4 +78,4 @@ class TeaserElement2022(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
             
             'container_uuid':   get_parent_node_uuid(obj),
         }
-        return cls.model_validate(dict)
+        return cls.model_validate(mapping)

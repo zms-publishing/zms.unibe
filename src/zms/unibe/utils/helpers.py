@@ -9,10 +9,6 @@ from uuid import UUID
 import pytz
 from AccessControl import ModuleSecurityInfo
 from Products.zms import standard, _blobfields
-from anytree import Node, RenderTree
-from anytree.exporter import JsonExporter, DictExporter
-from devtools import debug
-from ics import Calendar, Event
 
 from .enums import SiteType
 
@@ -58,98 +54,6 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
         dt = datetime.fromtimestamp(0)  # datetime.datetime(1970, 1, 1, 1, 0)
     dt = dt + timedelta(days=days_delta)
     return dt.astimezone(pytz.timezone(tz))
-
-
-def get_sections_tree(data, lang):
-
-    root = Node(UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'),
-                title='UniBE',
-                path='/unibe/content',
-                uuid=UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'))
-    nodes = {}
-
-    # set nodes with parent == root
-    for i, obj in enumerate(data):
-        if obj.parent_uuid == UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
-                obj.uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
-            nodes[obj.uuid] = Node(obj.uuid, parent=root,
-                                   domain=strip_cmstest(obj.domain),
-                                   title=get_attr_by_lang(lang,
-                                                          de=obj.title_de,
-                                                          en=obj.title_en,
-                                                          fr=obj.title_fr),
-                                   type=obj.type,
-                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
-                                   uuid=obj.uuid)
-
-    # set nodes with parent != root
-    for i, obj in enumerate(data):
-        if obj.parent_uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
-                obj.uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
-            nodes[obj.uuid] = Node(obj.uuid,
-                                   domain=strip_cmstest(obj.domain),
-                                   title=get_attr_by_lang(lang,
-                                                          de=obj.title_de,
-                                                          en=obj.title_en,
-                                                          fr=obj.title_fr),
-                                   type=obj.type,
-                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
-                                   uuid=obj.uuid)
-
-    # set parent nodes - Prerequisite: order_by(ZMSSite.level) to process in hierarchy
-    for i, obj in enumerate(data):
-        if obj.parent_uuid in nodes.keys():
-            nodes[obj.uuid] = Node(obj.uuid, parent=nodes[obj.parent_uuid],
-                                   domain=strip_cmstest(obj.domain),
-                                   title=get_attr_by_lang(lang,
-                                                          de=obj.title_de,
-                                                          en=obj.title_en,
-                                                          fr=obj.title_fr),
-                                   type=obj.type,
-                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
-                                   uuid=obj.uuid)
-        elif obj.parent_uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
-            debug(obj.parent_uuid, obj.uuid)
-
-    for pre, fill, node in RenderTree(root):
-        # print("%s%s" % (pre, node.title))
-        pass
-
-    jsonexporter = JsonExporter(indent=2, sort_keys=True, ensure_ascii=False)
-    # print(jsonexporter.export(root))
-
-    dictexporter = DictExporter(attriter=lambda attrs: [(k, v) for k, v in attrs if k != "name"])
-
-    return dictexporter.export(root)
-
-
-def generate_ics(lang, results):
-
-    calendar = Calendar()
-
-    for res in results:
-        event = Event()
-        event.name = get_attr_by_lang(lang,
-                                      de=res.NewsEvents.title_de,
-                                      en=res.NewsEvents.title_en,
-                                      fr=res.NewsEvents.title_fr)
-        event.begin = local_timezone(res.NewsEvents.start_dt)
-        event.end = local_timezone(res.NewsEvents.end_dt)
-        event.description = get_attr_by_lang(lang,
-                                             de=res.NewsEvents.infos_de,
-                                             en=res.NewsEvents.infos_en,
-                                             fr=res.NewsEvents.infos_fr)
-        event.location = get_attr_by_lang(lang,
-                                          de=res.NewsEvents.location_de,
-                                          en=res.NewsEvents.location_en,
-                                          fr=res.NewsEvents.location_fr)
-        event.url = get_attr_by_lang(lang,
-                                     de=res.NewsEvents.url_de,
-                                     en=res.NewsEvents.url_en,
-                                     fr=res.NewsEvents.url_fr)
-        calendar.events.add(event)
-
-    return io.StringIO(calendar.serialize())
 
 
 def get_attr(obj, attr, lang):
@@ -219,9 +123,9 @@ def is_activated_by_checkbox_and_timeline(obj, lang):
                            obj.breadcrumbs_obj_path(portalMaster=False)))) == 0
 
 
-def get_url(obj, attr, lang):
+def get_url(obj, attr, lang=None):
     request = obj.REQUEST
-    request.set('lang', lang)
+    request.set('lang', lang or obj.getPrimaryLanguage())
     value = obj.attr(attr)
 
     if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
@@ -235,6 +139,17 @@ def get_url(obj, attr, lang):
         return strip_cmstest(obj.getLinkObj(value).getHref2IndexHtmlInContext(None, REQUEST=request))
     
     return value
+
+
+def get_size(obj, attr, lang=None):
+    request = obj.REQUEST
+    request.set('lang', lang or obj.getPrimaryLanguage())
+    value = obj.attr(attr)
+    
+    if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
+        return value.get_size()
+    
+    return 0
 
 
 def get_url_from_conf_or_env(obj):

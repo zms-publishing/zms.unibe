@@ -1,9 +1,12 @@
 from uuid import UUID
-
 from sqlmodel import SQLModel, Field
-from .ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, \
-    get_type, get_children_count, get_parent_home_uuid
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import (
+    get_attr,
+    get_children_count,
+    get_parent_home_uuid,
+    get_type,
+)
 
 
 class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?metaobj=ZMS&types=%2A
@@ -30,7 +33,7 @@ class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?meta
     
     @classmethod
     def from_zms_obj(cls, obj):
-        dict = {
+        mapping = {
             **ZMSBase.get_attr_mappings(obj),
             # sql_attr      # zms_attr
             'title_de':     get_attr(obj, 'title', 'ger'),
@@ -43,4 +46,4 @@ class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?meta
             'count_objs':   get_children_count(obj),
             'parent_uuid':  get_parent_home_uuid(obj)
         }
-        return cls.model_validate(dict)
+        return cls.model_validate(mapping)

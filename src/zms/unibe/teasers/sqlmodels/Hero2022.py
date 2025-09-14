@@ -1,4 +1,5 @@
-from ...foundation.sqlmodels import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_url, get_size
 
 
 class Hero2022(ZMSBase, table=True):
@@ -31,34 +32,36 @@ class Hero2022(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'hero_2022'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'img':              'img',
-            'img_size':         'img',
-            'video':            'video',
-            'video_size':       'video',
-            'overlay':          'overlay',
-            'img_alt_de':       'img_alt_ger',
-            'img_alt_en':       'img_alt_eng',
-            'img_alt_fr':       'img_alt_fra',
-            'title_de':         'title_ger',
-            'title_en':         'title_eng',
-            'title_fr':         'title_fra',
-            'topic_de':         'topic_ger',
-            'topic_en':         'topic_eng',
-            'topic_fr':         'topic_fra',
-            'text_de':          'text_ger',
-            'text_en':          'text_eng',
-            'text_fr':          'text_fra',
-            'source_de':        'source_ger',
-            'source_en':        'source_eng',
-            'source_fr':        'source_fra',
-            'url_de':           'url_ger',
-            'url_en':           'url_eng',
-            'url_fr':           'url_fra',
-            'url_text_de':      'url_text_ger',
-            'url_text_en':      'url_text_eng',
-            'url_text_fr':      'url_text_fra',
+            'img':              get_url(obj, 'img'),
+            'img_size':         get_size(obj, 'img'),
+            'video':            get_url(obj, 'video'),
+            'video_size':       get_size(obj, 'video'),
+            'overlay':          obj.attr('overlay'),
+            'img_alt_de':       get_attr(obj, 'img_alt', 'ger'),
+            'img_alt_en':       get_attr(obj, 'img_alt', 'eng'),
+            'img_alt_fr':       get_attr(obj, 'img_alt', 'fra'),
+            'title_de':         get_attr(obj, 'title', 'ger'),
+            'title_en':         get_attr(obj, 'title', 'eng'),
+            'title_fr':         get_attr(obj, 'title', 'fra'),
+            'topic_de':         get_attr(obj, 'topic', 'ger'),
+            'topic_en':         get_attr(obj, 'topic', 'eng'),
+            'topic_fr':         get_attr(obj, 'topic', 'fra'),
+            'text_de':          get_attr(obj, 'text', 'ger'),
+            'text_en':          get_attr(obj, 'text', 'eng'),
+            'text_fr':          get_attr(obj, 'text', 'fra'),
+            'source_de':        get_attr(obj, 'source', 'ger'),
+            'source_en':        get_attr(obj, 'source', 'eng'),
+            'source_fr':        get_attr(obj, 'source', 'fra'),
+            'url_de':           get_url(obj, 'url', 'ger'),
+            'url_en':           get_url(obj, 'url', 'eng'),
+            'url_fr':           get_url(obj, 'url', 'fra'),
+            'url_text_de':      get_attr(obj, 'url_text', 'ger'),
+            'url_text_en':      get_attr(obj, 'url_text', 'eng'),
+            'url_text_fr':      get_attr(obj, 'url_text', 'fra'),
         }
+        return cls.model_validate(mapping)

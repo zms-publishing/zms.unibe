@@ -1,6 +1,6 @@
 from datetime import datetime
-
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_url
 
 
 class ZMSDataTable(ZMSBase, table=True):
@@ -26,24 +26,26 @@ class ZMSDataTable(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'ZMSDataTable'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'datatype':         'datatype',
-            'dataremote':       'dataremote',
-            'datawebservice':   'datawebservice',
-            'dataurl_de':       'dataurl_ger',
-            'dataurl_en':       'dataurl_eng',
-            'dataurl_fr':       'dataurl_fra',
-            'datafile_de':      'datafile_ger',
-            'datafile_en':      'datafile_eng',
-            'datafile_fr':      'datafile_fra',
-            'cached_data_de':   'obj.getData(_datafilecached_ger)',
-            'cached_data_en':   'obj.getData(_datafilecached_eng)',
-            'cached_data_fr':   'obj.getData(_datafilecached_fra)',
-            'upload_data_de':   'obj.getData(datafile_ger)',
-            'upload_data_en':   'obj.getData(datafile_eng)',
-            'upload_data_fr':   'obj.getData(datafile_fra)',
-            'lastupdate':       '_datalastupdated',
+            'datatype':         obj.attr('datatype'),
+            'dataremote':       obj.attr('dataremote'),
+            'datawebservice':   obj.attr('datawebservice'),
+            'dataurl_de':       get_url(obj, 'dataurl', 'ger'),
+            'dataurl_en':       get_url(obj, 'dataurl', 'eng'),
+            'dataurl_fr':       get_url(obj, 'dataurl', 'fra'),
+            'datafile_de':      get_url(obj, 'datafile', 'ger'),
+            'datafile_en':      get_url(obj, 'datafile', 'eng'),
+            'datafile_fr':      get_url(obj, 'datafile', 'fra'),
+            'cached_data_de':   'obj.getData(_datafilecached_ger)',  # TODO: retrieve _datafilecached in common helper function
+            'cached_data_en':   'obj.getData(_datafilecached_eng)',  # TODO: retrieve _datafilecached in common helper function
+            'cached_data_fr':   'obj.getData(_datafilecached_fra)',  # TODO: retrieve _datafilecached in common helper function
+            'upload_data_de':   'obj.getData(datafile_ger)',  # TODO: retrieve _datafilecached in common helper function
+            'upload_data_en':   'obj.getData(datafile_eng)',  # TODO: retrieve _datafilecached in common helper function
+            'upload_data_fr':   'obj.getData(datafile_fra)',  # TODO: retrieve _datafilecached in common helper function
+            'lastupdate':       obj.attr('_datalastupdated'),
         }
+        return cls.model_validate(mapping)
