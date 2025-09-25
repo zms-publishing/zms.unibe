@@ -1,6 +1,6 @@
 from uuid import UUID
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_parent_node_uuid
+from zms.unibe.utils.helpers import get_attr, get_parent_node_uuid, get_children_count
 
 
 class TeamSection(ZMSBase, table=True):
@@ -24,6 +24,6 @@ class TeamSection(ZMSBase, table=True):
             'title_en':         get_attr(obj, 'title', 'eng'),
             'title_fr':         get_attr(obj, 'title', 'fra'),
             'team_uuid':        get_parent_node_uuid(obj),
-            'persons':          obj.getObjChildren('person'),  # TODO: check this - or use get_children_count(obj)?
+            'persons':          get_children_count(obj, 'person'),
         }
         return cls.model_validate(mapping)

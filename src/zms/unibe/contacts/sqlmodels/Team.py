@@ -1,5 +1,5 @@
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-
+from zms.unibe.utils.helpers import get_children_count
 
 class Team(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
@@ -14,6 +14,6 @@ class Team(ZMSBase, table=True):
         mapping = {
             **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'sections':         obj.getObjChildren('teamsection'),  # TODO: check this - or use get_children_count(obj)?
+            'sections':         get_children_count(obj, 'teamsection'),
         }
         return cls.model_validate(mapping)

@@ -1,5 +1,5 @@
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr
+from zms.unibe.utils.helpers import get_attr, get_children_count
 
 
 class ZMSFormulator(ZMSBase, table=True):
@@ -21,6 +21,6 @@ class ZMSFormulator(ZMSBase, table=True):
             'title_de':         get_attr(obj, 'title', 'ger'),
             'title_en':         get_attr(obj, 'title', 'eng'),
             'title_fr':         get_attr(obj, 'title', 'fra'),
-            'items':            obj.getObjChildren('formulatorItems'),  # TODO: check this - or use get_children_count(obj)?
+            'items':            get_children_count(obj, 'ZMSFormulatorItem'),
         }
         return cls.model_validate(mapping)

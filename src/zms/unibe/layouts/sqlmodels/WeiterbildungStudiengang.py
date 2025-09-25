@@ -1,5 +1,5 @@
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_url, get_size
+from zms.unibe.utils.helpers import get_attr, get_url, get_size, get_children_count
 
 
 class WeiterbildungStudiengang(ZMSBase, table=True):
@@ -51,6 +51,6 @@ class WeiterbildungStudiengang(ZMSBase, table=True):
             'titleimg_size_de': get_size(obj, 'titleimage', 'ger'),
             'titleimg_size_en': get_size(obj, 'titleimage', 'eng'),
             'titleimg_size_fr': get_size(obj, 'titleimage', 'fra'),
-            'elements':         obj.getObjChildren('e'),  # TODO: check this - or use get_children_count(obj)?
+            'elements':         get_children_count(obj),
         }
         return cls.model_validate(mapping)

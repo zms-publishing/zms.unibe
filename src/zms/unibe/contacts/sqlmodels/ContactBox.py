@@ -1,5 +1,5 @@
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr
+from zms.unibe.utils.helpers import get_attr, get_children_count
 
 
 class ContactBox(ZMSBase, table=True):
@@ -27,6 +27,6 @@ class ContactBox(ZMSBase, table=True):
             'title_de':         get_attr(obj, 'title', 'ger'),
             'title_en':         get_attr(obj, 'title', 'eng'),
             'title_fr':         get_attr(obj, 'title', 'fra'),
-            'sections':         obj.getObjChildren('sections'),  # TODO: check this - or use get_children_count(obj)?
+            'sections':         get_children_count(obj, 'contactboxsection'),
         }
         return cls.model_validate(mapping)

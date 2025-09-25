@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlmodel import Field, Column, Date, Time
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_url, get_size, parse_datetime
+from zms.unibe.utils.helpers import get_attr, get_url, get_size, parse_datetime, get_children_count
 
 
 class UniBEEvent(ZMSBase, table=True):
@@ -49,6 +49,6 @@ class UniBEEvent(ZMSBase, table=True):
             'start_at_time':    parse_datetime(obj.attr('eventStarttime')),
             'end_at_date':      parse_datetime(obj.attr('eventEnd')),
             'end_at_time':      parse_datetime(obj.attr('eventEndtime')),
-            'elements':         obj.getObjChildren('e'),  # TODO: check this - or use get_children_count(obj)?
+            'elements':         get_children_count(obj),
         }
         return cls.model_validate(mapping)

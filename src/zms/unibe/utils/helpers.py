@@ -97,7 +97,10 @@ def get_parent_node_sort_id(obj):
         return 0
 
 
-def get_children_count(obj):
+def get_children_count(obj, meta_id=None):
+    if meta_id is not None:
+        return len(obj.zcatalog_index({'path': obj.getPath(),
+                                       'meta_id': meta_id}))
     return len(obj.zcatalog_index({'path': obj.getPath()}))
 
 
@@ -172,17 +175,6 @@ def strip_cmstest(domain):
     if standard.pybool(os.getenv('STRIP_CMSTEST', True)):
         return domain.replace('cmstest1.', '').replace('cmstest.', '').replace('cms.test.', '').replace('cmsint.', '')
     return domain
-
-
-def get_attr_by_lang(lang, de, en, fr):
-    if lang == 'de':
-        return de
-    elif lang == 'en':
-        return en
-    elif lang == 'fr':
-        return fr
-    else:
-        return None
 
 
 # Apply security assertions by ModuleSecurityInfo()
