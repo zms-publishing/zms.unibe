@@ -1,4 +1,3 @@
-import io
 import os
 import re
 import time
@@ -56,9 +55,11 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
     return dt.astimezone(pytz.timezone(tz))
 
 
-def get_attr(obj, attr, lang):
+def get_attr(obj, attr, lang, dt_exec=True):
     request = obj.REQUEST
     request.set('lang', lang)
+    if not dt_exec:  # bypass default code execution in ObjAttrs.getObjProperty (Line 579)
+        return obj.getObjAttrValue(obj.getObjAttr(attr), REQUEST=request)
     return obj.attr(attr)
 
 
@@ -123,20 +124,25 @@ def is_activated_by_checkbox_and_timeline(obj, lang):
                            obj.breadcrumbs_obj_path(portalMaster=False)))) == 0
 
 
-def get_url(obj, attr, lang=None):
+def get_url(obj, attr, lang=None, obj_context_href=False):
     request = obj.REQUEST
     request.set('lang', lang or obj.getPrimaryLanguage())
+
+    if obj_context_href:
+        return strip_cmstest(obj.getHref2IndexHtmlInContext(context=None, REQUEST=request))
+
+    assert attr is not None, 'attr must not be None'
     value = obj.attr(attr)
 
     if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
         return get_url_from_conf_or_env(obj) + value.getHref(REQUEST=request)
 
-    if isinstance(value, str) and value.startswith('{$uid:'):
+    if isinstance(value, str) and value.startswith('{$uid:') and value.endswith('}'):
         lang_target = lang
         if ';lang=' in value:
             lang_target = re.sub(r'{\$uid:(.*);lang=(\w*)}', r'\2', value)
         request.set('lang', lang_target)
-        return strip_cmstest(obj.getLinkObj(value).getHref2IndexHtmlInContext(None, REQUEST=request))
+        return strip_cmstest(obj.getLinkUrl(value, REQUEST=request))
     
     return value
 
@@ -163,9 +169,9 @@ def get_url_from_conf_or_env(obj):
 
 
 def strip_cmstest(domain):
-    if domain is None:
-        return ''
-    return domain.replace('cmstest1.', '').replace('cmstest.', '').replace('cms.test.', '').replace('cmsint.', '')
+    if standard.pybool(os.getenv('STRIP_CMSTEST', True)):
+        return domain.replace('cmstest1.', '').replace('cmstest.', '').replace('cms.test.', '').replace('cmsint.', '')
+    return domain
 
 
 def get_attr_by_lang(lang, de, en, fr):

@@ -1,7 +1,7 @@
 from datetime import date
 from sqlmodel import Field, Column, DateTime
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_url, parse_datetime, strip_cmstest
+from zms.unibe.utils.helpers import get_attr, get_url, parse_datetime
 
 
 class MediaNews(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=media_news&types=%2A
@@ -52,8 +52,8 @@ class MediaNews(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?met
             'img_de':           get_url(obj, 'teaser_image', 'ger'),
             'img_en':           get_url(obj, 'teaser_image', 'eng'),
             'img_fr':           get_url(obj, 'teaser_image', 'fra'),
-            'url_de':           strip_cmstest(obj.getHref2IndexHtmlInContext(context=None)),  # TODO: check -> REQUEST?
-            'url_en':           strip_cmstest(obj.getHref2IndexHtmlInContext(context=None)),  # TODO: check -> REQUEST?
-            'url_fr':           strip_cmstest(obj.getHref2IndexHtmlInContext(context=None)),  # TODO: check -> REQUEST?
+            'url_de':           get_url(obj, None, 'ger', obj_context_href=True),
+            'url_en':           get_url(obj, None, 'eng', obj_context_href=True),
+            'url_fr':           get_url(obj, None, 'fra', obj_context_href=True),
         }
         return cls.model_validate(mapping)

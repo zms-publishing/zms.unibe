@@ -1,7 +1,7 @@
 from datetime import date
 from sqlmodel import Field, Column, DateTime
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, strip_cmstest
+from zms.unibe.utils.helpers import get_attr, get_url
 
 
 class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=UniaktuellArticle&types=%2A
@@ -58,8 +58,8 @@ class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
             'img_de':           get_attr(obj, 'article_teaserbild', 'ger'),
             'img_en':           get_attr(obj, 'article_teaserbild', 'eng'),
             'img_fr':           get_attr(obj, 'article_teaserbild', 'fra'),
-            'url_de':           strip_cmstest(obj.getHref2IndexHtmlInContext(context=None)),  # TODO: check -> REQUEST?
-            'url_en':           strip_cmstest(obj.getHref2IndexHtmlInContext(context=None)),  # TODO: check -> REQUEST?
-            'url_fr':           strip_cmstest(obj.getHref2IndexHtmlInContext(context=None)),  # TODO: check -> REQUEST?
+            'url_de':           get_url(obj, None, 'ger', obj_context_href=True),
+            'url_en':           get_url(obj, None, 'eng', obj_context_href=True),
+            'url_fr':           get_url(obj, None, 'fra', obj_context_href=True),
         }
         return cls.model_validate(mapping)

@@ -19,12 +19,12 @@ class CodeBlock(ZMSBase, table=True):
     def from_zms_obj(cls, obj):
         mapping = {
             **ZMSBase.get_attr_mappings(obj),
-            # sql_attr          # zms_attr
-            'code_de':          obj.getObjAttrValue(obj.getObjAttr('text')),  # TODO: handle lang correctly
-            'code_en':          obj.getObjAttrValue(obj.getObjAttr('text')),  # TODO: handle lang correctly
-            'code_fr':          obj.getObjAttrValue(obj.getObjAttr('text')),  # TODO: handle lang correctly
-            'render_as_newscontainer_de': get_attr(obj, 'render_as_newscontainer', 'ger'),
-            'render_as_newscontainer_en': get_attr(obj, 'render_as_newscontainer', 'eng'),
-            'render_as_newscontainer_fr': get_attr(obj, 'render_as_newscontainer', 'fra'),
+            # sql_attr                      # zms_attr
+            'code_de':                      get_attr(obj, 'text', 'ger', dt_exec=False),
+            'code_en':                      get_attr(obj, 'text', 'eng', dt_exec=False),
+            'code_fr':                      get_attr(obj, 'text', 'fra', dt_exec=False),
+            'render_as_newscontainer_de':   get_attr(obj, 'render_as_newscontainer', 'ger'),
+            'render_as_newscontainer_en':   get_attr(obj, 'render_as_newscontainer', 'eng'),
+            'render_as_newscontainer_fr':   get_attr(obj, 'render_as_newscontainer', 'fra'),
         }
         return cls.model_validate(mapping)
