@@ -1,6 +1,6 @@
 from datetime import datetime
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_url
+from zms.unibe.utils.helpers import get_attr, get_url, get_data
 
 
 class ZMSDataTable(ZMSBase, table=True):
@@ -40,12 +40,12 @@ class ZMSDataTable(ZMSBase, table=True):
             'datafile_de':      get_url(obj, 'datafile', 'ger'),
             'datafile_en':      get_url(obj, 'datafile', 'eng'),
             'datafile_fr':      get_url(obj, 'datafile', 'fra'),
-            'cached_data_de':   'obj.getData(_datafilecached_ger)',  # TODO: retrieve _datafilecached in common helper function
-            'cached_data_en':   'obj.getData(_datafilecached_eng)',  # TODO: retrieve _datafilecached in common helper function
-            'cached_data_fr':   'obj.getData(_datafilecached_fra)',  # TODO: retrieve _datafilecached in common helper function
-            'upload_data_de':   'obj.getData(datafile_ger)',  # TODO: retrieve _datafilecached in common helper function
-            'upload_data_en':   'obj.getData(datafile_eng)',  # TODO: retrieve _datafilecached in common helper function
-            'upload_data_fr':   'obj.getData(datafile_fra)',  # TODO: retrieve _datafilecached in common helper function
+            'cached_data_de':   get_data(obj, '_datafilecached', 'ger'),
+            'cached_data_en':   get_data(obj, '_datafilecached', 'eng'),
+            'cached_data_fr':   get_data(obj, '_datafilecached', 'fra'),
+            'upload_data_de':   get_data(obj, 'datafile', 'ger'),
+            'upload_data_en':   get_data(obj, 'datafile', 'eng'),
+            'upload_data_fr':   get_data(obj, 'datafile', 'fra'),
             'lastupdate':       obj.attr('_datalastupdated'),
         }
         return cls.model_validate(mapping)

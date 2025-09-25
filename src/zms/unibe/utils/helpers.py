@@ -1,6 +1,8 @@
 import os
 import re
+import requests
 import time
+from devtools import debug
 from datetime import datetime, timedelta
 from DateTime import DateTime  # legacy Zope implementation, returned e.g. by ZopeTime()
 from uuid import UUID
@@ -175,6 +177,28 @@ def strip_cmstest(domain):
     if standard.pybool(os.getenv('STRIP_CMSTEST', True)):
         return domain.replace('cmstest1.', '').replace('cmstest.', '').replace('cms.test.', '').replace('cmsint.', '')
     return domain
+
+
+def get_data(obj, attr, lang=None):
+    request = obj.REQUEST
+    request.set('lang', lang or obj.getPrimaryLanguage())
+
+    value = obj.attr(attr)
+
+    # TODO: check if _blobfields.MyImage is a valid use case
+    if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
+        href = value.getHref(REQUEST=request)
+        href = f'{get_url_from_conf_or_env(obj)}{href}'
+        try:
+            if href.endswith('.json'):
+                json = requests.get(url=href, timeout=10).json()
+                return str(json)
+            else:
+                text = requests.get(url=href, timeout=10).text
+                return str(text)
+        except:
+            debug(href)
+            return None
 
 
 # Apply security assertions by ModuleSecurityInfo()

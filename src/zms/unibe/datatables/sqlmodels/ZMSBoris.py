@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlmodel import Field, DateTime
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_url
+from zms.unibe.utils.helpers import get_attr, get_url, get_data
 
 
 class ZMSBoris(ZMSBase, table=True):
@@ -26,7 +26,7 @@ class ZMSBoris(ZMSBase, table=True):
             'descr_de':         get_attr(obj, 'attr_dc_description', 'ger'),
             'descr_en':         get_attr(obj, 'attr_dc_description', 'eng'),
             'descr_fr':         get_attr(obj, 'attr_dc_description', 'fra'),
-            'boris_data':       'obj.getData(_datafilecached)',  # TODO: retrieve _datafilecached in common helper function
+            'boris_data':       get_data(obj, '_datafilecached'),
             'lastupdate':       obj.attr('_datalastupdated'),
         }
         return cls.model_validate(mapping)
