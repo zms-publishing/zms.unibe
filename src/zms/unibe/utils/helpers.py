@@ -65,6 +65,18 @@ def get_attr(obj, attr, lang, dt_exec=True):
     return obj.attr(attr)
 
 
+def get_attr_by_lang(lang, de, en, fr):
+
+    if lang in ('de', 'ger'):
+        return de
+    elif lang in ('en', 'eng'):
+        return en
+    elif lang in ('fr', 'fra'):
+        return fr
+    else:
+        return None
+
+
 def get_level(obj):
     level = obj.getLevel()
     if level == 0:
