@@ -186,6 +186,8 @@ def get_url_from_conf_or_env(obj):
 
 
 def strip_cmstest(domain):
+    if domain is None:
+        return ''
     if standard.pybool(os.getenv('STRIP_CMSTEST', True)):
         return domain.replace('cmstest1.', '').replace('cmstest.', '').replace('cms.test.', '').replace('cmsint.', '')
     return domain

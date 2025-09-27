@@ -52,3 +52,4 @@ class NewsBox(ZMSBase, table=True):
             'url_fr':           get_url(obj, 'attr_url', 'fra'),
             'container_uuid':   get_parent_node_uuid(obj),
         }
+        return cls.model_validate(mapping)

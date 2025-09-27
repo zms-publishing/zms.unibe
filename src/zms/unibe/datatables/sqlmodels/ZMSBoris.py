@@ -1,7 +1,7 @@
 from datetime import datetime
-from sqlmodel import Field, DateTime
+from sqlmodel import Field, Column, DateTime
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_url, get_data
+from zms.unibe.utils.helpers import get_attr, get_url, get_data, parse_datetime
 
 
 class ZMSBoris(ZMSBase, table=True):
@@ -11,7 +11,7 @@ class ZMSBoris(ZMSBase, table=True):
     descr_en: str | None
     descr_fr: str | None
     boris_data: str | None  # = Field(sa_column=Column(JSONB), default_factory=dict)
-    lastupdate: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
+    lastupdate: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
 
     @staticmethod
     def get_zms_catalog_query():
@@ -27,6 +27,6 @@ class ZMSBoris(ZMSBase, table=True):
             'descr_en':         get_attr(obj, 'attr_dc_description', 'eng'),
             'descr_fr':         get_attr(obj, 'attr_dc_description', 'fra'),
             'boris_data':       get_data(obj, '_datafilecached'),
-            'lastupdate':       obj.attr('_datalastupdated'),
+            'lastupdate':       parse_datetime(obj.attr('_datalastupdated')),
         }
         return cls.model_validate(mapping)

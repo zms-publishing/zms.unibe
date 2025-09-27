@@ -19,9 +19,9 @@ class WeiterbildungStudiengang(ZMSBase, table=True):
     titleimg_de: str | None
     titleimg_en: str | None
     titleimg_fr: str | None
-    titleimg_size_de: str | None
-    titleimg_size_en: str | None
-    titleimg_size_fr: str | None
+    titleimg_size_de: int | None
+    titleimg_size_en: int | None
+    titleimg_size_fr: int | None
     elements: int
 
     @staticmethod

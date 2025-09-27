@@ -5,7 +5,7 @@ from zms.unibe.utils.helpers import get_attr, get_url, get_size
 class Hero2022(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
     img: str | None
-    img_size: str | None
+    img_size: int | None
     video: str | None
     video_size: int | None
     overlay: bool

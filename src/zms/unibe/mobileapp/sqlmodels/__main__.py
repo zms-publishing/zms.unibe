@@ -1,9 +1,6 @@
-import time
 import uuid
 from datetime import datetime
 
-import requests
-from devtools import debug
 from sqlmodel import Session, inspect, select, or_
 
 from zms.unibe.agenda.sqlmodels.AgendaFilemaker import AgendaFilemaker
@@ -13,10 +10,8 @@ from zms.unibe.teasers.sqlmodels.TeaserElement2022 import TeaserElement2022
 from zms.unibe.announcements.sqlmodels.NewsBox import NewsBox
 from zms.unibe.mobileapp.sqlmodels.ServiceLinks import ServiceLink
 from zms.unibe.utils.db import connect_sqldb
-from zms.unibe.utils.helpers import local_timezone
 from zms.unibe.utils.zms2sql import zms2sql
 from .NewsEvents import NewsEvents
-from .StatusMessages import StatusMessage
 
 
 def update_newsevents():
@@ -290,32 +285,3 @@ def update_newsevents():
 
 def update_servicelinks(zms_context):
     zms2sql([ServiceLink], zms_context)
-    
-    
-def fetch_statusmessages():
-    print("update_statusmessages")
-    
-    sqlengine = connect_sqldb()
-    with Session(sqlengine) as session:
-        data_host = 'https://www.unibe.ch'
-        data_path = '/unibe/portal/content/e809/e946/e8896/e1217283/e1222429'  # Portal > IT Services > Status
-        data_file = f'{data_host}{data_path}/ZMSDataTable_data_?{str(time.time())}'  # add time to bypass cache
-        data_href = requests.get(url=data_file).text
-    
-        debug(data_host + data_href)
-        response = requests.get(url=data_host + data_href)
-        if response.status_code != 200 or \
-                not data_href.startswith(data_path):
-            raise ImportError
-    
-        status_messages = response.json()
-        if status_messages is not None:
-            if inspect(sqlengine).has_table(StatusMessage.__name__.lower()):
-                StatusMessage.__table__.drop(sqlengine)
-            StatusMessage.__table__.create(sqlengine)
-            for item in status_messages:
-                item['id'] = None
-                item['begin'] = local_timezone(datetime.fromisoformat(item['begin']))
-                item['end'] = item['end'] is not None and local_timezone(datetime.fromisoformat(item['end'])) or None
-                session.add(StatusMessage.model_validate(item))
-            session.commit()

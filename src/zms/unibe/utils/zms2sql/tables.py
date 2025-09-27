@@ -39,13 +39,16 @@ def process_sql_updates(zmsindex_result, model, verbose=True):
         if not inspect(sqlengine).has_table(model.__name__.lower()):
             model.__table__.create(sqlengine)
 
-        for index_obj in zmsindex_result:
+        for item in zmsindex_result:
             try:
-                zms_obj = index_obj.getObject()
-                obj = model.from_zms_obj(zms_obj)
+                if 'trashcan' in item.getPath():
+                    continue
+                obj = model.from_zms_obj(item.getObject())
+                if obj is None:
+                    continue
             except Exception as e:
                 if verbose:
-                    debug(index_obj.get_uid, index_obj.getPath(), index_obj.id, index_obj.meta_id)
+                    debug(item.get_uid, item.getPath(), item.id, item.meta_id)
                     traceback.print_exc()
                 continue
             statement = select(model).where(model.uuid == obj.uuid)

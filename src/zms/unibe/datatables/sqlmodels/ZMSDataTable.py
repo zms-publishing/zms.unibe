@@ -1,6 +1,7 @@
 from datetime import datetime
+from sqlmodel import Field, Column, DateTime
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_url, get_data
+from zms.unibe.utils.helpers import get_url, get_data, parse_datetime
 
 
 class ZMSDataTable(ZMSBase, table=True):
@@ -20,7 +21,7 @@ class ZMSDataTable(ZMSBase, table=True):
     upload_data_de: str | None
     upload_data_en: str | None
     upload_data_fr: str | None
-    lastupdate: datetime | None
+    lastupdate: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
 
     @staticmethod
     def get_zms_catalog_query():
@@ -46,6 +47,6 @@ class ZMSDataTable(ZMSBase, table=True):
             'upload_data_de':   get_data(obj, 'datafile', 'ger'),
             'upload_data_en':   get_data(obj, 'datafile', 'eng'),
             'upload_data_fr':   get_data(obj, 'datafile', 'fra'),
-            'lastupdate':       obj.attr('_datalastupdated'),
+            'lastupdate':       parse_datetime(obj.attr('_datalastupdated')),
         }
         return cls.model_validate(mapping)
