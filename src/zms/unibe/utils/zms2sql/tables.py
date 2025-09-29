@@ -24,7 +24,7 @@ def drop_create_sql_tables(model):
                 model.__table__.create(sqlengine)
 
 
-def process_sql_updates(zmsindex_result, model, verbose=True):
+def process_sql_updates(zmsindex_result, model, verbose=False):
     
     sqlengine = connect_sqldb(verbose=verbose)
 
