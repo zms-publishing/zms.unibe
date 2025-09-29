@@ -59,8 +59,8 @@ class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
             'img_de':           get_url(obj, 'article_teaserbild', 'ger'),
             'img_en':           get_url(obj, 'article_teaserbild', 'eng'),
             'img_fr':           get_url(obj, 'article_teaserbild', 'fra'),
-            'url_de':           get_url(obj, None, 'ger', obj_context_href=True),
-            'url_en':           get_url(obj, None, 'eng', obj_context_href=True),
-            'url_fr':           get_url(obj, None, 'fra', obj_context_href=True),
+            'url_de':           get_url(obj, None, 'ger'),
+            'url_en':           get_url(obj, None, 'eng'),
+            'url_fr':           get_url(obj, None, 'fra'),
         }
         return cls.model_validate(mapping)

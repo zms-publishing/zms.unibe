@@ -52,8 +52,8 @@ class MediaNews(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?met
             'img_de':           get_url(obj, 'teaser_image', 'ger'),
             'img_en':           get_url(obj, 'teaser_image', 'eng'),
             'img_fr':           get_url(obj, 'teaser_image', 'fra'),
-            'url_de':           get_url(obj, None, 'ger', obj_context_href=True),
-            'url_en':           get_url(obj, None, 'eng', obj_context_href=True),
-            'url_fr':           get_url(obj, None, 'fra', obj_context_href=True),
+            'url_de':           get_url(obj, None, 'ger'),
+            'url_en':           get_url(obj, None, 'eng'),
+            'url_fr':           get_url(obj, None, 'fra'),
         }
         return cls.model_validate(mapping)

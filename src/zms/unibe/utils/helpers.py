@@ -66,7 +66,6 @@ def get_attr(obj, attr, lang, dt_exec=True):
 
 
 def get_attr_by_lang(lang, de, en, fr):
-
     if lang in ('de', 'ger'):
         return de
     elif lang in ('en', 'eng'):
@@ -141,14 +140,13 @@ def is_activated_by_checkbox_and_timeline(obj, lang):
                            obj.breadcrumbs_obj_path(portalMaster=False)))) == 0
 
 
-def get_url(obj, attr, lang=None, obj_context_href=False):
+def get_url(obj, attr, lang=None):
     request = obj.REQUEST
     request.set('lang', lang or obj.getPrimaryLanguage())
 
-    if obj_context_href:
+    if attr is None:  # return obj's url with subdomain from config-properties
         return strip_cmstest(obj.getHref2IndexHtmlInContext(context=None, REQUEST=request))
 
-    assert attr is not None, 'attr must not be None'
     value = obj.attr(attr)
 
     if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
