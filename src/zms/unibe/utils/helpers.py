@@ -97,14 +97,14 @@ def get_parent_home_uuid(obj):
 
 
 def get_parent_node_uuid(obj):
-    if obj.getLevel() > 0 and 'trashcan' not in obj.getParentNode().getId():
+    if obj.getLevel() > 0 and '/trashcan' not in obj.getPath():
         return parse_uuid(obj.getParentNode()._uid)
     else:
         return parse_uuid(obj._uid)
 
 
 def get_parent_node_sort_id(obj):
-    if obj.getLevel() > 0 and 'trashcan' not in obj.getParentNode().getId():
+    if obj.getLevel() > 0 and '/trashcan' not in obj.getPath():
         return obj.getParentNode().getSortId()
     else:
         return 0
@@ -197,8 +197,7 @@ def get_data(obj, attr, lang=None):
 
     value = obj.attr(attr)
 
-    # TODO: check if _blobfields.MyImage is a valid use case
-    if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
+    if isinstance(value, _blobfields.MyFile):
         href = value.getHref(REQUEST=request)
         href = f'{get_url_from_conf_or_env(obj)}{href}'
         try:

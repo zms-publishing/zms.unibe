@@ -13,26 +13,26 @@ from zms.unibe.utils.zope.context import create_zope_app_context
 
 AVAILABLE_COMMANDS = {
     # DEFAULT
-    'update-zmssites': update_zmssites,             # (512)
+    'update-zmssites': update_zmssites,             #     (512) =  0.97 min
     # MUST-HAVE
-    'update-teasers': update_teasers,               # (5.944)
-    'update-heros': update_heros,                   # (85)
-    'update-newsboxes': update_newsboxes,           # (18.203)
+    'update-servicelinks': update_servicelinks,     #     (105) =  0.02 min
+    'update-heros': update_heros,                   #      (84) =  0.05 min 
+    'update-teasers': update_teasers,               #   (5,842) =  2.98 min
+    'update-newsboxes': update_newsboxes,           #  (18,397) =  5.67 min
     'fetch-agendas': fetch_agendas,
     'fetch-statusmessages': fetch_statusmessages,
-    'update-newsevents': update_newsevents,         # (11.594)
-    'update-servicelinks': update_servicelinks,     # (105)
+    'update-newsevents': update_newsevents,         #  (11,594) => aggregates above to access via zms-fastapi
     # NICE-TO-HAVE
-    'update-mediareleases': update_mediareleases,   # (2.088)
-    'update-uniaktuell': update_uniaktuell,         # (2.808)
+    'update-mediareleases': update_mediareleases,   #   (2,069) =  0.72 min
+    'update-uniaktuell': update_uniaktuell,         #   (2,180) =  0.72 min
     # OPTIONAL
-    'update-datatables': update_datatables,         # (150)
-    'update-boris': update_boris,                   # (746)
-    'update-formulator': update_formulator,         # (1.556)
+    'update-datatables': update_datatables,         #     (150) =  0.11 min (w/o data in mediadb on localhost)
+    'update-boris': update_boris,                   #     (741) =  0.35 min (w/o data in mediadb on localhost)
+    'update-formulator': update_formulator,         #   (1,528) =  0.97 min
     # EXTENSIVE
-    'update-contacts': update_contacts,             # (41.840)
-    'update-layouts': update_layouts,               # (62.494)
-    'update-zmsobjects': update_zmsobjects,         # (324.209)
+    'update-contacts': update_contacts,             #  (41,348) = 11.42 min
+    'update-layouts': update_layouts,               #  (61,788) = 22.65 min
+    'update-zmsobjects': update_zmsobjects,         # (317,300) = 65.17 min 
 }
 
 def run(command: str = typer.Argument(None, help=' | '.join(AVAILABLE_COMMANDS.keys()))):
