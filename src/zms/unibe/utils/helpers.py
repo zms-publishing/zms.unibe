@@ -110,6 +110,13 @@ def get_parent_node_sort_id(obj):
         return 0
 
 
+def get_parent_node_attr(obj, attr, lang, dt_exec=True):
+    if obj.getLevel() > 0 and '/trashcan' not in obj.getPath():
+        return get_attr(obj.getParentNode(), attr, lang, dt_exec)
+    else:
+        return get_attr(obj, attr, lang, dt_exec)
+
+
 def get_children_count(obj, meta_id=None):
     if meta_id is not None:
         return len(obj.zcatalog_index({'path': obj.getPath(),

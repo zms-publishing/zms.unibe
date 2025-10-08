@@ -1,6 +1,6 @@
 from uuid import UUID
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_url
+from zms.unibe.utils.helpers import get_attr, get_url, get_parent_node_uuid, get_parent_node_attr
 
 
 class ServiceLink(ZMSBase, table=True):
@@ -51,9 +51,9 @@ class ServiceLink(ZMSBase, table=True):
             'url_de':           get_url(obj, 'file', 'ger'),
             'url_en':           get_url(obj, 'file', 'eng'),
             'url_fr':           get_url(obj, 'file', 'fra'),
-            'parent_uuid':      obj.getParentNode()._uid,
-            'parent_title_de':  get_attr(obj.getParentNode(), 'title', 'ger'),
-            'parent_title_en':  get_attr(obj.getParentNode(), 'title', 'eng'),
-            'parent_title_fr':  get_attr(obj.getParentNode(), 'title', 'fra'),
+            'parent_uuid':      get_parent_node_uuid(obj),
+            'parent_title_de':  get_parent_node_attr(obj, 'title', 'ger'),
+            'parent_title_en':  get_parent_node_attr(obj, 'title', 'eng'),
+            'parent_title_fr':  get_parent_node_attr(obj, 'title', 'fra'),
         }
         return cls.model_validate(mapping)

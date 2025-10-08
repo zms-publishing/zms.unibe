@@ -1,6 +1,6 @@
 from uuid import UUID
 from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_children_count
+from zms.unibe.utils.helpers import get_attr, get_children_count, get_parent_node_uuid
 
 
 class ContentPane(ZMSBase, table=True):
@@ -24,6 +24,6 @@ class ContentPane(ZMSBase, table=True):
             'title_en':         get_attr(obj, 'title', 'eng'),
             'title_fr':         get_attr(obj, 'title', 'fra'),
             'elements':         get_children_count(obj),
-            'contenttabs_uuid': obj.getParentNode()._uid,
+            'contenttabs_uuid': get_parent_node_uuid(obj),
         }
         return cls.model_validate(mapping)
