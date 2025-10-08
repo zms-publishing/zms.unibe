@@ -1,4 +1,4 @@
-from zms.unibe.utils.zms2sql.zms2sql import zms2sql
+from zms.unibe.utils.zms2sql import zms2sql
 from .MediaNews import MediaNews
 from .NewsBox import NewsBox
 from .NewsContainer import NewsContainer

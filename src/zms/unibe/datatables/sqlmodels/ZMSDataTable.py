@@ -1,6 +1,7 @@
 from datetime import datetime
-
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from sqlmodel import Field, Column, DateTime
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_url, get_data, parse_datetime
 
 
 class ZMSDataTable(ZMSBase, table=True):
@@ -20,30 +21,32 @@ class ZMSDataTable(ZMSBase, table=True):
     upload_data_de: str | None
     upload_data_en: str | None
     upload_data_fr: str | None
-    lastupdate: datetime | None
+    lastupdate: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
 
     @staticmethod
     def get_zms_catalog_query():
         return {'meta_id': 'ZMSDataTable'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'datatype':         'datatype',
-            'dataremote':       'dataremote',
-            'datawebservice':   'datawebservice',
-            'dataurl_de':       'dataurl_ger',
-            'dataurl_en':       'dataurl_eng',
-            'dataurl_fr':       'dataurl_fra',
-            'datafile_de':      'datafile_ger',
-            'datafile_en':      'datafile_eng',
-            'datafile_fr':      'datafile_fra',
-            'cached_data_de':   'obj.getData(_datafilecached_ger)',
-            'cached_data_en':   'obj.getData(_datafilecached_eng)',
-            'cached_data_fr':   'obj.getData(_datafilecached_fra)',
-            'upload_data_de':   'obj.getData(datafile_ger)',
-            'upload_data_en':   'obj.getData(datafile_eng)',
-            'upload_data_fr':   'obj.getData(datafile_fra)',
-            'lastupdate':       '_datalastupdated',
+            'datatype':         obj.attr('datatype'),
+            'dataremote':       obj.attr('dataremote'),
+            'datawebservice':   obj.attr('datawebservice'),
+            'dataurl_de':       get_url(obj, 'dataurl', 'ger'),
+            'dataurl_en':       get_url(obj, 'dataurl', 'eng'),
+            'dataurl_fr':       get_url(obj, 'dataurl', 'fra'),
+            'datafile_de':      get_url(obj, 'datafile', 'ger'),
+            'datafile_en':      get_url(obj, 'datafile', 'eng'),
+            'datafile_fr':      get_url(obj, 'datafile', 'fra'),
+            'cached_data_de':   get_data(obj, '_datafilecached', 'ger'),
+            'cached_data_en':   get_data(obj, '_datafilecached', 'eng'),
+            'cached_data_fr':   get_data(obj, '_datafilecached', 'fra'),
+            'upload_data_de':   get_data(obj, 'datafile', 'ger'),
+            'upload_data_en':   get_data(obj, 'datafile', 'eng'),
+            'upload_data_fr':   get_data(obj, 'datafile', 'fra'),
+            'lastupdate':       parse_datetime(obj.attr('_datalastupdated')),
         }
+        return cls.model_validate(mapping)

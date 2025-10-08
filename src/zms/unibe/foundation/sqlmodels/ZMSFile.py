@@ -1,4 +1,5 @@
-from .ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_url, get_size
 
 
 class ZMSFile(ZMSBase, table=True):
@@ -24,24 +25,26 @@ class ZMSFile(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'ZMSFile'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'title_de':         'title_ger',
-            'title_en':         'title_eng',
-            'title_fr':         'title_fra',
-            'file_de':          'file_ger',
-            'file_en':          'file_eng',
-            'file_fr':          'file_fra',
-            'file_size_de':     'file_ger',
-            'file_size_en':     'file_eng',
-            'file_size_fr':     'file_fra', 
-            'filetype':         'filetype',
-            'descr_de':         'attr_dc_description_ger',
-            'descr_en':         'attr_dc_description_eng',
-            'descr_fr':         'attr_dc_description_fra',
-            'amount_de':        'amount_ger',
-            'amount_en':        'amount_eng',
-            'amount_fr':        'amount_fra',
+            'title_de':         get_attr(obj, 'title', 'ger'),
+            'title_en':         get_attr(obj, 'title', 'eng'),
+            'title_fr':         get_attr(obj, 'title', 'fra'),
+            'file_de':          get_url(obj, 'file', 'ger'),
+            'file_en':          get_url(obj, 'file', 'eng'),
+            'file_fr':          get_url(obj, 'file', 'fra'),
+            'file_size_de':     get_size(obj, 'file', 'ger'),
+            'file_size_en':     get_size(obj, 'file', 'eng'),
+            'file_size_fr':     get_size(obj, 'file', 'fra'),
+            'filetype':         obj.attr('filetype'),
+            'descr_de':         get_attr(obj, 'attr_dc_description', 'ger'),
+            'descr_en':         get_attr(obj, 'attr_dc_description', 'eng'),
+            'descr_fr':         get_attr(obj, 'attr_dc_description', 'fra'),
+            'amount_de':        get_attr(obj, 'amount', 'ger'),
+            'amount_en':        get_attr(obj, 'amount', 'eng'),
+            'amount_fr':        get_attr(obj, 'amount', 'fra'),
         }
+        return cls.model_validate(mapping)

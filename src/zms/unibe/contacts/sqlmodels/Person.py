@@ -1,4 +1,5 @@
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr
 
 
 class Person(ZMSBase, table=True):
@@ -17,17 +18,19 @@ class Person(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'person'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'lastname':         'lastname',
-            'firstname':        'firstname',
-            'honorificSuffix':  'honorificSuffix',
-            'position_de':      'position_ger',
-            'position_en':      'position_eng',
-            'position_fr':      'position_fra',
-            'department_de':    'department_ger',
-            'department_en':    'department_eng',
-            'department_fr':    'department_fra',
+            'lastname':         obj.attr('lastname'),
+            'firstname':        obj.attr('firstname'),
+            'honorificSuffix':  obj.attr('honorificSuffix'),
+            'position_de':      get_attr(obj, 'position', 'ger'),
+            'position_en':      get_attr(obj, 'position', 'eng'),
+            'position_fr':      get_attr(obj, 'position', 'fra'),
+            'department_de':    get_attr(obj, 'department', 'ger'),
+            'department_en':    get_attr(obj, 'department', 'eng'),
+            'department_fr':    get_attr(obj, 'department', 'fra'),
         }
+        return cls.model_validate(mapping)

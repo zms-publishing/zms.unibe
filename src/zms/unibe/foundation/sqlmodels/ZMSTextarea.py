@@ -1,4 +1,5 @@
-from .ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr
 
 
 class ZMSTextarea(ZMSBase, table=True):
@@ -13,13 +14,15 @@ class ZMSTextarea(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'ZMSTextarea'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'text_de':          'text_ger',
-            'text_en':          'text_eng',
-            'text_fr':          'text_fra',
-            'format':           'format',
-            'layout':           'attr_dc_type_layout',
+            'text_de':          get_attr(obj, 'text', 'ger'),
+            'text_en':          get_attr(obj, 'text', 'eng'),
+            'text_fr':          get_attr(obj, 'text', 'fra'),
+            'format':           obj.attr('format'),
+            'layout':           obj.attr('attr_dc_type_layout'),
         }
+        return cls.model_validate(mapping)

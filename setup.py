@@ -24,7 +24,7 @@ setup(
     name                  = 'zms.unibe',
     description           = 'Addons package for ZMS at UniBE',
     long_description      = 'Python-based extensions for and integrations with the ZMS publishing system',
-    version               = '1.1.0',
+    version               = '1.2.0dev',
     author                = 'University of Bern, IT Services',
     author_email          = '',
     url                   = 'https://github.com/idasm-unibe-ch/zms-addons',
@@ -44,7 +44,7 @@ setup(
     },
     entry_points          = {
         'console_scripts': [
-            'zms2sql = zms.unibe.utils.zms2sql.zms2sql_cli:main'
+            'zms2sql = zms.unibe.utils.zms2sql.cli:main'
         ]
     }
 )

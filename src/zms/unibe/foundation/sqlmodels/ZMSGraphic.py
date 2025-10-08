@@ -1,4 +1,5 @@
-from .ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_url, get_size
 
 
 class ZMSGraphic(ZMSBase, table=True):
@@ -36,40 +37,41 @@ class ZMSGraphic(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'ZMSGraphic'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
-            # sql_attr          # zms_attr
-
-            'descr_de': 'attr_dc_description_ger',
-            'descr_en': 'attr_dc_description_eng',
-            'descr_fr': 'attr_dc_description_fra',
-            'img_de': 'img_ger',
-            'img_en': 'img_eng',
-            'img_fr': 'img_fra',
-            'imghires_de': 'imghires_ger',
-            'imghires_en': 'imghires_eng',
-            'imghires_fr': 'imghires_fra',
-            'imgsuperres_de': 'imgsuperres_ger',
-            'imgsuperres_en': 'imgsuperres_eng',
-            'imgsuperres_fr': 'imgsuperres_fra',
-            'img_size_de': 'img_ger',
-            'img_size_en': 'img_eng',
-            'img_size_fr': 'img_fra',
-            'imghires_size_de': 'imghires_ger',
-            'imghires_size_en': 'imghires_eng',
-            'imghires_size_fr': 'imghires_fra',
-            'imgsuperres_size_de': 'imgsuperres_ger',
-            'imgsuperres_size_en': 'imgsuperres_eng',
-            'imgsuperres_size_fr': 'imgsuperres_fra',
-            'img_attrs_spec': 'img_attrs_spec',
-            'attr_url_de': 'attr_url_ger',
-            'attr_url_en': 'attr_url_eng',
-            'attr_url_fr': 'attr_url_fra',
-            'text_de': 'text_ger',
-            'text_en': 'text_eng',
-            'text_fr': 'text_fra',
-            'captionaddon_de': 'captionaddon_ger',
-            'captionaddon_en': 'captionaddon_eng',
-            'captionaddon_fr': 'captionaddon_fra',
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
+            # sql_attr              # zms_attr
+            'descr_de':             get_attr(obj, 'attr_dc_description', 'ger'),
+            'descr_en':             get_attr(obj, 'attr_dc_description', 'eng'),
+            'descr_fr':             get_attr(obj, 'attr_dc_description', 'fra'),
+            'img_de':               get_url(obj, 'img', 'ger'),
+            'img_en':               get_url(obj, 'img', 'eng'),
+            'img_fr':               get_url(obj, 'img', 'fra'),
+            'imghires_de':          get_url(obj, 'imghires', 'ger'),
+            'imghires_en':          get_url(obj, 'imghires', 'eng'),
+            'imghires_fr':          get_url(obj, 'imghires', 'fra'),
+            'imgsuperres_de':       get_url(obj, 'imgsuperres', 'ger'),
+            'imgsuperres_en':       get_url(obj, 'imgsuperres', 'eng'),
+            'imgsuperres_fr':       get_url(obj, 'imgsuperres', 'fra'),
+            'img_size_de':          get_size(obj, 'img', 'ger'),
+            'img_size_en':          get_size(obj, 'img', 'eng'),
+            'img_size_fr':          get_size(obj, 'img', 'fra'),
+            'imghires_size_de':     get_size(obj, 'imghires', 'ger'),
+            'imghires_size_en':     get_size(obj, 'imghires', 'eng'),
+            'imghires_size_fr':     get_size(obj, 'imghires', 'fra'),
+            'imgsuperres_size_de':  get_size(obj, 'imgsuperres', 'ger'),
+            'imgsuperres_size_en':  get_size(obj, 'imgsuperres', 'eng'),
+            'imgsuperres_size_fr':  get_size(obj, 'imgsuperres', 'fra'),
+            'img_attrs_spec':       obj.attr('img_attrs_spec'),
+            'attr_url_de':          get_url(obj, 'attr_url', 'ger'),
+            'attr_url_en':          get_url(obj, 'attr_url', 'eng'),
+            'attr_url_fr':          get_url(obj, 'attr_url', 'fra'),
+            'text_de':              get_attr(obj, 'text', 'ger'),
+            'text_en':              get_attr(obj, 'text', 'eng'),
+            'text_fr':              get_attr(obj, 'text', 'fra'),
+            'captionaddon_de':      get_attr(obj, 'captionaddon', 'ger'),
+            'captionaddon_en':      get_attr(obj, 'captionaddon', 'eng'),
+            'captionaddon_fr':      get_attr(obj, 'captionaddon', 'fra'),
         }
+        return cls.model_validate(mapping)

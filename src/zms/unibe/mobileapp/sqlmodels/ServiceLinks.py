@@ -1,6 +1,6 @@
 from uuid import UUID
-
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_url, get_parent_node_uuid, get_parent_node_attr
 
 
 class ServiceLink(ZMSBase, table=True):
@@ -30,28 +30,30 @@ class ServiceLink(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'path': '/unibe/uniapp/content/'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'meta_id':          'obj.meta_id',
-            'title_de':         'title_ger',
-            'title_en':         'title_eng',
-            'title_fr':         'title_fra',
-            'text_de':          'text_ger',
-            'text_en':          'text_eng',
-            'text_fr':          'text_fra',
-            'keywords_de':      'attr_dc_description_ger',
-            'keywords_en':      'attr_dc_description_eng',
-            'keywords_fr':      'attr_dc_description_fra',
-            'href_de':          'attr_ref_ger',
-            'href_en':          'attr_ref_eng',
-            'href_fr':          'attr_ref_fra',
-            'url_de':           'file_ger',
-            'url_en':           'file_eng',
-            'url_fr':           'file_fra',
-            'parent_uuid':      'obj.getParentNode()._uid',
-            'parent_title_de':  'obj.getParentNode().title_ger',
-            'parent_title_en':  'obj.getParentNode().title_eng',
-            'parent_title_fr':  'obj.getParentNode().title_fra',
+            'meta_id':          obj.attr('meta_id'),
+            'title_de':         get_attr(obj, 'title', 'ger'),
+            'title_en':         get_attr(obj, 'title', 'eng'),
+            'title_fr':         get_attr(obj, 'title', 'fra'),
+            'text_de':          get_attr(obj, 'text', 'ger'),
+            'text_en':          get_attr(obj, 'text', 'eng'),
+            'text_fr':          get_attr(obj, 'text', 'fra'),
+            'keywords_de':      get_attr(obj, 'attr_dc_description', 'ger'),
+            'keywords_en':      get_attr(obj, 'attr_dc_description', 'eng'),
+            'keywords_fr':      get_attr(obj, 'attr_dc_description', 'fra'),
+            'href_de':          get_url(obj, 'attr_ref', 'ger'),
+            'href_en':          get_url(obj, 'attr_ref', 'eng'),
+            'href_fr':          get_url(obj, 'attr_ref', 'fra'),
+            'url_de':           get_url(obj, 'file', 'ger'),
+            'url_en':           get_url(obj, 'file', 'eng'),
+            'url_fr':           get_url(obj, 'file', 'fra'),
+            'parent_uuid':      get_parent_node_uuid(obj),
+            'parent_title_de':  get_parent_node_attr(obj, 'title', 'ger'),
+            'parent_title_en':  get_parent_node_attr(obj, 'title', 'eng'),
+            'parent_title_fr':  get_parent_node_attr(obj, 'title', 'fra'),
         }
+        return cls.model_validate(mapping)

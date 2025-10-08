@@ -1,6 +1,6 @@
 from uuid import UUID
-
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_parent_node_uuid
 
 
 class ContactBoxSection(ZMSBase, table=True):
@@ -17,15 +17,17 @@ class ContactBoxSection(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'contactboxsection'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
-            # sql_attr          # zms_attr
-            'intersection_title_de':      'intersection_title_ger',
-            'intersection_title_en':      'intersection_title_eng',
-            'intersection_title_fr':      'intersection_title_fra',
-            'interpara_title_de':         'interpara_title_ger',
-            'interpara_title_en':         'interpara_title_eng',
-            'interpara_title_fr':         'interpara_title_fra',
-            'contactbox_uuid':            'obj.getParentNode()._uid',
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
+            # sql_attr                  # zms_attr
+            'intersection_title_de':    get_attr(obj, 'intersection_title', 'ger'),
+            'intersection_title_en':    get_attr(obj, 'intersection_title', 'eng'),
+            'intersection_title_fr':    get_attr(obj, 'intersection_title', 'fra'),
+            'interpara_title_de':       get_attr(obj, 'interpara_title', 'ger'),
+            'interpara_title_en':       get_attr(obj, 'interpara_title', 'eng'),
+            'interpara_title_fr':       get_attr(obj, 'interpara_title', 'fra'),
+            'contactbox_uuid':          get_parent_node_uuid(obj),
         }
+        return cls.model_validate(mapping)

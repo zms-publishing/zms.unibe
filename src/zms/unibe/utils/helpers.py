@@ -1,18 +1,17 @@
-import io
+import os
+import re
+import requests
 import time
+from devtools import debug
 from datetime import datetime, timedelta
 from DateTime import DateTime  # legacy Zope implementation, returned e.g. by ZopeTime()
 from uuid import UUID
 
 import pytz
 from AccessControl import ModuleSecurityInfo
-from Products.zms import standard
-from anytree import Node, RenderTree
-from anytree.exporter import JsonExporter, DictExporter
-from devtools import debug
-from ics import Calendar, Event
+from Products.zms import standard, _blobfields
 
-from .zms2sql.attributes import get_attr_by_lang, strip_cmstest
+from .enums import SiteType
 
 security = ModuleSecurityInfo('zms.unibe.utils.helpers.local_timezone')  # allow module import in RestrictedPython
 
@@ -58,96 +57,166 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
     return dt.astimezone(pytz.timezone(tz))
 
 
-def get_sections_tree(data, lang):
-
-    root = Node(UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'),
-                title='UniBE',
-                path='/unibe/content',
-                uuid=UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'))
-    nodes = {}
-
-    # set nodes with parent == root
-    for i, obj in enumerate(data):
-        if obj.parent_uuid == UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
-                obj.uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
-            nodes[obj.uuid] = Node(obj.uuid, parent=root,
-                                   domain=strip_cmstest(obj.domain),
-                                   title=get_attr_by_lang(lang,
-                                                          de=obj.title_de,
-                                                          en=obj.title_en,
-                                                          fr=obj.title_fr),
-                                   type=obj.type,
-                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
-                                   uuid=obj.uuid)
-
-    # set nodes with parent != root
-    for i, obj in enumerate(data):
-        if obj.parent_uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
-                obj.uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
-            nodes[obj.uuid] = Node(obj.uuid,
-                                   domain=strip_cmstest(obj.domain),
-                                   title=get_attr_by_lang(lang,
-                                                          de=obj.title_de,
-                                                          en=obj.title_en,
-                                                          fr=obj.title_fr),
-                                   type=obj.type,
-                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
-                                   uuid=obj.uuid)
-
-    # set parent nodes - Prerequisite: order_by(ZMSSite.level) to process in hierarchy
-    for i, obj in enumerate(data):
-        if obj.parent_uuid in nodes.keys():
-            nodes[obj.uuid] = Node(obj.uuid, parent=nodes[obj.parent_uuid],
-                                   domain=strip_cmstest(obj.domain),
-                                   title=get_attr_by_lang(lang,
-                                                          de=obj.title_de,
-                                                          en=obj.title_en,
-                                                          fr=obj.title_fr),
-                                   type=obj.type,
-                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
-                                   uuid=obj.uuid)
-        elif obj.parent_uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
-            debug(obj.parent_uuid, obj.uuid)
-
-    for pre, fill, node in RenderTree(root):
-        # print("%s%s" % (pre, node.title))
-        pass
-
-    jsonexporter = JsonExporter(indent=2, sort_keys=True, ensure_ascii=False)
-    # print(jsonexporter.export(root))
-
-    dictexporter = DictExporter(attriter=lambda attrs: [(k, v) for k, v in attrs if k != "name"])
-
-    return dictexporter.export(root)
+def get_attr(obj, attr, lang, dt_exec=True):
+    request = obj.REQUEST
+    request.set('lang', lang)
+    if not dt_exec:  # bypass default code execution in ObjAttrs.getObjProperty (Line 579)
+        return obj.getObjAttrValue(obj.getObjAttr(attr), REQUEST=request)
+    return obj.attr(attr)
 
 
-def generate_ics(lang, results):
+def get_attr_by_lang(lang, de, en, fr):
+    if lang in ('de', 'ger'):
+        return de
+    elif lang in ('en', 'eng'):
+        return en
+    elif lang in ('fr', 'fra'):
+        return fr
+    else:
+        return None
 
-    calendar = Calendar()
 
-    for res in results:
-        event = Event()
-        event.name = get_attr_by_lang(lang,
-                                      de=res.NewsEvents.title_de,
-                                      en=res.NewsEvents.title_en,
-                                      fr=res.NewsEvents.title_fr)
-        event.begin = local_timezone(res.NewsEvents.start_dt)
-        event.end = local_timezone(res.NewsEvents.end_dt)
-        event.description = get_attr_by_lang(lang,
-                                             de=res.NewsEvents.infos_de,
-                                             en=res.NewsEvents.infos_en,
-                                             fr=res.NewsEvents.infos_fr)
-        event.location = get_attr_by_lang(lang,
-                                          de=res.NewsEvents.location_de,
-                                          en=res.NewsEvents.location_en,
-                                          fr=res.NewsEvents.location_fr)
-        event.url = get_attr_by_lang(lang,
-                                     de=res.NewsEvents.url_de,
-                                     en=res.NewsEvents.url_en,
-                                     fr=res.NewsEvents.url_fr)
-        calendar.events.add(event)
+def get_level(obj):
+    level = obj.getLevel()
+    if level == 0:
+        return len(obj.getPath().split('/')) - 2  # calculate for a ZMSSite at content level
+    return level
 
-    return io.StringIO(calendar.serialize())
+
+def get_type(obj):
+    if '/unibiblio' in obj.getPath():
+        return SiteType.Library.value  # TODO: remove workaround to override type=Einrichtung
+    elif '/unisport' in obj.getPath():
+        return SiteType.Unisport.value  # TODO: remove workaround to override type=Einrichtung
+    else:
+        return obj.attr("attr_dc_type")  # TODO: handle multilang if needed - for ZMSSite not necessary
+
+
+def get_parent_home_uuid(obj):
+    return parse_uuid(getattr(obj.getHome().aq_parent, "content", obj.getHome().content)._uid)
+
+
+def get_parent_node_uuid(obj):
+    if obj.getLevel() > 0 and '/trashcan' not in obj.getPath():
+        return parse_uuid(obj.getParentNode()._uid)
+    else:
+        return parse_uuid(obj._uid)
+
+
+def get_parent_node_sort_id(obj):
+    if obj.getLevel() > 0 and '/trashcan' not in obj.getPath():
+        return obj.getParentNode().getSortId()
+    else:
+        return 0
+
+
+def get_parent_node_attr(obj, attr, lang, dt_exec=True):
+    if obj.getLevel() > 0 and '/trashcan' not in obj.getPath():
+        return get_attr(obj.getParentNode(), attr, lang, dt_exec)
+    else:
+        return get_attr(obj, attr, lang, dt_exec)
+
+
+def get_children_count(obj, meta_id=None):
+    if meta_id is not None:
+        return len(obj.zcatalog_index({'path': obj.getPath(),
+                                       'meta_id': meta_id}))
+    return len(obj.zcatalog_index({'path': obj.getPath()}))
+
+
+def parse_uuid(uuid):
+    return UUID(f'urn:uuid:{uuid}')
+
+
+def parse_datetime(value):
+    try:
+        return pytz.timezone('Europe/Zurich').localize(datetime(*value[:6]))
+    except (ValueError, TypeError):
+        return datetime(1970, 1, 1)
+
+
+def is_activated_by_checkbox_and_timeline(obj, lang):
+    # ZMSObject.isVisible() traversing object's hierarchy up to root node and checks if
+    # - object is translated
+    # - object has been committed
+    # - object is not in trashcan
+    # - object is activated -> ('active' is True) AND ('attr_active_start' < NOW < 'attr_active_end')
+    request = obj.REQUEST
+    request.set('lang', lang)
+    return len(list(filter(lambda x: not x.isVisible(REQUEST=request),
+                           obj.breadcrumbs_obj_path(portalMaster=False)))) == 0
+
+
+def get_url(obj, attr, lang=None):
+    request = obj.REQUEST
+    request.set('lang', lang or obj.getPrimaryLanguage())
+
+    if attr is None:  # return obj's url with subdomain from config-properties
+        return strip_cmstest(obj.getHref2IndexHtmlInContext(context=None, REQUEST=request))
+
+    value = obj.attr(attr)
+
+    if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
+        return get_url_from_conf_or_env(obj) + value.getHref(REQUEST=request)
+
+    if isinstance(value, str) and value.startswith('{$uid:') and value.endswith('}'):
+        lang_target = lang
+        if ';lang=' in value:
+            lang_target = re.sub(r'{\$uid:(.*);lang=(\w*)}', r'\2', value)
+        request.set('lang', lang_target)
+        return strip_cmstest(obj.getLinkUrl(value, REQUEST=request))
+    
+    return value
+
+
+def get_size(obj, attr, lang=None):
+    request = obj.REQUEST
+    request.set('lang', lang or obj.getPrimaryLanguage())
+    value = obj.attr(attr)
+    
+    if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
+        return value.get_size()
+    
+    return 0
+
+
+def get_url_from_conf_or_env(obj):
+    if obj is None:
+        return ''
+    prot = obj.getAbsoluteHome().portal.content.getConfProperty('ASP.protocol')
+    host = obj.getAbsoluteHome().portal.content.getConfProperty('UniBE.Server')
+    # Overwrite by environment variable if set
+    # ZMS_URL=http://127.0.0.1:8080 -> e.g. on localhost
+    return os.getenv('ZMS_URL', f'{prot}://{strip_cmstest(host)}')
+
+
+def strip_cmstest(domain):
+    if domain is None:
+        return ''
+    if standard.pybool(os.getenv('STRIP_CMSTEST', True)):
+        return domain.replace('cmstest1.', '').replace('cmstest.', '').replace('cms.test.', '').replace('cmsint.', '')
+    return domain
+
+
+def get_data(obj, attr, lang=None):
+    request = obj.REQUEST
+    request.set('lang', lang or obj.getPrimaryLanguage())
+
+    value = obj.attr(attr)
+
+    if isinstance(value, _blobfields.MyFile):
+        href = value.getHref(REQUEST=request)
+        href = f'{get_url_from_conf_or_env(obj)}{href}'
+        try:
+            if href.endswith('.json'):
+                json = requests.get(url=href, timeout=10).json()
+                return str(json)
+            else:
+                text = requests.get(url=href, timeout=10).text
+                return str(text)
+        except:
+            debug(href)
+            return None
 
 
 # Apply security assertions by ModuleSecurityInfo()

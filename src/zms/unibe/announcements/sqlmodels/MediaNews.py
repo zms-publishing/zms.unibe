@@ -1,8 +1,7 @@
 from datetime import date
-
 from sqlmodel import Field, Column, DateTime
-
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_url, parse_datetime
 
 
 class MediaNews(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=media_news&types=%2A
@@ -33,26 +32,28 @@ class MediaNews(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?met
             'meta_id': 'media_news'
         }
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'title_de':         'title_ger',
-            'title_en':         'title_eng',
-            'title_fr':         'title_fra',
-            'publish_dt_de':    'media_date_ger',
-            'publish_dt_en':    'media_date_eng',
-            'publish_dt_fr':    'media_date_fra',
-            'abstract_de':      'media_lead_ger',
-            'abstract_en':      'media_lead_eng',
-            'abstract_fr':      'media_lead_fra',
-            'topics_de':        'attr_schlagworte_ger',
-            'topics_en':        'attr_schlagworte_eng',
-            'topics_fr':        'attr_schlagworte_fra',
-            'img_de':           'teaser_image_ger',
-            'img_en':           'teaser_image_eng',
-            'img_fr':           'teaser_image_fra',
-            'url_de':           'obj.getHref2IndexHtmlInContext()',
-            'url_en':           'obj.getHref2IndexHtmlInContext()',
-            'url_fr':           'obj.getHref2IndexHtmlInContext()',
+            'title_de':         get_attr(obj, 'title', 'ger'),
+            'title_en':         get_attr(obj, 'title', 'eng'),
+            'title_fr':         get_attr(obj, 'title', 'fra'),
+            'publish_dt_de':    parse_datetime(get_attr(obj, 'media_date', 'ger')),
+            'publish_dt_en':    parse_datetime(get_attr(obj, 'media_date', 'eng')),
+            'publish_dt_fr':    parse_datetime(get_attr(obj, 'media_date', 'fra')),
+            'abstract_de':      get_attr(obj, 'media_lead', 'ger'),
+            'abstract_en':      get_attr(obj, 'media_lead', 'eng'),
+            'abstract_fr':      get_attr(obj, 'media_lead', 'fra'),
+            'topics_de':        get_attr(obj, 'attr_schlagworte', 'ger'),
+            'topics_en':        get_attr(obj, 'attr_schlagworte', 'eng'),
+            'topics_fr':        get_attr(obj, 'attr_schlagworte', 'fra'),
+            'img_de':           get_url(obj, 'teaser_image', 'ger'),
+            'img_en':           get_url(obj, 'teaser_image', 'eng'),
+            'img_fr':           get_url(obj, 'teaser_image', 'fra'),
+            'url_de':           get_url(obj, None, 'ger'),
+            'url_en':           get_url(obj, None, 'eng'),
+            'url_fr':           get_url(obj, None, 'fra'),
         }
+        return cls.model_validate(mapping)

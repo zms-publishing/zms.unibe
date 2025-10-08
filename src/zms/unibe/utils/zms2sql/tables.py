@@ -1,31 +1,22 @@
 import time
 import uuid
 import collections
+import traceback
 
 from devtools import debug
 from sqlmodel import SQLModel, Session, select, inspect
 
 from zms.unibe.utils.db import connect_sqldb
-from .mappings import map_obj_attributes
 
 
-def drop_create_sql_tables(model):
+def drop_all(verbose=False):
+    sqlengine = connect_sqldb(verbose=verbose)
     
-    sqlengine = connect_sqldb()
-    
-    # TODO: add SQL handling to drop and create all tables (or specific table)
-    if _all:
-        SQLModel.metadata.drop_all(sqlengine)
-        SQLModel.metadata.create_all(sqlengine)
-    else:
-        for model in models:
-            if inspect(sqlengine).has_table(model.__name__.lower()):
-                model.__table__.drop(sqlengine)
-                model.__table__.create(sqlengine)
+    SQLModel.metadata.drop_all(sqlengine)
+    SQLModel.metadata.create_all(sqlengine)
 
 
-def process_sql_updates(zmsindex_result, model, verbose=False):
-    
+def process_sql_updates(zmsindex_result, model, drop=False, verbose=False):
     sqlengine = connect_sqldb(verbose=verbose)
 
     with Session(sqlengine) as session:
@@ -35,11 +26,25 @@ def process_sql_updates(zmsindex_result, model, verbose=False):
         print('Process', model)
 
         uuids_processed = []
+        
+        if drop and inspect(sqlengine).has_table(model.__name__.lower()):
+            model.__table__.drop(sqlengine)
 
         if not inspect(sqlengine).has_table(model.__name__.lower()):
             model.__table__.create(sqlengine)
 
-        for obj in map_obj_attributes(zmsindex_result, model, verbose=verbose):
+        for item in zmsindex_result:
+            try:
+                if '/trashcan' in item.getPath():
+                    continue
+                obj = model.from_zms_obj(item.getObject())
+                if obj is None:
+                    continue
+            except Exception as e:
+                if verbose:
+                    debug(item.get_uid, item.getPath(), item.id, item.meta_id)
+                    traceback.print_exc()
+                continue
             statement = select(model).where(model.uuid == obj.uuid)
             results = session.exec(statement)
             row = results.one_or_none()

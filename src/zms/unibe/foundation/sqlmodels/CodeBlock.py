@@ -1,4 +1,5 @@
-from .ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr
 
 
 class CodeBlock(ZMSBase, table=True):
@@ -14,14 +15,16 @@ class CodeBlock(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'codeblock'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
-            # sql_attr          # zms_attr
-            'code_de':          'obj.getObjAttrValue(text)',
-            'code_en':          'obj.getObjAttrValue(text)',
-            'code_fr':          'obj.getObjAttrValue(text)',
-            'render_as_newscontainer_de': 'render_as_newscontainer_ger',
-            'render_as_newscontainer_en': 'render_as_newscontainer_eng',
-            'render_as_newscontainer_fr': 'render_as_newscontainer_fra',
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
+            # sql_attr                      # zms_attr
+            'code_de':                      get_attr(obj, 'text', 'ger', dt_exec=False),
+            'code_en':                      get_attr(obj, 'text', 'eng', dt_exec=False),
+            'code_fr':                      get_attr(obj, 'text', 'fra', dt_exec=False),
+            'render_as_newscontainer_de':   get_attr(obj, 'render_as_newscontainer', 'ger'),
+            'render_as_newscontainer_en':   get_attr(obj, 'render_as_newscontainer', 'eng'),
+            'render_as_newscontainer_fr':   get_attr(obj, 'render_as_newscontainer', 'fra'),
         }
+        return cls.model_validate(mapping)

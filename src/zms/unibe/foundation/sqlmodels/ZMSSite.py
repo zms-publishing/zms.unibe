@@ -1,6 +1,12 @@
 from uuid import UUID
-
 from sqlmodel import SQLModel, Field
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import (
+    get_attr,
+    get_children_count,
+    get_parent_home_uuid,
+    get_type,
+)
 
 
 class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?metaobj=ZMS&types=%2A
@@ -24,20 +30,20 @@ class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?meta
     @staticmethod
     def get_zms_catalog_query():
         return {'meta_id': 'ZMS'}
-
-    @staticmethod
-    def get_attr_mappings():
-        return {
-            # sql_attr          # zms_attr
-            'title_de':         'title_ger',
-            'title_en':         'title_eng',
-            'title_fr':         'title_fra',
-            'domain':           'obj.getConfProperty(UniBE.Server)',
-            'alias':            'obj.getConfProperty(UniBE.Alias)',
-            'level':            'obj.getLevel()',
-            'path':             'obj.getPath()',
-            'type':             'obj.getType()',
-            'theme':            'obj.getConfProperty(ZMS.theme)',
-            'count_objs':       'obj.getCount()',
-            'parent_uuid':      'obj.getParentHome()._uid'
+    
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
+            # sql_attr      # zms_attr
+            'title_de':     get_attr(obj, 'title', 'ger'),
+            'title_en':     get_attr(obj, 'title', 'eng'),
+            'title_fr':     get_attr(obj, 'title', 'fra'),
+            'domain':       obj.getConfProperty('UniBE.Server'),
+            'alias':        obj.getConfProperty('UniBE.Alias'),
+            'type':         get_type(obj),
+            'theme':        obj.getConfProperty('ZMS.theme'),
+            'count_objs':   get_children_count(obj),
+            'parent_uuid':  get_parent_home_uuid(obj)
         }
+        return cls.model_validate(mapping)

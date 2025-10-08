@@ -1,6 +1,6 @@
 from uuid import UUID
-
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_parent_node_uuid, get_children_count
 
 
 class TeamSection(ZMSBase, table=True):
@@ -15,13 +15,15 @@ class TeamSection(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'teamsection'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'title_de':         'title_ger',
-            'title_en':         'title_eng',
-            'title_fr':         'title_fra',
-            'team_uuid':        'obj.getParentNode()._uid',
-            'persons':          'obj.getObjChildren(person)',
+            'title_de':         get_attr(obj, 'title', 'ger'),
+            'title_en':         get_attr(obj, 'title', 'eng'),
+            'title_fr':         get_attr(obj, 'title', 'fra'),
+            'team_uuid':        get_parent_node_uuid(obj),
+            'persons':          get_children_count(obj, 'person'),
         }
+        return cls.model_validate(mapping)

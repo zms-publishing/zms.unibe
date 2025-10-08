@@ -1,8 +1,7 @@
 from datetime import datetime
-
-from sqlmodel import Field, DateTime
-
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from sqlmodel import Field, Column, DateTime
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_url, get_data, parse_datetime
 
 
 class ZMSBoris(ZMSBase, table=True):
@@ -12,21 +11,22 @@ class ZMSBoris(ZMSBase, table=True):
     descr_en: str | None
     descr_fr: str | None
     boris_data: str | None  # = Field(sa_column=Column(JSONB), default_factory=dict)
-    lastupdate: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
+    lastupdate: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
 
     @staticmethod
     def get_zms_catalog_query():
         return {'meta_id': 'ZMSBoris'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'dataurl':          'dataurl',
-            'descr_de':         'attr_dc_description_ger',
-            'descr_en':         'attr_dc_description_eng',
-            'descr_fr':         'attr_dc_description_fra',
-            'boris_data':       'obj.getData(_datafilecached)',
-            'lastupdate':       '_datalastupdated',
+            'dataurl':          get_url(obj, 'dataurl'),
+            'descr_de':         get_attr(obj, 'attr_dc_description', 'ger'),
+            'descr_en':         get_attr(obj, 'attr_dc_description', 'eng'),
+            'descr_fr':         get_attr(obj, 'attr_dc_description', 'fra'),
+            'boris_data':       get_data(obj, '_datafilecached'),
+            'lastupdate':       parse_datetime(obj.attr('_datalastupdated')),
         }
-
+        return cls.model_validate(mapping)

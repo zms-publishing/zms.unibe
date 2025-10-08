@@ -1,8 +1,8 @@
 from datetime import date
-
-from sqlmodel import Field, Column, DateTime
-
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from sqlmodel import Field, Column, DateTime, String
+from sqlalchemy.dialects import postgresql
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_url, parse_datetime
 
 
 class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=UniaktuellArticle&types=%2A
@@ -16,9 +16,9 @@ class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
     abstract_de: str | None
     abstract_en: str | None
     abstract_fr: str | None
-    category_de: str | None
-    category_en: str | None
-    category_fr: str | None
+    category_de: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
+    category_en: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
+    category_fr: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
     topics_de: str | None
     topics_en: str | None
     topics_fr: str | None
@@ -36,29 +36,31 @@ class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
             'meta_id': 'UniaktuellArticle'
         }
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'title_de':         'title_ger',
-            'title_en':         'title_eng',
-            'title_fr':         'title_fra',
-            'publish_dt_de':    'publishdate_ger',
-            'publish_dt_en':    'publishdate_eng',
-            'publish_dt_fr':    'publishdate_fra',
-            'abstract_de':      'attr_dc_description_ger',
-            'abstract_en':      'attr_dc_description_eng',
-            'abstract_fr':      'attr_dc_description_fra',
-            'category_de':      'rubrik_ger',
-            'category_en':      'rubrik_eng',
-            'category_fr':      'rubrik_fra',
-            'topics_de':        'themen_ger',
-            'topics_en':        'themen_eng',
-            'topics_fr':        'themen_fra',
-            'img_de':           'article_teaserbild_ger',
-            'img_en':           'article_teaserbild_eng',
-            'img_fr':           'article_teaserbild_fra',
-            'url_de':           'obj.getHref2IndexHtmlInContext()',
-            'url_en':           'obj.getHref2IndexHtmlInContext()',
-            'url_fr':           'obj.getHref2IndexHtmlInContext()',
+            'title_de':         get_attr(obj, 'title', 'ger'),
+            'title_en':         get_attr(obj, 'title', 'eng'),
+            'title_fr':         get_attr(obj, 'title', 'fra'),
+            'publish_dt_de':    parse_datetime(get_attr(obj, 'publishdate', 'ger')),
+            'publish_dt_en':    parse_datetime(get_attr(obj, 'publishdate', 'eng')),
+            'publish_dt_fr':    parse_datetime(get_attr(obj, 'publishdate', 'fra')),
+            'abstract_de':      get_attr(obj, 'attr_dc_description', 'ger'),
+            'abstract_en':      get_attr(obj, 'attr_dc_description', 'eng'),
+            'abstract_fr':      get_attr(obj, 'attr_dc_description', 'fra'),
+            'category_de':      get_attr(obj, 'rubrik', 'ger'),
+            'category_en':      get_attr(obj, 'rubrik', 'eng'),
+            'category_fr':      get_attr(obj, 'rubrik', 'fra'),
+            'topics_de':        get_attr(obj, 'themen', 'ger'),
+            'topics_en':        get_attr(obj, 'themen', 'eng'),
+            'topics_fr':        get_attr(obj, 'themen', 'fra'),
+            'img_de':           get_url(obj, 'article_teaserbild', 'ger'),
+            'img_en':           get_url(obj, 'article_teaserbild', 'eng'),
+            'img_fr':           get_url(obj, 'article_teaserbild', 'fra'),
+            'url_de':           get_url(obj, None, 'ger'),
+            'url_en':           get_url(obj, None, 'eng'),
+            'url_fr':           get_url(obj, None, 'fra'),
         }
+        return cls.model_validate(mapping)

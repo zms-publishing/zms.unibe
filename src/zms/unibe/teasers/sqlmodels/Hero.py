@@ -1,4 +1,5 @@
-from ...foundation.sqlmodels import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_url, get_size
 
 
 class Hero(ZMSBase, table=True):
@@ -28,28 +29,30 @@ class Hero(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'hero'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'img':              'hero_image',
-            'img_size':         'hero_image',
-            'name_de':          'hero_name_ger',
-            'name_en':          'hero_name_eng',
-            'name_fr':          'hero_name_fra',
-            'title_de':         'hero_title_ger',
-            'title_en':         'hero_title_eng',
-            'title_fr':         'hero_title_fra',
-            'quote_de':         'hero_quote_ger',
-            'quote_en':         'hero_quote_eng',
-            'quote_fr':         'hero_quote_fra',
-            'url_de':           'url_ger',
-            'url_en':           'url_eng',
-            'url_fr':           'url_fra',
-            'url_type_de':      'url_type_ger',
-            'url_type_en':      'url_type_eng',
-            'url_type_fr':      'url_type_fra',
-            'url_title_de':     'url_title_ger',
-            'url_title_en':     'url_title_eng',
-            'url_title_fr':     'url_title_fra',
+            'img':              get_url(obj,'hero_image'),
+            'img_size':         get_size(obj, 'hero_image'),
+            'name_de':          get_attr(obj, 'hero_name', 'ger'),
+            'name_en':          get_attr(obj, 'hero_name', 'eng'),
+            'name_fr':          get_attr(obj, 'hero_name', 'fra'),
+            'title_de':         get_attr(obj, 'hero_title', 'ger'),
+            'title_en':         get_attr(obj, 'hero_title', 'eng'),
+            'title_fr':         get_attr(obj, 'hero_title', 'fra'),
+            'quote_de':         get_attr(obj, 'hero_quote', 'ger'),
+            'quote_en':         get_attr(obj, 'hero_quote', 'eng'),
+            'quote_fr':         get_attr(obj, 'hero_quote', 'fra'),
+            'url_de':           get_url(obj, 'url', 'ger'),
+            'url_en':           get_url(obj, 'url', 'eng'),
+            'url_fr':           get_url(obj, 'url', 'fra'),
+            'url_type_de':      get_attr(obj, 'url_type', 'ger'),
+            'url_type_en':      get_attr(obj, 'url_type', 'eng'),
+            'url_type_fr':      get_attr(obj, 'url_type', 'fra'),
+            'url_title_de':     get_attr(obj, 'url_title', 'ger'),
+            'url_title_en':     get_attr(obj, 'url_title', 'eng'),
+            'url_title_fr':     get_attr(obj, 'url_title', 'fra'),
         }
+        return cls.model_validate(mapping)

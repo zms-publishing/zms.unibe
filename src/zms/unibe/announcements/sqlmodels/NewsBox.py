@@ -1,9 +1,8 @@
 from datetime import datetime
 from uuid import UUID
-
 from sqlmodel import Field, Column, DateTime
-
-from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from zms.unibe.utils.helpers import get_attr, get_url, parse_datetime, get_parent_node_uuid
 
 
 class NewsBox(ZMSBase, table=True):
@@ -30,25 +29,27 @@ class NewsBox(ZMSBase, table=True):
     def get_zms_catalog_query():
         return {'meta_id': 'newsbox'}
 
-    @staticmethod
-    def get_attr_mappings():
-        return {
+    @classmethod
+    def from_zms_obj(cls, obj):
+        mapping = {
+            **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
-            'title_de':         'title_ger',
-            'title_en':         'title_eng',
-            'title_fr':         'title_fra',
-            'type':             'boxtype',
-            'img':              'img',
-            'start_dt':         'attr_event_start',
-            'end_dt':           'attr_event_end',
-            'text_de':          'text_ger',
-            'text_en':          'text_eng',
-            'text_fr':          'text_fra',
-            'topic_de':         'attr_dc_subject_topic_ger',
-            'topic_en':         'attr_dc_subject_topic_eng',
-            'topic_fr':         'attr_dc_subject_topic_fra',
-            'url_de':           'attr_url_ger',
-            'url_en':           'attr_url_eng',
-            'url_fr':           'attr_url_fra',
-            'container_uuid':   'obj.getParentNode()._uid',
+            'title_de':         get_attr(obj, 'title', 'ger'),
+            'title_en':         get_attr(obj, 'title', 'eng'),
+            'title_fr':         get_attr(obj, 'title', 'fra'),
+            'type':             obj.attr('boxtype'),
+            'img':              get_url(obj, 'img'),
+            'start_dt':         parse_datetime(obj.attr('attr_event_start')),
+            'end_dt':           parse_datetime(obj.attr('ttr_event_end')),
+            'text_de':          get_attr(obj, 'text', 'ger'),
+            'text_en':          get_attr(obj, 'text', 'eng'),
+            'text_fr':          get_attr(obj, 'text', 'fra'),
+            'topic_de':         get_attr(obj, 'attr_dc_subject_topic', 'ger'),
+            'topic_en':         get_attr(obj, 'attr_dc_subject_topic', 'eng'),
+            'topic_fr':         get_attr(obj, 'attr_dc_subject_topic', 'fra'),
+            'url_de':           get_url(obj, 'attr_url', 'ger'),
+            'url_en':           get_url(obj, 'attr_url', 'eng'),
+            'url_fr':           get_url(obj, 'attr_url', 'fra'),
+            'container_uuid':   get_parent_node_uuid(obj),
         }
+        return cls.model_validate(mapping)

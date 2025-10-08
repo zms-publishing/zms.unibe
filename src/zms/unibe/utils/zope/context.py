@@ -35,6 +35,7 @@ def create_zope_app_context():
     # Add an HTTPRequest at app.REQUEST
     app = makerequest(app)
     app.REQUEST['PARENTS'] = [app]
+    app.REQUEST.set('ZMS_CONTEXT_URL', True)
     setRequest(app.REQUEST)
     newSecurityManager(None, user)
     return app.unibe.content
