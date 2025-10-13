@@ -17,12 +17,8 @@ class ZMSSchedulerRegistry(SQLModel, table=True):
     added_dt: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     processed_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
 
-    @staticmethod
-    def get_zms_catalog_query():
-        return {'meta_id': 'ZMSScheduler'}
-
     @classmethod
-    def get_attr_mapping_agenda(cls, obj):
+    def from_agenda(cls, obj):
         mapping = {
             'id':               None,
             'task_uuid':        parse_uuid(obj._uid),
