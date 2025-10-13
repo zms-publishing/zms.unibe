@@ -2,15 +2,17 @@ from datetime import datetime, timedelta
 from uuid import UUID
 
 from fastapi import APIRouter, Query
-from fastapi.responses import StreamingResponse
 from sqlmodel import Session, select, or_, not_
+from devtools import debug
+from anytree import Node, RenderTree
+from anytree.exporter import JsonExporter, DictExporter
 
 from zms.unibe.foundation.sqlmodels.ZMSSite import ZMSSite
 from zms.unibe.mobileapp.sqlmodels.NewsEvents import NewsEvents
-from zms.unibe.mobileapp.sqlmodels.StatusMessages import StatusMessage
+from zms.unibe.agenda.sqlmodels.StatusMessages import StatusMessage
 from zms.unibe.utils.db import connect_sqldb
-from zms.unibe.utils.helpers import local_timezone, get_sections_tree, generate_ics
-from zms.unibe.utils.zms2sql.attributes import Lang, SiteType, get_attr_by_lang, strip_cmstest
+from zms.unibe.utils.helpers import get_attr_by_lang, strip_cmstest, local_timezone
+from zms.unibe.utils.enums import Lang, SiteType  # TODO: Lang->Locale as in zmscontent.routers
 from ..schemas import newsevents as schema
 
 router = APIRouter(
@@ -143,6 +145,69 @@ def fetch_events(lang, sections, start_after, end_before, offset, limit):
         return results.all(), total.all()
 
 
+def get_sections_tree(data, lang):
+
+    root = Node(UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'),
+                title='UniBE',
+                path='/unibe/content',
+                uuid=UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'))
+    nodes = {}
+
+    # set nodes with parent == root
+    for i, obj in enumerate(data):
+        if obj.parent_uuid == UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
+                obj.uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
+            nodes[obj.uuid] = Node(obj.uuid, parent=root,
+                                   domain=strip_cmstest(obj.domain),
+                                   title=get_attr_by_lang(lang,
+                                                          de=obj.title_de,
+                                                          en=obj.title_en,
+                                                          fr=obj.title_fr),
+                                   type=obj.type,
+                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
+                                   uuid=obj.uuid)
+
+    # set nodes with parent != root
+    for i, obj in enumerate(data):
+        if obj.parent_uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
+                obj.uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
+            nodes[obj.uuid] = Node(obj.uuid,
+                                   domain=strip_cmstest(obj.domain),
+                                   title=get_attr_by_lang(lang,
+                                                          de=obj.title_de,
+                                                          en=obj.title_en,
+                                                          fr=obj.title_fr),
+                                   type=obj.type,
+                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
+                                   uuid=obj.uuid)
+
+    # set parent nodes - Prerequisite: order_by(ZMSSite.level) to process in hierarchy
+    for i, obj in enumerate(data):
+        if obj.parent_uuid in nodes.keys():
+            nodes[obj.uuid] = Node(obj.uuid, parent=nodes[obj.parent_uuid],
+                                   domain=strip_cmstest(obj.domain),
+                                   title=get_attr_by_lang(lang,
+                                                          de=obj.title_de,
+                                                          en=obj.title_en,
+                                                          fr=obj.title_fr),
+                                   type=obj.type,
+                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
+                                   uuid=obj.uuid)
+        elif obj.parent_uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
+            debug(obj.parent_uuid, obj.uuid)
+
+    for pre, fill, node in RenderTree(root):
+        # print("%s%s" % (pre, node.title))
+        pass
+
+    jsonexporter = JsonExporter(indent=2, sort_keys=True, ensure_ascii=False)
+    # print(jsonexporter.export(root))
+
+    dictexporter = DictExporter(attriter=lambda attrs: [(k, v) for k, v in attrs if k != "name"])
+
+    return dictexporter.export(root)
+
+
 @router.get("/events", summary='Events', response_model=schema.EventResponse,
             description='Events from portal at <a href="https://www.unibe.ch" target="_blank">unibe.ch</a> '
                         'and faculties at <a href="https://www.unibe.ch/fakultaeteninstitute" '
@@ -224,27 +289,6 @@ async def get_events(
         'total': len(total),
         'data': data
     }
-
-
-@router.get("/events/calendar.ics", include_in_schema=False)
-async def get_events_calendar(
-        lang: Lang = Lang.de,
-        sections: list[UUID] | None = Query(None, description='Filter by sections'),
-        start_after: datetime | None = Query(None, description='Filter by start after (UTC)'),
-        end_before: datetime | None = Query(None, description='Filter by end before (UTC)'),
-        offset: int = 0,
-        limit: int = 100):
-
-    if sections is None:
-        sections = [UUID('urn:uuid:9c92af4f-6e95-4391-86d5-76eb8ad48360'),  # UniBE Portal
-                    UUID('urn:uuid:6f2a0c71-67cf-40db-bc36-8483471b1c32'),  # UniBE Library
-                    ]
-    if start_after is None:
-        start_after = datetime.utcnow() - timedelta(days=30)  # fetch one month ago by default
-
-    results, total = fetch_events(lang, sections, start_after, end_before, offset, limit)
-
-    return StreamingResponse(generate_ics(lang, results), media_type='text/calendar')
 
 
 @router.get("/sections", summary='Sections to filter News and Events')

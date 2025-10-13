@@ -6,7 +6,8 @@ from sqlmodel import Session, select
 from zms.unibe.mobileapp.sqlmodels.ServiceLinks import ServiceLink
 from zms.unibe.utils.db import connect_sqldb
 from zms.unibe.utils.helpers import local_timezone
-from zms.unibe.utils.zms2sql.attributes import Lang, get_attr_by_lang
+from zms.unibe.utils.helpers import get_attr_by_lang
+from zms.unibe.utils.enums import Lang  # TODO: Lang->Locale as in zmscontent.routers
 from ..schemas import servicelinks as schema
 
 router = APIRouter(

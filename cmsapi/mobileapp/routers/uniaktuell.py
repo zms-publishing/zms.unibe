@@ -6,9 +6,11 @@ from sqlmodel import Session, select, not_
 from zms.unibe.foundation.sqlmodels.ZMSSite import ZMSSite
 from zms.unibe.uniaktuell.sqlmodels import UniaktuellArticle as model
 from zms.unibe.utils.db import connect_sqldb
-from zms.unibe.utils.zms2sql.attributes import Lang, get_attr_by_lang, strip_cmstest, get_uniaktuell_lang_str
+from zms.unibe.utils.helpers import get_attr_by_lang, strip_cmstest
+from zms.unibe.utils.enums import Lang, ContentModel  # TODO: Lang->Locale as in zmscontent.routers
 from ..schemas import uniaktuell as schema
 from ..schemas.newsevents import Section
+from ...zmscontent.routers.labels import get_content_labels
 
 router = APIRouter(
     prefix="/v3",
@@ -25,6 +27,10 @@ async def get_uniaktuell(
         limit: int = 20):
 
     data = []
+
+    # get translations from unibe langdict
+    locale = {'ger': 'de', 'eng': 'en', 'fra': 'fr'}
+    labels = get_content_labels(locale[lang.value], ContentModel.Uniaktuell)
 
     with Session(connect_sqldb()) as session:
         statement = [select(model.UniaktuellArticle, ZMSSite).join(ZMSSite).
@@ -60,15 +66,23 @@ async def get_uniaktuell(
                 path=res.ZMSSite.path,
                 uuid=res.ZMSSite.uuid
             )
+            category = get_attr_by_lang(lang,
+                                        res.UniaktuellArticle.category_de,
+                                        res.UniaktuellArticle.category_en,
+                                        res.UniaktuellArticle.category_fr)
+            topic = get_attr_by_lang(lang,
+                                     res.UniaktuellArticle.topics_de,
+                                     res.UniaktuellArticle.topics_en,
+                                     res.UniaktuellArticle.topics_fr)
 
-            topics = [get_uniaktuell_lang_str(lang, get_attr_by_lang(lang,
-                                                                     res.UniaktuellArticle.category_de,
-                                                                     res.UniaktuellArticle.category_en,
-                                                                     res.UniaktuellArticle.category_fr)),
-                      get_uniaktuell_lang_str(lang, get_attr_by_lang(lang,
-                                                                     res.UniaktuellArticle.topics_de,
-                                                                     res.UniaktuellArticle.topics_en,
-                                                                     res.UniaktuellArticle.topics_fr))]
+            # TODO: check use cases and value settings
+            # TODO: UniaktuellArticle.rubrik -> category
+            # TODO: UniaktuellArticle.themen -> topics
+            # TODO: UniaktuellArticle.get_ontology
+            if labels.get(topic) is not None:
+                topics = category + [labels.get(topic)]
+            else:
+                topics = category
 
             data.append(schema.UniaktuellArticle.model_validate({
                 'title': get_attr_by_lang(lang,

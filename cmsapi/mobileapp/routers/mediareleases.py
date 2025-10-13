@@ -6,7 +6,8 @@ from sqlmodel import Session, select, not_
 from zms.unibe.announcements.sqlmodels import MediaNews as model
 from zms.unibe.foundation.sqlmodels.ZMSSite import ZMSSite
 from zms.unibe.utils.db import connect_sqldb
-from zms.unibe.utils.zms2sql.attributes import Lang, get_attr_by_lang, strip_cmstest
+from zms.unibe.utils.helpers import get_attr_by_lang, strip_cmstest
+from zms.unibe.utils.enums import Lang  # TODO: Lang->Locale as in zmscontent.routers
 from ..schemas import mediareleases as schema
 from ..schemas.newsevents import Section
 
