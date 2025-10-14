@@ -23,7 +23,7 @@ class ZMSSchedulerRegistry(SQLModel, table=True):
             'id':               None,
             'task_uuid':        parse_uuid(obj._uid),
             'task_path':        obj.getPath(),
-            'task_title':       obj.attr('outlookid'),
+            'task_title':       obj.attr('outlook_upn'),
             'exec_onchange':    True,
             'exec_zms2sql':     False,
             'exec_opensearch':  False,
