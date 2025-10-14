@@ -167,7 +167,7 @@ def schedule_agenda_update_by_upn(
     with Session(sqlengine) as session:
         for item in zmsindex:  # an UPN may by set for multiple ZMSAgenda objects
             obj = item.getObject()
-            if obj.attr('include_outlook') and obj.attr('outlookid') == upn:
+            if obj.attr('include_outlook') and obj.attr('outlook_upn') == upn:
                 session.add(ZMSSchedulerRegistry.from_agenda(obj))
                 session.commit()
         
