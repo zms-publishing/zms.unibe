@@ -45,7 +45,7 @@ class OutlookConnector(ObjectManager):
         
         return access_token.token
 
-    async def get_calendar_events(self, start_date, end_date):
+    async def get_calendar_events(self, begin_date, end_date):
         """
         Fetch calendar events of the set account in the given time range.
 
@@ -80,7 +80,7 @@ class OutlookConnector(ObjectManager):
         # https://learn.microsoft.com/en-us/graph/api/user-list-calendarview?view=graph-rest-1.0&tabs=http
         response = requests.get(url=f"https://graph.microsoft.com/v1.0"
                                     f"/users/{self.account}/calendarView"
-                                    f"?startDateTime={local_timezone(start_date, tz='UTC').isoformat()[:-6]}"
+                                    f"?startDateTime={local_timezone(begin_date, tz='UTC').isoformat()[:-6]}"
                                     f"&endDateTime={local_timezone(end_date, tz='UTC', days_delta=1).isoformat()[:-6]}"
                                     f"&$top=100",
                                 headers=headers)
@@ -110,7 +110,7 @@ class OutlookConnector(ObjectManager):
         raise ValueError(response_json)
 
     @security.public
-    def debug_calendar_events(self, start_date, end_date, events_endpoint=None,
+    def debug_calendar_events(self, begin_date, end_date, events_endpoint=None,
                                      event_id=None, attachment_id=None, decode_base64=False):
         headers = {
             'Authorization': 'Bearer ' + asyncio.run(self.get_access_token()),
@@ -138,7 +138,7 @@ class OutlookConnector(ObjectManager):
 
         response = requests.get(url=f"https://graph.microsoft.com/v1.0"
                                     f"/users/{self.account}/calendarView"
-                                    f"?startDateTime={local_timezone(start_date, tz='UTC').isoformat()[:-6]}"
+                                    f"?startDateTime={local_timezone(begin_date, tz='UTC').isoformat()[:-6]}"
                                     f"&endDateTime={local_timezone(end_date, tz='UTC', days_delta=1).isoformat()[:-6]}"
                                     f"&$top=100",
                                 headers=headers)

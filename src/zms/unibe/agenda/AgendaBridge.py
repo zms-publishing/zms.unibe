@@ -25,39 +25,25 @@ LOGGER = logging.getLogger('ZMSAgenda')
 class AgendaBridge(ObjectManager):
     security = ClassSecurityInfo()  # control access to class methods in RestrictedPython
     
-    def __init__(self, locale, start_date=None, end_date=None, categories=None):
+    def __init__(self, locale, begin_date=None, end_date=None):
         self.events = []
         self.locale = locale
-        self.start_date = local_timezone(start_date)
+        self.begin_date = local_timezone(begin_date)
         self.end_date = local_timezone(end_date)
-        self.categories = categories
 
     @security.public    
     def get_events(self, mode=None):
-        array = [x.model_dump() for x in sorted(
+        events = [x.model_dump() for x in sorted(
             self.events,
-            key=attrgetter('eventStartDateTime', 'eventEndDateTime')
+            key=attrgetter('eventBeginDateTime', 'eventEndDateTime')
         )]
 
-        # filter out events without the given categories
-        if isinstance(self.categories, list) and len(self.categories) > 0:
-            prefix = 'ZMSAgenda.Category.'
-            array_filtered = []
-            for category in self.categories:
-                category = category.replace(prefix, '').replace('_', ' ')
-                array_tmp = list(filter(lambda x: category in (x.get('eventTopics')
-                                                               if x.get('eventTopics') is not None else []), array))
-                for item in array_tmp:
-                    if item not in array_filtered:
-                        array_filtered.append(item)
-            array = array_filtered
-
         if mode == 'dict':
-            return array
+            return events
         elif mode == 'dotdict':
-            return [DotDict(x) for x in array]
+            return [DotDict(x) for x in events]
         elif mode == 'json':
-            return json.dumps(array, indent=4, sort_keys=True, default=str)
+            return json.dumps(events, indent=4, sort_keys=True, default=str)
         return self.events
 
     @security.public
@@ -90,7 +76,7 @@ class AgendaBridge(ObjectManager):
         assert schema_input is not None, 'schema_input is required'
 
         outlook = OutlookConnector(account=account)
-        calendar = json.loads(asyncio.run(outlook.get_calendar_events(start_date=self.start_date,
+        calendar = json.loads(asyncio.run(outlook.get_calendar_events(begin_date=self.begin_date,
                                                                       end_date=self.end_date)))
         if isinstance(calendar, list):
             for item in calendar:
