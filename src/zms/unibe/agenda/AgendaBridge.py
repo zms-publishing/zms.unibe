@@ -5,6 +5,7 @@ import asyncio
 import requests
 import json
 import logging
+import os
 
 from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
@@ -46,6 +47,21 @@ class AgendaBridge(ObjectManager):
             return json.dumps(events, indent=4, sort_keys=True, default=str)
         return self.events
 
+    @security.public    
+    def get_categories(self, upn):
+        # WORKAROUND for FindCategoriesAccessDenied via MS Graph API
+        # see zms-addons: zms.unibe.agenda.OutlookConnector.py.debug_calendar_categories
+        # see zms-fastapi: cmsapi.zmscontent.routers.agenda.get_agenda_categories_by_upn
+        url = os.getenv('ZMS_FASTAPI_URL', 'http://localhost:5003')
+        endpoint = f'/v3/zms/content/agenda/{upn}/categories'
+        
+        if upn.endswith('@campus.unibe.ch'):
+            response = requests.get(f'{url}{endpoint}')
+            if response.status_code == 200:
+                return response.json()
+        
+        return []
+            
     @security.public
     def import_events_from_url(self, url=None,
                                schema_output=None, schema_input=None, response_dict_key='events'):
