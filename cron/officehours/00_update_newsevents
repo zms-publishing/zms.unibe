@@ -5,8 +5,8 @@ echo $now cmsadm update NewsEvents
 echo "==========================================================================" >> $VENV_HOME/log/api-cron.log
 echo $now >> $VENV_HOME/log/api-cron.log
 echo "--------------------------------------------------------------------------" >> $VENV_HOME/log/api-cron.log
-$VENV_HOME/bin/zms2sql-fetch-agendas &>> $VENV_HOME/log/api-cron.log
-$VENV_HOME/bin/zms2sql-fetch-statusmessages &>> $VENV_HOME/log/api-cron.log
-$VENV_HOME/bin/zms2sql-update-zmssites &>> $VENV_HOME/log/api-cron.log
-$VENV_HOME/bin/zms2sql-update-teasers &>> $VENV_HOME/log/api-cron.log
-$VENV_HOME/bin/zms2sql-update-newsevents &>> $VENV_HOME/log/api-cron.log
+$VENV_HOME/bin/zms2sql fetch-agendas &>> $VENV_HOME/log/api-cron.log
+$VENV_HOME/bin/zms2sql fetch-statusmessages &>> $VENV_HOME/log/api-cron.log
+$VENV_HOME/bin/zms2sql update-zmssites &>> $VENV_HOME/log/api-cron.log
+$VENV_HOME/bin/zms2sql update-teasers &>> $VENV_HOME/log/api-cron.log
+$VENV_HOME/bin/zms2sql update-newsevents &>> $VENV_HOME/log/api-cron.log

@@ -5,8 +5,8 @@ echo "$now cmsadm update --metaobj all"
 echo "==========================================================================" >> $VENV_HOME/log/api-cron.log
 echo $now >> $VENV_HOME/log/api-cron.log
 echo "--------------------------------------------------------------------------" >> $VENV_HOME/log/api-cron.log
-$VENV_HOME/bin/zms2sql-update-zmsobjects &>> $VENV_HOME/log/api-cron.log
-$VENV_HOME/bin/zms2sql-update-datatables &>> $VENV_HOME/log/api-cron.log
-$VENV_HOME/bin/zms2sql-update-formulator &>> $VENV_HOME/log/api-cron.log
-$VENV_HOME/bin/zms2sql-update-contacts &>> $VENV_HOME/log/api-cron.log
-$VENV_HOME/bin/zms2sql-update-layouts &>> $VENV_HOME/log/api-cron.log
+$VENV_HOME/bin/zms2sql update-zmsobjects &>> $VENV_HOME/log/api-cron.log
+$VENV_HOME/bin/zms2sql update-datatables &>> $VENV_HOME/log/api-cron.log
+$VENV_HOME/bin/zms2sql update-formulator &>> $VENV_HOME/log/api-cron.log
+$VENV_HOME/bin/zms2sql update-contacts &>> $VENV_HOME/log/api-cron.log
+$VENV_HOME/bin/zms2sql update-layouts &>> $VENV_HOME/log/api-cron.log
