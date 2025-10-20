@@ -50,13 +50,17 @@ class AgendaBridge(ObjectManager):
     @security.public    
     def get_categories(self, upn):
         # WORKAROUND for FindCategoriesAccessDenied via MS Graph API
-        # see zms-addons: zms.unibe.agenda.OutlookConnector.py.debug_calendar_categories
-        # see zms-fastapi: cmsapi.zmscontent.routers.agenda.get_agenda_categories_by_upn
-        url = os.getenv('ZMS_FASTAPI_URL', 'http://localhost:5003')
-        endpoint = f'/v3/zms/content/agenda/{upn}/categories'
+        # With delegated permission MailboxSettings.Read* you can't read/write outlook categories of other users.
+        # Only way to read/write outlook categories is with application permission MailboxSettings.ReadWrite.
+        # With this application permission, you can limit the scope to a subset of mailboxes.
+        # https://stackoverflow.com/questions/77825238/get-create-categories-for-any-user-in-outlook-calendar-with-graphapi
+        #
+        # see zms-addons: zms.unibe.agenda.OutlookConnector.debug_calendar_categories
+        url = os.getenv('AGENDA_CATEGORIES_URL', 'http://localhost:8081/unibe/agenda-categories.json')
+        query = f'?upn={upn}'
         
-        if upn.endswith('@campus.unibe.ch'):
-            response = requests.get(f'{url}{endpoint}')
+        if 'agenda' in upn and upn.endswith('@campus.unibe.ch'):
+            response = requests.get(f'{url}{query}')
             if response.status_code == 200:
                 return response.json()
         
