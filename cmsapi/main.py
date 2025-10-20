@@ -5,7 +5,7 @@ from fastapi.responses import PlainTextResponse, RedirectResponse
 
 from cmsapi.metadata import tags
 from cmsapi.mobileapp.routers import newsevents, servicelinks, uniaktuell, mediareleases
-from cmsapi.zmscontent.routers import objects, labels, scheduler
+from cmsapi.zmscontent.routers import objects, labels, scheduler, agenda
 
 app = FastAPI(title="CMSAPI-v3",
               version="3.3.0dev",
@@ -39,6 +39,7 @@ app.include_router(servicelinks.router)
 # UniBE Web CMS (unibe.ch)
 app.include_router(labels.router)
 app.include_router(objects.router)
+app.include_router(agenda.router)
 app.include_router(scheduler.router)
 
 

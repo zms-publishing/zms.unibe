@@ -9,7 +9,7 @@ tags = [  # see https://fastapi.tiangolo.com/tutorial/metadata/#metadata-for-tag
     },
     {
         "name": "UniBE Web CMS (unibe.ch)",
-        "description": "Inspect Content Models, analyze Content Objects, and retrieve Contents",
+        "description": "Retrieve Content Objects, Translations, and Data",
         "externalDocs": {
             "description": "GitHub / zms-fastapi / cmsapi / zmscontent",
             "url": "https://github.com/idasm-unibe-ch/zms-fastapi/tree/main/cmsapi/zmscontent"
