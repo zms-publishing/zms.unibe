@@ -12,7 +12,7 @@ from zms.unibe.mobileapp.sqlmodels.NewsEvents import NewsEvents
 from zms.unibe.agenda.sqlmodels.StatusMessages import StatusMessage
 from zms.unibe.utils.db import connect_sqldb
 from zms.unibe.utils.helpers import get_attr_by_lang, strip_cmstest, local_timezone
-from zms.unibe.utils.enums import Lang, SiteType  # TODO: Lang->Locale as in zmscontent.routers
+from zms.unibe.utils.enums import Locale, SiteType
 from ..schemas import newsevents as schema
 
 router = APIRouter(
@@ -25,7 +25,7 @@ router = APIRouter(
                         'and faculties at <a href="https://www.unibe.ch/fakultaeteninstitute" '
                         'target="_blank">unibe.ch/fakultaeteninstitute</a>')
 async def get_news(
-        lang: Lang = Lang.de,
+        lang: Locale = Locale.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
         date_after: datetime | None = Query(None, description='Filter by date after (UTC)'),
         offset: int = 0,
@@ -215,7 +215,7 @@ def get_sections_tree(data, lang):
                         '<a href="https://agenda.unibe.ch" target="_blank">agenda.unibe.ch</a> and '
                         '<a href="https://agenda.ub.unibe.ch" target="_blank">agenda.ub.unibe.ch</a>')
 async def get_events(
-        lang: Lang = Lang.de,
+        lang: Locale = Locale.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
         start_after: datetime | None = Query(None, description='Filter by start after (UTC)'),
         end_before: datetime | None = Query(None, description='Filter by end before (UTC)'),
@@ -293,7 +293,7 @@ async def get_events(
 
 @router.get("/sections", summary='Sections to filter News and Events')
 async def get_sections(
-        lang: Lang = Lang.de,
+        lang: Locale = Locale.de,
         tree: bool = False,
         types: list[SiteType] = Query([SiteType.Fakultaet.value,
                                        SiteType.Departement.value,

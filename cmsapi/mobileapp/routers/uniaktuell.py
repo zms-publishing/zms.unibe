@@ -7,7 +7,7 @@ from zms.unibe.foundation.sqlmodels.ZMSSite import ZMSSite
 from zms.unibe.uniaktuell.sqlmodels import UniaktuellArticle as model
 from zms.unibe.utils.db import connect_sqldb
 from zms.unibe.utils.helpers import get_attr_by_lang, strip_cmstest
-from zms.unibe.utils.enums import Lang, ContentModel  # TODO: Lang->Locale as in zmscontent.routers
+from zms.unibe.utils.enums import Locale, ContentModel
 from ..schemas import uniaktuell as schema
 from ..schemas.newsevents import Section
 from ...zmscontent.routers.labels import get_content_labels
@@ -21,7 +21,7 @@ router = APIRouter(
             description='Magazine articles from <a href="https://www.uniaktuell.unibe.ch" '
                         'target="_blank">uniaktuell.unibe.ch</a>')
 async def get_uniaktuell(
-        lang: Lang = Lang.de,
+        lang: Locale = Locale.de,
         date_after: datetime | None = Query(None, description='Filter by date after (UTC)'),
         offset: int = 0,
         limit: int = 20):
@@ -29,8 +29,7 @@ async def get_uniaktuell(
     data = []
 
     # get translations from unibe langdict
-    locale = {'ger': 'de', 'eng': 'en', 'fra': 'fr'}
-    labels = get_content_labels(locale[lang.value], ContentModel.Uniaktuell)
+    labels = get_content_labels(lang, ContentModel.Uniaktuell)
 
     with Session(connect_sqldb()) as session:
         statement = [select(model.UniaktuellArticle, ZMSSite).join(ZMSSite).

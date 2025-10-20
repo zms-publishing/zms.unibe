@@ -7,7 +7,7 @@ from zms.unibe.announcements.sqlmodels import MediaNews as model
 from zms.unibe.foundation.sqlmodels.ZMSSite import ZMSSite
 from zms.unibe.utils.db import connect_sqldb
 from zms.unibe.utils.helpers import get_attr_by_lang, strip_cmstest
-from zms.unibe.utils.enums import Lang  # TODO: Lang->Locale as in zmscontent.routers
+from zms.unibe.utils.enums import Locale
 from ..schemas import mediareleases as schema
 from ..schemas.newsevents import Section
 
@@ -21,7 +21,7 @@ router = APIRouter(
                         '<a href="https://www.unibe.ch/news/media_news/media_relations_e/media_releases" '
                         'target="_blank">unibe.ch/medien</a>')
 async def get_mediareleases(
-        lang: Lang = Lang.de,
+        lang: Locale = Locale.de,
         date_after: datetime | None = Query(None, description='Filter by date after (UTC)'),
         offset: int = 0,
         limit: int = 20):
