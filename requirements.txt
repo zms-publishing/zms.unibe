@@ -9,6 +9,7 @@ ics                             # https://github.com/ics-py/ics-py
 python-dotenv                   # https://github.com/theskumar/python-dotenv
 lxml                            # https://github.com/lxml/lxml
 Markdown                        # https://github.com/Python-Markdown/markdown
+markitdown[all]                 # https://github.com/microsoft/markitdown
 msgraph-sdk                     # https://github.com/microsoftgraph/msgraph-sdk-python
 opensearch-py                   # https://github.com/opensearch-project/opensearch-py
 pdfminer.six                    # https://github.com/pdfminer/pdfminer.six
@@ -18,7 +19,7 @@ Products.PluginRegistry         # https://github.com/zopefoundation/Products.Plu
 Products.ZSQLMethods            # https://github.com/zopefoundation/Products.ZSQLMethods
 psycopg2                        # https://www.psycopg.org/docs/install.html#psycopg-vs-psycopg-binary
 pydantic                        # https://pydantic-docs.helpmanual.io
-pydevd-pycharm~=252.23892.515   # https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html -> Debugger for PyCharm 2025.2.0.1 built on August 11, 2025
+pydevd-pycharm~=252.26830.99    # https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html -> Debugger for PyCharm 2025.2.3 built on October 2, 2025
 requests                        # https://requests.readthedocs.io
 requests-oauthlib               # https://github.com/requests/requests-oauthlib
 rich                            # https://github.com/Textualize/rich

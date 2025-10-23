@@ -40,7 +40,7 @@ class NewsBox(ZMSBase, table=True):
             'type':             obj.attr('boxtype'),
             'img':              get_url(obj, 'img'),
             'start_dt':         parse_datetime(obj.attr('attr_event_start')),
-            'end_dt':           parse_datetime(obj.attr('ttr_event_end')),
+            'end_dt':           parse_datetime(obj.attr('attr_event_end')),
             'text_de':          get_attr(obj, 'text', 'ger'),
             'text_en':          get_attr(obj, 'text', 'eng'),
             'text_fr':          get_attr(obj, 'text', 'fra'),
