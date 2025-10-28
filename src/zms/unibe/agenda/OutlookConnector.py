@@ -17,7 +17,7 @@ from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
 
-from Products.zms.standard import pybool
+from Products.zms.standard import pybool, getDataSizeStr
 from zms.unibe.utils.helpers import DotDict, local_timezone
 
 print('Addon: zms.unibe.agenda.OutlookConnector')
@@ -215,6 +215,8 @@ class OutlookConnector(ObjectManager):
                     'size': attachment.size,
                     "isInline": attachment.is_inline,
                     'lastModifiedDateTime': attachment.last_modified_date_time,
+                    'fileExtension': attachment.content_type.split('/')[-1] if '/' in attachment.content_type else None,
+                    'fileSize': getDataSizeStr(attachment.size),
                 }))
             return attachment_list
 
