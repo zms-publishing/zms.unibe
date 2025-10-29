@@ -206,19 +206,7 @@ class OutlookConnector(ObjectManager):
             attachments = asyncio.run(self.graph_client.users.by_user_id(self.account).events.by_event_id(
                 event_id).attachments.get(request_configuration=request_config))
 
-            for i, attachment in enumerate(attachments.value):
-                attachment_list.append(DotDict({
-                    'id': attachment.id,
-                    'contentId': attachment.content_id,  # TODO: needed to identify inline images by cid: to get bytes data...?!
-                    'contentType': attachment.content_type,
-                    'name': attachment.name,
-                    'size': attachment.size,
-                    "isInline": attachment.is_inline,
-                    'lastModifiedDateTime': attachment.last_modified_date_time,
-                    'fileExtension': attachment.content_type.split('/')[-1] if '/' in attachment.content_type else None,
-                    'fileSize': getDataSizeStr(attachment.size),
-                }))
-            return attachment_list
+            return attachments.value
 
         # retrieve attachment data of an event
         attachment_data = asyncio.run(self.graph_client.users.by_user_id(self.account).events.by_event_id(
