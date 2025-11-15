@@ -102,7 +102,9 @@ class AgendaBridge(ObjectManager):
             for item in calendar:
                 attachments = None
                 if item.get('hasAttachments'):
-                    attachments = outlook.get_event_attachments(event_id=item.get('id'))
+                    attachments = []
+                    for attachment in outlook.get_event_attachments(event_id=item.get('id')):
+                        attachments.append(schema_input.mapping_attachment(attachment))
                 event = schema_input.mapping(DotDict(item),
                                              attachments,
                                              self.locale)
