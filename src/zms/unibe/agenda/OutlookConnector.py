@@ -6,7 +6,6 @@ import json
 import requests
 import base64
 import logging
-from devtools import debug
 from dotenv import load_dotenv
 from azure.identity import EnvironmentCredential
 from msgraph import GraphServiceClient
@@ -17,7 +16,7 @@ from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
 
-from Products.zms.standard import pybool, getDataSizeStr
+from Products.zms.standard import pybool
 from zms.unibe.utils.helpers import DotDict, local_timezone
 
 print('Addon: zms.unibe.agenda.OutlookConnector')
@@ -34,8 +33,8 @@ class OutlookConnector(ObjectManager):
 
     security = ClassSecurityInfo()  #  control access to class methods in RestrictedPython
 
-    def __init__(self, account):
-        self.account = account
+    def __init__(self, upn):
+        self.upn = upn
         self.credential = EnvironmentCredential()
         self.graph_client = GraphServiceClient(self.credential)  # type: ignore
         
@@ -45,14 +44,14 @@ class OutlookConnector(ObjectManager):
         
         return access_token.token
 
-    async def get_calendar_events(self, begin_date, end_date):
+    def get_calendar_events(self, begin_date, end_date):
         """
-        Fetch calendar events of the set account in the given time range.
+        Fetch calendar events of the set UPN in the given time range.
 
         The events retrieved are filtered to include either the events organized by
-        the set account or the events accepted by the set account following an invitation.
+        the set UPN or the events accepted by the set UPN following an invitation.
 
-        If the event is an invitation accepted by the set account, the organizer's name
+        If the event is an invitation accepted by the set UPN, the organizer's name
         is removed from the event subject.
 
         Events shown as tentative are not included in the result.
@@ -62,13 +61,13 @@ class OutlookConnector(ObjectManager):
 
         Returns:
             str: A JSON string containing the list of events filtered for the
-                 set account on specific criteria.
+                 set UPN on specific criteria.
 
         Raises:
             ValueError: If the API response contains an error or invalid data.
         """
         headers = {
-            'Authorization': 'Bearer ' + await self.get_access_token(),
+            'Authorization': 'Bearer ' + asyncio.run(self.get_access_token()),
             'Prefer': 'IdType="ImmutableId",'  # https://learn.microsoft.com/en-us/graph/outlook-immutable-id
                       'outlook.timezone="Europe/Berlin"',  # https://learn.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-1.0&tabs=http#support-various-time-zones
         }
@@ -79,7 +78,7 @@ class OutlookConnector(ObjectManager):
         # /calendarView -> unfolds recurring event settings to multiple event occurrences in the set behaviour
         # https://learn.microsoft.com/en-us/graph/api/user-list-calendarview?view=graph-rest-1.0&tabs=http
         response = requests.get(url=f"https://graph.microsoft.com/v1.0"
-                                    f"/users/{self.account}/calendarView"
+                                    f"/users/{self.upn}/calendarView"
                                     f"?startDateTime={local_timezone(begin_date, tz='UTC').isoformat()[:-6]}"
                                     f"&endDateTime={local_timezone(end_date, tz='UTC', days_delta=1).isoformat()[:-6]}"
                                     f"&$top=100",
@@ -93,13 +92,13 @@ class OutlookConnector(ObjectManager):
             data = response_json["value"]
             for event in data:
                 event = DotDict(event)
-                if event.organizer.emailAddress.address == self.account:
+                if event.organizer.emailAddress.address == self.upn:
                     if event.showAs != 'tentative':
                         return_json.append(event)
                 else:
                     for attendee in event.attendees:
                         attendee = DotDict(attendee)
-                        if attendee.emailAddress.address == self.account:
+                        if attendee.emailAddress.address == self.upn:
                             if attendee.status.response == 'accepted':
                                 event.subject = event.subject.replace(event.organizer.emailAddress.name, '').strip()
                                 if event.showAs != 'tentative':
@@ -119,7 +118,7 @@ class OutlookConnector(ObjectManager):
         }
         if pybool(events_endpoint):
             response = requests.get(url=f"https://graph.microsoft.com/v1.0"
-                                        f"/users/{self.account}/events"
+                                        f"/users/{self.upn}/events"
                                         f"?$top=100",
                                     headers=headers)
             return json.dumps(response.json(), indent=4, sort_keys=True)
@@ -132,12 +131,12 @@ class OutlookConnector(ObjectManager):
                 return rtn
             else:
                 response = requests.get(url=f"https://graph.microsoft.com/v1.0"
-                                            f"/users/{self.account}/events/{event_id}",
+                                            f"/users/{self.upn}/events/{event_id}",
                                         headers=headers)
                 return json.dumps(response.json(), indent=4, sort_keys=True)
 
         response = requests.get(url=f"https://graph.microsoft.com/v1.0"
-                                    f"/users/{self.account}/calendarView"
+                                    f"/users/{self.upn}/calendarView"
                                     f"?startDateTime={local_timezone(begin_date, tz='UTC').isoformat()[:-6]}"
                                     f"&endDateTime={local_timezone(end_date, tz='UTC', days_delta=1).isoformat()[:-6]}"
                                     f"&$top=100",
@@ -157,7 +156,7 @@ class OutlookConnector(ObjectManager):
         # With this application permission, you can limit the scope to a subset of mailboxes.
         # https://stackoverflow.com/questions/77825238/get-create-categories-for-any-user-in-outlook-calendar-with-graphapi
         response = requests.get(url=f"https://graph.microsoft.com/v1.0"
-                                    f"/users/{self.account}/outlook/masterCategories",
+                                    f"/users/{self.upn}/outlook/masterCategories",
                                 headers=headers)
         return json.dumps(response.json(), indent=4, sort_keys=True)                              
 
@@ -203,13 +202,13 @@ class OutlookConnector(ObjectManager):
             request_config = RequestConfiguration(
                 query_parameters=query_params,
             )
-            attachments = asyncio.run(self.graph_client.users.by_user_id(self.account).events.by_event_id(
+            attachments = asyncio.run(self.graph_client.users.by_user_id(self.upn).events.by_event_id(
                 event_id).attachments.get(request_configuration=request_config))
 
             return attachments.value
 
         # retrieve attachment data of an event
-        attachment_data = asyncio.run(self.graph_client.users.by_user_id(self.account).events.by_event_id(
+        attachment_data = asyncio.run(self.graph_client.users.by_user_id(self.upn).events.by_event_id(
             event_id).attachments.by_attachment_id(
             attachment_id).get())
         if decode_base64:

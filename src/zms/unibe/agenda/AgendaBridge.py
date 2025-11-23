@@ -1,7 +1,6 @@
 # AgendaBridge aggregates events from different data sources
 # see also sqlmodels/__main__.py to store in PostgreSQL for unibe.app
 
-import asyncio
 import requests
 import json
 import logging
@@ -95,9 +94,8 @@ class AgendaBridge(ObjectManager):
         assert schema_output is not None, 'schema_output is required'
         assert schema_input is not None, 'schema_input is required'
 
-        outlook = OutlookConnector(account=account)
-        calendar = json.loads(asyncio.run(outlook.get_calendar_events(begin_date=self.begin_date,
-                                                                      end_date=self.end_date)))
+        outlook = OutlookConnector(upn=account)
+        calendar = json.loads(outlook.get_calendar_events(begin_date=self.begin_date, end_date=self.end_date))
         if isinstance(calendar, list):
             for item in calendar:
                 attachments = None
