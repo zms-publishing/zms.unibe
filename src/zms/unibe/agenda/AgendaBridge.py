@@ -25,9 +25,10 @@ LOGGER = logging.getLogger('ZMSAgenda')
 class AgendaBridge(ObjectManager):
     security = ClassSecurityInfo()  # control access to class methods in RestrictedPython
     
-    def __init__(self, locale, begin_date=None, end_date=None):
+    def __init__(self, locale, accounts='', begin_date=None, end_date=None):
         self.events = []
         self.locale = locale
+        self.accounts = (accounts.replace(';', ' ').replace(',', ' ')).split()
         self.begin_date = local_timezone(begin_date)
         self.end_date = local_timezone(end_date)
 
@@ -47,7 +48,7 @@ class AgendaBridge(ObjectManager):
         return self.events
 
     @security.public    
-    def get_categories(self, upn):
+    def get_categories(self, token):
         # WORKAROUND for FindCategoriesAccessDenied via MS Graph API
         # With delegated permission MailboxSettings.Read* you can't read/write outlook categories of other users.
         # Only way to read/write outlook categories is with application permission MailboxSettings.ReadWrite.
@@ -56,14 +57,18 @@ class AgendaBridge(ObjectManager):
         #
         # see zms-addons: zms.unibe.agenda.OutlookConnector.debug_calendar_categories
         url = os.getenv('AGENDA_CATEGORIES_URL', 'http://localhost:8081/unibe/agenda-categories.json')
-        query = f'?upn={upn}'
+        categories = []
+
+        response = requests.get(f'{url}?token={token}')
+        if response.status_code == 200:
+            agenda_categories = response.json()
+        else:
+            agenda_categories = {}
         
-        if 'agenda' in upn and upn.endswith('@campus.unibe.ch'):
-            response = requests.get(f'{url}{query}')
-            if response.status_code == 200:
-                return response.json()
-        
-        return []
+        for account in self.accounts:
+            if account in agenda_categories.keys():
+                categories.extend(agenda_categories[account])
+        return list(set(categories))
             
     @security.public
     def import_events_from_url(self, url=None,
@@ -88,26 +93,26 @@ class AgendaBridge(ObjectManager):
         return None
 
     @security.public
-    def import_events_from_outlook(self, account=None,
-                                   schema_output=None, schema_input=None):
-        assert account is not None, 'account is required'
+    def import_events_from_outlook(self, schema_output=None, schema_input=None):
         assert schema_output is not None, 'schema_output is required'
         assert schema_input is not None, 'schema_input is required'
 
-        outlook = OutlookConnector(upn=account)
-        calendar = json.loads(outlook.get_calendar_events(begin_date=self.begin_date, end_date=self.end_date))
-        if isinstance(calendar, list):
-            for item in calendar:
-                attachments = None
-                if item.get('hasAttachments'):
-                    attachments = []
-                    for attachment in outlook.get_event_attachments(event_id=item.get('id')):
-                        attachments.append(schema_input.mapping_attachment(attachment))
-                event = schema_input.mapping(DotDict(item),
-                                             attachments,
-                                             self.locale)
-                if event is not None:
-                    self.events.append(schema_output.model_validate(event))
+        for account in self.accounts:
+            outlook = OutlookConnector(upn=account)
+            calendar = json.loads(outlook.get_calendar_events(begin_date=self.begin_date, end_date=self.end_date))
+            if isinstance(calendar, list):
+                for item in calendar:
+                    attachments = None
+                    if item.get('hasAttachments'):
+                        attachments = []
+                        for attachment in outlook.get_event_attachments(event_id=item.get('id')):
+                            attachments.append(schema_input.mapping_attachment(attachment))
+                    event = schema_input.mapping(DotDict(item),
+                                                 attachments,
+                                                 account,
+                                                 self.locale)
+                    if event is not None:
+                        self.events.append(schema_output.model_validate(event))
         return None
     
     @security.public
