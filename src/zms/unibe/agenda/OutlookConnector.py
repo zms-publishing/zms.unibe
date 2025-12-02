@@ -37,6 +37,7 @@ class OutlookConnector(ObjectManager):
         self.upn = upn
         self.credential = EnvironmentCredential()
         self.graph_client = GraphServiceClient(self.credential)  # type: ignore
+        self.access_token = asyncio.run(self.get_access_token())
         
     async def get_access_token(self):
         graph_scope = 'https://graph.microsoft.com/.default'
@@ -67,7 +68,7 @@ class OutlookConnector(ObjectManager):
             ValueError: If the API response contains an error or invalid data.
         """
         headers = {
-            'Authorization': 'Bearer ' + asyncio.run(self.get_access_token()),
+            'Authorization': 'Bearer ' + self.access_token,
             'Prefer': 'IdType="ImmutableId",'  # https://learn.microsoft.com/en-us/graph/outlook-immutable-id
                       'outlook.timezone="Europe/Berlin"',  # https://learn.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-1.0&tabs=http#support-various-time-zones
         }
@@ -112,7 +113,7 @@ class OutlookConnector(ObjectManager):
     def debug_calendar_events(self, begin_date, end_date, events_endpoint=None,
                                      event_id=None, attachment_id=None, decode_base64=False):
         headers = {
-            'Authorization': 'Bearer ' + asyncio.run(self.get_access_token()),
+            'Authorization': 'Bearer ' + self.access_token,
             'Prefer': 'IdType="ImmutableId",'  # https://learn.microsoft.com/en-us/graph/outlook-immutable-id
                       'outlook.timezone="Europe/Berlin"',  # https://learn.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-1.0&tabs=http#support-various-time-zones
         }
@@ -146,7 +147,7 @@ class OutlookConnector(ObjectManager):
     @security.public
     def debug_calendar_categories(self):
         headers = {
-            'Authorization': 'Bearer ' + asyncio.run(self.get_access_token()),
+            'Authorization': 'Bearer ' + self.access_token,
             'Prefer': 'IdType="ImmutableId",'  # https://learn.microsoft.com/en-us/graph/outlook-immutable-id
                       'outlook.timezone="Europe/Berlin"',  # https://learn.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-1.0&tabs=http#support-various-time-zones
         }

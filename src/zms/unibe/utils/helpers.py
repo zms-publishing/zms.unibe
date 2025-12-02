@@ -1,19 +1,27 @@
+import logging
 import os
+import pytz
 import re
 import requests
 import time
+from bs4 import BeautifulSoup
+from babel.dates import format_date, format_time
 from devtools import debug
 from datetime import datetime, timedelta
 from DateTime import DateTime  # legacy Zope implementation, returned e.g. by ZopeTime()
+from markitdown import MarkItDown
+from markdown import markdown as render_as_html
+from io import BytesIO
 from uuid import UUID
 
-import pytz
 from AccessControl import ModuleSecurityInfo
 from Products.zms import standard, _blobfields
 
 from .enums import SiteType
 
-security = ModuleSecurityInfo('zms.unibe.utils.helpers.local_timezone')  # allow module import in RestrictedPython
+security = ModuleSecurityInfo('zms.unibe.utils.helpers')  # allow module import in RestrictedPython
+
+LOGGER = logging.getLogger('zms.unibe.utils.helpers')
 
 
 class DotDict(dict):
@@ -217,6 +225,79 @@ def get_data(obj, attr, lang=None):
         except:
             debug(href)
             return None
+
+
+def get_when(dt, mode, locale):
+    # broken or empty DateTimes for dt -> 1970-01-01T01:00:00+01:00
+    # https://babel.pocoo.org/en/latest/dates.html#pattern-syntax
+    if mode == 'date':
+        return format_date(dt, format='long', locale=locale)
+    elif mode == 'time':
+        return format_time(dt, format='short', locale='de')  # enforce 24h format to avoid AM/PM
+    elif mode == 'day':
+        return format_date(dt, format='d', locale=locale)
+    elif mode == 'weekday':
+        return format_date(dt, format='E', locale=locale).replace('.', '')
+
+    return dt  # datetime will be transformed to ISO on JSON export
+
+
+print('Addon: zms.unibe.utils.helpers.sanitize_html')
+@security.public
+def sanitize_html(content, return_type='html'):
+    """
+    Sanitizes HTML content by converting it into either plain markdown or sanitized HTML.
+    If the content starts with <html>, it uses the MarkItDown library to sanitize and 
+    convert it to markdown. Alternatively, the markdown is converted back to HTML,
+    performing additional cleaning such as removing images, empty paragraphs, and 
+    unwanted newline characters.
+
+    If errors occur, it uses BeautifulSoup to extract text content.
+
+    Parameters:
+    content (str): The input HTML content to be sanitized or processed.
+    
+    return_type (str, optional): Specifies the type of value to return:
+        - 'markdown': Converts the HTML to Markdown and returns it.
+        - 'html': Sanitizes the HTML, removing unwanted elements, and returns cleaned HTML.
+        - 'href': Extracts and returns the last hyperlink ('<a href="...">') present in the HTML.
+        Default is 'html'.
+
+    Returns:
+    str: The output in the format specified by `return_type`.
+
+    Raises:
+    Does not explicitly raise errors but logs any exceptions that occur during processing.
+    """
+    try:
+        if content.startswith('<html>'):
+            md = MarkItDown()
+            stream = BytesIO(content.encode(encoding="utf-8"))
+            markdown = md.convert_stream(stream).text_content
+            markdown = markdown.replace('\xa0', ' ')  # non-breaking space in Latin1 (ISO 8859-1)
+            if return_type == 'markdown':
+                return markdown
+            elif return_type == 'html':
+                html = render_as_html(markdown)
+                html = re.compile(r'<img.*?/>').sub('', html)
+                html = html.replace('<p></p>', '')
+                html = html.replace('\n', ' ')
+                return html.strip()
+
+    except Exception as e:
+        LOGGER.error(f'Error on sanitize_html: {e}')
+
+    soup = BeautifulSoup(content, "html.parser")
+    if return_type == 'href':
+        links = soup.find_all('a')
+        if len(links) > 0:
+            # last hyperlink in given HTML
+            return links[-1].get('href')
+    text = soup.get_text()
+    text = text.replace('\r\n', ' ')
+    text = text.replace('\n', '')
+    text = text.replace('  ', ' ')
+    return text.strip()
 
 
 # Apply security assertions by ModuleSecurityInfo()
