@@ -270,7 +270,7 @@ def sanitize_html(content, return_type='html'):
     Does not explicitly raise errors but logs any exceptions that occur during processing.
     """
     try:
-        if content.startswith('<html>'):
+        if content.startswith('<html>') and return_type in ('markdown', 'html'):
             md = MarkItDown()
             stream = BytesIO(content.encode(encoding="utf-8"))
             markdown = md.convert_stream(stream).text_content
@@ -288,11 +288,14 @@ def sanitize_html(content, return_type='html'):
         LOGGER.error(f'Error on sanitize_html: {e}')
 
     soup = BeautifulSoup(content, "html.parser")
+    
     if return_type == 'href':
         links = soup.find_all('a')
         if len(links) > 0:
             # last hyperlink in given HTML
             return links[-1].get('href')
+    
+    # extract at least plain text if conversion to markdown or html failed above
     text = soup.get_text()
     text = text.replace('\r\n', ' ')
     text = text.replace('\n', '')
