@@ -26,7 +26,7 @@ class ZMSBoris(ZMSBase, table=True):
             'descr_de':         get_attr(obj, 'attr_dc_description', 'ger'),
             'descr_en':         get_attr(obj, 'attr_dc_description', 'eng'),
             'descr_fr':         get_attr(obj, 'attr_dc_description', 'fra'),
-            'boris_data':       get_data(obj, '_datafilecached'),
+            'boris_data':       get_data(obj, '_datafilecached', json_as_py=False)[0],
             'lastupdate':       parse_datetime(obj.attr('_datalastupdated')),
         }
         return cls.model_validate(mapping)

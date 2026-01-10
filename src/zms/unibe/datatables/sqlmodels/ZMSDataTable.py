@@ -41,12 +41,12 @@ class ZMSDataTable(ZMSBase, table=True):
             'datafile_de':      get_url(obj, 'datafile', 'ger'),
             'datafile_en':      get_url(obj, 'datafile', 'eng'),
             'datafile_fr':      get_url(obj, 'datafile', 'fra'),
-            'cached_data_de':   get_data(obj, '_datafilecached', 'ger'),
-            'cached_data_en':   get_data(obj, '_datafilecached', 'eng'),
-            'cached_data_fr':   get_data(obj, '_datafilecached', 'fra'),
-            'upload_data_de':   get_data(obj, 'datafile', 'ger'),
-            'upload_data_en':   get_data(obj, 'datafile', 'eng'),
-            'upload_data_fr':   get_data(obj, 'datafile', 'fra'),
+            'cached_data_de':   get_data(obj, '_datafilecached', 'ger', json_as_py=False)[0],
+            'cached_data_en':   get_data(obj, '_datafilecached', 'eng', json_as_py=False)[0],
+            'cached_data_fr':   get_data(obj, '_datafilecached', 'fra', json_as_py=False)[0],
+            'upload_data_de':   get_data(obj, 'datafile', 'ger', json_as_py=False)[0],
+            'upload_data_en':   get_data(obj, 'datafile', 'eng', json_as_py=False)[0],
+            'upload_data_fr':   get_data(obj, 'datafile', 'fra', json_as_py=False)[0],
             'lastupdate':       parse_datetime(obj.attr('_datalastupdated')),
         }
         return cls.model_validate(mapping)
