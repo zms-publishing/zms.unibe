@@ -8,6 +8,12 @@ class ZMSAgendaOutlookSchema:
 
         begin = local_timezone(event.start.dateTime)
         end = local_timezone(event.end.dateTime)
+
+        if event.isAllDay:
+            # Outlook sets the end date to midnight (00:00) of the next day
+            # if all-day is set, which means there are no start/end times.
+            # Therefore, we need to adjust it to get the actual end date.
+            end = local_timezone(end, days_delta=-1)
         
         # extract the last hyperlink
         # -> check below if the link is the only content
