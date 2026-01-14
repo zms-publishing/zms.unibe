@@ -1,12 +1,11 @@
 from uuid import UUID
 
 import xmltodict
-import requests
 from fastapi import APIRouter, Query
 from fastapi.responses import Response
 
 from zms.unibe.utils.zope.context import create_zope_app_context
-from zms.unibe.utils.helpers import get_url_from_conf_or_env
+from zms.unibe.utils.helpers import is_activated_by_checkbox_and_timeline, get_data
 from zms.unibe.utils.enums import Locale, Lang, ContentModel, ImageVariant
 from ..schemas import agenda as schema
 
@@ -69,8 +68,13 @@ def get_content_object_by_uuid(
     zmsindex = context.zcatalog_index({ 
         "get_uid": f"uid:{uuid}",
     })
-    obj = zmsindex[0].getObject()
-    meta_id = zmsindex[0].meta_id
+    
+    if len(zmsindex) != 1:
+        return Response(status_code=404)
+    
+    entry = zmsindex[0]
+    obj = entry.getObject()
+    meta_id = entry.meta_id
 
     lang = Lang[locale].value
     context.REQUEST.set('lang', lang)
@@ -102,31 +106,34 @@ def get_content_object_data_by_uuid(
     zmsindex = context.zcatalog_index({
         "get_uid": f"uid:{uuid}",
     })
-    obj = zmsindex[0].getObject()
-    meta_id = zmsindex[0].meta_id
-    site_path = zmsindex[0].getPath()
+    
+    if len(zmsindex) != 1:
+        return Response(status_code=404)
+    
+    entry = zmsindex[0]
+    obj = entry.getObject()
+    meta_id = entry.meta_id
+    site_path = entry.getPath()
 
     lang = Lang[locale].value
     context.REQUEST.set('lang', lang)
-    
-    url = get_url_from_conf_or_env(obj)
+
+    if not is_activated_by_checkbox_and_timeline(obj, lang):
+        return Response(status_code=404)
+
     attr = "file"
     if meta_id in ContentModel._member_names_:
         if meta_id in ("ZMSDataTable", "ZMSBoris", "ZMSAgenda"):
-            attr = "_datafilecached" 
+            attr = "_datafilecached"
         elif meta_id == "ZMSGraphic":
             attr = image_variant.value
 
-    href = obj.attr(attr).getHref(REQUEST=context.REQUEST) if (obj.attr(attr) is not None) else None
-    if href is None:
-        raise Exception(f"No data found for {meta_id} at {site_path}")
+    data, headers = get_data(obj, attr, lang=lang, json_as_py=True)
     
-    response = requests.get(url + href)
-    if response.status_code != 200:
-        raise Exception(f"Error getting data from {url + href}")
+    if data is None or headers is None:
+        return Response(status_code=404)
     
-    if response.apparent_encoding == 'ascii':
-        data = response.json()
+    if isinstance(data, list):
         return {
             'offset': offset,
             'limit': limit,
@@ -139,6 +146,6 @@ def get_content_object_data_by_uuid(
             'data_items': data[offset : offset + limit],
         }
 
-    return Response(response.content,
-                    headers=response.headers,
-                    media_type=response.headers['Content-Type'])
+    return Response(data,
+                    headers=headers,
+                    media_type=headers['Content-Type'])
