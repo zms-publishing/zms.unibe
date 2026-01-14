@@ -6,7 +6,6 @@ import requests
 import time
 from bs4 import BeautifulSoup
 from babel.dates import format_date, format_time
-from devtools import debug
 from datetime import datetime, timedelta
 from DateTime import DateTime  # legacy Zope implementation, returned e.g. by ZopeTime()
 from markitdown import MarkItDown
@@ -206,25 +205,29 @@ def strip_cmstest(domain):
     return domain
 
 
-def get_data(obj, attr, lang=None):
+def get_data(obj, attr, lang=None, json_as_py=False):
     request = obj.REQUEST
     request.set('lang', lang or obj.getPrimaryLanguage())
 
     value = obj.attr(attr)
 
-    if isinstance(value, _blobfields.MyFile):
+    if isinstance(value, _blobfields.MyFile) or isinstance(value, _blobfields.MyImage):
         href = value.getHref(REQUEST=request)
         href = f'{get_url_from_conf_or_env(obj)}{href}'
-        try:
-            if href.endswith('.json'):
-                json = requests.get(url=href, timeout=10).json()
-                return str(json)
+        response = requests.get(url=href, timeout=10)
+        
+        if response.status_code == 200:        
+            if response.apparent_encoding in ('ascii', 'utf-8'):
+                if href.endswith('.json') and json_as_py:
+                    return response.json(), response.headers
+                else:
+                    return response.text, response.headers
             else:
-                text = requests.get(url=href, timeout=10).text
-                return str(text)
-        except:
-            debug(href)
-            return None
+                return response.content, response.headers
+        else:
+            LOGGER.error(f'Error on get_data: {response.status_code} {href}')
+
+    return None, None
 
 
 def get_when(dt, mode, locale):
