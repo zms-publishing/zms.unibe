@@ -1,0 +1,103 @@
+# https://stackoverflow.com/questions/62983756/what-is-pyproject-toml-file-for
+# https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
+# https://packaging.python.org/en/latest/guides/packaging-namespace-packages/
+# https://peps.python.org/pep-0420/ Implicit Namespace Packages
+# https://peps.python.org/pep-0517/ A build-system independent format for source trees
+# https://peps.python.org/pep-0518/ Specifying Minimum Build System Requirements for Python Projects
+# https://peps.python.org/pep-0660/ Editable installs for pyproject.toml based builds (wheel based)
+
+[build-system]
+requires = [
+    "setuptools >= 78.1.1,< 81",  # use the same as Zope
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zms.unibe"
+version = "1.2.5"
+description = "Addons package for ZMS at UniBE"
+readme = {text = "Python-based extensions for and integrations with the ZMS publishing system", content-type = "text/plain"}
+authors = [
+    { name = "University of Bern, IT Services" }
+]
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Zope :: 5",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Environment :: Web Environment",
+    "Topic :: Internet :: WWW/HTTP :: Site Management",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Customer Service",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Information Technology",
+]
+
+# https://stackoverflow.com/questions/74508024/is-requirements-txt-still-needed-when-using-pyproject-toml
+# https://pydevtools.com/handbook/explanation/pyproject-vs-requirements/
+# https://gary-badwal.medium.com/is-requirements-txt-becoming-obsolete-509eab442bdf
+dependencies = [
+    "anytree",                          # https://anytree.readthedocs.io
+    "azure-identity",                   # https://pypi.org/project/azure-identity/
+    "babel",                            # https://github.com/python-babel/babel
+    "beautifulsoup4",                   # https://beautiful-soup-4.readthedocs.io/en/latest/
+    "chardet",                          # https://github.com/chardet/chardet
+    "devtools",                         # https://python-devtools.helpmanual.io/install/
+    "ftfy",                             # https://github.com/rspeer/python-ftfy
+    "ics",                              # https://github.com/ics-py/ics-py
+    "python-dotenv",                    # https://github.com/theskumar/python-dotenv
+    "lxml",                             # https://github.com/lxml/lxml
+    "Markdown",                         # https://github.com/Python-Markdown/markdown
+    "markitdown[all]",                  # https://github.com/microsoft/markitdown
+    "msgraph-sdk",                      # https://github.com/microsoftgraph/msgraph-sdk-python
+    "opensearch-py",                    # https://github.com/opensearch-project/opensearch-py
+    "pdfminer.six",                     # https://github.com/pdfminer/pdfminer.six
+    "Products.mcdutils>=3.2",           # https://github.com/dataflake/Products.mcdutils
+    "Products.PluggableAuthService",    # https://github.com/zopefoundation/Products.PluggableAuthService
+    "Products.PluginRegistry",          # https://github.com/zopefoundation/Products.PluginRegistry
+    "Products.ZSQLMethods",             # https://github.com/zopefoundation/Products.ZSQLMethods
+    "psycopg2",                         # https://www.psycopg.org/docs/install.html#psycopg-vs-psycopg-binary
+    "pydantic",                         # https://pydantic-docs.helpmanual.io
+    "pydevd-pycharm~=253.29346.308",    # https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html -> Debugger for PyCharm 2025.3.1.1 built on January 9, 2026
+    "requests",                         # https://requests.readthedocs.io
+    "requests-oauthlib",                # https://github.com/requests/requests-oauthlib
+    "rich",                             # https://github.com/Textualize/rich
+    "SQLAlchemy",                       # https://www.sqlalchemy.org/
+    "SQLModel",                         # https://sqlmodel.tiangolo.com
+    "trio",                             # https://github.com/python-trio/trio -> see https://github.com/idasm-unibe-ch/zms-base/issues/5
+    "typer[all]",                       # https://typer.tiangolo.com
+    "xmltodict",                        # https://github.com/martinblech/xmltodict
+    "zeo",                              # https://github.com/zopefoundation/ZEO
+    "zodburi",                          # https://docs.pylonsproject.org/projects/zodburi/en/latest/
+]
+
+[project.optional-dependencies]
+fastapi = [
+    "FastAPI",                          # https://fastapi.tiangolo.com
+    "uvicorn[standard]",                # https://www.uvicorn.org
+]
+
+[project.scripts]
+zms2sql = "zms.unibe.utils.zms2sql.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/idasm-unibe-ch/zms-addons"
+Issues = "https://github.com/idasm-unibe-ch/zms-addons/issues"
+Changelog = "https://github.com/idasm-unibe-ch/zms-addons/releases"
+Documentation = "https://idasm-unibe-ch.github.io/unibe-web-mobile/web/cms"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["zms.unibe.*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+"*" = ["*.zcml"]
