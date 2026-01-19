@@ -19,7 +19,7 @@ Products.PluginRegistry         # https://github.com/zopefoundation/Products.Plu
 Products.ZSQLMethods            # https://github.com/zopefoundation/Products.ZSQLMethods
 psycopg2                        # https://www.psycopg.org/docs/install.html#psycopg-vs-psycopg-binary
 pydantic                        # https://pydantic-docs.helpmanual.io
-pydevd-pycharm~=252.26830.99    # https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html -> Debugger for PyCharm 2025.2.3 built on October 2, 2025
+pydevd-pycharm~=253.29346.308   # https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html -> Debugger for PyCharm 2025.3.1.1 built on January 9, 2026
 requests                        # https://requests.readthedocs.io
 requests-oauthlib               # https://github.com/requests/requests-oauthlib
 rich                            # https://github.com/Textualize/rich
