@@ -4,6 +4,8 @@ import pytz
 import re
 import requests
 import time
+import zExceptions
+
 from bs4 import BeautifulSoup
 from babel.dates import format_date, format_time
 from datetime import datetime, timedelta
@@ -62,6 +64,82 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
         dt = datetime.fromtimestamp(0)  # datetime.datetime(1970, 1, 1, 1, 0)
     dt = dt + timedelta(days=days_delta)
     return dt.astimezone(pytz.timezone(tz))
+
+
+print('Addon: zms.unibe.utils.helpers.is_authorized')
+@security.public
+def is_authorized(context, roles, acquired=False, raise_exception=True):
+    """
+    Helper function to be used in custom Python Scripts or External Methods.
+    The execution of such code can thus be limited to users with explicit set
+    roles in the given context/client. It can be restricted even for
+    ZMSAdministrators and Managers in upper hierarchy levels, e.g., if the
+    data is confidential and should not be exposed without explicit permission.
+    
+    Use Case:
+     -> assert is_authorized(self, ('ZMSAdministrator', 'ZMSEditor'), acquired=False)
+        /manage_survey_data of a specific ZMSSurveyJS should only be
+        accessible for users with roles explicitly set in the according client,
+        even if they are global ZMSAdministrators or Managers.
+
+    The function determines authorization by comparing the roles assigned to the 
+    authenticated user in the current context and the roles set within the client's 
+    object path hierarchy. It may raise an exception if the user is not authorized.
+
+    Args:
+        context (object): The context in which the authorization check is performed.
+        roles (list of str): List of roles to check against the user's roles.
+        acquired (bool, optional): Indicates whether to include roles acquired 
+            from parent contexts. Defaults to False.
+        raise_exception (bool, optional): Determines if an exception should be 
+            raised when the user is not authorized. Defaults to True.
+
+    Returns:
+        bool: True if the user is authorized, otherwise False.
+
+    Raises:
+        zExceptions.Unauthorized: If the user is not authorized and 
+            raise_exception is set to True.
+    """
+    auth_user = context.REQUEST.get('AUTHENTICATED_USER')
+    try:  # available only in ZMS context
+        sec_users = context.getSecurityUsers(acquired=acquired)
+        nodes = sec_users.get(str(auth_user), {}).get('nodes', {})
+        obj_path_breadcrumbs = context.breadcrumbs_obj_path(portalMaster=acquired)
+    except AttributeError:
+        nodes = {}
+        obj_path_breadcrumbs = []
+
+    # from devtools import debug
+    # debug(context.getSecurityUsers())
+
+    # Check if one of the given roles is assigned to the authenticated user
+    # and the role is set in the path hierarchy of the current client
+    # or in a parent hierarchy if acquired is True.
+    obj_path_roles = []
+    for obj_path in obj_path_breadcrumbs:
+        obj_path_uid = f'{{${obj_path.get_uid()}}}'
+        obj_path_roles.extend(nodes.get(obj_path_uid, {}).get('roles', []))
+
+    # print(str(auth_user), roles, type(roles))  
+    # print('roles_in_context', auth_user.getRolesInContext(context))
+    # print('obj_path_roles', set(obj_path_roles))
+    # print([x for x in roles if x in set(obj_path_roles)])
+    
+    if isinstance(roles, str):
+        roles = (roles, )  # make tuple to avoid search for 'Manager' in string
+    has_role_in_obj_path = len([x for x in roles if x in set(obj_path_roles)]) > 0
+    has_role_manager = (('Manager' in roles) and 
+                        ('Manager' in auth_user.getRolesInContext(context)))
+    
+    # print(has_role_in_obj_path)
+    # print(has_role_manager)
+    
+    if has_role_in_obj_path or has_role_manager:
+        return True
+    if raise_exception:
+        raise zExceptions.Unauthorized
+    return False
 
 
 def get_attr(obj, attr, lang, dt_exec=True):
@@ -172,7 +250,7 @@ def get_url(obj, attr, lang=None):
             lang_target = re.sub(r'{\$uid:(.*);lang=(\w*)}', r'\2', value)
         request.set('lang', lang_target)
         return strip_cmstest(obj.getLinkUrl(value, REQUEST=request))
-    
+
     return value
 
 
@@ -180,10 +258,10 @@ def get_size(obj, attr, lang=None):
     request = obj.REQUEST
     request.set('lang', lang or obj.getPrimaryLanguage())
     value = obj.attr(attr)
-    
+
     if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
         return value.get_size()
-    
+
     return 0
 
 
@@ -259,7 +337,7 @@ def sanitize_html(content, return_type='html'):
 
     Parameters:
     content (str): The input HTML content to be sanitized or processed.
-    
+
     return_type (str, optional): Specifies the type of value to return:
         - 'markdown': Converts the HTML to Markdown and returns it.
         - 'html': Sanitizes the HTML, removing unwanted elements, and returns cleaned HTML.
