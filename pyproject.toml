@@ -55,6 +55,7 @@ dependencies = [
     "markitdown[all]",                  # https://github.com/microsoft/markitdown
     "msgraph-sdk",                      # https://github.com/microsoftgraph/msgraph-sdk-python
     "opensearch-py",                    # https://github.com/opensearch-project/opensearch-py
+    "pandas",                           # https://github.com/pandas-dev/pandas
     "pdfminer.six",                     # https://github.com/pdfminer/pdfminer.six
     "Products.mcdutils>=3.2",           # https://github.com/dataflake/Products.mcdutils
     "Products.PluggableAuthService",    # https://github.com/zopefoundation/Products.PluggableAuthService
@@ -68,8 +69,10 @@ dependencies = [
     "rich",                             # https://github.com/Textualize/rich
     "SQLAlchemy",                       # https://www.sqlalchemy.org/
     "SQLModel",                         # https://sqlmodel.tiangolo.com
+    "tabulate",                         # https://github.com/astanin/python-tabulate
     "trio",                             # https://github.com/python-trio/trio -> see https://github.com/idasm-unibe-ch/zms-base/issues/5
     "typer[all]",                       # https://typer.tiangolo.com
+    "XlsxWriter",                       # https://github.com/jmcnamara/XlsxWriter
     "xmltodict",                        # https://github.com/martinblech/xmltodict
     "zeo",                              # https://github.com/zopefoundation/ZEO
     "zodburi",                          # https://docs.pylonsproject.org/projects/zodburi/en/latest/
