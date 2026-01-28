@@ -210,7 +210,7 @@ def get_children_count(obj, meta_id=None):
 
 
 def parse_uuid(uuid):
-    return UUID(f'urn:uuid:{uuid}')
+    return UUID(f'urn:uuid:{uuid.replace("uid:", "")}')
 
 
 def parse_datetime(value):
