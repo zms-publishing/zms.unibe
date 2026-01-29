@@ -29,6 +29,7 @@ SQLModel                        # https://sqlmodel.tiangolo.com
 tabulate                        # https://github.com/astanin/python-tabulate
 trio                            # https://github.com/python-trio/trio -> see https://github.com/idasm-unibe-ch/zms-base/issues/5
 typer[all]                      # https://typer.tiangolo.com
+XlsxWriter                      # https://github.com/jmcnamara/XlsxWriter
 xmltodict                       # https://github.com/martinblech/xmltodict
 zeo                             # https://github.com/zopefoundation/ZEO
 zodburi                         # https://docs.pylonsproject.org/projects/zodburi/en/latest/
