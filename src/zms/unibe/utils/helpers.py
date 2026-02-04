@@ -75,33 +75,39 @@ def is_authorized(context, roles, acquired=False, raise_exception=True):
     roles in the given context/client. It can be restricted even for
     ZMSAdministrators and Managers in upper hierarchy levels, e.g., if the
     data is confidential and should not be exposed without explicit permission.
-    
+
+    The user is granted access if they have created the object in the given context.
+
     Use Case:
      -> assert is_authorized(self, ('ZMSAdministrator', 'ZMSEditor'), acquired=False)
         /manage_survey_data of a specific ZMSSurveyJS should only be
         accessible for users with roles explicitly set in the according client,
         even if they are global ZMSAdministrators or Managers.
 
-    The function determines authorization by comparing the roles assigned to the 
-    authenticated user in the current context and the roles set within the client's 
+    The function determines authorization by comparing the roles assigned to the
+    authenticated user in the current context and the roles set within the client's
     object path hierarchy. It may raise an exception if the user is not authorized.
 
     Args:
         context (object): The context in which the authorization check is performed.
         roles (list of str): List of roles to check against the user's roles.
-        acquired (bool, optional): Indicates whether to include roles acquired 
+        acquired (bool, optional): Indicates whether to include roles acquired
             from parent contexts. Defaults to False.
-        raise_exception (bool, optional): Determines if an exception should be 
+        raise_exception (bool, optional): Determines if an exception should be
             raised when the user is not authorized. Defaults to True.
 
     Returns:
         bool: True if the user is authorized, otherwise False.
 
     Raises:
-        zExceptions.Unauthorized: If the user is not authorized and 
+        zExceptions.Unauthorized: If the user is not authorized and
             raise_exception is set to True.
     """
     auth_user = context.REQUEST.get('AUTHENTICATED_USER')
+
+    if context.attr('created_uid') == str(auth_user):
+        return True
+
     try:  # available only in ZMS context
         sec_users = context.getSecurityUsers(acquired=acquired)
         nodes = sec_users.get(str(auth_user), {}).get('nodes', {})
@@ -109,9 +115,6 @@ def is_authorized(context, roles, acquired=False, raise_exception=True):
     except AttributeError:
         nodes = {}
         obj_path_breadcrumbs = []
-
-    # from devtools import debug
-    # debug(context.getSecurityUsers())
 
     # Check if one of the given roles is assigned to the authenticated user
     # and the role is set in the path hierarchy of the current client
@@ -121,20 +124,12 @@ def is_authorized(context, roles, acquired=False, raise_exception=True):
         obj_path_uid = f'{{${obj_path.get_uid()}}}'
         obj_path_roles.extend(nodes.get(obj_path_uid, {}).get('roles', []))
 
-    # print(str(auth_user), roles, type(roles))  
-    # print('roles_in_context', auth_user.getRolesInContext(context))
-    # print('obj_path_roles', set(obj_path_roles))
-    # print([x for x in roles if x in set(obj_path_roles)])
-    
     if isinstance(roles, str):
-        roles = (roles, )  # make tuple to avoid search for 'Manager' in string
+        roles = (roles,)  # make tuple to avoid search for 'Manager' in string
     has_role_in_obj_path = len([x for x in roles if x in set(obj_path_roles)]) > 0
-    has_role_manager = (('Manager' in roles) and 
+    has_role_manager = (('Manager' in roles) and
                         ('Manager' in auth_user.getRolesInContext(context)))
-    
-    # print(has_role_in_obj_path)
-    # print(has_role_manager)
-    
+
     if has_role_in_obj_path or has_role_manager:
         return True
     if raise_exception:
@@ -268,8 +263,8 @@ def get_size(obj, attr, lang=None):
 def get_url_from_conf_or_env(obj):
     if obj is None:
         return ''
-    prot = obj.getAbsoluteHome().portal.content.getConfProperty('ASP.protocol')
-    host = obj.getAbsoluteHome().portal.content.getConfProperty('UniBE.Server')
+    prot = obj.getAbsoluteHome().portal.content.getConfProperty('ASP.protocol')  # https
+    host = obj.getAbsoluteHome().portal.content.getConfProperty('UniBE.Server')  # www.unibe.ch
     # Overwrite by environment variable if set
     # ZMS_URL=http://127.0.0.1:8080 -> e.g. on localhost
     return os.getenv('ZMS_URL', f'{prot}://{strip_cmstest(host)}')
@@ -293,8 +288,8 @@ def get_data(obj, attr, lang=None, json_as_py=False):
         href = value.getHref(REQUEST=request)
         href = f'{get_url_from_conf_or_env(obj)}{href}'
         response = requests.get(url=href, timeout=10)
-        
-        if response.status_code == 200:        
+
+        if response.status_code == 200:
             if response.apparent_encoding in ('ascii', 'utf-8'):
                 if href.endswith('.json') and json_as_py:
                     return response.json(), response.headers
@@ -328,9 +323,9 @@ print('Addon: zms.unibe.utils.helpers.sanitize_html')
 def sanitize_html(content, return_type='html'):
     """
     Sanitizes HTML content by converting it into either plain markdown or sanitized HTML.
-    If the content starts with <html>, it uses the MarkItDown library to sanitize and 
+    If the content starts with <html>, it uses the MarkItDown library to sanitize and
     convert it to markdown. Alternatively, the markdown is converted back to HTML,
-    performing additional cleaning such as removing images, empty paragraphs, and 
+    performing additional cleaning such as removing images, empty paragraphs, and
     unwanted newline characters.
 
     If errors occur, it uses BeautifulSoup to extract text content.
@@ -369,13 +364,13 @@ def sanitize_html(content, return_type='html'):
         LOGGER.error(f'Error on sanitize_html: {e}')
 
     soup = BeautifulSoup(content, "html.parser")
-    
+
     if return_type == 'href':
         links = soup.find_all('a')
         if len(links) > 0:
             # last hyperlink in given HTML
             return links[-1].get('href')
-    
+
     # extract at least plain text if conversion to markdown or html failed above
     text = soup.get_text()
     text = text.replace('\r\n', ' ')
