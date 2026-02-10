@@ -4,6 +4,8 @@ import pytz
 import re
 import requests
 import time
+import zExceptions
+
 from bs4 import BeautifulSoup
 from babel.dates import format_date, format_time
 from datetime import datetime, timedelta
@@ -62,6 +64,77 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
         dt = datetime.fromtimestamp(0)  # datetime.datetime(1970, 1, 1, 1, 0)
     dt = dt + timedelta(days=days_delta)
     return dt.astimezone(pytz.timezone(tz))
+
+
+print('Addon: zms.unibe.utils.helpers.is_authorized')
+@security.public
+def is_authorized(context, roles, acquired=False, raise_exception=True):
+    """
+    Helper function to be used in custom Python Scripts or External Methods.
+    The execution of such code can thus be limited to users with explicit set
+    roles in the given context/client. It can be restricted even for
+    ZMSAdministrators and Managers in upper hierarchy levels, e.g., if the
+    data is confidential and should not be exposed without explicit permission.
+
+    The user is granted access if they have created the object in the given context.
+
+    Use Case:
+     -> assert is_authorized(self, ('ZMSAdministrator', 'ZMSEditor'), acquired=False)
+        /manage_survey_data of a specific ZMSSurveyJS should only be
+        accessible for users with roles explicitly set in the according client,
+        even if they are global ZMSAdministrators or Managers.
+
+    The function determines authorization by comparing the roles assigned to the
+    authenticated user in the current context and the roles set within the client's
+    object path hierarchy. It may raise an exception if the user is not authorized.
+
+    Args:
+        context (object): The context in which the authorization check is performed.
+        roles (list of str): List of roles to check against the user's roles.
+        acquired (bool, optional): Indicates whether to include roles acquired
+            from parent contexts. Defaults to False.
+        raise_exception (bool, optional): Determines if an exception should be
+            raised when the user is not authorized. Defaults to True.
+
+    Returns:
+        bool: True if the user is authorized, otherwise False.
+
+    Raises:
+        zExceptions.Unauthorized: If the user is not authorized and
+            raise_exception is set to True.
+    """
+    auth_user = context.REQUEST.get('AUTHENTICATED_USER')
+
+    if context.attr('created_uid') == str(auth_user):
+        return True
+
+    try:  # available only in ZMS context
+        sec_users = context.getSecurityUsers(acquired=acquired)
+        nodes = sec_users.get(str(auth_user), {}).get('nodes', {})
+        obj_path_breadcrumbs = context.breadcrumbs_obj_path(portalMaster=acquired)
+    except AttributeError:
+        nodes = {}
+        obj_path_breadcrumbs = []
+
+    # Check if one of the given roles is assigned to the authenticated user
+    # and the role is set in the path hierarchy of the current client
+    # or in a parent hierarchy if acquired is True.
+    obj_path_roles = []
+    for obj_path in obj_path_breadcrumbs:
+        obj_path_uid = f'{{${obj_path.get_uid()}}}'
+        obj_path_roles.extend(nodes.get(obj_path_uid, {}).get('roles', []))
+
+    if isinstance(roles, str):
+        roles = (roles,)  # make tuple to avoid search for 'Manager' in string
+    has_role_in_obj_path = len([x for x in roles if x in set(obj_path_roles)]) > 0
+    has_role_manager = (('Manager' in roles) and
+                        ('Manager' in auth_user.getRolesInContext(context)))
+
+    if has_role_in_obj_path or has_role_manager:
+        return True
+    if raise_exception:
+        raise zExceptions.Unauthorized
+    return False
 
 
 def get_attr(obj, attr, lang, dt_exec=True):
@@ -132,7 +205,7 @@ def get_children_count(obj, meta_id=None):
 
 
 def parse_uuid(uuid):
-    return UUID(f'urn:uuid:{uuid}')
+    return UUID(f'urn:uuid:{uuid.replace("uid:", "")}')
 
 
 def parse_datetime(value):
@@ -172,7 +245,7 @@ def get_url(obj, attr, lang=None):
             lang_target = re.sub(r'{\$uid:(.*);lang=(\w*)}', r'\2', value)
         request.set('lang', lang_target)
         return strip_cmstest(obj.getLinkUrl(value, REQUEST=request))
-    
+
     return value
 
 
@@ -180,18 +253,18 @@ def get_size(obj, attr, lang=None):
     request = obj.REQUEST
     request.set('lang', lang or obj.getPrimaryLanguage())
     value = obj.attr(attr)
-    
+
     if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
         return value.get_size()
-    
+
     return 0
 
 
 def get_url_from_conf_or_env(obj):
     if obj is None:
         return ''
-    prot = obj.getAbsoluteHome().portal.content.getConfProperty('ASP.protocol')
-    host = obj.getAbsoluteHome().portal.content.getConfProperty('UniBE.Server')
+    prot = obj.getAbsoluteHome().portal.content.getConfProperty('ASP.protocol')  # https
+    host = obj.getAbsoluteHome().portal.content.getConfProperty('UniBE.Server')  # www.unibe.ch
     # Overwrite by environment variable if set
     # ZMS_URL=http://127.0.0.1:8080 -> e.g. on localhost
     return os.getenv('ZMS_URL', f'{prot}://{strip_cmstest(host)}')
@@ -215,8 +288,8 @@ def get_data(obj, attr, lang=None, json_as_py=False):
         href = value.getHref(REQUEST=request)
         href = f'{get_url_from_conf_or_env(obj)}{href}'
         response = requests.get(url=href, timeout=10)
-        
-        if response.status_code == 200:        
+
+        if response.status_code == 200:
             if response.apparent_encoding in ('ascii', 'utf-8'):
                 if href.endswith('.json') and json_as_py:
                     return response.json(), response.headers
@@ -250,16 +323,16 @@ print('Addon: zms.unibe.utils.helpers.sanitize_html')
 def sanitize_html(content, return_type='html'):
     """
     Sanitizes HTML content by converting it into either plain markdown or sanitized HTML.
-    If the content starts with <html>, it uses the MarkItDown library to sanitize and 
+    If the content starts with <html>, it uses the MarkItDown library to sanitize and
     convert it to markdown. Alternatively, the markdown is converted back to HTML,
-    performing additional cleaning such as removing images, empty paragraphs, and 
+    performing additional cleaning such as removing images, empty paragraphs, and
     unwanted newline characters.
 
     If errors occur, it uses BeautifulSoup to extract text content.
 
     Parameters:
     content (str): The input HTML content to be sanitized or processed.
-    
+
     return_type (str, optional): Specifies the type of value to return:
         - 'markdown': Converts the HTML to Markdown and returns it.
         - 'html': Sanitizes the HTML, removing unwanted elements, and returns cleaned HTML.
@@ -291,13 +364,13 @@ def sanitize_html(content, return_type='html'):
         LOGGER.error(f'Error on sanitize_html: {e}')
 
     soup = BeautifulSoup(content, "html.parser")
-    
+
     if return_type == 'href':
         links = soup.find_all('a')
         if len(links) > 0:
             # last hyperlink in given HTML
             return links[-1].get('href')
-    
+
     # extract at least plain text if conversion to markdown or html failed above
     text = soup.get_text()
     text = text.replace('\r\n', ' ')

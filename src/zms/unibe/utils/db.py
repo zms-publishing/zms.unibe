@@ -16,9 +16,12 @@ def connect_sqldb(verbose=False):
             credentials = file.read().strip()
     except FileNotFoundError:
         pass  # use default credentials
-    
+
+    if '@' not in SQLDB_STORAGE:  # apply credentials only if not already present
+        SQLDB_STORAGE.replace('://', f'://{credentials}@')
+
     sqlengine = create_engine(
-        SQLDB_STORAGE.replace('://', f'://{credentials}@'),
+        SQLDB_STORAGE,
         pool_pre_ping=True,
         # connect_args={"check_same_thread": False},  # for SQLite only
         # echo=True
