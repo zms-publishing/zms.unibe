@@ -1,4 +1,5 @@
 import uuid
+import json
 from datetime import datetime
 
 from sqlmodel import Session, inspect, select, or_
@@ -6,6 +7,7 @@ from sqlmodel import Session, inspect, select, or_
 from zms.unibe.agenda.sqlmodels.AgendaFilemaker import AgendaFilemaker
 from zms.unibe.agenda.sqlmodels.AgendaLibraryDE import AgendaLibraryDE
 from zms.unibe.agenda.sqlmodels.AgendaLibraryEN import AgendaLibraryEN
+from zms.unibe.agenda.sqlmodels.ZMSAgenda import ZMSAgenda
 from zms.unibe.teasers.sqlmodels.TeaserElement2022 import TeaserElement2022
 from zms.unibe.announcements.sqlmodels.NewsBox import NewsBox
 from zms.unibe.mobileapp.sqlmodels.ServiceLinks import ServiceLink
@@ -26,6 +28,7 @@ def update_newsevents():
             NewsEvents.__table__.drop(sqlengine)
         NewsEvents.__table__.create(sqlengine)
 
+        """
         # DATA SOURCE 1 ######################
         if inspect(sqlengine).has_table(AgendaFilemaker.__name__.lower()):
             statement = select(AgendaFilemaker)  # DE
@@ -220,7 +223,7 @@ def update_newsevents():
                 session.add(obj)
             session.commit()
 
-        # DATA SOURCE 6 ######################
+        # DATA SOURCE 6 ###################### TODO: Remove because phased out...?!
         if inspect(sqlengine).has_table(NewsBox.__name__.lower()):
             statement = [select(NewsBox).
                          where(or_(NewsBox.active_de, NewsBox.active_en, NewsBox.active_fr)).
@@ -281,6 +284,73 @@ def update_newsevents():
 
                 session.add(obj)
             session.commit()
+        """
+        
+        # DATA SOURCE 7 ######################
+        if inspect(sqlengine).has_table(ZMSAgenda.__name__.lower()):
+            statement = [select(ZMSAgenda)]
+
+            results = session.exec(statement[0])
+
+            for res in results.all():
+                data_json = json.loads(res.cached_data)
+                for item in data_json:
+                    obj = NewsEvents()
+                    
+                    obj.uuid = uuid.uuid4()  # temporary UUID until next import - for internal use only
+                    # TODO: item.get('eventId') -> Outlook 'AAkBOQAICN5h7gIwAAAuAAAAAB2EAxGqZhHNm8gAqgAvxFoNANzSYaQmlSlNiazOwMqFMpYAAAhI4FwAABA='
+                    
+                    obj.site_uuid = res.site_uuid
+                    obj.active_de = res.active_de
+                    obj.active_en = res.active_en
+                    obj.active_fr = res.active_fr
+                    obj.lastmod_dt_de = res.lastmod_dt_de
+                    obj.lastmod_dt_en = res.lastmod_dt_en
+                    obj.lastmod_dt_fr = res.lastmod_dt_fr
+    
+                    obj.path = res.path  # TODO: item.get('eventSource') -> 'agenda_outlook' / UPNs...?!
+                    obj.level = res.level
+                    obj.sort_id = res.sort_id
+                    obj.sort_id_parent = res.sort_id_parent
+    
+                    obj.title_de = item.get('eventTitle')
+                    obj.title_en = item.get('eventTitle')
+                    obj.title_fr = item.get('eventTitle')
+                    
+                    obj.location_de = item.get('eventLocation')
+                    obj.location_en = item.get('eventLocation')
+                    obj.location_fr = item.get('eventLocation')
+                    
+                    obj.type = 'event'
+                    
+                    obj.start_dt = item.get('eventBeginDateTime')
+                    obj.end_dt = item.get('eventEndDateTime')
+                    #obj.end_dt = res.end_dt > res.start_dt and \
+                    #             res.end_dt or \
+                    #             res.start_dt  # to filter out outdated Events - see where(NewsEvents.end_dt > datetime.utcnow())
+
+                    # TODO: item.get('eventAllDay') -> True/False
+    
+                    obj.url_de = item.get('eventUrl')
+                    obj.url_en = item.get('eventUrl')
+                    obj.url_fr = item.get('eventUrl')
+                    obj.infos_de = item.get('eventInfos')
+                    obj.infos_en = item.get('eventInfos')
+                    obj.infos_fr = item.get('eventInfos')
+
+                    # TODO: item.get('eventInfosPreview') -> TBD...?!
+                    
+                    obj.topics_de = item.get('eventCategories')  # TODO: handle include-only + filter-out as in ZMSAgenda
+                    obj.topics_en = item.get('eventCategories')
+                    obj.topics_fr = item.get('eventCategories')
+
+                    # TODO: item.get('eventTagline') -> None or filemaker: 'Career and networking event – Master in Biomedical Engineering'
+                                        
+                    # TODO: item.get('eventAttachments') -> TBD...?!
+                    # TODO: item.get('eventImage') -> currently None for Outlook
+
+                    session.add(obj)
+                session.commit()
 
 
 def update_servicelinks(zms_context):
