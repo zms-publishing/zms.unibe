@@ -9,6 +9,7 @@ SQLDB_STORAGE = os.getenv('SQLDB_STORAGE', 'postgresql://127.0.0.1:5432/zms_fast
 
 def connect_sqldb(verbose=False):
     
+    global SQLDB_STORAGE
     credentials = 'postgres:mysecretpassword'
     
     try:
@@ -18,7 +19,7 @@ def connect_sqldb(verbose=False):
         pass  # use default credentials
 
     if '@' not in SQLDB_STORAGE:  # apply credentials only if not already present
-        SQLDB_STORAGE.replace('://', f'://{credentials}@')
+        SQLDB_STORAGE = SQLDB_STORAGE.replace('://', f'://{credentials}@')
 
     sqlengine = create_engine(
         SQLDB_STORAGE,
