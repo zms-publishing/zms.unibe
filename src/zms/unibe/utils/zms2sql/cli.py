@@ -1,5 +1,5 @@
 import typer
-from zms.unibe.agenda.sqlmodels.__main__ import fetch_agendas, fetch_statusmessages
+from zms.unibe.agenda.sqlmodels.__main__ import update_agendas, fetch_agendas, fetch_statusmessages
 from zms.unibe.mobileapp.sqlmodels.__main__ import update_newsevents, update_servicelinks
 from zms.unibe.foundation.sqlmodels.__main__ import update_zmssites, update_zmsobjects
 from zms.unibe.teasers.sqlmodels.__main__ import update_teasers, update_heros
@@ -19,6 +19,7 @@ AVAILABLE_COMMANDS = {
     'update-heros': update_heros,                   #      (84) =  0.05 min 
     'update-teasers': update_teasers,               #   (5,842) =  2.98 min
     'update-newsboxes': update_newsboxes,           #  (18,397) =  5.67 min
+    'update-agendas': update_agendas,
     'fetch-agendas': fetch_agendas,
     'fetch-statusmessages': fetch_statusmessages,
     'update-newsevents': update_newsevents,         #  (11,594) => aggregates above to access via zms-fastapi
