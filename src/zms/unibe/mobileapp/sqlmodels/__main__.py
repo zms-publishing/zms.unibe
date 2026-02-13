@@ -312,7 +312,9 @@ def update_newsevents():
                     obj.lastmod_dt_en = res.lastmod_dt_en
                     obj.lastmod_dt_fr = res.lastmod_dt_fr
     
-                    obj.path = res.path  # TODO: item.get('eventSource') -> 'agenda_outlook' / UPNs...?!
+                    obj.id = item.get('eventId')
+                    obj.source = item.get('eventSource')
+                    obj.path = res.path
                     obj.level = res.level
                     obj.sort_id = res.sort_id
                     obj.sort_id_parent = res.sort_id_parent
@@ -329,11 +331,7 @@ def update_newsevents():
                     
                     obj.start_dt = item.get('eventBeginDateTime')
                     obj.end_dt = item.get('eventEndDateTime')
-                    #obj.end_dt = res.end_dt > res.start_dt and \
-                    #             res.end_dt or \
-                    #             res.start_dt  # to filter out outdated Events - see where(NewsEvents.end_dt > datetime.utcnow())
-
-                    # TODO: item.get('eventAllDay') -> True/False
+                    obj.allday = item.get('eventAllDay')
     
                     obj.url_de = item.get('eventUrl')
                     obj.url_en = item.get('eventUrl')

@@ -19,6 +19,9 @@ class NewsEvents(SQLModel, table=True):  # intermediate consolidation of Agendas
     title_en: str | None
     title_fr: str | None
     type: str | None
+    allday: bool | None
+    id: str | None
+    source: str | None
     path: str
     level: int
     sort_id: int
