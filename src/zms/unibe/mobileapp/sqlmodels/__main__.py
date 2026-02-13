@@ -1,6 +1,6 @@
 import uuid
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlmodel import Session, inspect, select, or_
 
@@ -21,6 +21,7 @@ def update_newsevents():
     print("update_newsevents")
 
     sqlengine = connect_sqldb()
+    now = datetime.now(timezone.utc)
 
     # fill the intermediate table NewsEvents consolidating data sources for queries
     with Session(sqlengine) as session:
@@ -50,7 +51,7 @@ def update_newsevents():
                 obj.start_dt = res.json_datum_zeit_start
                 obj.end_dt = res.json_datum_zeit_end > res.json_datum_zeit_start and \
                              res.json_datum_zeit_end or \
-                             res.json_datum_zeit_start  # to filter out outdated Events - see where(NewsEvents.end_dt > datetime.utcnow())
+                             res.json_datum_zeit_start  # to filter out outdated Events - see where(NewsEvents.end_dt > now)
                 obj.location_de = f'{res.veranstaltung_horsaal}\n' \
                                   f'{res.veranstaltung_gebaude_adresse}\n' \
                                   f'{res.veranstaltung_ort}'
@@ -83,7 +84,7 @@ def update_newsevents():
                 obj.start_dt = res.json_datum_zeit_start
                 obj.end_dt = res.json_datum_zeit_end > res.json_datum_zeit_start and \
                              res.json_datum_zeit_end or \
-                             res.json_datum_zeit_start  # to filter out outdated Events - see where(NewsEvents.end_dt > datetime.utcnow())
+                             res.json_datum_zeit_start  # to filter out outdated Events - see where(NewsEvents.end_dt > now)
                 obj.location_en = f'{res.veranstaltung_horsaal}\n' \
                                   f'{res.veranstaltung_gebaude_adresse}\n' \
                                   f'{res.veranstaltung_ort}'
@@ -147,7 +148,7 @@ def update_newsevents():
                 obj.start_dt = res.startsAt
                 obj.end_dt = res.endsAt > res.startsAt and \
                              res.endsAt or \
-                             res.startsAt  # to filter out outdated Events - see where(NewsEvents.end_dt > datetime.utcnow())
+                             res.startsAt  # to filter out outdated Events - see where(NewsEvents.end_dt > now)
                 obj.location_en = res.venue
 
                 obj.url_en = res.url
@@ -162,12 +163,12 @@ def update_newsevents():
             statement = [select(TeaserElement2022).
                          where(
                 or_(TeaserElement2022.active_de, TeaserElement2022.active_en, TeaserElement2022.active_fr)).
-                         where(or_(TeaserElement2022.active_start_de <= datetime.utcnow(),
-                                   TeaserElement2022.active_start_en <= datetime.utcnow(),
-                                   TeaserElement2022.active_start_fr <= datetime.utcnow())).
-                         where(or_(TeaserElement2022.active_end_de <= datetime.utcnow(),
-                                   TeaserElement2022.active_end_en <= datetime.utcnow(),
-                                   TeaserElement2022.active_end_fr <= datetime.utcnow()))]
+                         where(or_(TeaserElement2022.active_start_de <= now,
+                                   TeaserElement2022.active_start_en <= now,
+                                   TeaserElement2022.active_start_fr <= now)).
+                         where(or_(TeaserElement2022.active_end_de <= now,
+                                   TeaserElement2022.active_end_en <= now,
+                                   TeaserElement2022.active_end_fr <= now))]
 
             results = session.exec(statement[0])
 
@@ -202,7 +203,7 @@ def update_newsevents():
                 obj.start_dt = res.start_dt
                 obj.end_dt = res.end_dt > res.start_dt and \
                              res.end_dt or \
-                             res.start_dt  # to filter out outdated Events - see where(NewsEvents.end_dt > datetime.utcnow())
+                             res.start_dt  # to filter out outdated Events - see where(NewsEvents.end_dt > now)
                 obj.location_de = res.location
                 obj.location_en = res.location
                 obj.location_fr = res.location
@@ -227,12 +228,12 @@ def update_newsevents():
         if inspect(sqlengine).has_table(NewsBox.__name__.lower()):
             statement = [select(NewsBox).
                          where(or_(NewsBox.active_de, NewsBox.active_en, NewsBox.active_fr)).
-                         where(or_(NewsBox.active_start_de <= datetime.utcnow(),
-                                   NewsBox.active_start_en <= datetime.utcnow(),
-                                   NewsBox.active_start_fr <= datetime.utcnow())).
-                         where(or_(NewsBox.active_end_de <= datetime.utcnow(),
-                                   NewsBox.active_end_en <= datetime.utcnow(),
-                                   NewsBox.active_end_fr <= datetime.utcnow()))]
+                         where(or_(NewsBox.active_start_de <= now,
+                                   NewsBox.active_start_en <= now,
+                                   NewsBox.active_start_fr <= now)).
+                         where(or_(NewsBox.active_end_de <= now,
+                                   NewsBox.active_end_en <= now,
+                                   NewsBox.active_end_fr <= now))]
 
             results = session.exec(statement[0])
 
@@ -267,7 +268,7 @@ def update_newsevents():
                 obj.start_dt = res.start_dt
                 obj.end_dt = res.end_dt > res.start_dt and \
                              res.end_dt or \
-                             res.start_dt  # to filter out outdated Events - see where(NewsEvents.end_dt > datetime.utcnow())
+                             res.start_dt  # to filter out outdated Events - see where(NewsEvents.end_dt > now)
 
                 obj.url_de = res.url_de
                 obj.url_en = res.url_en
@@ -287,7 +288,14 @@ def update_newsevents():
         
         # DATA SOURCE 7 ######################
         if inspect(sqlengine).has_table(ZMSAgenda.__name__.lower()):
-            statement = [select(ZMSAgenda)]
+            statement = [select(ZMSAgenda).
+                         where(or_(ZMSAgenda.active_de, ZMSAgenda.active_en, ZMSAgenda.active_fr)).
+                         where(or_(ZMSAgenda.active_start_de <= now,
+                                   ZMSAgenda.active_start_en <= now,
+                                   ZMSAgenda.active_start_fr <= now)).
+                         where(or_(ZMSAgenda.active_end_de <= now,
+                                   ZMSAgenda.active_end_en <= now,
+                                   ZMSAgenda.active_end_fr <= now))]
 
             results = session.exec(statement[0])
 
