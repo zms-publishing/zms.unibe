@@ -4,6 +4,7 @@ from datetime import datetime
 
 from sqlmodel import Session, inspect, select, or_
 
+from zms.unibe.agenda.AgendaBridge import AgendaBridge
 from zms.unibe.agenda.sqlmodels.AgendaFilemaker import AgendaFilemaker
 from zms.unibe.agenda.sqlmodels.AgendaLibraryDE import AgendaLibraryDE
 from zms.unibe.agenda.sqlmodels.AgendaLibraryEN import AgendaLibraryEN
@@ -28,7 +29,6 @@ def update_newsevents():
             NewsEvents.__table__.drop(sqlengine)
         NewsEvents.__table__.create(sqlengine)
 
-        """
         # DATA SOURCE 1 ######################
         if inspect(sqlengine).has_table(AgendaFilemaker.__name__.lower()):
             statement = select(AgendaFilemaker)  # DE
@@ -284,7 +284,6 @@ def update_newsevents():
 
                 session.add(obj)
             session.commit()
-        """
         
         # DATA SOURCE 7 ######################
         if inspect(sqlengine).has_table(ZMSAgenda.__name__.lower()):
@@ -293,12 +292,17 @@ def update_newsevents():
             results = session.exec(statement[0])
 
             for res in results.all():
-                data_json = json.loads(res.cached_data)
-                for item in data_json:
+                
+                events_json = json.loads(res.cached_data)
+                # include only given categories if set
+                events_json = AgendaBridge.include_only(events_json, res.categories_include_only)
+                # filter out given categories if set
+                events_json = AgendaBridge.filter_out(events_json, res.categories_filter_out)
+                
+                for item in events_json:
+
                     obj = NewsEvents()
-                    
                     obj.uuid = uuid.uuid4()  # temporary UUID until next import - for internal use only
-                    # TODO: item.get('eventId') -> Outlook 'AAkBOQAICN5h7gIwAAAuAAAAAB2EAxGqZhHNm8gAqgAvxFoNANzSYaQmlSlNiazOwMqFMpYAAAhI4FwAABA='
                     
                     obj.site_uuid = res.site_uuid
                     obj.active_de = res.active_de
@@ -338,13 +342,12 @@ def update_newsevents():
                     obj.infos_en = item.get('eventInfos')
                     obj.infos_fr = item.get('eventInfos')
 
-                    # TODO: item.get('eventInfosPreview') -> TBD...?!
-                    
-                    obj.topics_de = item.get('eventCategories')  # TODO: handle include-only + filter-out as in ZMSAgenda
+                    obj.topics_de = item.get('eventCategories')
                     obj.topics_en = item.get('eventCategories')
                     obj.topics_fr = item.get('eventCategories')
 
-                    # TODO: item.get('eventTagline') -> None or filemaker: 'Career and networking event – Master in Biomedical Engineering'
+                    # TODO: item.get('eventInfosPreview') -> TBD...?!
+                    # TODO: item.get('eventTagline') -> None or filemaker only
                                         
                     # TODO: item.get('eventAttachments') -> TBD...?!
                     # TODO: item.get('eventImage') -> currently None for Outlook
