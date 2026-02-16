@@ -20,6 +20,7 @@ print('Addon: zms.unibe.agenda.AgendaBridge')
 security = ModuleSecurityInfo('zms.unibe.agenda.AgendaBridge')  # allow module import in RestrictedPython
 
 LOGGER = logging.getLogger('ZMSAgenda')
+PREFIX = 'ZMSAgenda.Category.'
 
 
 class AgendaBridge(ObjectManager):
@@ -157,6 +158,34 @@ class AgendaBridge(ObjectManager):
     def import_events_from_csv(self):
         # TODO: Get events from a CSV file (e.g. Excel)
         raise NotImplementedError
+
+    @staticmethod
+    def include_only(events, given_categories):
+        if isinstance(given_categories, list) and len(given_categories) > 0:
+            events_included = []
+            for event in events:
+                categories = event.get('eventCategories') if isinstance(event.get('eventCategories'), list) else []
+                for category in categories:
+                    category = f"{PREFIX}{category.replace(' ', '_')}"
+                    if category in given_categories:
+                        events_included.append(event)
+                        break
+            events = events_included
+        return events
+
+    @staticmethod
+    def filter_out(events, given_categories):
+        if isinstance(given_categories, list) and len(given_categories) > 0:
+            events_filtered = events.copy()
+            for event in events:
+                categories = event.get('eventCategories') if isinstance(event.get('eventCategories'), list) else []
+                for category in categories:
+                    category = f"{PREFIX}{category.replace(' ', '_')}"
+                    if category in given_categories:
+                        events_filtered.remove(event)
+                        break
+            events = events_filtered
+        return events
 
 
 # Apply security assertions by ClassSecurityInfo()

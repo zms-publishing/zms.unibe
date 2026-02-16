@@ -137,9 +137,9 @@ def is_authorized(context, roles, acquired=False, raise_exception=True):
     return False
 
 
-def get_attr(obj, attr, lang, dt_exec=True):
+def get_attr(obj, attr, lang=None, dt_exec=True):
     request = obj.REQUEST
-    request.set('lang', lang)
+    request.set('lang', lang or obj.getPrimaryLanguage())
     if not dt_exec:  # bypass default code execution in ObjAttrs.getObjProperty (Line 579)
         return obj.getObjAttrValue(obj.getObjAttr(attr), REQUEST=request)
     return obj.attr(attr)
@@ -190,7 +190,8 @@ def get_parent_node_sort_id(obj):
         return 0
 
 
-def get_parent_node_attr(obj, attr, lang, dt_exec=True):
+def get_parent_node_attr(obj, attr, lang=None, dt_exec=True):
+    lang = lang or obj.getPrimaryLanguage()
     if obj.getLevel() > 0 and '/trashcan' not in obj.getPath():
         return get_attr(obj.getParentNode(), attr, lang, dt_exec)
     else:
@@ -215,14 +216,14 @@ def parse_datetime(value):
         return datetime(1970, 1, 1)
 
 
-def is_activated_by_checkbox_and_timeline(obj, lang):
+def is_activated_by_checkbox_and_timeline(obj, lang=None):
     # ZMSObject.isVisible() traversing object's hierarchy up to root node and checks if
     # - object is translated
     # - object has been committed
     # - object is not in trashcan
     # - object is activated -> ('active' is True) AND ('attr_active_start' < NOW < 'attr_active_end')
     request = obj.REQUEST
-    request.set('lang', lang)
+    request.set('lang', lang or obj.getPrimaryLanguage())
     return len(list(filter(lambda x: not x.isVisible(REQUEST=request),
                            obj.breadcrumbs_obj_path(portalMaster=False)))) == 0
 
