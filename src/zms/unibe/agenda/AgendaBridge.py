@@ -163,12 +163,13 @@ class AgendaBridge(ObjectManager):
     def include_only(events, given_categories):
         if isinstance(given_categories, list) and len(given_categories) > 0:
             events_included = []
-            for category in given_categories:
-                category = category.replace(PREFIX, '').replace('_', ' ')
-                for event in list(filter(lambda x: category in (
-                        x.get('eventCategories') if isinstance(x.get('eventCategories'), list) else []), events)):
-                    if event not in events_included:
+            for event in events:
+                categories = event.get('eventCategories') if isinstance(event.get('eventCategories'), list) else []
+                for category in categories:
+                    category = f"{PREFIX}{category.replace(' ', '_')}"
+                    if category in given_categories:
                         events_included.append(event)
+                        break
             events = events_included
         return events
 
@@ -182,6 +183,7 @@ class AgendaBridge(ObjectManager):
                     category = f"{PREFIX}{category.replace(' ', '_')}"
                     if category in given_categories:
                         events_filtered.remove(event)
+                        break
             events = events_filtered
         return events
 

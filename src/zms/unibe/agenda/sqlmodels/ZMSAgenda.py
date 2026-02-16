@@ -8,8 +8,6 @@ from zms.unibe.utils.helpers import get_attr, get_data, parse_datetime, local_ti
 class ZMSAgenda(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
     attr_dc_type: str | None
-    path: str
-    level: int
     hide_past_events: bool
     categories: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
     categories_include_only: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
