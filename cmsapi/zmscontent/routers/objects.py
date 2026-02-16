@@ -7,7 +7,8 @@ from fastapi.responses import Response
 from zms.unibe.utils.zope.context import create_zope_app_context
 from zms.unibe.utils.helpers import is_activated_by_checkbox_and_timeline, get_data
 from zms.unibe.utils.enums import Locale, Lang, ContentModel, ImageVariant
-from ..schemas import agenda as schema
+from zms.unibe.agenda.schemas.ZMSAgendaEventSchema import ZMSAgendaEventSchema
+from ..schemas import agenda as schema  # TODO: this is an example to prove the concept with ZMSAgendaResponse
 
 
 router = APIRouter(
@@ -92,7 +93,7 @@ def get_content_object_by_uuid(
 @router.get(
     path="/content/object/{uuid}/data",
     summary="Get data stored for the given object uuid",
-    # response_model=schema.ZMSAgendaResponse
+    response_model=schema.ZMSAgendaResponse  # TODO: handle appropriate response_model according to the processed content_object
 )
 def get_content_object_data_by_uuid(
         uuid: UUID,
@@ -142,7 +143,7 @@ def get_content_object_data_by_uuid(
             'site_path': site_path,
             'content_model': meta_id,
             # TODO: handle appropriate data_schema according to the processed content_object
-            'data_schema': schema.ZMSAgendaEventSchema.model_json_schema() if include_schema else None,
+            'data_schema': ZMSAgendaEventSchema.model_json_schema() if include_schema else None,
             'data_items': data[offset : offset + limit],
         }
 

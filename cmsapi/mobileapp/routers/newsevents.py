@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 from fastapi import APIRouter, Query
@@ -125,7 +125,7 @@ def fetch_events(lang, sections, start_after, end_before, offset, limit):
                                             fr=NewsEvents.active_fr)).
                      where(start_after is None and True or (NewsEvents.start_dt > start_after)).
                      where(end_before is None and True or (NewsEvents.end_dt < end_before)).
-                     where(NewsEvents.end_dt > datetime.utcnow()).
+                     where(NewsEvents.end_dt > datetime.now(timezone.utc)).
                      where(not_(ZMSSite.path.contains('/arbeitgeberin'))).
                      where(not_(ZMSSite.path.contains('/images'))).
                      where(not_(ZMSSite.path.contains('/jahresberichte'))).
@@ -399,7 +399,7 @@ async def get_statusmessages(
         statement = [select(StatusMessage).
                      where(start_after is None and True or (StatusMessage.begin > start_after)).
                      where(end_before is None and True or (StatusMessage.end < end_before)).
-                     where(or_(StatusMessage.end > datetime.utcnow() - timedelta(days=1),  # show resolved by yesterday
+                     where(or_(StatusMessage.end > datetime.now(timezone.utc) - timedelta(days=1),  # show resolved by yesterday
                                StatusMessage.end == datetime.fromisoformat('1970-01-01T00:00:00'))).  # show open issues
                      order_by(StatusMessage.begin).
                      order_by(StatusMessage.end.desc())]
