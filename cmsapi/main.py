@@ -8,7 +8,7 @@ from cmsapi.mobileapp.routers import newsevents, servicelinks, uniaktuell, media
 from cmsapi.zmscontent.routers import objects, labels, scheduler, agenda
 
 app = FastAPI(title="CMSAPI-v3",
-              version="3.3.2",
+              version="3.3.3",
               summary="Python-based REST API to connect ZMS with unibe.app and unibe.ch",
               description="**zms-fastapi** is running on the **UniBE Web/Mobile Integration Platform**",
               docs_url="/v3/swagger",
