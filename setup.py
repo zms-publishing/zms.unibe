@@ -24,7 +24,7 @@ setup(
     name                  = 'zms.unibe',
     description           = 'Addons package for ZMS at UniBE',
     long_description      = 'Python-based extensions for and integrations with the ZMS publishing system',
-    version               = '1.2.8',
+    version               = '1.2.9',
     author                = 'University of Bern, IT Services',
     author_email          = '',
     url                   = 'https://github.com/idasm-unibe-ch/zms-addons',
