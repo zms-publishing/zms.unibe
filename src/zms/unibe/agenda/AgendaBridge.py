@@ -64,7 +64,7 @@ class AgendaBridge(ObjectManager):
         if response.status_code == 200:
             agenda_categories = response.json()
         else:
-            agenda_categories = {}
+            raise ImportError(url)
         
         if translations:
             categories = {}
