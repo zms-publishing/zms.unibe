@@ -37,7 +37,11 @@ class OutlookConnector(ObjectManager):
         self.upn = upn
         self.credential = EnvironmentCredential()
         self.graph_client = GraphServiceClient(self.credential)  # type: ignore
-        self.access_token = asyncio.run(self.get_access_token())
+        self.headers = {
+            'Authorization': 'Bearer ' + asyncio.run(self.get_access_token()),
+            'Prefer': 'IdType="ImmutableId",'  # https://learn.microsoft.com/en-us/graph/outlook-immutable-id
+                      'outlook.timezone="Europe/Berlin"',  # https://learn.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-1.0&tabs=http#support-various-time-zones
+        }
         
     async def get_access_token(self):
         graph_scope = 'https://graph.microsoft.com/.default'
@@ -67,11 +71,6 @@ class OutlookConnector(ObjectManager):
         Raises:
             ValueError: If the API response contains an error or invalid data.
         """
-        headers = {
-            'Authorization': 'Bearer ' + self.access_token,
-            'Prefer': 'IdType="ImmutableId",'  # https://learn.microsoft.com/en-us/graph/outlook-immutable-id
-                      'outlook.timezone="Europe/Berlin"',  # https://learn.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-1.0&tabs=http#support-various-time-zones
-        }
         # /calendar/events?$top=100
         # /calendar/events?mailboxlocation=resource
         # /calendarView?startDateTime=2023-07-26T00:00:00Z&endDateTime=2026-07-27T00:00:00Z
@@ -83,7 +82,7 @@ class OutlookConnector(ObjectManager):
                                     f"?startDateTime={local_timezone(begin_date, tz='UTC').isoformat()[:-6]}"
                                     f"&endDateTime={local_timezone(end_date, tz='UTC', days_delta=1).isoformat()[:-6]}"
                                     f"&$top=100",
-                                headers=headers)
+                                headers=self.headers)
         response_json = response.json()
 
         return_json = []
@@ -112,16 +111,11 @@ class OutlookConnector(ObjectManager):
     @security.public
     def debug_calendar_events(self, begin_date, end_date, events_endpoint=None,
                                      event_id=None, attachment_id=None, decode_base64=False):
-        headers = {
-            'Authorization': 'Bearer ' + self.access_token,
-            'Prefer': 'IdType="ImmutableId",'  # https://learn.microsoft.com/en-us/graph/outlook-immutable-id
-                      'outlook.timezone="Europe/Berlin"',  # https://learn.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-1.0&tabs=http#support-various-time-zones
-        }
         if pybool(events_endpoint):
             response = requests.get(url=f"https://graph.microsoft.com/v1.0"
                                         f"/users/{self.upn}/events"
                                         f"?$top=100",
-                                    headers=headers)
+                                    headers=self.headers)
             return json.dumps(response.json(), indent=4, sort_keys=True)
 
         if event_id is not None:
@@ -146,19 +140,14 @@ class OutlookConnector(ObjectManager):
 
     @security.public
     def debug_calendar_categories(self):
-        headers = {
-            'Authorization': 'Bearer ' + self.access_token,
-            'Prefer': 'IdType="ImmutableId",'  # https://learn.microsoft.com/en-us/graph/outlook-immutable-id
-                      'outlook.timezone="Europe/Berlin"',  # https://learn.microsoft.com/en-us/graph/api/user-list-events?view=graph-rest-1.0&tabs=http#support-various-time-zones
-        }
         # TODO: FindCategoriesAccessDenied
-        # With delegated permission MailboxSettings.Read* you can't read/write outlook categories of other users.
-        # Only way to read/write outlook categories is with application permission MailboxSettings.ReadWrite.
+        # With _delegated_ permission MailboxSettings.Read* you can't read/write outlook categories of other users.
+        # Only way to read/write outlook categories is with _application_ permission MailboxSettings.ReadWrite.
         # With this application permission, you can limit the scope to a subset of mailboxes.
         # https://stackoverflow.com/questions/77825238/get-create-categories-for-any-user-in-outlook-calendar-with-graphapi
         response = requests.get(url=f"https://graph.microsoft.com/v1.0"
                                     f"/users/{self.upn}/outlook/masterCategories",
-                                headers=headers)
+                                headers=self.headers)
         return json.dumps(response.json(), indent=4, sort_keys=True)                              
 
     @security.public
