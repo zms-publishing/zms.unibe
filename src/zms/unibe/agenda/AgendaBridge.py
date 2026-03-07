@@ -75,7 +75,7 @@ class AgendaBridge(ObjectManager):
             
         for account in self.accounts:
             if account in agenda_categories.keys():
-                categories.extend(agenda_categories[account])
+                categories.extend(agenda_categories[account]['categories'])
         return list(set(categories))
             
     @security.public
