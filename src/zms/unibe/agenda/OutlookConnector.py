@@ -18,6 +18,7 @@ from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurity
 
 from Products.zms.standard import pybool
 from zms.unibe.utils.helpers import DotDict, local_timezone
+from zms.unibe.agenda.schemas.ZMSAgendaOutlookSchema import ZMSAgendaOutlookSchema
 
 print('Addon: zms.unibe.agenda.OutlookConnector')
 security = ModuleSecurityInfo('zms.unibe.agenda.OutlookConnector')  # allow module import in RestrictedPython
@@ -127,7 +128,7 @@ class OutlookConnector(ObjectManager):
             else:
                 response = requests.get(url=f"https://graph.microsoft.com/v1.0"
                                             f"/users/{self.upn}/events/{event_id}",
-                                        headers=headers)
+                                        headers=self.headers)
                 return json.dumps(response.json(), indent=4, sort_keys=True)
 
         response = requests.get(url=f"https://graph.microsoft.com/v1.0"
@@ -135,7 +136,7 @@ class OutlookConnector(ObjectManager):
                                     f"?startDateTime={local_timezone(begin_date, tz='UTC').isoformat()[:-6]}"
                                     f"&endDateTime={local_timezone(end_date, tz='UTC', days_delta=1).isoformat()[:-6]}"
                                     f"&$top=100",
-                                headers=headers)
+                                headers=self.headers)
         return json.dumps(response.json(), indent=4, sort_keys=True)
 
     @security.public
@@ -220,6 +221,27 @@ class OutlookConnector(ObjectManager):
         else:
             return attachment_data.name, attachment_data.content_bytes
 
+    @security.public
+    def create_calendar_event(self, data):   
+        data = DotDict(data)
+        payload = ZMSAgendaOutlookSchema.from_surveyjs(data)
+        
+        headers = self.headers.copy()
+        headers['Content-Type'] = 'application/json'
+        
+        response = requests.post(url=f"https://graph.microsoft.com/v1.0"
+                                     f"/users/{data.upn}/calendar/events",
+                                 headers=headers,
+                                 json=payload)
+        
+        # print('create_calendar_event -> POST:', data.upn,
+        #       json.dumps(payload, indent=4, sort_keys=True, default=str),
+        #       response.status_code,
+        #       response.text)
+        
+        if response.status_code != 201:
+            LOGGER.error(f'POST {data.upn} {response.status_code} {response.text}')
+        
 
 # Apply security assertions by ClassSecurityInfo()
 # https://zope.readthedocs.io/en/latest/zdgbook/Security.html#a-class-security-example
