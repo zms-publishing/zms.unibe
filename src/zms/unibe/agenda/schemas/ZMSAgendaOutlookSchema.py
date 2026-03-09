@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from Products.zms import standard
 from zms.unibe.utils.helpers import local_timezone, get_when, sanitize_html
 import datetime as dt
+import html
 
 
 class ZMSAgendaOutlookSchema:
@@ -97,26 +98,22 @@ class ZMSAgendaOutlookSchema:
         else:
             end_time = dt.time.fromisoformat(tomorrow.strftime('%H:%M:%S'))
 
-        if 'allday' in event.event_duration:
+        if 'allday' in event.get('event_duration', ''):
             begin_time = dt.time.fromisoformat('00:00:00')
             end_time = dt.time.fromisoformat('00:00:00')
 
-        begin_datetime = dt.datetime.combine(begin_date, begin_time, tzinfo=tomorrow.tzinfo)
-        end_datetime = dt.datetime.combine(end_date, end_time, tzinfo=tomorrow.tzinfo)
-
-        if begin_datetime < tomorrow:
-            begin_datetime = end_datetime
+        begin_datetime = dt.datetime.combine(begin_date.date(), begin_time).replace(tzinfo=begin_date.tzinfo)
+        end_datetime = dt.datetime.combine(end_date.date(), end_time).replace(tzinfo=end_date.tzinfo)
 
         if end_datetime < begin_datetime:
             end_datetime = begin_datetime
 
         if begin_datetime == end_datetime:
-            end_datetime = end_datetime + dt.timedelta(days=1)
+            end_datetime = begin_datetime + dt.timedelta(days=1)
 
-        if event.get('event_link', '').startswith('https://'):
-            link = f"<a href='{event.get("event_link")}' target='_blank'>{event.get("event_link")[8:]}</a>"
-        else:
-            link = ""
+        link = html.escape(event.get('event_link', ''))
+        if link.startswith('https://'):
+            link = f"<a href='{link}' target='_blank'>{link[8:]}</a>"
 
         if event.get('event_categories'):
             if isinstance(event.event_categories, list):
@@ -130,28 +127,28 @@ class ZMSAgendaOutlookSchema:
 
         return {
             "showAs": "tentative",
-            "subject": event.event_title,
+            "subject": html.escape(event.event_title),
             "body": {
                 "contentType": "HTML",
                 "content": f"<blockquote style=\"margin-left:0.8ex; padding-left:1ex; border-left:3px solid rgb(200,200,200); color:rgb(102,102,102)\">"
-                           f"KONTAKT: {event.get('event_submitter_name', '')}"
-                    f"<br />{event.get('event_submitter_email', '')} {event.get('event_submitter_phone', '')}"
-                    f"<hr />BEACHTE: {event.get('event_submitter_hints', '')}"
-                    f"<hr />TURNUS: {event.get('event_recurrence', '')}"
-                    f"<hr />WEITERE KATEGORIE: {event.get('event_categories-Comment', '')}"
-                    f"<hr /></blockquote><br />{event.get('event_description', '')} {link}"
+                           f"KONTAKT: {html.escape(event.get('event_submitter_name', ''))}"
+                    f"<br />{html.escape(event.get('event_submitter_email', ''))} {html.escape(event.get('event_submitter_phone', ''))}"
+                    f"<hr />BEACHTE: {html.escape(event.get('event_submitter_hints', ''))}"
+                    f"<hr />TURNUS: {html.escape(event.get('event_recurrence', ''))}"
+                    f"<hr />WEITERE KATEGORIE: {html.escape(event.get('event_categories-Comment', ''))}"
+                    f"<hr /></blockquote><br />{html.escape(event.get('event_description', ''))} {link}"
             },
             "isAllDay": True if 'allday' in event.event_duration else False,
             "start": {
-                "dateTime": begin_datetime.isoformat()[:-6],
+                "dateTime": begin_datetime.strftime('%Y-%m-%dT%H:%M:%S'),
                 "timeZone": "Europe/Berlin"
             },
             "end": {
-                "dateTime": end_datetime.isoformat()[:-6],
+                "dateTime": end_datetime.strftime('%Y-%m-%dT%H:%M:%S'),
                 "timeZone": "Europe/Berlin"
             },
             "location": {
-                "displayName": event.event_location
+                "displayName": html.escape(event.event_location)
             },
             "categories": categories,
             # "attendees": [

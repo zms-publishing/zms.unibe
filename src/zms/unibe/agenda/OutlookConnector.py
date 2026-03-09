@@ -230,17 +230,28 @@ class OutlookConnector(ObjectManager):
         headers['Content-Type'] = 'application/json'
         
         response = requests.post(url=f"https://graph.microsoft.com/v1.0"
-                                     f"/users/{data.upn}/calendar/events",
+                                     f"/users/{self.upn}/calendar/events",
                                  headers=headers,
                                  json=payload)
         
-        # print('create_calendar_event -> POST:', data.upn,
+        # print('create_calendar_event -> POST:', self.upn,
         #       json.dumps(payload, indent=4, sort_keys=True, default=str),
         #       response.status_code,
         #       response.text)
         
         if response.status_code != 201:
-            LOGGER.error(f'POST {data.upn} {response.status_code} {response.text}')
+            LOGGER.error(f'POST {self.upn} {response.status_code} {response.text}')
+            raise ValueError(
+                f"Failed to create calendar event for {self.upn}: "
+                f"{response.status_code} {response.text}")
+        
+        try:
+            return response.json()
+        except Exception:
+            LOGGER.warning(
+                f"create_calendar_event: successful response for {self.upn} "
+                f"could not be decoded as JSON (status {response.status_code})")
+            return {"status_code": response.status_code}
         
 
 # Apply security assertions by ClassSecurityInfo()
