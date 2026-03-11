@@ -203,7 +203,20 @@ class OutlookConnector(ObjectManager):
             request_config = RequestConfiguration(
                 query_parameters=query_params,
             )
-            attachments = asyncio.run(self.graph_client.users.by_user_id(self.upn).events.by_event_id(
+            
+            # When making client calls from a sync env with asyncio.run() the loop 
+            # gets closed after the first request, causing subsequent ones to fail
+            # https://github.com/microsoftgraph/msgraph-sdk-python/issues/366
+            # -> see workaround
+            def get_loop():
+                try:
+                    loop = asyncio.get_event_loop()
+                except RuntimeError:
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                return loop
+            
+            attachments = get_loop().run_until_complete(self.graph_client.users.by_user_id(self.upn).events.by_event_id(
                 event_id).attachments.get(request_configuration=request_config))
 
             return attachments.value
