@@ -81,29 +81,32 @@ class ZMSAgendaOutlookSchema:
 
         # we expect a lead time of one day for new events 
         tomorrow = local_timezone() + dt.timedelta(days=1)
-        begin_date = local_timezone(event.event_begin_date)
+        begin_date = event.event_begin_date
+        is_allday = False
 
-        if 'event_end_date' in event:
-            end_date = local_timezone(event.event_end_date)
+        if event.get('event_end_date'):
+            end_date = event.event_end_date
         else:
             end_date = tomorrow
 
-        if 'event_begin_time' in event:
-            begin_time = dt.time.fromisoformat(event.event_begin_time)
+        if event.get('event_begin_time'):
+            begin_time = event.event_begin_time
         else:
             begin_time = dt.time.fromisoformat(tomorrow.strftime('%H:%M:%S'))
 
-        if 'event_end_time' in event:
-            end_time = dt.time.fromisoformat(event.event_end_time)
+        if event.get('event_end_time'):
+            end_time = event.event_end_time
         else:
             end_time = dt.time.fromisoformat(tomorrow.strftime('%H:%M:%S'))
 
-        if 'allday' in event.get('event_duration', ''):
-            begin_time = dt.time.fromisoformat('00:00:00')
-            end_time = dt.time.fromisoformat('00:00:00')
+        if event.get('event_duration'):
+            if 'allday' in event.event_duration:
+                is_allday = True
+                begin_time = dt.time.fromisoformat('00:00:00')
+                end_time = dt.time.fromisoformat('00:00:00')
 
-        begin_datetime = dt.datetime.combine(begin_date.date(), begin_time).replace(tzinfo=begin_date.tzinfo)
-        end_datetime = dt.datetime.combine(end_date.date(), end_time).replace(tzinfo=end_date.tzinfo)
+        begin_datetime = local_timezone(dt.datetime.combine(begin_date, begin_time))
+        end_datetime = local_timezone(dt.datetime.combine(end_date, end_time))
 
         if end_datetime < begin_datetime:
             end_datetime = begin_datetime
@@ -138,7 +141,7 @@ class ZMSAgendaOutlookSchema:
                     f"<hr />WEITERE KATEGORIE: {html.escape(event.get('event_categories-Comment', ''))}"
                     f"<hr /></blockquote><br />{html.escape(event.get('event_description', ''))} {link}"
             },
-            "isAllDay": True if 'allday' in event.event_duration else False,
+            "isAllDay": is_allday,
             "start": {
                 "dateTime": begin_datetime.strftime('%Y-%m-%dT%H:%M:%S'),
                 "timeZone": "Europe/Berlin"
