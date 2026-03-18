@@ -4,6 +4,7 @@ babel                           # https://github.com/python-babel/babel
 beautifulsoup4                  # https://beautiful-soup-4.readthedocs.io/en/latest/
 chardet                         # https://github.com/chardet/chardet
 devtools                        # https://python-devtools.helpmanual.io/install/
+email-validator                 # https://github.com/JoshData/python-email-validator -> https://docs.pydantic.dev/latest/api/networks/#pydantic.networks.EmailStr
 ftfy                            # https://github.com/rspeer/python-ftfy
 ics                             # https://github.com/ics-py/ics-py
 python-dotenv                   # https://github.com/theskumar/python-dotenv
