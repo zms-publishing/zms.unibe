@@ -304,6 +304,20 @@ def get_data(obj, attr, lang=None, json_as_py=False):
     return None, None
 
 
+def get_json_schema(obj, lang=None):
+    request = obj.REQUEST
+    request.set('lang', lang or obj.getPrimaryLanguage())
+
+    href = f'{get_url_from_conf_or_env(obj)}{obj.getPath()}/getJSONSchema'
+    response = requests.get(url=href, timeout=10)
+
+    if response.status_code == 200:
+        return response.text
+    else:
+        LOGGER.error(f'Error on get_json_schema: {response.status_code} {href}')
+    return None
+
+
 def get_when(dt, mode, locale):
     # broken or empty DateTimes for dt -> 1970-01-01T01:00:00+01:00
     # https://babel.pocoo.org/en/latest/dates.html#pattern-syntax
