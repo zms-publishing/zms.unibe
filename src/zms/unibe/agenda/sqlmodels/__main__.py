@@ -13,6 +13,13 @@ from .AgendaLibraryDE import AgendaLibraryDE
 from .AgendaLibraryEN import AgendaLibraryEN
 from .StatusMessages import StatusMessage
 
+from zms.unibe.utils.zms2sql import zms2sql
+from .ZMSAgenda import ZMSAgenda
+
+
+def update_agendas(zms_context):
+    zms2sql([ZMSAgenda], zms_context)
+
 
 def fetch_agendas():
     print("fetch_agendas")

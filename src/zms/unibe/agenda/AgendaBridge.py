@@ -20,6 +20,7 @@ print('Addon: zms.unibe.agenda.AgendaBridge')
 security = ModuleSecurityInfo('zms.unibe.agenda.AgendaBridge')  # allow module import in RestrictedPython
 
 LOGGER = logging.getLogger('ZMSAgenda')
+PREFIX = 'ZMSAgenda.Category.'
 
 
 class AgendaBridge(ObjectManager):
@@ -48,26 +49,33 @@ class AgendaBridge(ObjectManager):
         return self.events
 
     @security.public    
-    def get_categories(self, token):
+    def get_categories(self, translations=False):
         # WORKAROUND for FindCategoriesAccessDenied via MS Graph API
-        # With delegated permission MailboxSettings.Read* you can't read/write outlook categories of other users.
-        # Only way to read/write outlook categories is with application permission MailboxSettings.ReadWrite.
+        #
+        # With delegated permission MailboxSettings.Read* you cannot read outlook categories of other users.
+        # The only way to read outlook categories is with application permission MailboxSettings.ReadWrite.
+        #
         # With this application permission, you can limit the scope to a subset of mailboxes.
         # https://stackoverflow.com/questions/77825238/get-create-categories-for-any-user-in-outlook-calendar-with-graphapi
-        #
-        # see zms-addons: zms.unibe.agenda.OutlookConnector.debug_calendar_categories
         url = os.getenv('AGENDA_CATEGORIES_URL', 'http://localhost:8081/unibe/agenda-categories.json')
         categories = []
 
-        response = requests.get(f'{url}?token={token}')
+        response = requests.get(url)
         if response.status_code == 200:
             agenda_categories = response.json()
         else:
-            agenda_categories = {}
+            raise ImportError(url)
         
+        if translations:
+            categories = {}
+            for category in agenda_categories.keys():
+                if category.startswith('ZMSAgenda.Category.'):
+                    categories[category] = agenda_categories[category]
+            return categories
+            
         for account in self.accounts:
             if account in agenda_categories.keys():
-                categories.extend(agenda_categories[account])
+                categories.extend(agenda_categories[account]['categories'])
         return list(set(categories))
             
     @security.public
@@ -150,6 +158,34 @@ class AgendaBridge(ObjectManager):
     def import_events_from_csv(self):
         # TODO: Get events from a CSV file (e.g. Excel)
         raise NotImplementedError
+
+    @staticmethod
+    def include_only(events, given_categories):
+        if isinstance(given_categories, list) and len(given_categories) > 0:
+            events_included = []
+            for event in events:
+                categories = event.get('eventCategories') if isinstance(event.get('eventCategories'), list) else []
+                for category in categories:
+                    category = f"{PREFIX}{category.replace(' ', '_')}"
+                    if category in given_categories:
+                        events_included.append(event)
+                        break
+            events = events_included
+        return events
+
+    @staticmethod
+    def filter_out(events, given_categories):
+        if isinstance(given_categories, list) and len(given_categories) > 0:
+            events_filtered = events.copy()
+            for event in events:
+                categories = event.get('eventCategories') if isinstance(event.get('eventCategories'), list) else []
+                for category in categories:
+                    category = f"{PREFIX}{category.replace(' ', '_')}"
+                    if category in given_categories:
+                        events_filtered.remove(event)
+                        break
+            events = events_filtered
+        return events
 
 
 # Apply security assertions by ClassSecurityInfo()

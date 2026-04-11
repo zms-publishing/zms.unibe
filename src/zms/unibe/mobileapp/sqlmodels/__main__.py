@@ -1,11 +1,14 @@
 import uuid
-from datetime import datetime
+import json
+from datetime import datetime, timezone
 
 from sqlmodel import Session, inspect, select, or_
 
+from zms.unibe.agenda.AgendaBridge import AgendaBridge
 from zms.unibe.agenda.sqlmodels.AgendaFilemaker import AgendaFilemaker
 from zms.unibe.agenda.sqlmodels.AgendaLibraryDE import AgendaLibraryDE
 from zms.unibe.agenda.sqlmodels.AgendaLibraryEN import AgendaLibraryEN
+from zms.unibe.agenda.sqlmodels.ZMSAgenda import ZMSAgenda
 from zms.unibe.teasers.sqlmodels.TeaserElement2022 import TeaserElement2022
 from zms.unibe.announcements.sqlmodels.NewsBox import NewsBox
 from zms.unibe.mobileapp.sqlmodels.ServiceLinks import ServiceLink
@@ -18,6 +21,7 @@ def update_newsevents():
     print("update_newsevents")
 
     sqlengine = connect_sqldb()
+    now = datetime.now(timezone.utc)
 
     # fill the intermediate table NewsEvents consolidating data sources for queries
     with Session(sqlengine) as session:
@@ -47,7 +51,7 @@ def update_newsevents():
                 obj.start_dt = res.json_datum_zeit_start
                 obj.end_dt = res.json_datum_zeit_end > res.json_datum_zeit_start and \
                              res.json_datum_zeit_end or \
-                             res.json_datum_zeit_start  # to filter out outdated Events - see where(NewsEvents.end_dt > datetime.utcnow())
+                             res.json_datum_zeit_start  # to filter out outdated Events - see where(NewsEvents.end_dt > now)
                 obj.location_de = f'{res.veranstaltung_horsaal}\n' \
                                   f'{res.veranstaltung_gebaude_adresse}\n' \
                                   f'{res.veranstaltung_ort}'
@@ -80,7 +84,7 @@ def update_newsevents():
                 obj.start_dt = res.json_datum_zeit_start
                 obj.end_dt = res.json_datum_zeit_end > res.json_datum_zeit_start and \
                              res.json_datum_zeit_end or \
-                             res.json_datum_zeit_start  # to filter out outdated Events - see where(NewsEvents.end_dt > datetime.utcnow())
+                             res.json_datum_zeit_start  # to filter out outdated Events - see where(NewsEvents.end_dt > now)
                 obj.location_en = f'{res.veranstaltung_horsaal}\n' \
                                   f'{res.veranstaltung_gebaude_adresse}\n' \
                                   f'{res.veranstaltung_ort}'
@@ -144,7 +148,7 @@ def update_newsevents():
                 obj.start_dt = res.startsAt
                 obj.end_dt = res.endsAt > res.startsAt and \
                              res.endsAt or \
-                             res.startsAt  # to filter out outdated Events - see where(NewsEvents.end_dt > datetime.utcnow())
+                             res.startsAt  # to filter out outdated Events - see where(NewsEvents.end_dt > now)
                 obj.location_en = res.venue
 
                 obj.url_en = res.url
@@ -159,12 +163,12 @@ def update_newsevents():
             statement = [select(TeaserElement2022).
                          where(
                 or_(TeaserElement2022.active_de, TeaserElement2022.active_en, TeaserElement2022.active_fr)).
-                         where(or_(TeaserElement2022.active_start_de <= datetime.utcnow(),
-                                   TeaserElement2022.active_start_en <= datetime.utcnow(),
-                                   TeaserElement2022.active_start_fr <= datetime.utcnow())).
-                         where(or_(TeaserElement2022.active_end_de <= datetime.utcnow(),
-                                   TeaserElement2022.active_end_en <= datetime.utcnow(),
-                                   TeaserElement2022.active_end_fr <= datetime.utcnow()))]
+                         where(or_(TeaserElement2022.active_start_de <= now,
+                                   TeaserElement2022.active_start_en <= now,
+                                   TeaserElement2022.active_start_fr <= now)).
+                         where(or_(TeaserElement2022.active_end_de <= now,
+                                   TeaserElement2022.active_end_en <= now,
+                                   TeaserElement2022.active_end_fr <= now))]
 
             results = session.exec(statement[0])
 
@@ -199,7 +203,7 @@ def update_newsevents():
                 obj.start_dt = res.start_dt
                 obj.end_dt = res.end_dt > res.start_dt and \
                              res.end_dt or \
-                             res.start_dt  # to filter out outdated Events - see where(NewsEvents.end_dt > datetime.utcnow())
+                             res.start_dt  # to filter out outdated Events - see where(NewsEvents.end_dt > now)
                 obj.location_de = res.location
                 obj.location_en = res.location
                 obj.location_fr = res.location
@@ -220,16 +224,16 @@ def update_newsevents():
                 session.add(obj)
             session.commit()
 
-        # DATA SOURCE 6 ######################
+        # DATA SOURCE 6 ###################### TODO: Remove because phased out...?!
         if inspect(sqlengine).has_table(NewsBox.__name__.lower()):
             statement = [select(NewsBox).
                          where(or_(NewsBox.active_de, NewsBox.active_en, NewsBox.active_fr)).
-                         where(or_(NewsBox.active_start_de <= datetime.utcnow(),
-                                   NewsBox.active_start_en <= datetime.utcnow(),
-                                   NewsBox.active_start_fr <= datetime.utcnow())).
-                         where(or_(NewsBox.active_end_de <= datetime.utcnow(),
-                                   NewsBox.active_end_en <= datetime.utcnow(),
-                                   NewsBox.active_end_fr <= datetime.utcnow()))]
+                         where(or_(NewsBox.active_start_de <= now,
+                                   NewsBox.active_start_en <= now,
+                                   NewsBox.active_start_fr <= now)).
+                         where(or_(NewsBox.active_end_de <= now,
+                                   NewsBox.active_end_en <= now,
+                                   NewsBox.active_end_fr <= now))]
 
             results = session.exec(statement[0])
 
@@ -264,7 +268,7 @@ def update_newsevents():
                 obj.start_dt = res.start_dt
                 obj.end_dt = res.end_dt > res.start_dt and \
                              res.end_dt or \
-                             res.start_dt  # to filter out outdated Events - see where(NewsEvents.end_dt > datetime.utcnow())
+                             res.start_dt  # to filter out outdated Events - see where(NewsEvents.end_dt > now)
 
                 obj.url_de = res.url_de
                 obj.url_en = res.url_en
@@ -281,6 +285,81 @@ def update_newsevents():
 
                 session.add(obj)
             session.commit()
+        
+        # DATA SOURCE 7 ######################
+        if inspect(sqlengine).has_table(ZMSAgenda.__name__.lower()):
+            statement = [select(ZMSAgenda).
+                         where(or_(ZMSAgenda.active_de, ZMSAgenda.active_en, ZMSAgenda.active_fr)).
+                         where(or_(ZMSAgenda.active_start_de <= now,
+                                   ZMSAgenda.active_start_en <= now,
+                                   ZMSAgenda.active_start_fr <= now)).
+                         where(or_(ZMSAgenda.active_end_de <= now,
+                                   ZMSAgenda.active_end_en <= now,
+                                   ZMSAgenda.active_end_fr <= now))]
+
+            results = session.exec(statement[0])
+
+            for res in results.all():
+                
+                events_json = json.loads(res.cached_data)
+                # include only given categories if set
+                events_json = AgendaBridge.include_only(events_json, res.categories_include_only)
+                # filter out given categories if set
+                events_json = AgendaBridge.filter_out(events_json, res.categories_filter_out)
+                
+                for item in events_json:
+
+                    obj = NewsEvents()
+                    obj.uuid = uuid.uuid4()  # temporary UUID until next import - for internal use only
+                    
+                    obj.site_uuid = res.site_uuid
+                    obj.active_de = res.active_de
+                    obj.active_en = res.active_en
+                    obj.active_fr = res.active_fr
+                    obj.lastmod_dt_de = res.lastmod_dt_de
+                    obj.lastmod_dt_en = res.lastmod_dt_en
+                    obj.lastmod_dt_fr = res.lastmod_dt_fr
+    
+                    obj.id = item.get('eventId')
+                    obj.source = item.get('eventSource')
+                    obj.path = res.path
+                    obj.level = res.level
+                    obj.sort_id = res.sort_id
+                    obj.sort_id_parent = res.sort_id_parent
+    
+                    obj.title_de = item.get('eventTitle')
+                    obj.title_en = item.get('eventTitle')
+                    obj.title_fr = item.get('eventTitle')
+                    
+                    obj.location_de = item.get('eventLocation')
+                    obj.location_en = item.get('eventLocation')
+                    obj.location_fr = item.get('eventLocation')
+                    
+                    obj.type = 'event'
+                    
+                    obj.start_dt = item.get('eventBeginDateTime')
+                    obj.end_dt = item.get('eventEndDateTime')
+                    obj.allday = item.get('eventAllDay')
+    
+                    obj.url_de = item.get('eventUrl')
+                    obj.url_en = item.get('eventUrl')
+                    obj.url_fr = item.get('eventUrl')
+                    obj.infos_de = item.get('eventInfos')
+                    obj.infos_en = item.get('eventInfos')
+                    obj.infos_fr = item.get('eventInfos')
+
+                    obj.topics_de = item.get('eventCategories')
+                    obj.topics_en = item.get('eventCategories')
+                    obj.topics_fr = item.get('eventCategories')
+
+                    # TODO: item.get('eventInfosPreview') -> TBD...?!
+                    # TODO: item.get('eventTagline') -> None or filemaker only
+                                        
+                    # TODO: item.get('eventAttachments') -> TBD...?!
+                    # TODO: item.get('eventImage') -> currently None for Outlook
+
+                    session.add(obj)
+                session.commit()
 
 
 def update_servicelinks(zms_context):
