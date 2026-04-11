@@ -1,6 +1,6 @@
 # zms-addons
 
-Python-based extensions for and integrations with the [ZMS publishing](https://github.com/zms-publishing/ZMS) system at the [University of Bern (UniBE)](https://unibe.ch).
+Python-based extensions for and integrations with the [ZMS publishing](https://github.com/zms-publishing/ZMS) system at [UniBE](https://unibe.ch) (University of Bern).
 
 The included `zms.unibe` add-on package is a comprehensive library that extends ZMS and underlying [Zope](https://github.com/zopefoundation/Zope) functionality with institution-specific features, integrations, and utilities. It includes modules for agenda management, announcements, contacts, data tables, forms, layouts, mobile app support, and more.
 
@@ -22,6 +22,18 @@ $ ./.venv/bin/pip install -e ./'zms-addons'
 
 ```bash
 $ ./.venv/bin/pip install -e ./'zms-addons[fastapi]'
+```
+
+### With [Microsoft Graph API](https://learn.microsoft.com/en-us/graph/overview) Support
+
+```bash
+$ ./.venv/bin/pip install -e ./'zms-addons[msgraphapi]'
+```
+
+### With [PyCharm Remote Debugging](https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html) Support
+
+```bash
+$ ./.venv/bin/pip install -e ./'zms-addons[pydevd-pycharm]'
 ```
 
 ### Command-Line Tools
