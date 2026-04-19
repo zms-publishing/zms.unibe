@@ -3,16 +3,15 @@ from uuid import UUID
 from fastapi import APIRouter
 from sqlmodel import Session, select
 
+from zms.unibe.fastapi.meta import Tags
+from zms.unibe.mobileapp.schemas import ServiceLinksSchema as schema
 from zms.unibe.mobileapp.sqlmodels.ServiceLinks import ServiceLink
 from zms.unibe.utils.db import connect_sqldb
-from zms.unibe.utils.helpers import local_timezone
-from zms.unibe.utils.helpers import get_attr_by_lang
 from zms.unibe.utils.enums import Locale
-from ..schemas import servicelinks as schema
+from zms.unibe.utils.helpers import get_attr_by_lang
+from zms.unibe.utils.helpers import local_timezone
 
-router = APIRouter(
-    prefix="/v3/app",
-    tags=["UniBE Mobile App (unibe.app)"])
+router = APIRouter(tags=[Tags.mobile])
 
 
 def _retrieve_service_links(lang, uuid):

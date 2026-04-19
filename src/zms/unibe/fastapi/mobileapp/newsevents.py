@@ -1,23 +1,22 @@
 from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
-from fastapi import APIRouter, Query
-from sqlmodel import Session, select, or_, not_
-from devtools import debug
 from anytree import Node, RenderTree
-from anytree.exporter import JsonExporter, DictExporter
+from anytree.exporter import DictExporter, JsonExporter
+from devtools import debug
+from fastapi import APIRouter, Query
+from sqlmodel import Session, not_, or_, select
 
-from zms.unibe.foundation.sqlmodels.ZMSSite import ZMSSite
-from zms.unibe.mobileapp.sqlmodels.NewsEvents import NewsEvents
 from zms.unibe.agenda.sqlmodels.StatusMessages import StatusMessage
+from zms.unibe.fastapi.meta import Tags
+from zms.unibe.foundation.sqlmodels.ZMSSite import ZMSSite
+from zms.unibe.mobileapp.schemas import NewsEventsSchema as schema
+from zms.unibe.mobileapp.sqlmodels.NewsEvents import NewsEvents
 from zms.unibe.utils.db import connect_sqldb
-from zms.unibe.utils.helpers import get_attr_by_lang, strip_cmstest, local_timezone
 from zms.unibe.utils.enums import Locale, SiteType
-from ..schemas import newsevents as schema
+from zms.unibe.utils.helpers import get_attr_by_lang, local_timezone, strip_cmstest
 
-router = APIRouter(
-    prefix="/v3",
-    tags=["UniBE Mobile App (unibe.app)"])
+router = APIRouter(tags=[Tags.mobile])
 
 
 @router.get("/news", summary="News", response_model=schema.NewsResponse,

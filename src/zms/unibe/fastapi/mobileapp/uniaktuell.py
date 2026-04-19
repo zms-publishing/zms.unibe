@@ -1,20 +1,19 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Query
-from sqlmodel import Session, select, not_
+from sqlmodel import Session, not_, select
 
+from zms.unibe.fastapi.meta import Tags
+from zms.unibe.fastapi.zmscontent.labels import get_content_labels
 from zms.unibe.foundation.sqlmodels.ZMSSite import ZMSSite
+from zms.unibe.mobileapp.schemas.NewsEventsSchema import Section
+from zms.unibe.uniaktuell.schemas import UniaktuellSchema as schema
 from zms.unibe.uniaktuell.sqlmodels import UniaktuellArticle as model
 from zms.unibe.utils.db import connect_sqldb
+from zms.unibe.utils.enums import ContentModel, Locale
 from zms.unibe.utils.helpers import get_attr_by_lang, strip_cmstest
-from zms.unibe.utils.enums import Locale, ContentModel
-from ..schemas import uniaktuell as schema
-from ..schemas.newsevents import Section
-from ...zmscontent.routers.labels import get_content_labels
 
-router = APIRouter(
-    prefix="/v3",
-    tags=["UniBE Mobile App (unibe.app)"])
+router = APIRouter(tags=[Tags.mobile])
 
 
 @router.get("/uniaktuell", summary='Magazine articles', response_model=schema.UniaktuellArticleResponse,

@@ -4,18 +4,15 @@ import xmltodict
 from fastapi import APIRouter, Query
 from fastapi.responses import Response
 
-from zms.unibe.utils.zope.context import create_zope_app_context
-from zms.unibe.utils.helpers import is_activated_by_checkbox_and_timeline, get_data
-from zms.unibe.utils.enums import Locale, Lang, ContentModel, ImageVariant
+# TODO: this is an example to prove the concept with ZMSAgendaResponse
+from zms.unibe.agenda.schemas import ZMSAgendaSchema as schema
 from zms.unibe.agenda.schemas.ZMSAgendaEventSchema import ZMSAgendaEventSchema
-from ..schemas import agenda as schema  # TODO: this is an example to prove the concept with ZMSAgendaResponse
+from zms.unibe.fastapi.meta import Tags
+from zms.unibe.utils.enums import ContentModel, ImageVariant, Lang, Locale
+from zms.unibe.utils.helpers import get_data, is_activated_by_checkbox_and_timeline
+from zms.unibe.utils.zope.context import create_zope_app_context
 
-
-router = APIRouter(
-    prefix="/v3/zms",
-    tags=["UniBE Web CMS (unibe.ch)"],
-)
-
+router = APIRouter(prefix="/zms", tags=[Tags.content])
 
 @router.get(
     path="/content/objects",

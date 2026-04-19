@@ -1,15 +1,12 @@
 from fastapi import APIRouter
-from sqlmodel import Session, select, inspect
-from zms.unibe.utils.db import connect_sqldb
+from sqlmodel import Session, inspect, select
 
-from zms.unibe.utils.zope.context import create_zope_app_context
+from zms.unibe.fastapi.meta import Tags
 from zms.unibe.maintenance.sqlmodels.ZMSSchedulerRegistry import ZMSSchedulerRegistry
+from zms.unibe.utils.db import connect_sqldb
+from zms.unibe.utils.zope.context import create_zope_app_context
 
-
-router = APIRouter(
-    prefix="/v3/zms",
-    tags=["UniBE Web CMS (unibe.ch)"],
-)
+router = APIRouter(prefix="/zms", tags=[Tags.content])
 
 
 @router.post(

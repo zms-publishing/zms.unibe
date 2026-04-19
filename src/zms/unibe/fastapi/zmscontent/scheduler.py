@@ -1,17 +1,14 @@
-from uuid import UUID
 from datetime import datetime
+from uuid import UUID
 
 from fastapi import APIRouter, Query
 from sqlmodel import Session, select
 
-from zms.unibe.utils.db import connect_sqldb
+from zms.unibe.fastapi.meta import Tags
 from zms.unibe.maintenance.sqlmodels.ZMSSchedulerRegistry import ZMSSchedulerRegistry
+from zms.unibe.utils.db import connect_sqldb
 
-
-router = APIRouter(
-    prefix="/v3/zms",
-    tags=["UniBE Web CMS (unibe.ch)"],
-)
+router = APIRouter(prefix="/zms", tags=[Tags.content])
 
 
 @router.get(

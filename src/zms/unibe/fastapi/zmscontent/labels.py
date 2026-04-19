@@ -1,15 +1,12 @@
 import xmltodict
 from fastapi import APIRouter
+
 from Products.zms._multilangmanager import exportXml
+from zms.unibe.fastapi.meta import Tags
+from zms.unibe.utils.enums import ContentModel, LabelPrefix, Lang, Locale
 from zms.unibe.utils.zope.context import create_zope_app_context
-from zms.unibe.utils.enums import Locale, Lang, ContentModel, LabelPrefix
 
-
-router = APIRouter(
-    prefix="/v3/zms",
-    tags=["UniBE Web CMS (unibe.ch)"],
-)
-
+router = APIRouter(prefix="/zms", tags=[Tags.content])
 
 @router.get(
     path="/content/labels",

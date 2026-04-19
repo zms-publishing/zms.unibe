@@ -1,7 +1,14 @@
 *~
 .*.swp
 
+.env
 .idea/
 .vscode/
-ZMS.egg-info/
+.venv/
+*.egg-info/
 
+data.json
+data.csv
+/build
+__pycache__/
+.DS_Store

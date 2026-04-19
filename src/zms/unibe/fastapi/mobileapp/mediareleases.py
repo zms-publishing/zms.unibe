@@ -1,19 +1,18 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Query
-from sqlmodel import Session, select, not_
+from sqlmodel import Session, not_, select
 
+from zms.unibe.announcements.schemas import MediaReleasesSchema as schema
 from zms.unibe.announcements.sqlmodels import MediaNews as model
+from zms.unibe.fastapi.meta import Tags
 from zms.unibe.foundation.sqlmodels.ZMSSite import ZMSSite
+from zms.unibe.mobileapp.schemas.NewsEventsSchema import Section
 from zms.unibe.utils.db import connect_sqldb
-from zms.unibe.utils.helpers import get_attr_by_lang, strip_cmstest
 from zms.unibe.utils.enums import Locale
-from ..schemas import mediareleases as schema
-from ..schemas.newsevents import Section
+from zms.unibe.utils.helpers import get_attr_by_lang, strip_cmstest
 
-router = APIRouter(
-    prefix="/v3",
-    tags=["UniBE Mobile App (unibe.app)"])
+router = APIRouter(tags=[Tags.mobile])
 
 
 @router.get("/mediareleases", summary='Media releases', response_model=schema.MediaReleaseResponse,

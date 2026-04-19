@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from ..schemas.newsevents import Section
+from zms.unibe.mobileapp.schemas.NewsEventsSchema import Section
 
 
 class MediaRelease(BaseModel):
