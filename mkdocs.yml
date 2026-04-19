@@ -1,0 +1,86 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+
+# Project information
+site_name: CMSAPI v3 - Documentation
+site_url: https://api.cms.test.unibe.ch/v3  # NOTE: /v3 is added as path in docker container automatically
+site_author: Christian Meier
+site_description: >-
+  Python-based REST API for retrieving, analyzing and consolidating content
+  published in UniBE-CMS and other information systems.
+
+# Repository
+repo_name: idasm-unibe-ch/unibe-cmsapi
+repo_url: https://github.com/idasm-unibe-ch/unibe-cmsapi
+
+# Copyright
+copyright: Copyright &copy; 2020-2023 University of Bern, IT Services Department, Applications & Service Management
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  features:
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - toc.integrate
+    - content.tabs.link
+    - content.code.annotate
+
+extra_css:
+  - overrides/extra.css
+
+markdown_extensions:
+  - admonition
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - search
+  - git-revision-date-localized:
+        type: iso_datetime
+        #type: timeago | custom
+        custom_format: "%d. %B %Y"
+        timezone: Europe/Zurich
+        locale: en
+        # Fallback for git as submodule
+        fallback_to_build_date: true
+        enable_creation_date: true
+#        exclude:
+#            - index.md
+        enabled: true
+  - git-authors:
+        show_contribution: true
+        show_line_count: true
+        count_empty_lines: true
+        # Fallback for git as submodule
+        fallback_to_empty: true
+#        exclude:
+#            - index.md
+        enabled: true
+#  - git-committers
+
+#extra:
+#  version:
+#    provider: mike
+
+# Page tree
+nav:
+  - Home: index.md
+  - Examples: examples.md
+  - Drafts:
+    - News/Events: newsevents-api-draft.md

@@ -1,150 +1,64 @@
-# zms-addons
+# UniBE CMSAPI
 
-Python-based extensions for and integrations with the [ZMS publishing](https://github.com/zms-publishing/ZMS) system at [UniBE](https://unibe.ch) (University of Bern).
+The implementation of a RESTful API for UniBE CMS relies on the ~~web application (micro)framework Flask~~ [FastAPI](https://fastapi.tiangolo.com) Library. This should enable a more lightweight Python development mode alongside the historically grown Zope stack.
 
-The included `zms.unibe` add-on package is a comprehensive library that extends ZMS and underlying [Zope](https://github.com/zopefoundation/Zope) functionality with institution-specific features, integrations, and utilities. It includes modules for agenda management, announcements, contacts, data tables, forms, layouts, mobile app support, and more.
+Additionally CMSAPI makes use of ~~Flasgger to generate the documentation~~ [SQLModel](https://sqlmodel.tiangolo.com) to implement the object relational mapping and is served by [Uvicorn](https://www.uvicorn.org) in testing and production deployments.
 
-## Repository
-- https://github.com/idasm-unibe-ch/zms-addons
-- https://github.com/idasm-unibe-ch/zms-addons/releases
+## Codebase
 
-## Setup development sandbox
+**REST-API Repositories**
+* https://github.com/idasm-unibe-ch/zms-fastapi
 
-### From Source
+## Local container environment
 
-```bash
-$ git clone https://github.com/idasm-unibe-ch/zms-addons.git
-$ virtualenv .venv
-$ ./.venv/bin/pip install -e ./'zms-addons'
-```
+Prerequisites:
+- Docker
 
-### With [FastAPI](https://fastapi.tiangolo.com) Support
+Execute the following commands to build and run the CMSAPI containers:
 
 ```bash
-$ ./.venv/bin/pip install -e ./'zms-addons[fastapi]'
+$ docker compose build zms-base
+$ docker compose build
+$ docker compose up
 ```
 
-### With [Microsoft Graph API](https://learn.microsoft.com/en-us/graph/overview) Support
+Hint: Everytime you change the code you have to re-execute these commands. You can skip the `docker compose build zms-base` step if `zms-base` didn't change.
 
-```bash
-$ ./.venv/bin/pip install -e ./'zms-addons[msgraphapi]'
-```
+Docker compose runs the following containers:
+- `mobileapp`: container(s) for API queries /v3 for unibe.app (aggregate and provide News, Events, Announcements and Service Links)
+- `zmscontent`: container(s) for API queries /v1 for unibe.ch (retrieve and analyze content objects published in UniBE-CMS)
+- `admin`: container which runs cronjobs for zms2sql
+- `zodb`: container for ZODB storing ZMS objects locally if not connected to a remote storage via ZEO
+- `postgresql`: container used for API endpoints which provides cached data via SQL mapped from ZODB
+- `docs`: `mkdocs` container including API documentation
 
-### With [PyCharm Remote Debugging](https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html) Support
 
-```bash
-$ ./.venv/bin/pip install -e ./'zms-addons[pydevd-pycharm]'
-```
+## Local Development
 
-### Command-Line Tools
+[PyCharm](https://www.jetbrains.com/pycharm/) is the recommended IDE for local development. First the desired Python version has to be installed for your system. Second an isolated Python virtual environment has to be created. Third the needed software stack has to be installed and setup.
 
-The package provides the `zms2sql` command-line utility for object-relational mappings to mirror selected data in the [ZODB](https://zodb.org) to e.g. [PostgreSQL](https://www.postgresql.org):
+    $ app/bin/pip install \
+        Zope[wsgi]==5.8.6 \
+        -c https://zopefoundation.github.io/Zope/releases/5.8.6/constraints.txt \
+        -e zms-core \
+        -r requirements.txt \
+        -c constraints.txt
 
-```bash
-$ ./.venv/bin/zms2sql --help
-```
+A sample run configuration:
 
-## Features
+    <component name="ProjectRunConfigurationManager">
+        <configuration default="false" name="unibe-cmsapi-v3" type="PythonConfigurationType" factoryName="Python">
+            <option name="SDK_HOME" value="$PROJECT_DIR$/venvpy310-cmsapi/bin/python" />
+            <option name="SCRIPT_NAME" value="uvicorn" />
+            <option name="PARAMETERS" value="cmsapi.main:app --port=5003 --reload" />
+            <envs>
+              <env name="PYTHONUNBUFFERED" value="1" />
+            </envs>
+            ...
+        </configuration>
+    </component>
 
-### Integrations with other services
-- [DataTables.net](https://datatables.net) samples
-- [BORIS](https://boris.unibe.ch) connector
-- Outlook connector for [calendar integration via Microsoft Graph API](https://learn.microsoft.com/en-us/graph/api/resources/calendar-overview?view=graph-rest-1.0)
-- Agenda bridge for flexible data aggregation
-- Event schemas and SQL models
-- Library and news integration
-- IT status messages
-- Form management based on [JSON Editor](https://github.com/json-editor/json-editor) 
-- [SurveyJS](https://surveyjs.io) integration
+## Container Environments
 
-### Utilities & custom monkey patches
-- Database utilities
-- Helper functions
-- Enums and context management
-- Scheduler registry
-- `zms2sql` command-line tool
-- `MemCached` error handling
-- `ExternalMethod` auto-reload
-- Security assertions
-
-### Content object handling
-- Base models (ZMSBase, ZMSSite, ZMSFolder, ZMSDocument)
-- File and graphic handling
-- Tables and text areas
-- Code blocks
-- Hero 2022 components
-- Teaser containers and elements
-- Content panes and tabs
-- Two-column layouts
-- Event and factsheet layouts
-- Alert boxes, info boxes, news boxes
-- Media news and Article management
-- Contact boxes and sections
-- Person and team management
-- Team sections
-
-## Dependencies
-
-The package requires [Python 3](https://www.python.org/downloads/) and depends on, e.g.:
-
-- **Application Server**: `Zope`, `Products.mcdutils`, `Products.PluggableAuthService`
-- **Database**: `SQLAlchemy`, `SQLModel`, `psycopg2`
-- **Web/API**: `FastAPI`, `starlette`, `pydantic`, `requests`, `msgraph-sdk`
-- **Data Processing**: `pandas`, `beautifulsoup4`, `lxml`, `Markdown`
-- **Office Integration**: `azure-identity`, `msgraph-sdk`, `XlsxWriter`
-- **Utilities**: `typer`, `rich`, `python-dotenv`, `devtools`
-- **Optional**: `uvicorn` (with `[fastapi]` extra)
-
-See [`requirements.txt`](https://github.com/idasm-unibe-ch/zms-addons/blob/main/requirements.txt) for the complete list and references of dependencies and [`constraints.txt`](https://github.com/idasm-unibe-ch/zms-addons/blob/main/constraints.txt) for their pinned versions.
-
-## Project Structure
-
-```
-zms-addons
-├── README.md
-├── constraints.txt
-├── pyproject.toml
-└── src
-    └── zms
-        └── unibe
-            ├── agenda
-            │   ├── schemas
-            │   └── sqlmodels
-            ├── announcements
-            │   └── sqlmodels
-            ├── contacts
-            │   └── sqlmodels
-            ├── datatables
-            │   ├── samples
-            │   │   ├── agenda
-            │   │   ├── announcement
-            │   │   ├── ikim
-            │   │   ├── kirchenbautag
-            │   │   ├── pariscms
-            │   │   ├── siteoverview
-            │   │   ├── sozinno
-            │   │   ├── tree
-            │   │   └── webinare
-            │   └── sqlmodels
-            ├── formulator
-            │   └── sqlmodels
-            ├── foundation
-            │   └── sqlmodels
-            ├── layouts
-            │   └── sqlmodels
-            ├── maintenance
-            │   └── sqlmodels
-            ├── mobileapp
-            │   └── sqlmodels
-            ├── patches
-            │   ├── monkey
-            │   └── security
-            ├── teasers
-            │   └── sqlmodels
-            ├── uniaktuell
-            │   └── sqlmodels
-            └── utils
-                ├── zms2sql
-                ├── zope
-                └── helpers.py
-```
+* Testing: [test-unibe-cmsapi](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config-test/browse/stacks/test-unibe-cmsapi/docker-compose.yml) => https://api.cms.test.unibe.ch/v3
+* Production: [prod-unibe-cmsapi](https://id-code.unibe.ch/projects/EPDOCKER/repos/docker-config/browse/stacks/prod-unibe-cmsapi/docker-compose.yml) => https://api.cms.unibe.ch/v3

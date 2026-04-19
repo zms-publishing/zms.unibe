@@ -1,0 +1,9 @@
+name: Deploy tag to Prod
+on:
+  workflow_dispatch:
+jobs:
+  call-deploy-tag-to-swarm-workflow:
+    if: ${{ github.ref_type == 'tag' }}
+    uses: idasm-unibe-ch/reusable-workflows/.github/workflows/deploy-tag-to-swarm.yml@v1
+    with:
+      environment: production

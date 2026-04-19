@@ -1,0 +1,133 @@
+version: '3.7'
+
+networks:
+  fastapi_network:
+
+services:
+  zms-base:
+    image: ghcr.io/idasm-unibe-ch/zms-base:local-fastapi
+    build: ./zms-base
+    entrypoint: "bash -c"
+    command: "exit 0"
+
+  zeo:
+    image: ghcr.io/idasm-unibe-ch/zms-base-zeo:local-fastapi
+    init: true
+    build:
+      context: ./zms-base/zeo
+      args:
+        ZMS_BASE_VERSION: local-fastapi
+    depends_on:
+      - zms-base
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+    ports:
+      - 8000:8000
+    volumes:
+      - ./docker/mounts/data:/app/zope/var
+      - ./docker/mounts/log:/app/zope/log
+    environment:
+      - PYTHONUNBUFFERED=true
+    networks:
+      - fastapi_network
+
+  api:
+    image: ghcr.io/idasm-unibe-ch/zms-fastapi:local
+    init: true
+    build:
+      context: .
+      args:
+        ZMS_BASE_VERSION: local-fastapi
+    depends_on:
+      - zms-base
+      - postgres
+      - zeo
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+    ports:
+      - 5555:5003
+    volumes:
+      - ./docker/mounts/log:/app/zope/log
+    environment:
+      - PYTHONUNBUFFERED=true
+      - RUN_CRONJOBS=false  # init_scripts startUp only in the dedicated admin container below
+      - ZODB_STORAGE=zeo://zeo:8000?storage=main
+      - SQLDB_STORAGE=postgresql://postgres:5432/zms_fastapi
+      - ZMS_URL=https://www.unibe.ch
+    networks:
+      - fastapi_network
+
+  adm:
+    image: ghcr.io/idasm-unibe-ch/zms-fastapi:local
+    init: true
+    depends_on:
+      - api
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+    volumes:
+      - ./docker/mounts/log:/app/zope/log
+    environment:
+      - PYTHONUNBUFFERED=true
+      - RUN_CRONJOBS=true  # init_scripts startUp in this dedicated admin container only
+      - ZODB_STORAGE=zeo://zeo:8000?storage=main
+      - SQLDB_STORAGE=postgresql://postgres:5432/zms_fastapi
+      - ZMS_URL=https://www.unibe.ch
+    networks:
+      - fastapi_network
+
+  postgres:
+    image: postgres:14.7
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+    ports:
+      - 5432:5432
+    volumes:
+      - ./docker/mounts/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=zms_fastapi
+    networks:
+      - fastapi_network
+
+  doc:
+    image: squidfunk/mkdocs-material:local
+    init: true
+    build: ./docs
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+    ports:
+      - 7777:8000
+    volumes:
+      - .:/docs:ro
+    networks:
+      - fastapi_network

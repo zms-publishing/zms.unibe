@@ -1,9 +1,7 @@
-.env
-.idea
-.venv
-*.egg-info
-data.json
-data.csv
-/build
-__pycache__/
-.DS_Store
+*~
+.*.swp
+
+.idea/
+.vscode/
+ZMS.egg-info/
+
