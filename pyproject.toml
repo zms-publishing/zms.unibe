@@ -17,9 +17,12 @@ build-backend = "setuptools.build_meta"
 name = "zms.unibe"
 version = "2.0.0-dev"  # TODO: remove -dev
 description = "Addons package for ZMS at UniBE"
-readme = {text = "Python-based extensions for and integrations with the ZMS publishing system", content-type = "text/plain"}
+readme = {
+    text = "Python-based extensions for and integrations with the ZMS publishing system",
+    content-type = "text/plain"
+}
 authors = [
-    { name = "University of Bern, IT Services" }
+    { name = "University of Bern, IT Services Department" }
 ]
 requires-python = ">=3.10"
 classifiers = [
@@ -95,12 +98,11 @@ pydevd-pycharm = [                      # https://www.jetbrains.com/help/pycharm
 [project.scripts]
 zms2sql = "zms.unibe.utils.zms2sql.cli:main"
 
-# TODO: switch repo urls to zms-publishing
 [project.urls]
-Homepage = "https://github.com/idasm-unibe-ch/zms-addons"
-Issues = "https://github.com/idasm-unibe-ch/zms-addons/issues"
-Changelog = "https://github.com/idasm-unibe-ch/zms-addons/releases"
-Documentation = "https://idasm-unibe-ch.github.io/unibe-web-mobile/web/cms"
+Homepage = "https://github.com/zms-publishing/zms.unibe"
+Issues = "https://github.com/zms-publishing/zms.unibe/issues"
+Changelog = "https://github.com/zms-publishing/zms.unibe/releases"
+Documentation = "https://idasm-unibe-ch.github.io/unibe-web-mobile/integration/hub/"
 
 [tool.setuptools]
 zip-safe = false
