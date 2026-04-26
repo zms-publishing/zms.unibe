@@ -15,7 +15,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "zms.unibe"
-version = "1.3.0-dev"
+version = "2.0.0-dev"  # TODO: remove -dev
 description = "Addons package for ZMS at UniBE"
 readme = {text = "Python-based extensions for and integrations with the ZMS publishing system", content-type = "text/plain"}
 authors = [
@@ -95,6 +95,7 @@ pydevd-pycharm = [                      # https://www.jetbrains.com/help/pycharm
 [project.scripts]
 zms2sql = "zms.unibe.utils.zms2sql.cli:main"
 
+# TODO: switch repo urls to zms-publishing
 [project.urls]
 Homepage = "https://github.com/idasm-unibe-ch/zms-addons"
 Issues = "https://github.com/idasm-unibe-ch/zms-addons/issues"

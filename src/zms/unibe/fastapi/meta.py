@@ -5,6 +5,7 @@ from enum import Enum
 class Tags(Enum):
     content = "content"
     mobile = "mobile"
+    scheduler = "scheduler"
 
 
 # https://fastapi.tiangolo.com/tutorial/metadata/#metadata-for-tags
@@ -24,5 +25,8 @@ tags = [
         #    "description": "GitHub / zms-fastapi / cmsapi / mobileapp",
         #    "url": "https://github.com/idasm-unibe-ch/zms-fastapi/tree/main/cmsapi/mobileapp",
         #},
-    }
+    },
+    {
+        "name": "scheduler",
+    },
 ]

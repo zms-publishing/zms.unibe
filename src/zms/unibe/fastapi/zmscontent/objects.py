@@ -1,8 +1,8 @@
+import os
 from uuid import UUID
 
 import xmltodict
-from fastapi import APIRouter, Query
-from fastapi.responses import Response
+from fastapi import APIRouter, Query, Response, HTTPException
 
 # TODO: this is an example to prove the concept with ZMSAgendaResponse
 from zms.unibe.agenda.schemas import ZMSAgendaSchema as schema
@@ -10,25 +10,30 @@ from zms.unibe.agenda.schemas.ZMSAgendaEventSchema import ZMSAgendaEventSchema
 from zms.unibe.fastapi.meta import Tags
 from zms.unibe.utils.enums import ContentModel, ImageVariant, Lang, Locale
 from zms.unibe.utils.helpers import get_data, is_activated_by_checkbox_and_timeline
-from zms.unibe.utils.zope.context import create_zope_app_context
+from zms.unibe.utils.zope.context import create_zope_app_context, get_zmsindex
 
 router = APIRouter(prefix="/zms", tags=[Tags.content])
 
 @router.get(
     path="/content/objects",
-    summary="Get content objects by model type and filtered by site path",
+    summary="Get content objects by model type and filtered by path",
 )
 def get_content_objects(
         locale: Locale = Locale.de,
         content_model: ContentModel | None = None,
-        site_path: str | None = Query("/unibe/portal/content", description="Filter by path"),
+        portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
+                                          description="Portal master with ZMSIndex"),
+        path_filter: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
+                                        description="Filter by path"),
         offset: int = 0,
         limit: int = 20,
 ):
     context = create_zope_app_context()
-    zmsindex = context.zcatalog_index({
+    zmsindex = get_zmsindex(portal_master, context)
+    
+    results = zmsindex({
         "meta_id": content_model,
-        "path": site_path,
+        "path": path_filter,
     })
     
     lang = Lang[locale].value
@@ -41,14 +46,15 @@ def get_content_objects(
         deep=False,
         data2hex=False,
         multilang=False,
-    )) for x in zmsindex[offset : offset + limit]]
+    )) for x in results[offset : offset + limit]]
 
     return {
         'offset': offset,
         'limit': limit,
-        'total': len(zmsindex),
+        'total': len(results),
         'locale': locale.value,
-        'site_path': site_path,
+        'portal_master': portal_master,
+        'path_filter': path_filter,
         'content_model': content_model,
         'content_objects': objs,
     }
@@ -61,16 +67,25 @@ def get_content_objects(
 def get_content_object_by_uuid(
         uuid: UUID,
         locale: Locale = Locale.de,
+        portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
+                                          description="Portal master with ZMSIndex"),
 ):
     context = create_zope_app_context()
-    zmsindex = context.zcatalog_index({ 
+    zmsindex = get_zmsindex(portal_master, context)
+    
+    results = zmsindex({ 
         "get_uid": f"uid:{uuid}",
     })
+
+    if len(results) == 0:
+        raise HTTPException(status_code=404,
+                            detail=f"Object with uuid '{uuid}' not found")
+
+    if len(results) > 1:
+        raise HTTPException(status_code=500,
+                            detail=f"Multiple objects found for uuid '{uuid}'")
     
-    if len(zmsindex) != 1:
-        return Response(status_code=404)
-    
-    entry = zmsindex[0]
+    entry = results[0]
     obj = entry.getObject()
     meta_id = entry.meta_id
 
@@ -95,20 +110,29 @@ def get_content_object_by_uuid(
 def get_content_object_data_by_uuid(
         uuid: UUID,
         locale: Locale = Locale.de,
+        portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
+                                          description="Portal master with ZMSIndex"),
         image_variant: ImageVariant = ImageVariant.img,
         include_schema: bool = False,
         offset: int = 0,
         limit: int = 20,
 ):
     context = create_zope_app_context()
-    zmsindex = context.zcatalog_index({
+    zmsindex = get_zmsindex(portal_master, context)
+    
+    results = zmsindex({
         "get_uid": f"uid:{uuid}",
     })
     
-    if len(zmsindex) != 1:
-        return Response(status_code=404)
+    if len(results) == 0:
+        raise HTTPException(status_code=404,
+                            detail=f"Object with uuid '{uuid}' not found")
+
+    if len(results) > 1:
+        raise HTTPException(status_code=500,
+                            detail=f"Multiple objects found for uuid '{uuid}'")
     
-    entry = zmsindex[0]
+    entry = results[0]
     obj = entry.getObject()
     meta_id = entry.meta_id
     site_path = entry.getPath()
@@ -117,7 +141,8 @@ def get_content_object_data_by_uuid(
     context.REQUEST.set('lang', lang)
 
     if not is_activated_by_checkbox_and_timeline(obj, lang):
-        return Response(status_code=404)
+        raise HTTPException(status_code=404,
+                            detail=f"Object with uuid '{uuid}' is not activated")
 
     attr = "file"
     if meta_id in ContentModel._member_names_:
@@ -129,7 +154,8 @@ def get_content_object_data_by_uuid(
     data, headers = get_data(obj, attr, lang=lang, json_as_py=True)
     
     if data is None or headers is None:
-        return Response(status_code=404)
+        raise HTTPException(status_code=404,
+                            detail=f"Object with uuid '{uuid}' has no '{attr}' data")
     
     if isinstance(data, list):
         return {

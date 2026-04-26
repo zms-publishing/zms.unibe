@@ -1,10 +1,11 @@
+import os
 import xmltodict
-from fastapi import APIRouter
+from fastapi import APIRouter, Query, Response
 
 from Products.zms._multilangmanager import exportXml
 from zms.unibe.fastapi.meta import Tags
 from zms.unibe.utils.enums import ContentModel, LabelPrefix, Lang, Locale
-from zms.unibe.utils.zope.context import create_zope_app_context
+from zms.unibe.utils.zope.context import create_zope_app_context, get_zmsindex
 
 router = APIRouter(prefix="/zms", tags=[Tags.content])
 
@@ -15,16 +16,21 @@ router = APIRouter(prefix="/zms", tags=[Tags.content])
 )
 def get_content_labels(
         locale: Locale = Locale.de,
+        portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
+                                          description="Portal master with ZMSIndex"),
         content_model: ContentModel | None = None,
         prefix: str | None = None,
 ):
     context = create_zope_app_context()
+    zmsindex = get_zmsindex(portal_master, context)
+    
     lang = Lang[locale].value
+    content = zmsindex.content
     
     if content_model in LabelPrefix._member_names_:
         prefix = LabelPrefix[content_model].value
-        if content_model.value == 'Uniaktuell':
-            context = context.portal.uni_aktuell.content
+        if content_model.value == 'UniaktuellArticle':
+            content = zmsindex.unibe.portal.uni_aktuell.content
             # TODO: use UniaktuellArticle.KEYWORD in ...?!
     else:
         if prefix is None:
@@ -32,7 +38,7 @@ def get_content_labels(
         if content_model is not None:
             prefix = '###'
     
-    langdict = xmltodict.parse(exportXml(context, []))
+    langdict = xmltodict.parse(exportXml(content, []))
 
     labels = {}
     for listitem in langdict['list']['item']:

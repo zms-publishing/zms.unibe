@@ -1,4 +1,4 @@
-%define INSTANCE /app/zope
+%define INSTANCE .
 %define ZEO_URL {{ ZEO_URL }}
 
 instancehome $INSTANCE

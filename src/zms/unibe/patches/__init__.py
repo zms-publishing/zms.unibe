@@ -7,7 +7,7 @@ try:
     from zms.unibe.patches.monkey import MemCached_log_instead_raise_ConnectionError
 
     # initialize security assertions on zope startup
-    from zms.unibe.patches.security import assertations
+    from zms.unibe.patches.security import assertions
 
     from App.config import getConfiguration
     if getConfiguration().debug_mode:

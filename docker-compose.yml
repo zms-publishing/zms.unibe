@@ -66,6 +66,8 @@ services:
       - ZODB_STORAGE=zeo://zeo:8000?storage=main
       - SQLDB_STORAGE=postgresql://postgres:5432/zms_fastapi
       - ZMS_URL=https://www.unibe.ch
+      - ZEO_URL=zeo:8000
+      - PORTAL_MASTER=/unibe/content
     networks:
       - fastapi_network
 
