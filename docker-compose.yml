@@ -57,7 +57,7 @@ services:
           cpus: "1.0"
           memory: 768M
     ports:
-      - 5555:5003
+      - 5555:5000
     volumes:
       - ./docker/mounts/log:/app/zope/log
     environment:
