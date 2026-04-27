@@ -1,0 +1,121 @@
+# https://stackoverflow.com/questions/62983756/what-is-pyproject-toml-file-for
+# https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
+# https://packaging.python.org/en/latest/guides/packaging-namespace-packages/
+# https://peps.python.org/pep-0420/ Implicit Namespace Packages
+# https://peps.python.org/pep-0517/ A build-system independent format for source trees
+# https://peps.python.org/pep-0518/ Specifying Minimum Build System Requirements for Python Projects
+# https://peps.python.org/pep-0660/ Editable installs for pyproject.toml based builds (wheel based)
+
+[build-system]
+requires = [
+    "setuptools >= 78.1.1,< 81",  # use the same as Zope
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zms.unibe"
+version = "2.0.0-dev"  # TODO: remove -dev
+description = "Addons package for ZMS at UniBE"
+readme = {
+    text = "Python-based extensions for and integrations with the ZMS publishing system",
+    content-type = "text/plain"
+}
+authors = [
+    { name = "University of Bern, IT Services Department" }
+]
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Zope :: 6",
+    "Framework :: FastAPI",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Environment :: Web Environment",
+    "Topic :: Internet :: WWW/HTTP :: Site Management",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Customer Service",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Information Technology",
+]
+
+# https://stackoverflow.com/questions/74508024/is-requirements-txt-still-needed-when-using-pyproject-toml
+# https://pydevtools.com/handbook/explanation/pyproject-vs-requirements/
+# https://gary-badwal.medium.com/is-requirements-txt-becoming-obsolete-509eab442bdf
+dependencies = [
+    "anytree",                          # https://anytree.readthedocs.io
+    "babel",                            # https://github.com/python-babel/babel
+    "beautifulsoup4",                   # https://beautiful-soup-4.readthedocs.io/en/latest/
+    "chardet",                          # https://github.com/chardet/chardet
+    "devtools",                         # https://python-devtools.helpmanual.io/install/
+    "email-validator",                  # https://github.com/JoshData/python-email-validator -> https://docs.pydantic.dev/latest/api/networks/#pydantic.networks.EmailStr
+    "ftfy",                             # https://github.com/rspeer/python-ftfy
+    "ics",                              # https://github.com/ics-py/ics-py
+    "python-dotenv",                    # https://github.com/theskumar/python-dotenv
+    "lxml",                             # https://github.com/lxml/lxml
+    "Markdown",                         # https://github.com/Python-Markdown/markdown
+    "markitdown",                       # https://github.com/microsoft/markitdown
+    "opensearch-py",                    # https://github.com/opensearch-project/opensearch-py
+    "pandas",                           # https://github.com/pandas-dev/pandas
+    "pdfminer.six",                     # https://github.com/pdfminer/pdfminer.six
+    "Products.mcdutils",                # https://github.com/dataflake/Products.mcdutils
+    "Products.ExternalMethod",          # https://github.com/zopefoundation/Products.ExternalMethod
+    "Products.PluggableAuthService",    # https://github.com/zopefoundation/Products.PluggableAuthService
+    "Products.PluginRegistry",          # https://github.com/zopefoundation/Products.PluginRegistry
+    "Products.ZSQLMethods",             # https://github.com/zopefoundation/Products.ZSQLMethods
+    "psycopg2",                         # https://www.psycopg.org/docs/install.html#psycopg-vs-psycopg-binary
+    "pydantic",                         # https://pydantic-docs.helpmanual.io
+    "requests",                         # https://requests.readthedocs.io
+    "requests-oauthlib",                # https://github.com/requests/requests-oauthlib
+    "rich",                             # https://github.com/Textualize/rich
+    "SQLAlchemy",                       # https://www.sqlalchemy.org/
+    "SQLModel",                         # https://sqlmodel.tiangolo.com
+    "tabulate",                         # https://github.com/astanin/python-tabulate
+    "trio",                             # https://github.com/python-trio/trio -> see https://github.com/idasm-unibe-ch/zms-base/issues/5
+    "typer",                            # https://typer.tiangolo.com
+    "XlsxWriter",                       # https://github.com/jmcnamara/XlsxWriter
+    "xmltodict",                        # https://github.com/martinblech/xmltodict
+    "zeo",                              # https://github.com/zopefoundation/ZEO
+    "zodburi",                          # https://docs.pylonsproject.org/projects/zodburi/en/latest/
+]
+
+[project.optional-dependencies]
+fastapi = [
+    "FastAPI[standard]",                # https://fastapi.tiangolo.com
+    "uvicorn[standard]",                # https://www.uvicorn.org
+]
+msgraphapi = [
+    "msgraph-sdk",                      # https://github.com/microsoftgraph/msgraph-sdk-python
+    "azure-identity",                   # https://pypi.org/project/azure-identity/
+]
+pydevd-pycharm = [                      # https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html
+    "pydevd-pycharm~=261.22158.340",    # -> Debugger for PyCharm 2026.1 built on March 30, 2026
+]
+
+[project.scripts]
+zms2sql = "zms.unibe.utils.zms2sql.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/zms-publishing/zms.unibe"
+Issues = "https://github.com/zms-publishing/zms.unibe/issues"
+Changelog = "https://github.com/zms-publishing/zms.unibe/releases"
+Documentation = "https://idasm-unibe-ch.github.io/unibe-web-mobile/integration/hub/"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["zms.unibe.*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+"*" = ["*.zcml"]
+
+# https://fastapi.tiangolo.com/fastapi-cli/#configure-the-app-entrypoint-in-pyproject-toml
+[tool.fastapi]
+entrypoint = "app.main:api"

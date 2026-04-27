@@ -262,12 +262,13 @@ def get_size(obj, attr, lang=None):
 
 
 def get_url_from_conf_or_env(obj):
-    if obj is None:
-        return ''
-    prot = obj.getAbsoluteHome().portal.content.getConfProperty('ASP.protocol')  # https
-    host = obj.getAbsoluteHome().portal.content.getConfProperty('UniBE.Server')  # www.unibe.ch
+    try:
+        prot = obj.getAbsoluteHome().portal.content.getConfProperty('ASP.protocol')  # https
+        host = obj.getAbsoluteHome().portal.content.getConfProperty('UniBE.Server')  # www.unibe.ch
+    except AttributeError:
+        prot = 'http'
+        host = '127.0.0.1:8080'
     # Overwrite by environment variable if set
-    # ZMS_URL=http://127.0.0.1:8080 -> e.g. on localhost
     return os.getenv('ZMS_URL', f'{prot}://{strip_cmstest(host)}')
 
 

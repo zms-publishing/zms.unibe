@@ -1,7 +1,12 @@
+*~
+.*.swp
+
 .env
-.idea
-.venv
-*.egg-info
+.idea/
+.vscode/
+.venv/
+*.egg-info/
+
 data.json
 data.csv
 /build

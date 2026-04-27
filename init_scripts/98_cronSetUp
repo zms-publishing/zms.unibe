@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ "$RUN_CRONJOBS" == true ] ; then
+  # echo "*   *   *   *   *   run-parts /etc/periodic/1min" >> /etc/crontabs/root
+  echo "5   18   *   *   1-5   run-parts /etc/periodic/afterwork" > ~/zope-cron # /etc/crontabs/root
+  echo "50   7-17/2   *   *   1-5   run-parts /etc/periodic/officehours" >> ~/zope-cron # /etc/crontabs/root
+  echo "5   8   *   *   6   run-parts /etc/periodic/weekly" >> ~/zope-cron # /etc/crontabs/root
+
+  # Use supercronic to run cron jobs as restricted zope user
+  supercronic ~/zope-cron
+  # crontab -l
+  # crond -f -l 8
+fi

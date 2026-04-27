@@ -1,0 +1,9 @@
+#!/bin/bash
+
+now=$(date)
+echo $now cmsadm update NewsBoxes
+echo "==========================================================================" >> $VENV_HOME/log/api-cron.log
+echo $now >> $VENV_HOME/log/api-cron.log
+echo "--------------------------------------------------------------------------" >> $VENV_HOME/log/api-cron.log
+$VENV_HOME/bin/zms2sql update-newsboxes &>> $VENV_HOME/log/api-cron.log
+$VENV_HOME/bin/zms2sql update-newsevents &>> $VENV_HOME/log/api-cron.log

@@ -26,13 +26,30 @@ class SiteType(str, Enum):
     
 
 class ContentModel(str, Enum):
-    Uniaktuell = "Uniaktuell"
+    UniaktuellArticle = "UniaktuellArticle"
     ZMSAgenda = "ZMSAgenda"
     ZMSBoris = "ZMSBoris"
     ZMSDataTable = "ZMSDataTable"
-    ZMSFile = "ZMSFile"
     ZMSFormulator = "ZMSFormulator"
+    ZMS = "ZMS"
+    ZMSDocument = "ZMSDocument"
+    ZMSFigure = "ZMSFigure"
+    ZMSFile = "ZMSFile"
+    ZMSFlexbox = "ZMSFlexbox"
+    ZMSFolder = "ZMSFolder"
     ZMSGraphic = "ZMSGraphic"
+    ZMSLinkContainer = "ZMSLinkContainer"
+    ZMSLinkElement = "ZMSLinkElement"
+    ZMSNote = "ZMSNote"
+    ZMSObjectSet = "ZMSObjectSet"
+    ZMSRecordSet = "ZMSRecordSet"
+    ZMSRichtext = "ZMSRichtext"
+    ZMSSqlDb = "ZMSSqlDb"
+    ZMSTable = "ZMSTable"
+    ZMSTeaserContainer = "ZMSTeaserContainer"
+    ZMSTeaserElement = "ZMSTeaserElement"
+    ZMSTextarea = "ZMSTextarea"
+    ZMSVideo = "ZMSVideo"
 
 
 class ImageVariant(str, Enum):
@@ -42,6 +59,7 @@ class ImageVariant(str, Enum):
 
 
 class LabelPrefix(str, Enum):
-    Uniaktuell = "UA_"
+    UniaktuellArticle = "UA_"
     ZMSAgenda = "ZMSAgenda."
     ZMSFormulator = "zms.formulator.lib."
+    ZMSTable = "ZMSTable."
