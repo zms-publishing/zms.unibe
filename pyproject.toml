@@ -79,7 +79,7 @@ dependencies = [
 
 [project.optional-dependencies]
 fastapi = [
-    "FastAPI",                          # https://fastapi.tiangolo.com
+    "FastAPI[standard]",                # https://fastapi.tiangolo.com
     "uvicorn[standard]",                # https://www.uvicorn.org
 ]
 msgraphapi = [
