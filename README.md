@@ -1,6 +1,6 @@
-# zms.unibe 2.0
+# zms.unibe 2026+
 
-## Python-based extensions for and integrations with the ZMS publishing system
+### Python-based extensions for and integrations with the ZMS publishing system
 
 This `zms.unibe` add-on package is a comprehensive library that extends [ZMS](https://github.com/zms-publishing/ZMS) and the underlying [Zope](https://github.com/zopefoundation/Zope) functionality with generally applicable features and utilities as well as integrations specific for [UniBE](https://unibe.ch). It includes modules for agenda management, announcements, contacts, data tables, forms and surveys, layouts, mobile app support, and more.
 
@@ -14,9 +14,9 @@ This solution architecture, based on modern [Python](https://www.python.org) fra
 
 ## Setup development sandbox
 
-### With [FastAPI](https://fastapi.tiangolo.com) Support
+#### With [FastAPI](https://fastapi.tiangolo.com) Support
 
-FastAPI is a modern, fast (high-performance), web framework for building APIs with Python based on standard Python type hints.
+- FastAPI is a modern, fast (high-performance), web framework for building APIs with Python based on standard Python type hints.
 
 ```bash
 $ git clone https://github.com/zms-publishing/zms.unibe.git
@@ -26,33 +26,33 @@ $ ./.venv/bin/fastapi dev  # -> http://127.0.0.1:8000/v1
                            # -> http://127.0.0.1:8000/v3
 ```
 
-### Include [Microsoft Graph API](https://learn.microsoft.com/en-us/graph/api/overview) Support
+#### Include [Microsoft Graph API](https://learn.microsoft.com/en-us/graph/api/overview) Support
 
-Microsoft Graph is the gateway to data and intelligence in Microsoft cloud services like [Microsoft Entra](https://learn.microsoft.com/en-us/graph/identity-network-access-overview) and [Microsoft 365](https://learn.microsoft.com/en-us/graph/overview).
+- Microsoft Graph is the gateway to data and intelligence in Microsoft cloud services like [Microsoft Entra](https://learn.microsoft.com/en-us/graph/identity-network-access-overview) and [Microsoft 365](https://learn.microsoft.com/en-us/graph/overview).
 
 ```bash
 $ ./.venv/bin/pip install -e ./'zms.unibe[msgraphapi]'
 ```
 
-### Include [Remote Debugging with PyCharm](https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html) Support
+#### Include [Remote Debugging with PyCharm](https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html) Support
 
-With [PyCharm](https://www.jetbrains.com/pycharm/) you can debug your application using an interpreter that is located on the other computer, for example, on a web server or dedicated test machine.
+- With [PyCharm](https://www.jetbrains.com/pycharm/) you can debug your application using an interpreter that is located on the other computer, for example, on a web server or dedicated test machine.
 
 ```bash
 $ ./.venv/bin/pip install -e ./'zms.unibe[pydevd-pycharm]'
 ```
 
-### Command-Line Tools
+#### Command-Line Tools
 
-The package provides the `zms2sql` command-line utility for object-relational mappings to mirror selected data from the [ZODB](https://zodb.org) to [PostgreSQL](https://www.postgresql.org), for example.
+- The package provides the `zms2sql` command-line utility for object-relational mappings to mirror selected data from the [ZODB](https://zodb.org) to [PostgreSQL](https://www.postgresql.org), for example:
 
 ```bash
 $ ./.venv/bin/zms2sql --help
 ```
 
-### Monkey Patches and Helper Utilities
+#### Monkey Patches and Helper Utilities
 
-To apply the [monkey patches](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/monkey) for customizing other installed packages as well as the [security assertions](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/security) for using the helper utilities in [RestrictedPython](https://github.com/zopefoundation/RestrictedPython) code (py, zpt, dtml) edited via the web with [ZMI](https://zope.readthedocs.io/en/latest/zopebook/UsingZope.html) or synchronized via the [ZMSRepositoryManager](https://github.com/zms-publishing/ZMS/tree/main/Products/zms/zpt/ZMSRepositoryManager), the following package include must be added to the `./.venv/etc/site.zcml` file:
+- To apply the [monkey patches](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/monkey) for customizing other installed packages as well as the [security assertions](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/security) for using the helper utilities in [RestrictedPython](https://github.com/zopefoundation/RestrictedPython) code (py, zpt, dtml) edited via the web with [ZMI](https://zope.readthedocs.io/en/latest/zopebook/UsingZope.html) or synchronized via the [ZMSRepositoryManager](https://github.com/zms-publishing/ZMS/tree/main/Products/zms/zpt/ZMSRepositoryManager/readme.md), the following package include must be added to the `./.venv/etc/site.zcml` file:
 
 ```xml
 <include zcml:condition="installed zms.unibe.patches" package="zms.unibe.patches" />
@@ -60,7 +60,7 @@ To apply the [monkey patches](https://github.com/zms-publishing/zms.unibe/blob/m
 
 ## Features
 
-### Integrations with other services
+#### Integrations with other services
 - [DataTables.net](https://datatables.net) samples
 - [BORIS](https://boris.unibe.ch) connector
 - Outlook connector for [calendar integration via Microsoft Graph API](https://learn.microsoft.com/en-us/graph/api/resources/calendar-overview?view=graph-rest-1.0)
@@ -71,7 +71,7 @@ To apply the [monkey patches](https://github.com/zms-publishing/zms.unibe/blob/m
 - Form management based on [JSON Editor](https://github.com/json-editor/json-editor) 
 - [SurveyJS](https://surveyjs.io) integration
 
-### Utilities & custom monkey patches
+#### Utilities & custom monkey patches
 - Database utilities
 - Helper functions
 - Enums and context management
@@ -81,7 +81,7 @@ To apply the [monkey patches](https://github.com/zms-publishing/zms.unibe/blob/m
 - `ExternalMethod` auto-reload
 - Security assertions
 
-### Content object handling
+#### Content object handling
 - Base models (ZMSBase, ZMSSite, ZMSFolder, ZMSDocument)
 - File and graphic handling
 - Tables and text areas
@@ -98,7 +98,7 @@ To apply the [monkey patches](https://github.com/zms-publishing/zms.unibe/blob/m
 
 ## Dependencies
 
-The package requires [Python 3](https://www.python.org/downloads/) and depends on:
+#### The package requires [Python 3](https://www.python.org/downloads/) and depends on:
 
 - **Application Server**: `Zope`, `Products.mcdutils`, `Products.PluggableAuthService`
 - **Database**: `SQLAlchemy`, `SQLModel`, `psycopg2`
@@ -114,11 +114,15 @@ See [`pyproject.toml`](https://github.com/zms-publishing/zms.unibe/blob/main/pyp
 
 ```
 zms.unibe
+├── LICENSE
 ├── README.md
-├── Dockerfile
-├── docker-compose.yml
-├── constraints.txt
 ├── pyproject.toml
+├── constraints.txt
+├── docker-compose.yml
+├── app
+├── cron
+├── docker
+├── init_scripts
 └── src
     └── zms
         └── unibe
