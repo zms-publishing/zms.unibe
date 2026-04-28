@@ -15,22 +15,24 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "zms.unibe"
-version = "2026.1.0"
+version = "2026.2.0.dev0"
 description = "Addons package for ZMS at UniBE"
-readme = {
-    text = "Python-based extensions for and integrations with the ZMS publishing system",
-    content-type = "text/plain"
-}
+readme = { text = "Python-based extensions for and integrations with the ZMS publishing system", content-type = "text/plain" }
 authors = [
     { name = "University of Bern, IT Services Department" }
 ]
 requires-python = ">=3.10"
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Framework :: Zope :: 6",
     "Framework :: FastAPI",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Operating System :: OS Independent",
     "Environment :: Web Environment",
     "Topic :: Internet :: WWW/HTTP :: Site Management",
@@ -92,7 +94,7 @@ msgraphapi = [
     "azure-identity",                   # https://pypi.org/project/azure-identity/
 ]
 pydevd-pycharm = [                      # https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html
-    "pydevd-pycharm~=261.22158.340",    # -> Debugger for PyCharm 2026.1 built on March 30, 2026
+    "pydevd-pycharm~=261.23567.174",    # -> Debugger for PyCharm 2026.1.1 built on April 27, 2026
 ]
 
 [project.scripts]

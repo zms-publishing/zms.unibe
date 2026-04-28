@@ -28,7 +28,7 @@ charset-normalizer==3.4.7
 click==8.3.3
 cobble==0.1.4
 configparser==7.2.0
-cryptography==46.0.7
+cryptography==47.0.0
 DateTime==6.0
 defusedxml==0.7.1
 devtools==0.12.2
@@ -43,7 +43,7 @@ executing==2.2.1
 ExtensionClass==6.2
 fastapi==0.136.1
 fastapi-cli==0.0.24
-fastapi-cloud-cli==0.17.0
+fastapi-cloud-cli==0.17.1
 fastar==0.11.0
 five.localsitemanager==5.0
 frozenlist==1.8.0
@@ -91,8 +91,8 @@ oauthlib==3.3.1
 olefile==0.47
 openai==2.32.0
 openpyxl==3.1.5
-opensearch-protobufs==0.19.0
-opensearch-py==3.1.0
+opensearch-protobufs==1.2.0
+opensearch-py==3.2.0
 opentelemetry-api==1.41.1
 opentelemetry-sdk==1.41.1
 opentelemetry-semantic-conventions==0.62b1
@@ -138,7 +138,7 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.2.2
 python-gettext==5.0
 python-memcached==1.62
-python-multipart==0.0.26
+python-multipart==0.0.27
 python-pptx==1.0.2
 pytz==2026.1.post1
 PyYAML==6.0.3
@@ -171,7 +171,7 @@ tempstorage==6.0
 tqdm==4.67.3
 transaction==5.1
 trio==0.33.0
-typer==0.24.2
+typer==0.25.0
 typing-inspection==0.4.2
 typing_extensions==4.15.0
 tzdata==2026.2
@@ -184,6 +184,7 @@ wcwidth==0.6.0
 WebOb==1.8.9
 websockets==16.0
 WebTest==3.0.7
+wheel==0.47.0
 WSGIProxy2==0.5.1
 xlrd==2.0.2
 xlsxwriter==3.2.9
