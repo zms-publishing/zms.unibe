@@ -1,7 +1,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:browser="http://namespaces.zope.org/browser"
-    >
+    xmlns:browser="http://namespaces.zope.org/browser">
 
   <configure
       xmlns:cmf="http://namespaces.zope.org/cmf"
@@ -10,8 +9,10 @@
       >
     <!-- invoked in etc/site.zcml by <include zcml:condition="installed zms.unibe.patches" package="zms.unibe.patches" />  -->
     <!-- provokes loading of zms.unibe.patches.__init.py__ to initialize monkey patches and security assertions on zope startup -->
-    <cmf:registerDirectory name="assets" directory="../../../../../../frontend/web/estatico-handlebars/dist/assets" recursive="True" />
-
+    <cmf:registerDirectory
+      name="assets"
+      directory="../../../../../../frontend/web/estatico-handlebars/dist/assets"
+      recursive="True" />
   </configure>
 
 </configure>

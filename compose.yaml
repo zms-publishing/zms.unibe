@@ -1,0 +1,97 @@
+name: unibe-cms-dev
+
+networks:
+  worker:
+
+services:
+  zms:
+    image: ghcr.io/idasm-unibe-ch/unibe-cms-dev-zms:local
+    init: true
+    pull_policy: never
+    user: zope:zope
+    build:
+      context: .
+      dockerfile: ./Dockerfile.zms
+    develop:
+      # [BUG] develop.watch initial_sync: true does not fire at container start
+      # https://github.com/docker/compose/issues/13725
+      watch:
+        - action: sync+restart
+          path: ./dev/zope/src
+          target: /app/zope/src/zope/src
+          initial_sync: true
+        - action: sync+restart
+          path: ./dev/products-zms/Products/zms
+          target: /app/zope/src/products-zms/Products/zms
+          initial_sync: true
+        - action: sync+restart
+          path: ./src
+          target: /app/zope/src/zms-unibe/src
+          ignore:
+            - zms/unibe/fastapi
+          initial_sync: true
+        - action: sync+restart
+          path: ./conf
+          target: /app/zope/etc
+          initial_sync: true
+    environment:
+      - PYTHONUNBUFFERED=true
+      - RUN_MIGRATIONS=false
+      - DEBUG_MODE=true
+      - SQLDB_STORAGE=postgresql://postgres:thisIsMyRoot@host.docker.internal:5432/cms_formulator  # TODO: align naming of database
+      - AGENDA_CATEGORIES_URL=http://zms:8080/unibe/agenda-categories.json
+    ports:
+      - "8088:8080"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+    networks:
+      - worker
+  
+  fastapi:
+    image: ghcr.io/idasm-unibe-ch/unibe-cms-dev-fastapi:local
+    init: true
+    pull_policy: never
+    user: zope:zope
+    build:
+      context: .
+      dockerfile: ./Dockerfile.fastapi
+    develop:
+      # [BUG] develop.watch initial_sync: true does not fire at container start
+      # https://github.com/docker/compose/issues/13725      
+      watch:
+        - action: sync+restart
+          path: ./dev/zope/src
+          target: /app/zope/src/zope/src
+          initial_sync: true
+        - action: sync+restart
+          path: ./dev/products-zms/Products/zms
+          target: /app/zope/src/products-zms/Products/zms
+          initial_sync: true
+        - action: sync+restart
+          path: ./src/zms/unibe/fastapi
+          target: /app/zope/src/zms-unibe/src/zms/unibe/fastapi
+          initial_sync: true
+    environment:
+      - PYTHONUNBUFFERED=true
+      - SQLDB_STORAGE=postgresql://host.docker.internal:5432/unibe_portal  # TODO: align naming of database
+      - ZODB_STORAGE=zeo://zeo:8000?storage=main  # deprecated in favor of ZEO_URL -> zms/unibe/utils/zope/zope.conf
+      - ZEO_URL=host.docker.internal:8000
+      - ZMS_URL=http://zms:8080
+    ports:
+      - "5055:8000"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+    networks:
+      - worker

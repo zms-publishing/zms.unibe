@@ -1,0 +1,21 @@
+FROM ghcr.io/idasm-unibe-ch/unibe-cms:python3.14.4-zope6.1
+
+ENV ZOPE_VERSION=6.1 \
+    ZMS_CORE_BRANCH_OR_COMMIT=main \
+    ZMS_UNIBE_BRANCH_OR_COMMIT=python3.14-zope6.0 \
+    ZMS_UNIBE_EXTRAS=fastapi \
+    SETUPTOOLS_VERSION=80.10.2
+
+RUN python3 -m venv $VENV_HOME \
+ && $VENV_HOME/bin/pip install --upgrade pip wheel setuptools==$SETUPTOOLS_VERSION \
+    -e "Zope[wsgi] @ git+https://github.com/zopefoundation/Zope.git@$ZOPE_VERSION" \
+    -e "Products.zms @ git+https://github.com/zms-publishing/ZMS.git@$ZMS_CORE_BRANCH_OR_COMMIT" \
+    -e "zms.unibe[$ZMS_UNIBE_EXTRAS] @ git+https://github.com/zms-publishing/zms.unibe.git@$ZMS_UNIBE_BRANCH_OR_COMMIT" \
+    -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt" \
+    -c "https://raw.githubusercontent.com/zms-publishing/zms.unibe/$ZMS_UNIBE_BRANCH_OR_COMMIT/constraints.txt"
+
+RUN chown -R $USERNAME:$GROUPNAME $VENV_HOME
+
+WORKDIR /app/zope/src/zms-unibe
+
+CMD ["/app/zope/bin/fastapi", "dev", "--host", "0.0.0.0", "--port", "8000"]
