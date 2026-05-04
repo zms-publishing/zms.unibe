@@ -17,10 +17,7 @@ build-backend = "setuptools.build_meta"
 name = "zms.unibe"
 version = "2026.1.0"
 description = "Addons package for ZMS at UniBE"
-readme = {
-    text = "Python-based extensions for and integrations with the ZMS publishing system",
-    content-type = "text/plain"
-}
+readme = {text = "Python-based extensions for and integrations with the ZMS publishing system", "content-type" = "text/plain"}
 authors = [
     { name = "University of Bern, IT Services Department" }
 ]
