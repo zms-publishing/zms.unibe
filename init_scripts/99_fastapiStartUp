@@ -1,3 +1,0 @@
-#!/bin/bash
-
-$VENV_HOME/bin/fastapi run --port 5000

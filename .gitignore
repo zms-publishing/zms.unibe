@@ -4,9 +4,11 @@
 .env
 .idea/
 .vscode/
-.venv/
+.venv*/
 *.egg-info/
 
+dev/*
+!dev/README.md
 data.json
 data.csv
 /build
