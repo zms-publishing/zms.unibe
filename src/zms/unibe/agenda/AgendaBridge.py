@@ -60,7 +60,11 @@ class AgendaBridge(ObjectManager):
         url = os.getenv('AGENDA_CATEGORIES_URL', 'http://localhost:8081/unibe/agenda-categories.json')
         categories = []
 
-        response = requests.get(url)
+        try:
+            response = requests.get(url)
+        except requests.exceptions.ConnectionError:
+            raise ImportError(url)
+        
         if response.status_code == 200:
             agenda_categories = response.json()
         else:
@@ -106,7 +110,10 @@ class AgendaBridge(ObjectManager):
         assert schema_input is not None, 'schema_input is required'
 
         for account in self.accounts:
-            outlook = OutlookConnector(upn=account)
+            try:
+                outlook = OutlookConnector(upn=account)
+            except:
+                return
             calendar = json.loads(outlook.get_calendar_events(begin_date=self.begin_date, end_date=self.end_date))
             if isinstance(calendar, list):
                 for item in calendar:

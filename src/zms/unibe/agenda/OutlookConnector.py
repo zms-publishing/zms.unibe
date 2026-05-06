@@ -7,10 +7,14 @@ import requests
 import base64
 import logging
 from dotenv import load_dotenv
-from azure.identity import EnvironmentCredential
-from msgraph import GraphServiceClient
-from msgraph.generated.users.item.events.item.attachments.attachments_request_builder import AttachmentsRequestBuilder
-from kiota_abstractions.base_request_configuration import RequestConfiguration
+try:
+    from azure.identity import EnvironmentCredential
+    from msgraph import GraphServiceClient
+    from msgraph.generated.users.item.events.item.attachments.attachments_request_builder import AttachmentsRequestBuilder
+    from kiota_abstractions.base_request_configuration import RequestConfiguration
+    MS_GRAPH_API_AVAILABLE = True
+except ImportError:
+    MS_GRAPH_API_AVAILABLE = False
 
 from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
@@ -20,7 +24,10 @@ from Products.zms.standard import pybool
 from zms.unibe.utils.helpers import DotDict, local_timezone
 from zms.unibe.agenda.schemas.ZMSAgendaOutlookSchema import ZMSAgendaOutlookSchema
 
-print('Addon: zms.unibe.agenda.OutlookConnector')
+if not MS_GRAPH_API_AVAILABLE:
+    print("Addon: zms.unibe.agenda.OutlookConnector will be disabled - MS Graph API not available -> pip install 'zms.unibe[msgraphapi] @ git+https://github.com/zms-publishing/zms.unibe.git' -c 'https://raw.githubusercontent.com/zms-publishing/zms.unibe/main/constraints.txt'")
+else:
+    print('Addon: zms.unibe.agenda.OutlookConnector')
 security = ModuleSecurityInfo('zms.unibe.agenda.OutlookConnector')  # allow module import in RestrictedPython
 
 LOGGER = logging.getLogger('OutlookConnector')
@@ -35,6 +42,8 @@ class OutlookConnector(ObjectManager):
     security = ClassSecurityInfo()  #  control access to class methods in RestrictedPython
 
     def __init__(self, upn):
+        if not MS_GRAPH_API_AVAILABLE:
+            raise ModuleNotFoundError
         self.upn = upn
         self.credential = EnvironmentCredential()
         self.graph_client = GraphServiceClient(self.credential)  # type: ignore
