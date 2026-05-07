@@ -6,6 +6,7 @@ class Tags(Enum):
     content = "content"
     mobile = "mobile"
     scheduler = "scheduler"
+    system = "system"
 
 
 # https://fastapi.tiangolo.com/tutorial/metadata/#metadata-for-tags
@@ -28,5 +29,8 @@ tags = [
     },
     {
         "name": "scheduler",
+    },
+    {
+        "name": "system",
     },
 ]

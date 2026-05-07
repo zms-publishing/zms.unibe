@@ -4,13 +4,13 @@ from fastapi.responses import PlainTextResponse, RedirectResponse
 from app.main import api
 from zms.unibe.fastapi.meta import tags
 from .mobileapp import mediareleases, newsevents, servicelinks, uniaktuell
-from .zmscontent import labels, objects, scheduler
+from .zmscontent import labels, objects, scheduler, system
 
 # https://fastapi.tiangolo.com/advanced/sub-applications/
 v1 = FastAPI(
     title="zms.unibe.fastapi",
     summary="Python-based REST API to connect unibe.ch and unibe.app with ZMS",
-    version="1.0.0",
+    version="1.0.1",
     openapi_tags=tags,
     redoc_url="/redoc",
     servers=[  # TODO: set urls
@@ -55,6 +55,7 @@ def check_health():
 v1.include_router(objects.router)
 v1.include_router(labels.router)
 v1.include_router(scheduler.router)
+v1.include_router(system.router)
 v3.include_router(newsevents.router)
 v3.include_router(servicelinks.router)
 v3.include_router(uniaktuell.router)

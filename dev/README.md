@@ -8,6 +8,8 @@ This project provides two specialized `Dockerfiles` to support both the legacy [
 
 The [`compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml) file orchestrates a [multi-container environment](https://docs.docker.com/compose/intro/compose-application-model/) for local development. The services use [Docker Compose Watch](https://docs.docker.com/compose/how-tos/file-watch/) (`develop.watch`) reflecting the changes to local code/configs in the containers instantly and restart the servers automatically.
 
+<img src="https://raw.githubusercontent.com/zms-publishing/zms.unibe/assets/pycharm2026.png" width="100%" />
+
 ## Repository
 - https://github.com/zms-publishing/zms.unibe
 - https://github.com/zms-publishing/zms.unibe/releases
