@@ -4,7 +4,7 @@
 
 This `zms.unibe` add-on package is a comprehensive library that extends [ZMS](https://github.com/zms-publishing/ZMS) and the underlying [Zope](https://github.com/zopefoundation/Zope) functionality with generally applicable features and utilities as well as integrations specific for [UniBE](https://unibe.ch). It includes modules for agenda management, announcements, contacts, data tables, forms and surveys, layouts, mobile app support, and more.
 
-It features a fully decoupled, [headless RESTful API](https://github.com/zms-publishing/zms.unibe/pull/41) for accessing the content objects stored in [ZODB](https://zodb.org), using the ~~web application (micro)framework Flask~~ [FastAPI](https://fastapi.tiangolo.com) framework, which is served by [Uvicorn](https://www.uvicorn.org). In addition, it relies on ~~Flasgger to generate the documentation~~ [SQLModel](https://sqlmodel.tiangolo.com) for implementing an object-relational mapping.
+It features a fully decoupled, [headless RESTful API](https://github.com/zms-publishing/zms.unibe/pull/41) for accessing the content objects stored in [ZODB](https://zodb.org), using the ~~web application (micro)framework Flask~~ [FastAPI](https://fastapi.tiangolo.com) framework, which is served by [Uvicorn](https://www.uvicorn.dev). In addition, it relies on ~~Flasgger to generate the documentation~~ [SQLModel](https://sqlmodel.tiangolo.com) for implementing an object-relational mapping.
 
 Furthermore, it can connect to [Microsoft Graph API](https://learn.microsoft.com/en-us/graph/api/overview) as the gateway to data and intelligence in Microsoft cloud services like [M365](https://learn.microsoft.com/en-us/graph/overview) or [Entra](https://learn.microsoft.com/en-us/graph/identity-network-access-overview) if the `[msgraphapi]` extra has been applied on installation.
 
@@ -13,10 +13,12 @@ This solution architecture, based on modern [Python](https://www.python.org) fra
 <img src="https://raw.githubusercontent.com/zms-publishing/zms.unibe/assets/zms6.png" width="33%" /> <img src="https://raw.githubusercontent.com/zms-publishing/zms.unibe/assets/fastapi1.png" width="33%" /> <img src="https://raw.githubusercontent.com/zms-publishing/zms.unibe/assets/fastapi3.png" width="33%" />
 
 ## Repository
-- https://github.com/zms-publishing/zms.unibe
-- https://github.com/zms-publishing/zms.unibe/releases
+
+- <https://github.com/zms-publishing/zms.unibe>
+- <https://github.com/zms-publishing/zms.unibe/releases>
 
 ## Development
+
 - see [`dev/README.md`](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md)
 
 ## Features
@@ -34,7 +36,7 @@ This solution architecture, based on modern [Python](https://www.python.org) fra
 
 ## Dependencies
 
-### The package requires [Python 3.10+](https://www.python.org/downloads/) and depends on:
+### The package requires [Python 3.10+](https://www.python.org/downloads/) and depends on
 
 - **Application Server**: `Zope`, `Products.PluggableAuthService`, `Products.mcdutils`
 - **Database**: `SQLAlchemy`, `SQLModel`, `psycopg2`
@@ -50,7 +52,7 @@ See [`pyproject.toml`](https://github.com/zms-publishing/zms.unibe/blob/main/pyp
 The package provides the `zms2sql` command-line tool for object-relational mappings to mirror selected data from the [ZODB](https://zodb.org) to [PostgreSQL](https://www.postgresql.org), for example:
 
 ```bash
-$ ./.venv/bin/zms2sql --help
+./.venv/bin/zms2sql --help
 ```
 
 To apply the [monkey patches](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/monkey) for customizing other installed packages as well as the [security assertions](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/security) for using the helper utilities in [RestrictedPython](https://github.com/zopefoundation/RestrictedPython) code (py, zpt, dtml), the following package include must be added to the `./.venv/etc/site.zcml` file:
@@ -112,3 +114,4 @@ zms.unibe
 Copyright (c) 2020-2026 [University of Bern, IT Services Department](https://id.unibe.ch). All rights reserved.
 
 Licensed under the [MIT license](https://github.com/zms-publishing/zms.unibe/blob/main/LICENSE).
+
