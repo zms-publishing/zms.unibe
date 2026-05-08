@@ -6,29 +6,39 @@ This document describes the Docker-based development environment for the [ZMS](h
 
 This project provides two specialized `Dockerfiles` to support both the legacy [Zope](https://github.com/zopefoundation/Zope) stack and the modern [FastAPI](https://fastapi.tiangolo.com) stack. The `conf/` directory contains essential configuration for the Zope application server.
 
-The [`compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml) file orchestrates a [multi-container environment](https://docs.docker.com/compose/intro/compose-application-model/) for local development. The services use [Docker Compose Watch](https://docs.docker.com/compose/how-tos/file-watch/) (`develop.watch`) reflecting the changes to local code/configs in the containers instantly and restart the servers automatically.
+The [`compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml) file orchestrates a [multi-container environment](https://docs.docker.com/compose/intro/compose-application-model/) for local development. The services use [Docker Compose Watch](https://docs.docker.com/compose/how-tos/file-watch/) reflecting the changes to local code/configs in the containers instantly and restart the servers automatically.
 
 <img src="https://raw.githubusercontent.com/zms-publishing/zms.unibe/assets/pycharm2026.png" width="100%" />
 
 ## Repository
-- https://github.com/zms-publishing/zms.unibe
-- https://github.com/zms-publishing/zms.unibe/releases
+
+- <https://github.com/zms-publishing/zms.unibe>
+- <https://github.com/zms-publishing/zms.unibe/releases>
 
 ## Features
+
 - see [`README.md`](https://github.com/zms-publishing/zms.unibe/blob/main/README.md)
 
 ## Usage
 
+> [!NOTE]
+> The preconfigured virtual environments with all dependencies installed in the containers can be customized in [`Dockerfile.zms`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.zms) and [`Dockerfile.fastapi`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.fastapi).
+
+> [!TIP]
+> The revisions to be used as containers can be customized to your needs by setting the variables `ZOPE_VERSION`, `ZMS_CORE_BRANCH_OR_COMMIT`, `ZMS_UNIBE_BRANCH_OR_COMMIT`, `ZMS_UNIBE_EXTRAS`, and `SETUPTOOLS_VERSION` in the `Dockerfiles` as well as the startup commands.
+
 To start the `unibe-cms-dev` development environment:
 
 ```bash
+# Clone the repository and run the containers
+$ git clone https://github.com/zms-publishing/zms.unibe.git
 $ docker compose up --watch
 
 # force rebuild of the containers
 $ docker compose build --no-cache
 ```
 
-These directories are synchronized into the containers:
+These directories are synchronized into the containers - see [`develop.watch` in `compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml#L18):
 - Code Sync for `zms.unibe` library
   - Changes in `src/` to `/app/zope/src/zms-unibe/src`
 - Config Sync for Zope application server:
@@ -36,22 +46,17 @@ These directories are synchronized into the containers:
 - Editable Dependencies for Zope/ZMS:
   - Changes in `dev/zope` and/or `dev/products-zms` if checked out
 
-### Checkout and install the backend Python Packages
+### Checkout and install the backend Python Packages on localhost
 
-> [!NOTE]
-> The preconfigured virtual environments with all dependencies installed can be customized in [`Dockerfile.zms`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.zms) and [`Dockerfile.fastapi`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.fastapi).
-
-> [!TIP]
-> The revisions to be used as containers can be customized to your needs by setting the variables `ZOPE_VERSION`, `ZMS_CORE_BRANCH_OR_COMMIT`, `ZMS_UNIBE_BRANCH_OR_COMMIT`, `ZMS_UNIBE_EXTRAS`, and `SETUPTOOLS_VERSION` in the `Dockerfiles` as well as the startup commands. Alternatively, the following commands demonstrate how to set up a new virtual environment on the local machine.
+> [!CAUTION]
+> The following commands demonstrate how to set up a new virtual environment on the local machine with the [latest revisions of the dependencies](https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-upgrade-strategy) - these may be work-in-progress and unstable.
 
 ```bash
-# Clone the repository and create a local virtual environment
-$ git clone https://github.com/zms-publishing/zms.unibe.git
+# Create a local virtual environment
 $ cd zms.unibe
 $ virtualenv .venv
 
 # Install latest revisions of the dependencies in editable mode
-# Refs: https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-upgrade-strategy
 $ ./.venv/bin/pip install --upgrade --upgrade-strategy=eager \
     --src ./dev -e "Zope @ git+https://github.com/zopefoundation/Zope.git@master" \
     --src ./dev -e "Products.zms @ git+https://github.com/zms-publishing/ZMS.git@main" \
@@ -62,7 +67,7 @@ $ ./.venv/bin/pip install --upgrade --upgrade-strategy=eager \
 ### Checkout and link the frontend Content Models
 
 > [!TIP]
-> The following commands demonstrate how to check out just a single subdirectory from a large Git repository. This procedure is optional.
+> The following commands demonstrate how to [check out just a single subdirectory from a large Git repository](https://gist.github.com/dinhvle/d085848c09ebd7d3a4a52de9f026c0d3). This procedure is optional.
 
 > [!IMPORTANT]  
 > The repo `github.com:idasm-unibe-ch/unibe-cms.git` is a private repository – permission is required to check it out.
@@ -70,7 +75,6 @@ $ ./.venv/bin/pip install --upgrade --upgrade-strategy=eager \
 ```bash
 # Init a Git repository, add remote
 # and enable the tree check feature
-# Refs: https://gist.github.com/dinhvle/d085848c09ebd7d3a4a52de9f026c0d3
 $ cd dev && mkdir unibe-cms-models && cd unibe-cms-models
 $ git init
 $ git remote add -f origin git@github.com:idasm-unibe-ch/unibe-cms.git

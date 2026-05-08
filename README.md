@@ -52,7 +52,7 @@ See [`pyproject.toml`](https://github.com/zms-publishing/zms.unibe/blob/main/pyp
 The package provides the `zms2sql` command-line tool for object-relational mappings to mirror selected data from the [ZODB](https://zodb.org) to [PostgreSQL](https://www.postgresql.org), for example:
 
 ```bash
-./.venv/bin/zms2sql --help
+$ ./.venv/bin/zms2sql --help
 ```
 
 To apply the [monkey patches](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/monkey) for customizing other installed packages as well as the [security assertions](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/security) for using the helper utilities in [RestrictedPython](https://github.com/zopefoundation/RestrictedPython) code (py, zpt, dtml), the following package include must be added to the `./.venv/etc/site.zcml` file:
@@ -61,9 +61,9 @@ To apply the [monkey patches](https://github.com/zms-publishing/zms.unibe/blob/m
 <include zcml:condition="installed zms.unibe.patches" package="zms.unibe.patches" />
 ```
 
-This allows editing via the web using [ZMI](https://zope.readthedocs.io/en/latest/zopebook/UsingZope.html) or synchronize code changes via the [ZMSRepositoryManager](https://github.com/zms-publishing/ZMS/tree/main/Products/zms/zpt/ZMSRepositoryManager/readme.md)
+This allows editing via the web using [ZMI](https://zope.readthedocs.io/en/latest/zopebook/UsingZope.html) or synchronize code changes via the [ZMSRepositoryManager](https://github.com/zms-publishing/ZMS/tree/main/Products/zms/zpt/ZMSRepositoryManager/readme.md).
 
-To enable support for [Remote Debugging with PyCharm](https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html) you can include the `[pydevd-pycharm]` extra on installation
+To enable support for [Remote Debugging with PyCharm](https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html) you can include the `[pydevd-pycharm]` extra on installation.
 
 ## Structure
 
@@ -114,4 +114,3 @@ zms.unibe
 Copyright (c) 2020-2026 [University of Bern, IT Services Department](https://id.unibe.ch). All rights reserved.
 
 Licensed under the [MIT license](https://github.com/zms-publishing/zms.unibe/blob/main/LICENSE).
-

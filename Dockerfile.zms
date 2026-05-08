@@ -1,4 +1,8 @@
 FROM ghcr.io/idasm-unibe-ch/unibe-cms:python3.14.4-zope6.1
+# TODO: make depending base images general available (GA)
+# -> zms-base + unibe-cms
+# -> provide generated /app/frontend/web/estatico-handlebars/dist/assets in container
+# -> already done for image used for deployments - just on localhost it is mounted
 
 ENV ZOPE_VERSION=6.1 \
     ZMS_CORE_BRANCH_OR_COMMIT=main \
@@ -15,8 +19,6 @@ RUN python3 -m venv $VENV_HOME \
     -c "https://raw.githubusercontent.com/zms-publishing/zms.unibe/$ZMS_UNIBE_BRANCH_OR_COMMIT/constraints.txt"
 
 RUN chown -R $USERNAME:$GROUPNAME $VENV_HOME
-
-# TODO: provide generated /app/frontend/web/estatico-handlebars/dist/assets in container
 
 COPY --chown=$USERNAME:$GROUPNAME ./conf/site.zcml $VENV_HOME/etc/site.zcml
 COPY --chown=$USERNAME:$GROUPNAME ./conf/zope.conf $VENV_HOME/etc/zope.conf
