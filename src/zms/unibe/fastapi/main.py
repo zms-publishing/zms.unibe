@@ -4,7 +4,7 @@ from fastapi.responses import PlainTextResponse, RedirectResponse
 from app.main import api
 from zms.unibe.fastapi.meta import tags
 from .mobileapp import mediareleases, newsevents, servicelinks, uniaktuell
-from .zmscontent import labels, objects, scheduler, system
+from .zmscontent import labels, managers, objects, scheduler, system
 
 # https://fastapi.tiangolo.com/advanced/sub-applications/
 v1 = FastAPI(
@@ -54,6 +54,7 @@ def check_health():
 # https://fastapi.tiangolo.com/reference/apirouter/
 v1.include_router(objects.router)
 v1.include_router(labels.router)
+v1.include_router(managers.router)
 v1.include_router(scheduler.router)
 v1.include_router(system.router)
 v3.include_router(newsevents.router)
