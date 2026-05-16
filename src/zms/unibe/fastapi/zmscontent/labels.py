@@ -29,9 +29,6 @@ def get_content_labels(
     
     if content_model in LabelPrefix._member_names_:
         prefix = LabelPrefix[content_model].value
-        if content_model.value == 'UniaktuellArticle':
-            content = zmsindex.unibe.portal.uni_aktuell.content
-            # TODO: use UniaktuellArticle.KEYWORD in ...?!
     else:
         if prefix is None:
             prefix = ''
