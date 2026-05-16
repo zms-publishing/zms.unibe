@@ -7,10 +7,10 @@ from zms.unibe.fastapi.meta import Tags
 from zms.unibe.utils.enums import ContentModel, LabelPrefix, Lang, Locale
 from zms.unibe.utils.zope.context import create_zope_app_context, get_zmsindex
 
-router = APIRouter(prefix="/zms", tags=[Tags.content])
+router = APIRouter(prefix="/zms/content", tags=[Tags.content])
 
 @router.get(
-    path="/content/labels",
+    path="/labels",
     summary="Get label translations from language dictionary filtered by content model or prefix",
     # response_model=schema.ZMSAgendaResponse,
 )

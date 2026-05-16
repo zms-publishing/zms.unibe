@@ -12,10 +12,10 @@ from zms.unibe.utils.enums import ContentModel, ImageVariant, Lang, Locale
 from zms.unibe.utils.helpers import get_data, is_activated_by_checkbox_and_timeline
 from zms.unibe.utils.zope.context import create_zope_app_context, get_zmsindex
 
-router = APIRouter(prefix="/zms", tags=[Tags.content])
+router = APIRouter(prefix="/zms/content", tags=[Tags.content])
 
 @router.get(
-    path="/content/objects",
+    path="/objects",
     summary="Get content objects by model type and filtered by path",
 )
 def get_content_objects(
@@ -61,7 +61,7 @@ def get_content_objects(
 
 
 @router.get(
-    path="/content/object/{uuid}",
+    path="/object/{uuid}",
     summary="Get attributes of the given content object uuid",
 )
 def get_content_object_by_uuid(
@@ -103,8 +103,8 @@ def get_content_object_by_uuid(
 
 
 @router.get(
-    path="/content/object/{uuid}/data",
-    summary="Get data stored for the given object uuid",
+    path="/object/{uuid}/data",
+    summary="Get data stored for the given content object uuid",
     response_model=schema.ZMSAgendaResponse  # TODO: handle appropriate response_model according to the processed content_object
 )
 def get_content_object_data_by_uuid(
