@@ -85,3 +85,61 @@ def get_installed_content_actions(
                             detail=f"Content model '{content_model.name}' not found.")
     return metacmds
 
+
+@router.get(
+    path="/mappings",
+    summary="Get virtual hosting mappings",
+)
+def get_vhm_mappings(
+
+):
+    context = create_zope_app_context()
+    return context.virtual_hosting.lines
+
+
+@router.post(
+    path="/mappings",
+    summary="Set virtual hosting mappings",
+)
+def set_vhm_mappings(
+        mapping: str
+):
+    context = create_zope_app_context()
+    mappings = '\n'.join(context.virtual_hosting.lines)
+    
+    context.virtual_hosting.set_map(mapping)
+    if "#!" in context.virtual_hosting.lines[-1]:
+        raise HTTPException(status_code=404,
+                            detail=f"Set virtual hosting mapping failed.")
+    mappings += '\n' + mapping
+    
+    # TODO: restrict access to change the mappings
+    import transaction
+    for attempt in transaction.attempts(3):
+        with attempt as t:
+            t.user = str('zms.unibe.fastapi')
+            t.note('set_vhm_mappings')
+            context.virtual_hosting.set_map(mappings)
+
+    return context.virtual_hosting.lines
+
+@router.get(
+    path="/subdomains",
+    summary="Get virtual hosting subdomains",
+)
+def get_vhm_subdomains(
+
+):
+    context = create_zope_app_context()
+    return context.virtual_hosting.fixed_map
+
+
+@router.get(
+    path="/wildcards",
+    summary="Get virtual hosting wildcards",
+)
+def get_vhm_wildcards(
+
+):
+    context = create_zope_app_context()
+    return context.virtual_hosting.sub_map
