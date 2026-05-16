@@ -59,6 +59,7 @@ def set_virtual_hosting_mappings(
 
     return context.virtual_hosting.lines
 
+  
 @router.get(
     path="/subdomains",
     summary="Get virtual hosting subdomains",
