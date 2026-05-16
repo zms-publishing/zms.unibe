@@ -1,19 +1,16 @@
 import os
-from datetime import datetime
-from uuid import UUID
 
 from fastapi import APIRouter, Query, HTTPException
-from sqlmodel import Session, select, inspect
 
 from zms.unibe.utils.zope.context import create_zope_app_context, get_zmsindex
 from zms.unibe.utils.enums import ContentModel
 from zms.unibe.fastapi.meta import Tags
 
-router = APIRouter(prefix="/zms", tags=[Tags.system])
+router = APIRouter(prefix="/zms/system", tags=[Tags.system])
 
 
 @router.get(
-    path="/system/packages",
+    path="/packages",
     summary="Get installed Python packages",
 )
 def get_installed_python_packages(
@@ -33,10 +30,10 @@ def get_installed_python_packages(
 
 
 @router.get(
-    path="/system/metaobjs",
-    summary="Get installed Meta objects",
+    path="/models",
+    summary="Get installed content models",
 )
-def get_installed_meta_objects(
+def get_installed_content_models(
         content_model: ContentModel | None = None,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
                                           description="Portal master with ZMSIndex"),
@@ -58,3 +55,33 @@ def get_installed_meta_objects(
         raise HTTPException(status_code=404,
                             detail=f"Content model '{content_model.name}' not found.")
     return metaobjs
+
+
+@router.get(
+    path="/actions",
+    summary="Get installed content actions",
+)
+def get_installed_content_actions(
+        content_model: ContentModel | None = None,
+        portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
+                                          description="Portal master with ZMSIndex"),
+):
+    context = create_zope_app_context()
+    zmsindex = get_zmsindex(portal_master, context)
+    content = zmsindex.content
+
+    metacmds = {}
+    for id in content.getMetaCmdIds():
+        data = {}
+        data['revision'] = content.getMetaCmd(id).get('revision')
+        data['package'] = content.getMetaCmd(id).get('package')
+        data['description'] = content.getMetaCmdDescription(id)
+        metacmds[id] = data
+
+    if content_model in metacmds:
+        return {content_model: metacmds[content_model]}
+    elif content_model:
+        raise HTTPException(status_code=404,
+                            detail=f"Content model '{content_model.name}' not found.")
+    return metacmds
+

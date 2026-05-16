@@ -1,8 +1,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:meta="http://namespaces.zope.org/meta"
-    xmlns:zcml="http://namespaces.zope.org/zcml"
-    xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:five="http://namespaces.zope.org/five">
 
   <include package="Zope2.App" />
@@ -18,14 +16,20 @@
   <!-- Load the configuration overrides-->
   <includeOverrides files="package-includes/*-overrides.zcml" />
   <five:loadProductsOverrides />
-  
-  <browser:resourceDirectory
-    name="zmi"
-    directory="../src/zope/src/zmi/styles/resources"
-    permission="zope.Public" />
-    
-  <include
-    zcml:condition="installed zms.unibe.patches"
-    package="zms.unibe.patches" />
 
+  <configure
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+    <include
+      zcml:condition="installed zms.unibe.patches"
+      package="zms.unibe.patches" />
+
+    <browser:resourceDirectory
+      name="zmi"
+      directory="../src/zope/src/zmi/styles/resources"
+      permission="zope.Public" />
+      
+  </configure>     
+  
 </configure>

@@ -10,11 +10,11 @@ from zms.unibe.maintenance.sqlmodels.ZMSSchedulerRegistry import ZMSSchedulerReg
 from zms.unibe.utils.db import connect_sqldb
 from zms.unibe.utils.zope.context import create_zope_app_context, get_zmsindex
 
-router = APIRouter(prefix="/zms", tags=[Tags.scheduler])
+router = APIRouter(prefix="/zms/scheduler", tags=[Tags.scheduler])
 
 
 @router.get(
-    path="/scheduler/tasks",
+    path="/tasks",
     summary="Get tasks that will be processed by scheduler",
 )
 def get_scheduler_tasks(
@@ -29,7 +29,7 @@ def get_scheduler_tasks(
 
 
 @router.post(
-    path="/scheduler/tasks",
+    path="/tasks",
     summary="Update tasks that have been processed by scheduler",
 )
 def update_scheduler_tasks(
@@ -61,7 +61,7 @@ def update_scheduler_tasks(
         return results.all()
 
 @router.post(
-    path="/scheduler/task/agenda/{upn}",
+    path="/task/agenda/{upn}",
     summary="Schedule update of agenda(s) identified by User Principal Name (UPN)",
 )
 def schedule_agenda_update_by_upn(
