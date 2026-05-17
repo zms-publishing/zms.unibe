@@ -6,7 +6,7 @@ FROM ghcr.io/idasm-unibe-ch/unibe-cms:python3.14.4-zope6.1
 
 ENV ZOPE_VERSION=6.1 \
     ZMS_CORE_BRANCH_OR_COMMIT=main \
-    ZMS_UNIBE_BRANCH_OR_COMMIT=2026.2.0 \
+    ZMS_UNIBE_BRANCH_OR_COMMIT=2026.2.1 \
     ZMS_UNIBE_EXTRAS=msgraphapi \
     SETUPTOOLS_VERSION=80.10.2
 
