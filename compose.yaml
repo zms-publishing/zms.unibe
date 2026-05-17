@@ -83,6 +83,8 @@ services:
       - ZODB_STORAGE=zeo://zeo:8000?storage=main  # deprecated in favor of ZEO_URL -> zms/unibe/utils/zope/zope.conf
       - ZEO_URL=host.docker.internal:8000
       - ZMS_URL=http://zms:8080
+      - API_V1=true
+      - API_V3=true
     ports:
       - "5055:8000"
     deploy:

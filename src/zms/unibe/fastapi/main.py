@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse, RedirectResponse
 
@@ -18,7 +20,8 @@ v1 = FastAPI(
         {"url": "https://prod.example.com/v1", "description": "Production environment"},
     ]
 )
-api.mount("/v1", v1)
+if os.getenv("API_V1", "true") == "true":
+    api.mount("/v1", v1)
 
 v3 = FastAPI(
     title="zms.unibe.fastapi",
@@ -31,7 +34,8 @@ v3 = FastAPI(
         {"url": "https://prod.example.com/v3", "description": "Production environment"},
     ]
 )
-api.mount("/v3", v3)
+if os.getenv("API_V3", "true") == "true":
+    api.mount("/v3", v3)
 
 
 @v1.get("/", include_in_schema=False)
