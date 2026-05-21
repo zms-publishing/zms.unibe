@@ -45,7 +45,7 @@ def run(command: str = typer.Argument(None, help=' | '.join(AVAILABLE_COMMANDS.k
         fn()
     else:
         zope_context = create_zope_app_context()
-        fn(zope_context)
+        fn(zope_context.unibe.content)
 
 def main():
     typer.run(run)
