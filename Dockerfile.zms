@@ -5,8 +5,8 @@ FROM ghcr.io/idasm-unibe-ch/unibe-cms:python3.14.4-zope6.1
 # -> already done for image used for deployments - just on localhost it is mounted
 
 ENV ZOPE_VERSION=6.1 \
-    ZMS_CORE_BRANCH_OR_COMMIT=a567f3cafdf3dbbdc2c11c2bb5c0612352a452b1 \
-    ZMS_UNIBE_BRANCH_OR_COMMIT=2026.2.2 \
+    ZMS_CORE_BRANCH_OR_COMMIT=main \
+    ZMS_UNIBE_BRANCH_OR_COMMIT=main \
     ZMS_UNIBE_EXTRAS=msgraphapi \
     SETUPTOOLS_VERSION=80.10.2
 
