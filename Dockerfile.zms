@@ -10,6 +10,8 @@ ENV ZOPE_VERSION=6.1 \
     ZMS_UNIBE_EXTRAS=msgraphapi \
     SETUPTOOLS_VERSION=80.10.2
 
+USER $USERNAME
+
 RUN python3 -m venv $VENV_HOME \
  && $VENV_HOME/bin/pip install --upgrade pip wheel setuptools==$SETUPTOOLS_VERSION \
     -e "Zope[wsgi] @ git+https://github.com/zopefoundation/Zope.git@$ZOPE_VERSION" \
@@ -17,8 +19,6 @@ RUN python3 -m venv $VENV_HOME \
     -e "zms.unibe[$ZMS_UNIBE_EXTRAS] @ git+https://github.com/zms-publishing/zms.unibe.git@$ZMS_UNIBE_BRANCH_OR_COMMIT" \
     -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt" \
     -c "https://raw.githubusercontent.com/zms-publishing/zms.unibe/$ZMS_UNIBE_BRANCH_OR_COMMIT/constraints.txt"
-
-RUN chown -R $USERNAME:$GROUPNAME $VENV_HOME
 
 COPY --chown=$USERNAME:$GROUPNAME ./conf/site.zcml $VENV_HOME/etc/site.zcml
 COPY --chown=$USERNAME:$GROUPNAME ./conf/zope.conf $VENV_HOME/etc/zope.conf
