@@ -1,8 +1,5 @@
 FROM ghcr.io/idasm-unibe-ch/unibe-cms:python3.14.4-zope6.1
 # TODO: make depending base images general available (GA)
-# -> zms-base + unibe-cms
-# -> provide generated /app/frontend/web/estatico-handlebars/dist/assets in container
-# -> already done for image used for deployments - just on localhost it is mounted
 
 ENV ZOPE_VERSION=6.1 \
     ZMS_CORE_BRANCH_OR_COMMIT=main \
@@ -23,5 +20,15 @@ RUN python3 -m venv $VENV_HOME \
 COPY --chown=$USERNAME:$GROUPNAME ./conf/site.zcml $VENV_HOME/etc/site.zcml
 COPY --chown=$USERNAME:$GROUPNAME ./conf/zope.conf $VENV_HOME/etc/zope.conf
 COPY --chown=$USERNAME:$GROUPNAME ./conf/zope.ini $VENV_HOME/etc/zope.ini
+
+# include assets from multi-stage build and align path hierarchy
+# -> prerequiste: set build.target to unibe-cms (instead of cms-backend)
+USER root
+RUN mkdir -p zope/frontend/web/estatico-handlebars/dist \
+ && cd zope/frontend/web/estatico-handlebars/dist \
+ && ln -s /app/frontend/web/estatico-handlebars/dist/assets
+# TODO: clean up this workaround because assets/js is missing...?!
+USER $USERNAME
+COPY --chown=$USERNAME:$GROUPNAME ./dev/assets $VENV_HOME/frontend/web/estatico-handlebars/dist/assets
 
 CMD ["/app/zope/bin/runwsgi", "-v", "/app/zope/etc/zope.ini"]

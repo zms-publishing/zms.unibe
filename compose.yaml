@@ -34,6 +34,9 @@ services:
           path: ./conf
           target: /app/zope/etc
           initial_sync: true
+    volumes:
+      - ./dev/unibe-cms-models/frontend/zms/models:/app/frontend/zms/models:rw
+      - ./dev/extensions:/app/zope/Extensions:rw
     environment:
       - PYTHONUNBUFFERED=true
       - RUN_MIGRATIONS=false
