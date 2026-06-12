@@ -63,3 +63,4 @@ class LabelPrefix(str, Enum):
     ZMSAgenda = "ZMSAgenda."
     ZMSFormulator = "zms.formulator.lib."
     ZMSTable = "ZMSTable."
+    ZMSLinkElement = "ZMSLinkElement."
