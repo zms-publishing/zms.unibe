@@ -7,8 +7,14 @@ import time
 import zExceptions
 
 from bs4 import BeautifulSoup
-from babel.dates import format_date, format_time
-from datetime import datetime, timedelta
+from babel.dates import (format_date, 
+                         format_time, 
+                         format_datetime, 
+                         format_timedelta, 
+                         get_timezone, 
+                         get_timezone_name)
+from datetime import (datetime,
+                      timedelta)
 from DateTime import DateTime  # legacy Zope implementation, returned e.g. by ZopeTime()
 from markitdown import MarkItDown
 from markdown import markdown as render_as_html
@@ -49,6 +55,35 @@ class DotDict(dict):
 print('Addon: zms.unibe.utils.helpers.local_timezone')
 @security.public
 def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
+    """
+    Convert a datetime, timestamp, or ISO8601 string to the specified local timezone.
+
+    This function takes a datetime object or other datetime representations such 
+    as ISO8601 strings, struct_time objects, or UNIX timestamps and converts them 
+    to the specified timezone. If no timezone is provided, it defaults to 'Europe/Zurich'. 
+    The function optionally adjusts the datetime by a specified number of days before 
+    performing the timezone conversion.
+
+    :param dt: The datetime input, which can be a datetime object, ISO8601 string, 
+        struct_time object, or a UNIX timestamp (int or float). If no value 
+        is provided, the current datetime will be used.
+    :type dt: Optional[Union[datetime, str, time.struct_time, int, float, DateTime]]
+
+    :param tz: The timezone to convert the datetime to. If it is not provided, the 
+        timezone 'Europe/Zurich' will be used.
+    :type tz: Optional[str]
+
+    :param days_delta: Number of days to adjust the datetime before converting it 
+        to the specified timezone.
+    :type days_delta: int
+
+    :return: A timezone-aware datetime object in the specified timezone.
+    :rtype: datetime
+    """
+    try:
+        tz = pytz.timezone(tz)
+    except pytz.UnknownTimeZoneError:
+        tz = pytz.timezone('Europe/Zurich')
     if dt is None:
         dt = datetime.now()
     elif isinstance(dt, time.struct_time):
@@ -63,7 +98,7 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
     except (ValueError, TypeError):
         dt = datetime.fromtimestamp(0)  # datetime.datetime(1970, 1, 1, 1, 0)
     dt = dt + timedelta(days=days_delta)
-    return dt.astimezone(pytz.timezone(tz))
+    return dt.astimezone(tz)
 
 
 print('Addon: zms.unibe.utils.helpers.is_authorized')
@@ -318,20 +353,105 @@ def get_json_schema(obj, lang=None):
         LOGGER.error(f'Error on get_json_schema: {response.status_code} {href}')
     return None
 
+print('Addon: zms.unibe.utils.helpers.get_when')
+@security.public
+def get_when(dt, mode=None,
+             locale='de_CH', tz='Europe/Zurich', 
+             granularity='second', threshold=0.85,
+             format='long', add_direction=True):
+    """
+    Determines and returns a formatted representation of the input date, time, or timedelta 
+    based on the specified `mode` and formatting criteria. Handles localization, time zone 
+    adjustments, and granularity for delta formats.
+    
+    It is basically a wrapper for https://babel.pocoo.org/en/latest/dates.html
 
-def get_when(dt, mode, locale):
-    # broken or empty DateTimes for dt -> 1970-01-01T01:00:00+01:00
-    # https://babel.pocoo.org/en/latest/dates.html#pattern-syntax
-    if mode == 'date':
-        return format_date(dt, format='long', locale=locale)
-    elif mode == 'time':
-        return format_time(dt, format='short', locale='de')  # enforce 24h format to avoid AM/PM
-    elif mode == 'day':
-        return format_date(dt, format='d', locale=locale)
-    elif mode == 'weekday':
-        return format_date(dt, format='E', locale=locale).replace('.', '')
-
-    return dt  # datetime will be transformed to ISO on JSON export
+    :param dt: Input date, time, or timedelta. Can be a `datetime`, `date`, or a number 
+               (interpreted as days). This parameter determines the entity to be formatted 
+               based on the given `mode`.
+    :type dt: datetime | date | timedelta | int | float
+    :param mode: Specifies the formatting operation to perform. Options include:
+                 - 'date': Formats only the date.
+                 - 'time': Formats only the time.
+                 - 'day': Formats the day of the month.
+                 - 'weekday': Formats the name of the weekday.
+                 - 'delta': Formats timedelta with varying granularity and threshold.
+                 - Other values are interpreted as explicit format strings or defaulted
+                   to ISO8601 if not recognized.
+    :type mode: str | None
+    :param locale: Locale string for localized formatting. Defaults to 'de_CH'.
+    :type locale: str
+    :param tz: Timezone information for adjusting the datetime. Defaults to 'Europe/Zurich' 
+               if the provided timezone is unrecognized or `None`.
+    :type tz: str | None
+    :param granularity: Defines the smallest time unit (e.g., 'second', 'minute', 'day') 
+                        for timedelta formatting when the mode is 'delta'. Defaults to 'second'.
+    :type granularity: str
+    :param threshold: Threshold value determining when to step into the next higher 
+                      granularity for timedelta formatting. Defaults to 0.85.
+    :type threshold: float
+    :param format: Specifies the verbosity of the output in timedelta formatting (e.g., 'short', 
+                   'long'). Defaults to 'long'.
+    :type format: str
+    :param add_direction: When `True`, includes direction indicators (e.g., 'in', 'ago') 
+                          in timedelta formatting. Defaults to `True`.
+    :type add_direction: bool
+    :return: Returns a string representing the formatted input based on the specified mode 
+             and locale. The format varies depending on the mode. Examples include formatted 
+             dates, times, weekdays, and timedelta durations.
+    :rtype: str
+    """
+    try:
+        tz = get_timezone(tz)
+    except LookupError:
+        tz = get_timezone('Europe/Zurich')
+    tzname = get_timezone_name(tz, return_zone=True)
+    
+    if isinstance(dt, timedelta):
+        mode = 'delta'
+    
+    match mode:
+        case 'date':
+            return format_date(local_timezone(dt, tz=tzname),
+                               format='long',
+                               locale=locale)
+        case 'time':
+            return format_time(local_timezone(dt, tz=tzname),
+                               format='short',
+                               locale='de',  # enforce 24h format to avoid AM/PM
+                               tzinfo=tz)
+        case 'day':
+            return format_date(local_timezone(dt, tz=tzname),
+                               format='d',
+                               locale=locale)
+        case 'weekday':
+            return format_date(local_timezone(dt, tz=tzname),
+                               format='E',
+                               locale=locale).replace('.', '')
+        case 'delta':
+            if not isinstance(dt, timedelta):
+                try:
+                    dt = timedelta(days=dt)
+                except TypeError:
+                    dt = timedelta(days=0)
+            # https://babel.pocoo.org/en/latest/dates.html#time-delta-formatting
+            return format_timedelta(dt,
+                                    locale=locale,
+                                    granularity=granularity,
+                                    threshold=threshold,
+                                    format=format,
+                                    add_direction=add_direction)
+        case x if x not in (
+            None, 'iso', 'iso8601'):
+            # https://babel.pocoo.org/en/latest/dates.html#pattern-syntax
+            return format_datetime(local_timezone(dt, tz=tzname),
+                                   format=mode,
+                                   locale=locale,
+                                   tzinfo=tz)
+    # return ISO8601 format as default
+    return format_datetime(local_timezone(dt, tz=tzname),
+                           format="yyyy-MM-dd'T'HH:mm:ssZZZZZ",
+                           tzinfo=tz)
 
 
 print('Addon: zms.unibe.utils.helpers.sanitize_html')
