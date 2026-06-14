@@ -175,6 +175,27 @@ def is_authorized(context, roles, acquired=False, raise_exception=True):
     return False
 
 
+print('Addon: zms.unibe.utils.helpers.is_dev_or_test')
+@security.public
+def is_dev_or_test(context):
+    
+    url = context.REQUEST.get('URL', '')
+    
+    return (
+        url.startswith('https://edit.cmstest')  # 1, 2, 3, ...
+        or url.startswith('https://edit.cmsint.')
+        or url.startswith('http://localhost:')
+        or url.startswith('http://127.0.0.1:')
+    )
+
+def strip_cmstest(domain):
+    if domain is None:
+        return ''
+    if standard.pybool(os.getenv('STRIP_CMSTEST', True)):
+        return domain.replace('cmstest1.', '').replace('cmstest.', '').replace('cms.test.', '').replace('cmsint.', '')
+    return domain
+
+
 def get_attr(obj, attr, lang=None, dt_exec=True):
     request = obj.REQUEST
     request.set('lang', lang or obj.getPrimaryLanguage())
@@ -308,14 +329,6 @@ def get_url_from_conf_or_env(obj):
         host = '127.0.0.1:8080'
     # Overwrite by environment variable if set
     return os.getenv('ZMS_URL', f'{prot}://{strip_cmstest(host)}')
-
-
-def strip_cmstest(domain):
-    if domain is None:
-        return ''
-    if standard.pybool(os.getenv('STRIP_CMSTEST', True)):
-        return domain.replace('cmstest1.', '').replace('cmstest.', '').replace('cms.test.', '').replace('cmsint.', '')
-    return domain
 
 
 def get_data(obj, attr, lang=None, json_as_py=False):
