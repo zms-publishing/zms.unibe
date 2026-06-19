@@ -83,6 +83,9 @@ class ZMSAgendaOutlookSchema:
         tomorrow = local_timezone(days_delta=1)
         begin_date = event.event_begin_date
         is_allday = False
+        recurrence = False
+        recurrence_pattern = None
+        recurrence_range = None
 
         if event.get('event_end_date'):
             end_date = event.event_end_date
@@ -128,6 +131,39 @@ class ZMSAgendaOutlookSchema:
         else:
             categories = []
 
+        if 'recurring' in event.get('event_duration'):
+            recurrence = True
+            
+            # https://learn.microsoft.com/en-us/graph/api/resources/recurrencepattern?view=graph-rest-1.0
+            recurrence_pattern = {'interval': event.get('event_recurrence_pattern_interval')}
+            pattern_days_of_week = event.get('event_recurrence_pattern_daysOfWeek')
+            if isinstance(pattern_days_of_week, str):
+                pattern_days_of_week = [pattern_days_of_week]
+            if event.get('event_recurrence_pattern_isWeekly'):
+                recurrence_pattern['type'] = 'weekly'
+                recurrence_pattern['daysOfWeek'] = pattern_days_of_week
+                recurrence_pattern['firstDayOfWeek'] = 'monday'
+            else:
+                if event.get('event_recurrence_pattern_isDaysOfWeek'):
+                    recurrence_pattern['type'] = 'relativeMonthly'
+                    recurrence_pattern['daysOfWeek'] = pattern_days_of_week
+                    recurrence_pattern['index'] = event.get('event_recurrence_pattern_indexInMonth')
+                else:
+                    recurrence_pattern['type'] = 'absoluteMonthly'
+                    recurrence_pattern['dayOfMonth'] = event.get('event_recurrence_pattern_dayOfMonth')
+
+            # https://learn.microsoft.com/en-us/graph/api/resources/recurrencerange?view=graph-rest-1.0
+            recurrence_range = {'startDate': begin_datetime.strftime('%Y-%m-%d')}
+            if event.get('event_recurrence_range_hasEndDate'):
+                recurrence_range['type'] = 'endDate'
+                range_end_date = event.get('event_recurrence_range_endDate')
+                range_end_time = dt.time.fromisoformat('00:00:00')
+                range_end_datetime = local_timezone(dt.datetime.combine(range_end_date, range_end_time))
+                recurrence_range['endDate'] = range_end_datetime.strftime('%Y-%m-%d')
+            else:
+                recurrence_range['type'] = 'numbered'
+                recurrence_range['numberOfOccurrences'] = event.get('event_recurrence_range_endCount')
+
         return {
             "showAs": "tentative",
             "subject": html.escape(event.event_title),
@@ -154,6 +190,10 @@ class ZMSAgendaOutlookSchema:
                 "displayName": html.escape(event.event_location)
             },
             "categories": categories,
+            "recurrence": {
+                'pattern': recurrence_pattern,
+                'range': recurrence_range,
+            } if recurrence else None,
             # "attendees": [
             #     {
             #         "emailAddress": {
