@@ -34,6 +34,9 @@ services:
           path: ./conf
           target: /app/zope/etc
           initial_sync: true
+    volumes:
+      - ./dev/unibe-cms-models/frontend/zms/models:/app/frontend/zms/models:rw
+      - ./dev/extensions:/app/zope/Extensions:rw
     environment:
       - PYTHONUNBUFFERED=true
       - RUN_MIGRATIONS=false
@@ -77,6 +80,10 @@ services:
           path: ./src/zms/unibe/fastapi
           target: /app/zope/src/zms-unibe/src/zms/unibe/fastapi
           initial_sync: true
+        - action: sync+restart
+          path: ./src/zms/unibe/utils
+          target: /app/zope/src/zms-unibe/src/zms/unibe/utils
+          initial_sync: true
     environment:
       - PYTHONUNBUFFERED=true
       - SQLDB_STORAGE=postgresql://host.docker.internal:5432/unibe_portal  # TODO: align naming of database
@@ -85,6 +92,7 @@ services:
       - ZMS_URL=http://zms:8080
       - API_V1=true
       - API_V3=true
+      - PORTAL_MASTER=/unibe/content
     ports:
       - "5055:8000"
     deploy:
