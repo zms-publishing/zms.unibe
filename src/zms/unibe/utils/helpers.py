@@ -14,6 +14,7 @@ from babel.dates import (format_date,
                          get_timezone, 
                          get_timezone_name)
 from datetime import (datetime,
+                      date,
                       timedelta)
 from DateTime import DateTime  # legacy Zope implementation, returned e.g. by ZopeTime()
 from markitdown import MarkItDown
@@ -64,10 +65,10 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
     The function optionally adjusts the datetime by a specified number of days before 
     performing the timezone conversion.
 
-    :param dt: The datetime input, which can be a datetime object, ISO8601 string, 
+    :param dt: The datetime input, which can be a datetime or date object, ISO8601 string, 
         struct_time object, or a UNIX timestamp (int or float). If no value 
         is provided, the current datetime will be used.
-    :type dt: Optional[Union[datetime, str, time.struct_time, int, float, DateTime]]
+    :type dt: Optional[Union[datetime, date, str, time.struct_time, int, float, DateTime]]
 
     :param tz: The timezone to convert the datetime to. If it is not provided, the 
         timezone 'Europe/Zurich' will be used.
@@ -98,6 +99,8 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
     except (ValueError, TypeError):
         dt = datetime.fromtimestamp(0)  # datetime.datetime(1970, 1, 1, 1, 0)
     dt = dt + timedelta(days=days_delta)
+    if isinstance(dt, date):
+        dt = datetime.combine(dt, datetime.min.time())
     return dt.astimezone(tz)
 
 
@@ -451,6 +454,7 @@ def get_when(dt, mode=None,
     # return ISO8601 format as default
     return format_datetime(local_timezone(dt, tz=tzname),
                            format="yyyy-MM-dd'T'HH:mm:ssZZZZZ",
+                           locale=locale,
                            tzinfo=tz)
 
 

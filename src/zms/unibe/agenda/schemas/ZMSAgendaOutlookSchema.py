@@ -80,7 +80,7 @@ class ZMSAgendaOutlookSchema:
     def from_surveyjs(cls, event):
 
         # we expect a lead time of one day for new events 
-        tomorrow = local_timezone() + dt.timedelta(days=1)
+        tomorrow = local_timezone(days_delta=1)
         begin_date = event.event_begin_date
         is_allday = False
 
@@ -112,7 +112,7 @@ class ZMSAgendaOutlookSchema:
             end_datetime = begin_datetime
 
         if begin_datetime == end_datetime:
-            end_datetime = begin_datetime + dt.timedelta(days=1)
+            end_datetime = local_timezone(begin_datetime, days_delta=1)
 
         link = html.escape(event.get('event_link', ''))
         if link.startswith('https://'):
