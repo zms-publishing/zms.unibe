@@ -1,5 +1,5 @@
 FROM ghcr.io/idasm-unibe-ch/unibe-cms:python3.14.4-zope6.1
-# TODO: make depending base images general available (GA)
+# TODO: make the dependent base image generally available (GA)
 
 ENV ZOPE_VERSION=6.1 \
     ZMS_CORE_BRANCH_OR_COMMIT=main \
