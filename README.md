@@ -36,7 +36,7 @@ This solution architecture, based on modern [Python](https://www.python.org) fra
 
 ## Dependencies
 
-### The package requires [Python 3.10+](https://www.python.org/downloads/) and depends on
+### The package requires [Python 3.11+](https://www.python.org/downloads/) and depends on
 
 - **Application Server**: `Zope`, `Products.PluggableAuthService`, `Products.mcdutils`
 - **Database**: `SQLAlchemy`, `SQLModel`, `psycopg2`
