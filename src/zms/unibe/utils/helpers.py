@@ -99,7 +99,9 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
     except (ValueError, TypeError):
         dt = datetime.fromtimestamp(0)  # datetime.datetime(1970, 1, 1, 1, 0)
     dt = dt + timedelta(days=days_delta)
-    if isinstance(dt, date):
+    if type(dt) is date:
+        # Please note: isinstance(dt, date) is also True for datetime objects, because datetime is a subclass of date
+        # add 00:00:00 to a plain date object so that the time zone can be set to the datetime object in the next step
         dt = datetime.combine(dt, datetime.min.time())
     return dt.astimezone(tz)
 
