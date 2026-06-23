@@ -2,8 +2,8 @@ FROM ghcr.io/idasm-unibe-ch/unibe-cms:python3.14.4-zope6.1
 # TODO: make the dependent base image generally available (GA)
 
 ENV ZOPE_VERSION=6.1 \
-    ZMS_CORE_BRANCH_OR_COMMIT=main \
-    ZMS_UNIBE_BRANCH_OR_COMMIT=main \
+    ZMS_CORE_BRANCH_OR_COMMIT=73f52fbaae712d11400f15691a2be767d3e0d86b \
+    ZMS_UNIBE_BRANCH_OR_COMMIT=2026.3.1 \
     ZMS_UNIBE_EXTRAS=fastapi \
     SETUPTOOLS_VERSION=80.10.2
 
