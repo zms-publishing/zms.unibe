@@ -1,11 +1,11 @@
-FROM ghcr.io/idasm-unibe-ch/unibe-cms:python3.14.4-zope6.1
+ARG BASE_IMAGE
 # TODO: make the dependent base image generally available (GA)
+FROM ghcr.io/idasm-unibe-ch/unibe-cms:$BASE_IMAGE
 
-ENV ZOPE_VERSION=6.1 \
-    ZMS_CORE_BRANCH_OR_COMMIT=73f52fbaae712d11400f15691a2be767d3e0d86b \
-    ZMS_UNIBE_BRANCH_OR_COMMIT=2026.3.1 \
-    ZMS_UNIBE_EXTRAS=msgraphapi \
-    SETUPTOOLS_VERSION=80.10.2
+ARG ZOPE_VERSION
+ARG ZMS_CORE_BRANCH_OR_COMMIT
+ARG ZMS_UNIBE_BRANCH_OR_COMMIT
+ARG SETUPTOOLS_VERSION
 
 USER $USERNAME
 
@@ -13,7 +13,7 @@ RUN python3 -m venv $VENV_HOME \
  && $VENV_HOME/bin/pip install --upgrade pip wheel setuptools==$SETUPTOOLS_VERSION \
     -e "Zope[wsgi] @ git+https://github.com/zopefoundation/Zope.git@$ZOPE_VERSION" \
     -e "Products.zms @ git+https://github.com/zms-publishing/ZMS.git@$ZMS_CORE_BRANCH_OR_COMMIT" \
-    -e "zms.unibe[$ZMS_UNIBE_EXTRAS] @ git+https://github.com/zms-publishing/zms.unibe.git@$ZMS_UNIBE_BRANCH_OR_COMMIT" \
+    -e "zms.unibe[msgraphapi] @ git+https://github.com/zms-publishing/zms.unibe.git@$ZMS_UNIBE_BRANCH_OR_COMMIT" \
     -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt" \
     -c "https://raw.githubusercontent.com/zms-publishing/zms.unibe/$ZMS_UNIBE_BRANCH_OR_COMMIT/constraints.txt"
 
@@ -23,11 +23,10 @@ COPY --chown=$USERNAME:$GROUPNAME ./conf/zope.ini $VENV_HOME/etc/zope.ini
 
 # include assets from multi-stage build and align path hierarchy
 # -> prerequisite: set build.target to unibe-cms (instead of cms-backend)
-USER root
-RUN RUN mkdir -p "$VENV_HOME/frontend/web/estatico-handlebars/dist" \
- && ln -sfn /app/frontend/web/estatico-handlebars/dist/assets "$VENV_HOME/frontend/web/estatico-handlebars/dist/assets"
-# TODO: clean up this workaround because assets/js is missing...?!
-USER $USERNAME
-COPY --chown=$USERNAME:$GROUPNAME ./dev/assets $VENV_HOME/frontend/web/estatico-handlebars/dist/assets
+# TODO: assets/js/head|main[.min].js are missing in base image...?!
+#USER root
+#RUN mkdir -p /app/zope/frontend/web/estatico-handlebars/dist   
+#RUN ln -sfn /app/frontend/web/estatico-handlebars/dist/assets /app/zope/frontend/web/estatico-handlebars/dist/assets
+#USER $USERNAME
 
 CMD ["/app/zope/bin/runwsgi", "-v", "/app/zope/etc/zope.ini"]
