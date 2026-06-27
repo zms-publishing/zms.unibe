@@ -11,12 +11,14 @@
 requires = [
     "setuptools >= 78.1.1,< 81",  # use the same as Zope
     "wheel",
+    "setuptools-git-versioning>=3.0,<4",
 ]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "zms.unibe"
-version = "2026.3.1"
+#version = "2026.4.0.dev0"
+dynamic = ["version"]
 description = "Addons package for ZMS at UniBE"
 readme = { text = "Python-based extensions for and integrations with the ZMS publishing system", content-type = "text/plain" }
 authors = [
@@ -118,6 +120,11 @@ namespaces = true
 
 [tool.setuptools.package-data]
 "*" = ["*.zcml"]
+
+# https://setuptools-git-versioning.readthedocs.io/en/stable/install.html
+# https://setuptools-git-versioning.readthedocs.io/en/stable/comparison.html
+[tool.setuptools-git-versioning]
+enabled = true
 
 # https://fastapi.tiangolo.com/fastapi-cli/#configure-the-app-entrypoint-in-pyproject-toml
 [tool.fastapi]
