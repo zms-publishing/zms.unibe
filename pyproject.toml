@@ -17,7 +17,6 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "zms.unibe"
-#version = "2026.4.0.dev0"
 dynamic = ["version"]
 description = "Addons package for ZMS at UniBE"
 readme = { text = "Python-based extensions for and integrations with the ZMS publishing system", content-type = "text/plain" }
@@ -125,6 +124,13 @@ namespaces = true
 # https://setuptools-git-versioning.readthedocs.io/en/stable/comparison.html
 [tool.setuptools-git-versioning]
 enabled = true
+# https://setuptools-git-versioning.readthedocs.io/en/stable/options/template.html
+# https://setuptools-git-versioning.readthedocs.io/en/stable/options/dev_template.html
+# https://setuptools-git-versioning.readthedocs.io/en/stable/options/dirty_template.html
+# https://setuptools-git-versioning.readthedocs.io/en/stable/substitutions/index.html
+template = "{tag}"  # starting with 2026.4
+dev_template = "{tag}.{ccount}+{full_sha}"
+dirty_template = "{tag}.{ccount}+{full_sha}.dirty"
 
 # https://fastapi.tiangolo.com/fastapi-cli/#configure-the-app-entrypoint-in-pyproject-toml
 [tool.fastapi]
