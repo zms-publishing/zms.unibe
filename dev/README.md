@@ -21,13 +21,13 @@ The [`compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compo
 
 ## Usage
 
+### Start the `unibe-cms-dev` container environment
+
 > [!NOTE]
-> The preconfigured virtual environments with all dependencies installed in the containers can be customized in [`Dockerfile.zms`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.zms) and [`Dockerfile.fastapi`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.fastapi).
+> The revisions to be used as containers can be customized to your needs by setting the variables `BASE_IMAGE`, `ZOPE_VERSION`, `ZMS_CORE_BRANCH_OR_COMMIT`, `ZMS_UNIBE_BRANCH_OR_COMMIT`, and `SETUPTOOLS_VERSION` in the [`versions.env` file](https://github.com/zms-publishing/zms.unibe/blob/main/versions.env) and their dafaults in [`build.args` in `compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml#L15). The container installation procedures can be customized in [`Dockerfile.zms`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.zms) and [`Dockerfile.fastapi`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.fastapi).
 
-> [!TIP]
-> The revisions to be used as containers can be customized to your needs by setting the variables `BASE_IMAGE`, `ZOPE_VERSION`, `ZMS_CORE_BRANCH_OR_COMMIT`, `ZMS_UNIBE_BRANCH_OR_COMMIT`, and `SETUPTOOLS_VERSION` in the [`versions.env` file](https://github.com/zms-publishing/zms.unibe/blob/main/versions.env) and their dafaults in [`build.args` in `compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml#L15).
-
-### Start the `unibe-cms-dev` container environment (requires the built base image)
+> [!IMPORTANT]
+> The base image `ghcr.io/idasm-unibe-ch/unibe-cms` is required to build on top of – permission is required to check it out. In addition, it is expected that the `zeo`, `memcached`, and `psql` containers from the `unibe-cms` stack are running to provide the data storages.
 
 ```bash
 # Get the project
@@ -51,10 +51,10 @@ These directories are synchronized into the containers - see [`develop.watch` in
 - Editable Dependencies for Zope/ZMS:
   - Changes in `dev/zope` and/or `dev/products-zms` if checked out
 
-### Checkout and install on localhost (to develop/debug in the containers)
+### Checkout and install on localhost
 
 > [!CAUTION]
-> The following commands demonstrate how to set up a new virtual environment on the local machine with the [latest revisions of the dependencies](https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-upgrade-strategy) - these may be work-in-progress and unstable.
+> The following commands demonstrate how to set up a new virtual environment on the local machine with the [latest revisions of the dependencies](https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-upgrade-strategy) – these may be work-in-progress and unstable.
 
 ```bash
 # Create a local virtual environment
@@ -62,15 +62,20 @@ $ cd zms.unibe
 $ virtualenv .venv
 
 # Install the backend revisions defined in versions.env file in editable mode
-# -> e.g. to update dependencies in zms.unibe/constraints.txt (installed using a progressive strategy)
-$ export $(xargs < versions.env) && ./.venv/bin/pip install pip --upgrade --upgrade-strategy=eager \
+# -> pip install using a progressive strategy and omitting the pinned versions
+# -> e.g. to update dependencies in zms.unibe/constraints.txt
+$ export $(xargs < versions.env) && ./.venv/bin/pip install --upgrade pip wheel setuptools==$SETUPTOOLS_VERSION
+$ export $(xargs < versions.env) && ./.venv/bin/pip install --upgrade --upgrade-strategy=eager \
     --src ./dev -e "Zope @ git+https://github.com/zopefoundation/Zope.git@$ZOPE_VERSION" \
     --src ./dev -e "Products.zms @ git+https://github.com/zms-publishing/ZMS.git@$ZMS_CORE_BRANCH_OR_COMMIT" \
     -e ../"zms.unibe[fastapi,msgraphapi,pydevd-pycharm]" \
     -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt"
 ```
 
-### Setup and run on localhost (alternative to the container environment)
+### Setup and run on localhost
+
+> [!TIP]
+> The following commands provide a plain Zope installation with default settings and an initial database in the local virtual environment. It can be used in parallel to the container environment.
 
 ```bash
 # Create default directories for Zope instance home
@@ -84,7 +89,7 @@ $ ./.venv/bin/mkwsgiinstance -d ./.venv -u admin:admin
 $ ./.venv/bin/runwsgi -v ./.venv/etc/zope.ini --debug debug-mode=on
 ```
 
-### Checkout and link the content models (without the web frontend css/js code)
+### Checkout and link the content models
 
 > [!TIP]
 > The following commands demonstrate how to [check out just a single subdirectory from a large Git repository](https://gist.github.com/dinhvle/d085848c09ebd7d3a4a52de9f026c0d3). This procedure is optional.

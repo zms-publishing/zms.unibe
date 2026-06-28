@@ -1,21 +1,30 @@
-ARG BASE_IMAGE
+ARG BASE_IMAGE=local
 # TODO: make the dependent base image generally available (GA)
 FROM ghcr.io/idasm-unibe-ch/unibe-cms:$BASE_IMAGE
 
 ARG ZOPE_VERSION
 ARG ZMS_CORE_BRANCH_OR_COMMIT
 ARG ZMS_UNIBE_BRANCH_OR_COMMIT
+ARG FASTAPI_EXTRAS
 ARG SETUPTOOLS_VERSION
+ARG UPDATE_DEPENDENCIES
+ARG UPDATE_EXTRAS
 
 USER $USERNAME
 
 RUN python3 -m venv $VENV_HOME \
- && $VENV_HOME/bin/pip install --upgrade pip wheel setuptools==$SETUPTOOLS_VERSION \
-    -e "Zope[wsgi] @ git+https://github.com/zopefoundation/Zope.git@$ZOPE_VERSION" \
-    -e "Products.zms @ git+https://github.com/zms-publishing/ZMS.git@$ZMS_CORE_BRANCH_OR_COMMIT" \
-    -e "zms.unibe[fastapi] @ git+https://github.com/zms-publishing/zms.unibe.git@$ZMS_UNIBE_BRANCH_OR_COMMIT" \
-    -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt" \
-    -c "https://raw.githubusercontent.com/zms-publishing/zms.unibe/$ZMS_UNIBE_BRANCH_OR_COMMIT/constraints.txt"
+ && $VENV_HOME/bin/pip install --upgrade pip wheel setuptools==$SETUPTOOLS_VERSION
+RUN set -- \
+      -e "Zope[wsgi] @ git+https://github.com/zopefoundation/Zope.git@$ZOPE_VERSION" \
+      -e "Products.zms @ git+https://github.com/zms-publishing/ZMS.git@$ZMS_CORE_BRANCH_OR_COMMIT"; \
+    if [ "$UPDATE_DEPENDENCIES" != "true" ]; then \
+      set -- "$@" -e "zms.unibe[$FASTAPI_EXTRAS] @ git+https://github.com/zms-publishing/zms.unibe.git@$ZMS_UNIBE_BRANCH_OR_COMMIT"; \
+      set -- "$@" -c "https://raw.githubusercontent.com/zms-publishing/zms.unibe/$ZMS_UNIBE_BRANCH_OR_COMMIT/constraints.txt"; \
+    else \
+      set -- "$@" -e "zms.unibe[$UPDATE_EXTRAS] @ git+https://github.com/zms-publishing/zms.unibe.git@$ZMS_UNIBE_BRANCH_OR_COMMIT"; \
+    fi; \
+    set -- "$@" -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt"; \
+    $VENV_HOME/bin/pip install --upgrade "$@"
 
 WORKDIR /app/zope/src/zms-unibe
 

@@ -96,7 +96,7 @@ msgraphapi = [
     "azure-identity",                   # https://pypi.org/project/azure-identity/
 ]
 pydevd-pycharm = [                      # https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html
-    "pydevd-pycharm~=261.23567.174",    # -> Debugger for PyCharm 2026.1.1 built on April 27, 2026
+    "pydevd-pycharm~=261.25134.203",    # -> Debugger for PyCharm 2026.1.3 built on June 18, 2026
 ]
 
 [project.scripts]
