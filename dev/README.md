@@ -135,7 +135,7 @@ $ git pull origin main
     - [Entrypoint](https://www.docker.com/blog/docker-best-practices-choosing-between-run-cmd-and-entrypoint/): Runs the Zope WSGI server via `runwsgi` on port 8080.
 
 - [**`Dockerfile.fastapi`**](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.fastapi): Builds the FastAPI using ZMS headless mode.
-    - Base: `ghcr.io/idasm-unibe-ch/unibe-cms:python3.14.4-zope6.1`
+    - Base: `docker.io/python:3.14.4`
     - Extras: Installs `zms.unibe` with `fastapi` support.
     - [Entrypoint](https://www.docker.com/blog/docker-best-practices-choosing-between-run-cmd-and-entrypoint/): Runs `fastapi dev` on port 8000.
 

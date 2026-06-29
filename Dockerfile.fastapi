@@ -1,6 +1,5 @@
-ARG BASE_IMAGE=local
-# TODO: make the dependent base image generally available (GA)
-FROM ghcr.io/idasm-unibe-ch/unibe-cms:$BASE_IMAGE
+ARG PYTHON_VERSION=3.14.4
+FROM python:$PYTHON_VERSION
 
 ARG ZOPE_VERSION
 ARG ZMS_CORE_BRANCH_OR_COMMIT
@@ -9,8 +8,9 @@ ARG FASTAPI_EXTRAS
 ARG SETUPTOOLS_VERSION
 ARG UPDATE_DEPENDENCIES
 ARG UPDATE_EXTRAS
+ARG VENV_HOME=/app/zope
 
-USER $USERNAME
+#USER $USERNAME
 
 RUN python3 -m venv $VENV_HOME \
  && $VENV_HOME/bin/pip install --upgrade pip wheel setuptools==$SETUPTOOLS_VERSION

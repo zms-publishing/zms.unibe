@@ -14,6 +14,7 @@ services:
       dockerfile: ./Dockerfile.zms
       args:
         - BASE_IMAGE=${BASE_IMAGE:-python3.14.4-zope6.1}
+        - PYTHON_VERSION=${PYTHON_VERSION:-3.14.4}
         - ZOPE_VERSION=${ZOPE_VERSION:-6.1}
         - ZMS_CORE_BRANCH_OR_COMMIT=${ZMS_CORE_BRANCH_OR_COMMIT:-main}
         - ZMS_UNIBE_BRANCH_OR_COMMIT=${ZMS_UNIBE_BRANCH_OR_COMMIT:-main}
@@ -73,7 +74,7 @@ services:
     image: ghcr.io/idasm-unibe-ch/unibe-cms-dev-fastapi:local
     init: true
     pull_policy: never
-    user: zope:zope
+    #user: zope:zope
     build:
       context: .
       dockerfile: ./Dockerfile.fastapi
