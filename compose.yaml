@@ -14,10 +14,14 @@ services:
       dockerfile: ./Dockerfile.zms
       args:
         - BASE_IMAGE=${BASE_IMAGE:-python3.14.4-zope6.1}
+        - PYTHON_VERSION=${PYTHON_VERSION:-3.14.4}
         - ZOPE_VERSION=${ZOPE_VERSION:-6.1}
         - ZMS_CORE_BRANCH_OR_COMMIT=${ZMS_CORE_BRANCH_OR_COMMIT:-main}
         - ZMS_UNIBE_BRANCH_OR_COMMIT=${ZMS_UNIBE_BRANCH_OR_COMMIT:-main}
+        - ZMS_EXTRAS=${ZMS_EXTRAS:-msgraphapi}
         - SETUPTOOLS_VERSION=${SETUPTOOLS_VERSION:-80.10.2}
+        - UPDATE_DEPENDENCIES=${UPDATE_DEPENDENCIES:-false}
+        - UPDATE_EXTRAS=${UPDATE_EXTRAS:-msgraphapi,fastapi,pydevd-pycharm}
     develop:
       # [BUG] develop.watch initial_sync: true does not fire at container start
       # https://github.com/docker/compose/issues/13725
@@ -32,7 +36,8 @@ services:
           path: ./conf
           target: /app/zope/etc
           initial_sync: true
-        # enable if checked out  
+        # enable if checked out
+        # see https://github.com/zms-publishing/zms.unibe/tree/main/dev#checkout-and-install-on-localhost
 #        - action: sync+restart
 #          path: ./dev/zope/src
 #          target: /app/zope/src/zope/src
@@ -42,10 +47,8 @@ services:
 #          target: /app/zope/src/products-zms/Products/zms
 #          initial_sync: true
     volumes:
-      - ./dev/unibe-cms-models/frontend/zms/models:/app/frontend/zms/models:rw
+#      - ./dev/unibe-cms-models/frontend/zms/models:/app/frontend/zms/models:rw
       - ./dev/extensions:/app/zope/Extensions:rw
-      # TODO: assets/js/head|main[.min].js are missing in base image...?!
-      - ./dev/assets:/app/zope/frontend/web/estatico-handlebars/dist/assets:r
     environment:
       - PYTHONUNBUFFERED=true
       - RUN_MIGRATIONS=false
@@ -69,7 +72,7 @@ services:
     image: ghcr.io/idasm-unibe-ch/unibe-cms-dev-fastapi:local
     init: true
     pull_policy: never
-    user: zope:zope
+    #user: zope:zope
     build:
       context: .
       dockerfile: ./Dockerfile.fastapi
@@ -78,7 +81,10 @@ services:
         - ZOPE_VERSION=${ZOPE_VERSION:-6.1}
         - ZMS_CORE_BRANCH_OR_COMMIT=${ZMS_CORE_BRANCH_OR_COMMIT:-main}
         - ZMS_UNIBE_BRANCH_OR_COMMIT=${ZMS_UNIBE_BRANCH_OR_COMMIT:-main}
+        - FASTAPI_EXTRAS=${FASTAPI_EXTRAS:-fastapi}
         - SETUPTOOLS_VERSION=${SETUPTOOLS_VERSION:-80.10.2}
+        - UPDATE_DEPENDENCIES=${UPDATE_DEPENDENCIES:-false}
+        - UPDATE_EXTRAS=${UPDATE_EXTRAS:-msgraphapi,fastapi,pydevd-pycharm}
     develop:
       # [BUG] develop.watch initial_sync: true does not fire at container start
       # https://github.com/docker/compose/issues/13725      
@@ -92,6 +98,7 @@ services:
           target: /app/zope/src/zms-unibe/src/zms/unibe/utils
           initial_sync: true
         # enable if checked out locally
+        # see https://github.com/zms-publishing/zms.unibe/tree/main/dev#checkout-and-install-on-localhost
 #        - action: sync+restart
 #          path: ./dev/zope/src
 #          target: /app/zope/src/zope/src
