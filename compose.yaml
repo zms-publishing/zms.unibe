@@ -47,10 +47,8 @@ services:
 #          target: /app/zope/src/products-zms/Products/zms
 #          initial_sync: true
     volumes:
-      - ./dev/unibe-cms-models/frontend/zms/models:/app/frontend/zms/models:rw
+#      - ./dev/unibe-cms-models/frontend/zms/models:/app/frontend/zms/models:rw
       - ./dev/extensions:/app/zope/Extensions:rw
-      # TODO: assets/js/head|main[.min].js are missing in base image...?!
-      - ./dev/assets:/app/zope/frontend/web/estatico-handlebars/dist/assets:r
     environment:
       - PYTHONUNBUFFERED=true
       - RUN_MIGRATIONS=false

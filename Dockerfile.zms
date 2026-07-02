@@ -32,10 +32,10 @@ COPY --chown=$USERNAME:$GROUPNAME ./conf/zope.ini $VENV_HOME/etc/zope.ini
 
 # include assets from multi-stage build and align path hierarchy
 # -> prerequisite: set build.target to unibe-cms (instead of cms-backend)
-# TODO: assets/js/head|main[.min].js are missing in base image...?!
-#USER root
-#RUN mkdir -p /app/zope/frontend/web/estatico-handlebars/dist   
-#RUN ln -sfn /app/frontend/web/estatico-handlebars/dist/assets /app/zope/frontend/web/estatico-handlebars/dist/assets
-#USER $USERNAME
+# -> match relative path in zms.unibe/src/zms/unibe/patches/configure.zcml
+USER root
+RUN mkdir -p /app/zope/frontend/web/estatico-handlebars/dist
+RUN ln -sfn /app/frontend/web/estatico-handlebars/dist/assets /app/zope/frontend/web/estatico-handlebars/dist/assets
+USER $USERNAME
 
 CMD ["/app/zope/bin/runwsgi", "-v", "/app/zope/etc/zope.ini"]
