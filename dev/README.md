@@ -24,7 +24,7 @@ The [`compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compo
 ### Start the `unibe-cms-dev` container environment
 
 > [!NOTE]
-> The revisions to be used as containers can be customized to your needs by setting the variables `BASE_IMAGE`, `ZOPE_VERSION`, `ZMS_CORE_BRANCH_OR_COMMIT`, `ZMS_UNIBE_BRANCH_OR_COMMIT`, and `SETUPTOOLS_VERSION` in the [`versions.env` file](https://github.com/zms-publishing/zms.unibe/blob/main/versions.env) and their dafaults in [`build.args` in `compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml#L15). The container installation procedures can be customized in [`Dockerfile.zms`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.zms) and [`Dockerfile.fastapi`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.fastapi).
+> The revisions to be used as containers can be customized to your needs by setting the variables `BASE_IMAGE`, `ZOPE_VERSION`, `ZMS_CORE_BRANCH_OR_COMMIT`, `ZMS_UNIBE_BRANCH_OR_COMMIT`, and `SETUPTOOLS_VERSION` in the [`versions.env` file](https://github.com/zms-publishing/zms.unibe/blob/main/versions.env) and their dafaults in [`build.args` in `compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml#L18). The container installation procedures can be customized in [`Dockerfile.zms`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.zms) and [`Dockerfile.fastapi`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.fastapi).
 
 > [!IMPORTANT]
 > The base image `ghcr.io/idasm-unibe-ch/unibe-cms` is required to build on top of – permission is required to check it out. In addition, it is expected that the `zeo`, `memcached`, and `psql` containers from the `unibe-cms` stack are running to provide the data storages.
@@ -33,7 +33,9 @@ The [`compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compo
 # Get the project
 $ git clone https://github.com/zms-publishing/zms.unibe.git
 
-# Set the backend revisions defined in versions.env file and check the resolved variables
+# Set the build environment from versions.env
+# and check the resolved variables
+# -> run this every time you change versions.env
 $ export $(xargs < versions.env) && docker compose config
 
 # Force rebuild of the containers
@@ -43,13 +45,13 @@ $ docker compose build --no-cache
 $ docker compose up --watch
 ```
 
-These directories are synchronized into the containers - see [`develop.watch` in `compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml#L24):
+These directories are synchronized into the containers - see `develop.watch` in [`compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml#L28) and [`compose.dev.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.dev.yaml)
 - Code Sync for `zms.unibe` library
   - Changes in `src/` to `/app/zope/src/zms-unibe/src`
 - Config Sync for Zope application server:
   - Changes in `conf/` to `/app/zope/etc`
 - Editable Dependencies for Zope/ZMS:
-  - Changes in `dev/zope` and/or `dev/products-zms` if checked out
+  - Changes in `dev/zope` and/or `dev/products-zms` if checked out and set `COMPOSE_INCLUDE=dev` in `versions.env`
 
 ### Checkout and install on localhost
 
@@ -61,14 +63,16 @@ These directories are synchronized into the containers - see [`develop.watch` in
 $ cd zms.unibe
 $ virtualenv .venv
 
-# Install the backend revisions defined in versions.env file in editable mode
-# -> pip install using a progressive strategy and omitting the pinned versions
-# -> e.g. to update dependencies in zms.unibe/constraints.txt
+# Install Zope/ZMS as editable dependencies
+# using the revisions defined in versions.env file
+# and checked out as git repos in the ./dev directory
+# -> will be linked into the containers by COMPOSE_INCLUDE=dev in versions.env
 $ export $(xargs < versions.env) && ./.venv/bin/pip install --upgrade pip wheel setuptools==$SETUPTOOLS_VERSION
-$ export $(xargs < versions.env) && ./.venv/bin/pip install --upgrade --upgrade-strategy=eager \
+$ export $(xargs < versions.env) && ./.venv/bin/pip install --upgrade \
     --src ./dev -e "Zope @ git+https://github.com/zopefoundation/Zope.git@$ZOPE_VERSION" \
     --src ./dev -e "Products.zms @ git+https://github.com/zms-publishing/ZMS.git@$ZMS_CORE_BRANCH_OR_COMMIT" \
     -e ../"zms.unibe[fastapi,msgraphapi,pydevd-pycharm]" \
+    -c "https://raw.githubusercontent.com/zms-publishing/zms.unibe/$ZMS_UNIBE_BRANCH_OR_COMMIT/constraints.txt" \
     -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt"
 ```
 
@@ -92,7 +96,7 @@ $ ./.venv/bin/runwsgi -v ./.venv/etc/zope.ini --debug debug-mode=on
 ### Checkout and link the content models
 
 > [!TIP]
-> The following commands demonstrate how to [check out just a single subdirectory from a large Git repository](https://gist.github.com/dinhvle/d085848c09ebd7d3a4a52de9f026c0d3). This procedure is optional.
+> The following commands demonstrate how to [check out just a single subdirectory from a large Git repository](https://gist.github.com/dinhvle/d085848c09ebd7d3a4a52de9f026c0d3). This sparse checkout is optional.
 
 > [!IMPORTANT]  
 > The repo `github.com:idasm-unibe-ch/unibe-cms.git` is a private repository – permission is required to check it out.

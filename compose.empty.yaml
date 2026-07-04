@@ -1,0 +1,3 @@
+# This is simply a placeholder to realize an easy-to-use switch
+# that includes compose.dev.yaml if COMPOSE_INCLUDE=dev is set in versions.env
+# or includes compose.empty.yaml if COMPOSE_INCLUDE is not set or set to empty

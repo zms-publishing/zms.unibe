@@ -76,6 +76,9 @@ zms.unibe
 ├── Dockerfile.fastapi
 ├── Dockerfile.zms
 ├── compose.yaml
+├── compose.dev.yaml
+├── compose.empty.yaml
+├── versions.env
 ├── app
 ├── cron
 │   ├── [scheduled jobs]

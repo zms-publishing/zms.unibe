@@ -1,5 +1,8 @@
 name: unibe-cms-dev
 
+include:
+  - compose.${COMPOSE_INCLUDE:-empty}.yaml
+
 networks:
   worker:
 
@@ -26,28 +29,17 @@ services:
       # [BUG] develop.watch initial_sync: true does not fire at container start
       # https://github.com/docker/compose/issues/13725
       watch:
-        - action: sync+restart
-          path: ./src
+        - path: ./src
           target: /app/zope/src/zms-unibe/src
+          action: sync+restart
           ignore:
             - zms/unibe/fastapi
           initial_sync: true
-        - action: sync+restart
-          path: ./conf
+        - path: ./conf
           target: /app/zope/etc
+          action: sync+restart
           initial_sync: true
-        # enable if checked out
-        # see https://github.com/zms-publishing/zms.unibe/tree/main/dev#checkout-and-install-on-localhost
-#        - action: sync+restart
-#          path: ./dev/zope/src
-#          target: /app/zope/src/zope/src
-#          initial_sync: true
-#        - action: sync+restart
-#          path: ./dev/products-zms/Products/zms
-#          target: /app/zope/src/products-zms/Products/zms
-#          initial_sync: true
     volumes:
-#      - ./dev/unibe-cms-models/frontend/zms/models:/app/frontend/zms/models:rw
       - ./dev/extensions:/app/zope/Extensions:rw
     environment:
       - PYTHONUNBUFFERED=true
@@ -87,26 +79,16 @@ services:
         - UPDATE_EXTRAS=${UPDATE_EXTRAS:-msgraphapi,fastapi,pydevd-pycharm}
     develop:
       # [BUG] develop.watch initial_sync: true does not fire at container start
-      # https://github.com/docker/compose/issues/13725      
+      # https://github.com/docker/compose/issues/13725
       watch:
-        - action: sync+restart
-          path: ./src/zms/unibe/fastapi
+        - path: ./src/zms/unibe/fastapi
           target: /app/zope/src/zms-unibe/src/zms/unibe/fastapi
+          action: sync+restart
           initial_sync: true
-        - action: sync+restart
-          path: ./src/zms/unibe/utils
+        - path: ./src/zms/unibe/utils
           target: /app/zope/src/zms-unibe/src/zms/unibe/utils
+          action: sync+restart
           initial_sync: true
-        # enable if checked out locally
-        # see https://github.com/zms-publishing/zms.unibe/tree/main/dev#checkout-and-install-on-localhost
-#        - action: sync+restart
-#          path: ./dev/zope/src
-#          target: /app/zope/src/zope/src
-#          initial_sync: true
-#        - action: sync+restart
-#          path: ./dev/products-zms/Products/zms
-#          target: /app/zope/src/products-zms/Products/zms
-#          initial_sync: true
     environment:
       - PYTHONUNBUFFERED=true
       - SQLDB_STORAGE=postgresql://host.docker.internal:5432/unibe_portal  # TODO: align naming of database
