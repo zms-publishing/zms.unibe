@@ -1,2 +1,6 @@
 .git
 .dockerignore
+.venv
+**/build
+**/*.egg-info
+**/__pycache__
