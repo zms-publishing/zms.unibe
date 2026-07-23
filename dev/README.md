@@ -70,7 +70,7 @@ $ virtualenv .venv
 $ export $(xargs < versions.env) && ./.venv/bin/pip install --upgrade pip wheel setuptools==$SETUPTOOLS_VERSION
 $ export $(xargs < versions.env) && ./.venv/bin/pip install --upgrade \
     --src ./dev -e "Zope @ git+https://github.com/zopefoundation/Zope.git@$ZOPE_VERSION" \
-    --src ./dev -e "Products.zms @ git+https://github.com/zms-publishing/ZMS.git@$ZMS_CORE_BRANCH_OR_COMMIT" \
+    --src ./dev -e "ZMS @ git+https://github.com/zms-publishing/ZMS.git@$ZMS_CORE_BRANCH_OR_COMMIT" \
     -e ../"zms.unibe[fastapi,msgraphapi,pydevd-pycharm]" \
     -c "https://raw.githubusercontent.com/zms-publishing/zms.unibe/$ZMS_UNIBE_BRANCH_OR_COMMIT/constraints.txt" \
     -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt"
