@@ -102,11 +102,10 @@ class ZMSAgendaOutlookSchema:
         else:
             end_time = dt.time.fromisoformat(tomorrow.strftime('%H:%M:%S'))
 
-        if event.get('event_duration'):
-            if 'allday' in event.event_duration:
-                is_allday = True
-                begin_time = dt.time.fromisoformat('00:00:00')
-                end_time = dt.time.fromisoformat('00:00:00')
+        if 'allday' in  event.get('event_duration', ''):
+            is_allday = True
+            begin_time = dt.time.fromisoformat('00:00:00')
+            end_time = dt.time.fromisoformat('00:00:00')
 
         begin_datetime = local_timezone(dt.datetime.combine(begin_date, begin_time))
         end_datetime = local_timezone(dt.datetime.combine(end_date, end_time))
@@ -131,7 +130,7 @@ class ZMSAgendaOutlookSchema:
         else:
             categories = []
 
-        if 'recurring' in event.get('event_duration'):
+        if 'recurring' in event.get('event_duration', ''):
             recurrence = True
             
             # https://learn.microsoft.com/en-us/graph/api/resources/recurrencepattern?view=graph-rest-1.0
