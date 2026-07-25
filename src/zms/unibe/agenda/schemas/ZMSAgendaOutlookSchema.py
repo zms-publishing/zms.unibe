@@ -79,8 +79,8 @@ class ZMSAgendaOutlookSchema:
     @classmethod
     def from_surveyjs(cls, event):
 
-        # we do not create events in the past via form
-        now = local_timezone()
+        # we do not create events before today via form
+        now = local_timezone().replace(microsecond=0)
         begin_date = event.event_begin_date
         is_allday = False
         recurrence = False
