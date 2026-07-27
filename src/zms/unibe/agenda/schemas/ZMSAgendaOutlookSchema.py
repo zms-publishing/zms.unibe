@@ -79,8 +79,8 @@ class ZMSAgendaOutlookSchema:
     @classmethod
     def from_surveyjs(cls, event):
 
-        # we expect a lead time of one day for new events 
-        tomorrow = local_timezone(days_delta=1)
+        # we do not create events before today via form
+        now = local_timezone().replace(microsecond=0)
         begin_date = event.event_begin_date
         is_allday = False
         recurrence = False
@@ -90,32 +90,34 @@ class ZMSAgendaOutlookSchema:
         if event.get('event_end_date'):
             end_date = event.event_end_date
         else:
-            end_date = tomorrow
+            end_date = begin_date
 
         if event.get('event_begin_time'):
             begin_time = event.event_begin_time
         else:
-            begin_time = dt.time.fromisoformat(tomorrow.strftime('%H:%M:%S'))
+            begin_time = dt.time.fromisoformat(now.strftime('%H:%M:%S'))
 
         if event.get('event_end_time'):
             end_time = event.event_end_time
         else:
-            end_time = dt.time.fromisoformat(tomorrow.strftime('%H:%M:%S'))
+            end_time = dt.time.fromisoformat(now.strftime('%H:%M:%S'))
 
-        if event.get('event_duration'):
-            if 'allday' in event.event_duration:
-                is_allday = True
-                begin_time = dt.time.fromisoformat('00:00:00')
-                end_time = dt.time.fromisoformat('00:00:00')
+        if 'allday' in event.get('event_duration', ''):
+            is_allday = True
+            begin_time = dt.time.fromisoformat('00:00:00')
+            end_time = dt.time.fromisoformat('00:00:00')
 
         begin_datetime = local_timezone(dt.datetime.combine(begin_date, begin_time))
         end_datetime = local_timezone(dt.datetime.combine(end_date, end_time))
 
+        if begin_datetime < now:
+            begin_datetime = local_timezone(dt.datetime.combine(now.date(), begin_time))
+            
         if end_datetime < begin_datetime:
-            end_datetime = begin_datetime
+            end_datetime = local_timezone(dt.datetime.combine(begin_datetime.date(), end_time))
 
-        if begin_datetime == end_datetime:
-            end_datetime = local_timezone(begin_datetime, days_delta=1)
+        if end_datetime <= begin_datetime:
+            end_datetime = local_timezone(end_datetime, days_delta=1)
 
         link = html.escape(event.get('event_link', ''))
         if link.startswith('https://'):
@@ -131,7 +133,7 @@ class ZMSAgendaOutlookSchema:
         else:
             categories = []
 
-        if 'recurring' in event.get('event_duration'):
+        if 'recurring' in event.get('event_duration', ''):
             recurrence = True
             
             # https://learn.microsoft.com/en-us/graph/api/resources/recurrencepattern?view=graph-rest-1.0
