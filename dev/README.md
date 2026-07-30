@@ -56,7 +56,7 @@ These directories are synchronized into the containers - see `develop.watch` in 
 ### Checkout and install on localhost
 
 > [!CAUTION]
-> The following commands demonstrate how to set up a new virtual environment on the local machine with the [latest revisions of the dependencies](https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-upgrade-strategy) – these may be work-in-progress and unstable.
+> The following commands demonstrate how to set up a new virtual environment on the local machine with the [latest revisions of the dependencies](https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-U) omitting the pinned versions in [`zms.unibe/constraints.txt`](https://github.com/zms-publishing/zms.unibe/blob/main/constraints.txt) – these may be work-in-progress and unstable.
 
 ```bash
 # Create a local virtual environment
@@ -68,11 +68,10 @@ $ virtualenv .venv
 # and checked out as git repos in the ./dev directory
 # -> will be linked into the containers by COMPOSE_INCLUDE=dev in versions.env
 $ export $(xargs < versions.env) && ./.venv/bin/pip install --upgrade pip wheel setuptools==$SETUPTOOLS_VERSION
-$ export $(xargs < versions.env) && ./.venv/bin/pip install --upgrade \
+$ export $(xargs < versions.env) && ./.venv/bin/pip install --upgrade --upgrade-strategy eager \
     --src ./dev -e "Zope @ git+https://github.com/zopefoundation/Zope.git@$ZOPE_VERSION" \
     --src ./dev -e "ZMS @ git+https://github.com/zms-publishing/ZMS.git@$ZMS_CORE_BRANCH_OR_COMMIT" \
     -e ../"zms.unibe[fastapi,msgraphapi,pydevd-pycharm]" \
-    -c "https://raw.githubusercontent.com/zms-publishing/zms.unibe/$ZMS_UNIBE_BRANCH_OR_COMMIT/constraints.txt" \
     -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt"
 ```
 
