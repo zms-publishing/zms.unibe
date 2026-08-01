@@ -18,10 +18,10 @@ class ZMSAgendaInfotageSchema:
         end = local_timezone(event.eventEndDateTime)
 
         plain_url, href_html = _extract_href(event.eventUrl)
-        event_infos = f'{event.eventInfos}'.strip()
+        event_infos = f'{event.eventInfos or ""}'.strip()
         if href_html:
             event_infos = f'{event_infos} <p>{href_html}</p>' if event_infos != '' else event_infos
-        elif plain_url.startswith('http'):
+        elif plain_url and plain_url.startswith('http'):
             event_infos = (f'{event_infos} <p><a href="{plain_url}"'
                            f' target="_blank">{plain_url}</a></p>') if event_infos != '' else event_infos
 

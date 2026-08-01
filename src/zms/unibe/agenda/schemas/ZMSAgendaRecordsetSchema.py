@@ -6,9 +6,9 @@ class ZMSAgendaRecordsetSchema:
         begin = local_timezone(event.eventBegin)
         end = local_timezone(event.eventEnd)
 
-        event_infos = f'{event.eventInfos}'.strip()
+        event_infos = f'{event.eventInfos or ""}'.strip()
         event_url = context.getLinkUrl(event.eventUrl, REQUEST={'lang': lang})
-        if event_url.startswith('http'):
+        if event_url and event_url.startswith('http'):
             event_infos = (f'{event_infos} <p><a href="{event_url}"'
                            f' target="_blank">{event_url}</a></p>') if event_infos != '' else event_infos
 
