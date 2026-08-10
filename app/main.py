@@ -14,6 +14,15 @@ def import_submodules_recursively(module):
 
 # https://fastapi.tiangolo.com/#run-it
 # https://fastapi.tiangolo.com/fastapi-cli/
-api = FastAPI(openapi_url=None)
+# https://fastapi.tiangolo.com/advanced/behind-a-proxy/#enable-proxy-forwarded-headers
+# https://fastapi.tiangolo.com/advanced/behind-a-proxy/#mounting-a-sub-application
+# Please note:
+# - The proxy_headers and the forwarded_allow_ips must be set for all mounted sub-applications as well.
+
+api = FastAPI(
+    openapi_url=None,
+    proxy_headers=True,
+    forwarded_allow_ips=["*"],
+)
 
 import_submodules_recursively(endpoints)

@@ -9,12 +9,19 @@ from .mobileapp import mediareleases, newsevents, servicelinks, uniaktuell
 from .zmscontent import labels, managers, objects, scheduler, system
 
 # https://fastapi.tiangolo.com/advanced/sub-applications/
+# https://fastapi.tiangolo.com/advanced/behind-a-proxy/#enable-proxy-forwarded-headers
+# https://fastapi.tiangolo.com/advanced/behind-a-proxy/#mounting-a-sub-application
+# Please note:
+# - The proxy_headers and the forwarded_allow_ips must be set for all mounted sub-applications as well.
+
 v1 = FastAPI(
     title="zms.unibe.fastapi",
     summary="Python-based REST API to connect unibe.ch and unibe.app with ZMS",
     version="1.0.1",
     openapi_tags=tags,
     redoc_url="/redoc",
+    proxy_headers=True,
+    forwarded_allow_ips=["*"],
     servers=[  # TODO: set urls
         {"url": "https://stag.example.com/v1", "description": "Staging environment"},
         {"url": "https://prod.example.com/v1", "description": "Production environment"},
@@ -29,6 +36,8 @@ v3 = FastAPI(
     version="3.4.0",
     openapi_tags=tags,
     redoc_url="/redoc",
+    proxy_headers=True,
+    forwarded_allow_ips=["*"],
     servers=[  # TODO: set urls
         {"url": "https://stag.example.com/v3", "description": "Staging environment"},
         {"url": "https://prod.example.com/v3", "description": "Production environment"},
