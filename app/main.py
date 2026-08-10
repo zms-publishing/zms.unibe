@@ -18,11 +18,14 @@ def import_submodules_recursively(module):
 # https://fastapi.tiangolo.com/advanced/behind-a-proxy/#mounting-a-sub-application
 # Please note:
 # - The proxy_headers and the forwarded_allow_ips must be set for all mounted sub-applications as well.
+# - The ignore_trailing_slashes and to not redirect_slashes must be set for all mounted sub-applications as well.
 
 api = FastAPI(
     openapi_url=None,
     proxy_headers=True,
     forwarded_allow_ips=["*"],
+    ignore_trailing_slashes=True,
+    redirect_slashes=False,
 )
 
 import_submodules_recursively(endpoints)

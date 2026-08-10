@@ -1,7 +1,7 @@
 import os
 
 from fastapi import FastAPI
-from fastapi.responses import PlainTextResponse, RedirectResponse
+from fastapi.responses import PlainTextResponse
 
 from app.main import api
 from zms.unibe.fastapi.meta import tags
@@ -13,6 +13,7 @@ from .zmscontent import labels, managers, objects, scheduler, system
 # https://fastapi.tiangolo.com/advanced/behind-a-proxy/#mounting-a-sub-application
 # Please note:
 # - The proxy_headers and the forwarded_allow_ips must be set for all mounted sub-applications as well.
+# - The ignore_trailing_slashes and to not redirect_slashes must be set for all mounted sub-applications as well.
 
 v1 = FastAPI(
     title="zms.unibe.fastapi",
@@ -22,6 +23,8 @@ v1 = FastAPI(
     redoc_url="/redoc",
     proxy_headers=True,
     forwarded_allow_ips=["*"],
+    ignore_trailing_slashes=True,
+    redirect_slashes=False,
     servers=[  # TODO: set urls
         {"url": "https://stag.example.com/v1", "description": "Staging environment"},
         {"url": "https://prod.example.com/v1", "description": "Production environment"},
@@ -38,6 +41,8 @@ v3 = FastAPI(
     redoc_url="/redoc",
     proxy_headers=True,
     forwarded_allow_ips=["*"],
+    ignore_trailing_slashes=True,
+    redirect_slashes=False,
     servers=[  # TODO: set urls
         {"url": "https://stag.example.com/v3", "description": "Staging environment"},
         {"url": "https://prod.example.com/v3", "description": "Production environment"},
@@ -45,16 +50,6 @@ v3 = FastAPI(
 )
 if os.getenv("API_V3", "true") == "true":
     api.mount("/v3", v3)
-
-
-@v1.get("/", include_in_schema=False)
-def redirect_docs_v1():
-    return RedirectResponse("/v1/docs")
-
-
-@v3.get("/", include_in_schema=False)
-def redirect_docs_v3():
-    return RedirectResponse("/v3/docs")
 
 
 @v1.get("/healthcheck")
