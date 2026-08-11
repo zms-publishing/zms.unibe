@@ -1,7 +1,7 @@
 import os
 
 from fastapi import FastAPI
-from fastapi.responses import PlainTextResponse, RedirectResponse
+from fastapi.responses import PlainTextResponse
 
 from app.main import api
 from zms.unibe.fastapi.meta import tags
@@ -9,12 +9,22 @@ from .mobileapp import mediareleases, newsevents, servicelinks, uniaktuell
 from .zmscontent import labels, managers, objects, scheduler, system
 
 # https://fastapi.tiangolo.com/advanced/sub-applications/
+# https://fastapi.tiangolo.com/advanced/behind-a-proxy/#enable-proxy-forwarded-headers
+# https://fastapi.tiangolo.com/advanced/behind-a-proxy/#mounting-a-sub-application
+# Please note:
+# - The proxy_headers and the forwarded_allow_ips must be set for all mounted sub-applications as well.
+# - The ignore_trailing_slashes and to not redirect_slashes must be set for all mounted sub-applications as well.
+
 v1 = FastAPI(
     title="zms.unibe.fastapi",
     summary="Python-based REST API to connect unibe.ch and unibe.app with ZMS",
     version="1.0.1",
     openapi_tags=tags,
     redoc_url="/redoc",
+    proxy_headers=True,
+    forwarded_allow_ips=["*"],
+    ignore_trailing_slashes=True,
+    redirect_slashes=False,
     servers=[  # TODO: set urls
         {"url": "https://stag.example.com/v1", "description": "Staging environment"},
         {"url": "https://prod.example.com/v1", "description": "Production environment"},
@@ -29,6 +39,10 @@ v3 = FastAPI(
     version="3.4.0",
     openapi_tags=tags,
     redoc_url="/redoc",
+    proxy_headers=True,
+    forwarded_allow_ips=["*"],
+    ignore_trailing_slashes=True,
+    redirect_slashes=False,
     servers=[  # TODO: set urls
         {"url": "https://stag.example.com/v3", "description": "Staging environment"},
         {"url": "https://prod.example.com/v3", "description": "Production environment"},
@@ -36,16 +50,6 @@ v3 = FastAPI(
 )
 if os.getenv("API_V3", "true") == "true":
     api.mount("/v3", v3)
-
-
-@v1.get("/", include_in_schema=False)
-def redirect_docs_v1():
-    return RedirectResponse("/v1/docs")
-
-
-@v3.get("/", include_in_schema=False)
-def redirect_docs_v3():
-    return RedirectResponse("/v3/docs")
 
 
 @v1.get("/healthcheck")
