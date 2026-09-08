@@ -10,6 +10,7 @@ class AgendaLibraryEN(SQLModel, table=True):  # to import https://agenda.ub.unib
     title: str
     eventType: str
     subjects: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
+    series: str | None
     venue: str
     startsAt: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
     endsAt: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
