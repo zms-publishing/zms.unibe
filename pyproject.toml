@@ -72,6 +72,7 @@ dependencies = [
     "Products.ZSQLMethods",             # https://github.com/zopefoundation/Products.ZSQLMethods
     "psycopg2",                         # https://www.psycopg.org/docs/install.html#psycopg-vs-psycopg-binary
     "pydantic",                         # https://pydantic-docs.helpmanual.io
+    "relstorage",                       # https://github.com/zodb/relstorage
     "requests",                         # https://requests.readthedocs.io
     "requests-oauthlib",                # https://github.com/requests/requests-oauthlib
     "rich",                             # https://github.com/Textualize/rich
