@@ -15,4 +15,9 @@
       recursive="True" />
   </configure>
 
+  <subscriber
+      for="ZPublisher.interfaces.IPubSuccess"
+      handler="zms.unibe.utils.subscribers.transform_html_to_markdown"
+      />
+
 </configure>
