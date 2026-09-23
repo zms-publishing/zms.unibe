@@ -2,7 +2,7 @@
 
 import io
 import os
-from markitdown import MarkItDown, StreamInfo
+from markitdown import MarkItDown  #, StreamInfo
 from Products.zms.standard import pybool
 from ZPublisher.interfaces import IPubSuccess
 
@@ -41,12 +41,14 @@ def transform_html_to_markdown(event):
         try:
             # 2. Run MarkItDown execution
             html_stream = io.BytesIO(html_bytes)
-            stream_info = StreamInfo(
-                extension=".html",
-                mimetype="text/html",
-                charset="utf-8"
-            )
-            result = MD_CONVERTER.convert_stream(html_stream, stream_info=stream_info)
+            # stream_info = StreamInfo(
+            #     extension=".html",
+            #     mimetype="text/html",
+            #     charset="utf-8"
+            # )
+            # -> requires https://github.com/microsoft/markitdown/releases/tag/v0.1.0 or later
+            # see https://github.com/zms-publishing/zms.unibe/commit/d1be8d6b2109c32a9f121dfbcffec0df23812f32
+            result = MD_CONVERTER.convert_stream(html_stream, file_extension=".html")  # stream_info=stream_info)
 
             markdown_text = result.text_content or ""
             markdown_bytes = markdown_text.encode('utf-8')
