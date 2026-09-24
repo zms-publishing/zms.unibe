@@ -26,8 +26,10 @@ def transform_html_to_markdown(event):
 
     query = request.get('QUERY_STRING', '').lower()
 
-    if 'transform=markdown' in query:
+    if any(part == 'transform=markdown' for part in query.split('&')):
         # 1. Grab the finalized content body from the response
+        if 'text/html' not in (response.getHeader('content-type') or '').lower():
+            return
         body = response.body
 
         if not body:
