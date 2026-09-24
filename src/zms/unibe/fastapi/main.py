@@ -2,6 +2,7 @@ import os
 
 from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
+from Products.zms.standard import pybool
 
 from app.main import api
 from zms.unibe.fastapi.meta import tags
@@ -30,7 +31,7 @@ v1 = FastAPI(
         {"url": "https://prod.example.com/v1", "description": "Production environment"},
     ]
 )
-if os.getenv("API_V1", "true") == "true":
+if pybool(os.getenv("API_V1")):
     api.mount("/v1", v1)
 
 v3 = FastAPI(
@@ -48,7 +49,7 @@ v3 = FastAPI(
         {"url": "https://prod.example.com/v3", "description": "Production environment"},
     ]
 )
-if os.getenv("API_V3", "true") == "true":
+if pybool(os.getenv("API_V3")):
     api.mount("/v3", v3)
 
 

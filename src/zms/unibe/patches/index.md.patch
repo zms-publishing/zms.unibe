@@ -1,0 +1,46 @@
+# This patch adds support for index.md for primary/mono language as well as index_lang.md
+# see https://github.com/zms-publishing/zms.unibe/pull/60/
+
+Index: Products/zms/zmsobject.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Products/zms/zmsobject.py b/Products/zms/zmsobject.py
+--- a/Products/zms/zmsobject.py	(revision c53e4df7efc4602210070ba9b50900bf95bf541c)
++++ b/Products/zms/zmsobject.py	(date 1790121667855)
+@@ -1061,7 +1061,7 @@
+       @return: Page extension.
+       @rtype: C{str}
+       """
+-      pageexts = ['.html']
++      pageexts = ['.' + REQUEST.get('ZMS_EXT', 'html')]
+       if 'attr_pageext' in self.getObjAttrs():
+         obj_attr = self.getObjAttr('attr_pageext')
+         if 'keys' in obj_attr and len(obj_attr.get('keys')) > 0:
+Index: Products/zms/_pathhandler.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Products/zms/_pathhandler.py b/Products/zms/_pathhandler.py
+--- a/Products/zms/_pathhandler.py	(revision c53e4df7efc4602210070ba9b50900bf95bf541c)
++++ b/Products/zms/_pathhandler.py	(date 1790121611188)
+@@ -303,13 +303,13 @@
+           l = name
+           i = l.rfind('_')
+           j = l.rfind('.')
+-          if i > 0 and j > 0:
+-            lang = l[i+1:j]
++          if j > 0:
++            lang = l[i+1:j] if i > 0 else self.getPrimaryLanguage()
+             if lang in self.getLangIds():
+-              zms_skin = l[:i]
++              zms_skin = l[:i] if i > 0 else self.getConfProperty('ZMS.skins', 'index')
+               zms_ext = l[j+1:]
+               if zms_skin in [x.strip() for x in self.getConfProperty('ZMS.skins', 'index').split(',')] and \
+-                 zms_ext == self.getPageExt(request)[1:]:
++                 zms_ext in ('html', 'md'):
+                 request.set('ZMS_SKIN', zms_skin)
+                 request.set('ZMS_EXT', zms_ext)
+                 request.set('lang', lang)
