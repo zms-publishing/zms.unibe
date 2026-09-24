@@ -1,5 +1,5 @@
 # This patch adds support for index.md for primary/mono language as well as index_lang.md
-# see https://github.com/zms-publishing/zms.unibe/pull/...
+# see https://github.com/zms-publishing/zms.unibe/pull/60/
 
 Index: Products/zms/zmsobject.py
 IDEA additional info:
