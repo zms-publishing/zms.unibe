@@ -6,7 +6,20 @@ from markitdown import MarkItDown  #, StreamInfo
 from Products.zms.standard import pybool
 from ZPublisher.interfaces import IPubSuccess
 
-MD_CONVERTER = MarkItDown()
+global MD_CONVERTER
+
+def initialize():
+
+    if not pybool(os.getenv('ZMS_ENABLE_MARKDOWN_RENDERING')):
+        return
+    
+    print('Handler: zms.unibe.utils.subscribers.transform_html_to_markdown'
+          ' registered for ZPublisher.interfaces.IPubSuccess')
+    
+    global MD_CONVERTER
+    MD_CONVERTER = MarkItDown()
+    
+initialize()
 
 
 def transform_html_to_markdown(event):
@@ -15,9 +28,6 @@ def transform_html_to_markdown(event):
     """
     request = event.request
     response = request.response
-
-    if not pybool(os.getenv('ZMS_ENABLE_MARKDOWN_RENDERING')):
-        return
 
     # path = request.get('PATH_INFO', '').lower()
     # if 'index' in path and path.endswith('.md'):
