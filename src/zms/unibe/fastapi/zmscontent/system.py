@@ -23,8 +23,35 @@ def get_installed_python_packages(
 
 
 @router.get(
-    path="/mappings",
-    summary="Get virtual hosting mappings",
+    path="/database/mounts",
+    summary="Get mounted Zope Object Databases (ZODB)",
+)
+def get_zope_object_databases():
+    context = create_zope_app_context()
+    mounts = {}
+    for zodb in context.Control_Panel.Database.getDatabaseNames():
+        mount = context.Control_Panel.Database[zodb]
+        mount_status = [x for x in manage_getMountStatus(mount) if x.get("name") == zodb]
+        mounts[zodb] = {
+            'zodb_location': mount.db_name(),
+            'zodb_objects': mount.database_size(),
+            'zodb_size': mount.db_size(),
+            'zodb_mount': mount_status if len(mount_status)>0 else {'path': '/', 
+                                                                    'name': zodb,
+                                                                    'exists': 1,
+                                                                    'status': 'Ok',
+                                                                    },
+            'cache_size': mount.cache_size(),
+            'cache_length': mount.cache_length(),
+            'cache_length_bytes': mount.cache_length_bytes(),
+            'cache_active_and_inactive_count': mount.cache_active_and_inactive_count(),
+        }
+    return mounts
+
+
+@router.get(
+    path="/domain/mappings",
+    summary="Get virtual host Domain/Path mappings",
 )
 def get_virtual_hosting_mappings(
 
