@@ -105,7 +105,7 @@ def get_content_object_by_uuid(
 @router.get(
     path="/object/{uuid}/data",
     summary="Get data stored for the given content object uuid",
-    response_model=schema.ZMSAgendaResponse  # TODO: handle appropriate response_model according to the processed content_object
+    #response_model=schema.ZMSAgendaResponse  # TODO: handle appropriate response_model according to the processed content_object
 )
 def get_content_object_data_by_uuid(
         uuid: UUID,

@@ -12,7 +12,7 @@ try:
     from App.config import getConfiguration
     if getConfiguration().debug_mode:
         # allow debugging in Restricted Python
-        print("DEBUG MODE in Restricted Python: import pdb; pdb.set_trace()")
+        print("Debug: import pdb; pdb.set_trace() allowed in Restricted Python")
         from AccessControl import allow_module
         allow_module('pdb')
     

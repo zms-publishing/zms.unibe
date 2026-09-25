@@ -47,6 +47,7 @@ services:
       - DEBUG_MODE=true
       - SQLDB_STORAGE=postgresql://postgres:thisIsMyRoot@host.docker.internal:5432/cms_formulator  # TODO: align naming of database
       - AGENDA_CATEGORIES_URL=http://zms:8080/unibe/agenda-categories.json
+      - ZMS_ENABLE_MARKDOWN_RENDERING=true
     ports:
       - "8088:8080"
     deploy:
