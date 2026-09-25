@@ -64,3 +64,9 @@ class LabelPrefix(str, Enum):
     ZMSFormulator = "zms.formulator.lib."
     ZMSTable = "ZMSTable."
     ZMSLinkElement = "ZMSLinkElement."
+
+
+class VirtualHosting(str, Enum):
+    subdomains = "subdomains"
+    wildcards = "wildcards"
+    paths = "paths"

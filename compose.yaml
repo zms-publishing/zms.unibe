@@ -91,7 +91,7 @@ services:
           initial_sync: true
     environment:
       - PYTHONUNBUFFERED=true
-      - SQLDB_STORAGE=postgresql://host.docker.internal:5432/unibe_portal  # TODO: align naming of database
+      - SQLDB_STORAGE=postgresql://postgres:thisIsMyRoot@host.docker.internal:5432/unibeportal  # TODO: align naming of database
       - ZODB_STORAGE=zeo://zeo:8000?storage=main  # deprecated in favor of ZEO_URL -> zms/unibe/utils/zope/zope.conf
       - ZEO_URL=host.docker.internal:8000
       - ZMS_URL=http://zms:8080

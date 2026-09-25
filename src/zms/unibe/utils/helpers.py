@@ -371,6 +371,7 @@ def get_json_schema(obj, lang=None):
         LOGGER.error(f'Error on get_json_schema: {response.status_code} {href}')
     return None
 
+
 print('Addon: zms.unibe.utils.helpers.get_when')
 @security.public
 def get_when(dt, mode=None,
