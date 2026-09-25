@@ -3,7 +3,8 @@ from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Query
-from sqlmodel import Session, select, inspect
+from sqlalchemy.exc import ProgrammingError
+from sqlmodel import Session, select
 
 from zms.unibe.fastapi.meta import Tags
 from zms.unibe.maintenance.sqlmodels.ZMSSchedulerRegistry import ZMSSchedulerRegistry
@@ -15,6 +16,16 @@ router = APIRouter(prefix="/zms/scheduler", tags=[Tags.scheduler])
 # https://github.com/idasm-unibe-ch/zms-fastapi/issues/48#issuecomment-3373453954
 
 
+def _ensure_scheduler_registry_table(sqlengine):
+    try:
+        ZMSSchedulerRegistry.__table__.create(sqlengine, checkfirst=True)
+    except ProgrammingError as exc:
+        sqlstate = getattr(getattr(exc, "orig", None), "sqlstate", None)
+        pgcode = getattr(getattr(exc, "orig", None), "pgcode", None)
+        if sqlstate != "42P07" and pgcode != "42P07":
+            raise
+
+
 @router.get(
     path="/tasks",
     summary="Get tasks that will be processed by scheduler",
@@ -23,10 +34,8 @@ def get_scheduler_tasks(
 
 ):
     sqlengine = connect_sqldb()
-    
-    if not inspect(sqlengine).has_table(ZMSSchedulerRegistry.__name__.lower()):
-        ZMSSchedulerRegistry.__table__.create(sqlengine)
-    
+    _ensure_scheduler_registry_table(sqlengine)
+
     with Session(sqlengine) as session:
         statement = select(ZMSSchedulerRegistry).where(
             ZMSSchedulerRegistry.processed_dt.is_(None))
@@ -44,12 +53,10 @@ def update_scheduler_tasks(
 ):
     if not isinstance(uuids, list):
         return []
-
     now = datetime.now()
     sqlengine = connect_sqldb()
 
-    if not inspect(sqlengine).has_table(ZMSSchedulerRegistry.__name__.lower()):
-        ZMSSchedulerRegistry.__table__.create(sqlengine)
+    _ensure_scheduler_registry_table(sqlengine)
 
     with Session(sqlengine) as session:
 
@@ -88,8 +95,7 @@ def schedule_agenda_update_by_upn(
         "meta_id": "ZMSAgenda",
     })
 
-    if not inspect(sqlengine).has_table(ZMSSchedulerRegistry.__name__.lower()):
-        ZMSSchedulerRegistry.__table__.create(sqlengine)
+    _ensure_scheduler_registry_table(sqlengine)
 
     with Session(sqlengine) as session:
         for item in results:  # a UPN may be set for multiple ZMSAgenda objects
