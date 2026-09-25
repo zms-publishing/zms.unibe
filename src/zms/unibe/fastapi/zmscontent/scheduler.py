@@ -11,6 +11,8 @@ from zms.unibe.utils.db import connect_sqldb
 from zms.unibe.utils.zope.context import create_zope_app_context, get_zmsindex
 
 router = APIRouter(prefix="/zms/scheduler", tags=[Tags.scheduler])
+# See sequence diagram:
+# https://github.com/idasm-unibe-ch/zms-fastapi/issues/48#issuecomment-3373453954
 
 
 @router.get(
@@ -20,7 +22,12 @@ router = APIRouter(prefix="/zms/scheduler", tags=[Tags.scheduler])
 def get_scheduler_tasks(
 
 ):
-    with Session(connect_sqldb()) as session:
+    sqlengine = connect_sqldb()
+    
+    if not inspect(sqlengine).has_table(ZMSSchedulerRegistry.__name__.lower()):
+        ZMSSchedulerRegistry.__table__.create(sqlengine)
+    
+    with Session(sqlengine) as session:
         statement = select(ZMSSchedulerRegistry).where(
             ZMSSchedulerRegistry.processed_dt.is_(None))
         results = session.exec(statement)
@@ -39,8 +46,12 @@ def update_scheduler_tasks(
         return []
 
     now = datetime.now()
+    sqlengine = connect_sqldb()
 
-    with Session(connect_sqldb()) as session:
+    if not inspect(sqlengine).has_table(ZMSSchedulerRegistry.__name__.lower()):
+        ZMSSchedulerRegistry.__table__.create(sqlengine)
+
+    with Session(sqlengine) as session:
 
         for uuid in uuids:
             statement = select(ZMSSchedulerRegistry).where(
@@ -71,18 +82,17 @@ def schedule_agenda_update_by_upn(
 ):
     context = create_zope_app_context()
     zmsindex = get_zmsindex(portal_master, context)
-    
-    zmsindex = context.zcatalog_index({
+    sqlengine = connect_sqldb()
+
+    results = zmsindex({
         "meta_id": "ZMSAgenda",
     })
-
-    sqlengine = connect_sqldb()
 
     if not inspect(sqlengine).has_table(ZMSSchedulerRegistry.__name__.lower()):
         ZMSSchedulerRegistry.__table__.create(sqlengine)
 
     with Session(sqlengine) as session:
-        for item in zmsindex:  # an UPN may by set for multiple ZMSAgenda objects
+        for item in results:  # a UPN may be set for multiple ZMSAgenda objects
             obj = item.getObject()
             if obj.attr('include_outlook') and upn in obj.attr('outlook_upn'):
                 session.add(ZMSSchedulerRegistry.from_agenda(obj))
