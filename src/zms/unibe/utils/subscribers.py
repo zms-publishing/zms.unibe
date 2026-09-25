@@ -26,6 +26,9 @@ def transform_html_to_markdown(event):
     """
     Subscribes to IPubSuccess (guaranteed execution at request end).
     """
+    if not pybool(os.getenv('ZMS_ENABLE_MARKDOWN_RENDERING')):
+        return
+
     request = event.request
     response = request.response
 
