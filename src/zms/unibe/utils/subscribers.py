@@ -7,10 +7,14 @@ from Products.zms.standard import pybool
 from ZPublisher.interfaces import IPubSuccess
 
 global MD_CONVERTER
+global IS_ENABLED
 
 def initialize():
 
-    if not pybool(os.getenv('ZMS_ENABLE_MARKDOWN_RENDERING')):
+    global IS_ENABLED
+    IS_ENABLED = pybool(os.getenv('ZMS_ENABLE_MARKDOWN_RENDERING'))
+
+    if not IS_ENABLED:
         return
     
     print('Handler: zms.unibe.utils.subscribers.transform_html_to_markdown'
@@ -26,7 +30,7 @@ def transform_html_to_markdown(event):
     """
     Subscribes to IPubSuccess (guaranteed execution at request end).
     """
-    if not pybool(os.getenv('ZMS_ENABLE_MARKDOWN_RENDERING')):
+    if not IS_ENABLED:
         return
 
     request = event.request

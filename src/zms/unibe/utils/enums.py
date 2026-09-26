@@ -70,3 +70,7 @@ class VirtualHosting(str, Enum):
     subdomains = "subdomains"
     wildcards = "wildcards"
     paths = "paths"
+    
+class PipCmd(str, Enum):
+    list = "list"
+    freeze = "freeze"
