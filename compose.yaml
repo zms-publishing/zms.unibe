@@ -90,6 +90,10 @@ services:
           target: /app/zope/src/zms-unibe/src/zms/unibe/utils
           action: sync+restart
           initial_sync: true
+        - path: ./app
+          target: /app/zope/src/zms-unibe/app
+          action: sync+restart
+          initial_sync: true
     environment:
       - PYTHONUNBUFFERED=true
       - SQLDB_STORAGE=postgresql://postgres:thisIsMyRoot@host.docker.internal:5432/unibeportal  # TODO: align naming of database
@@ -98,6 +102,10 @@ services:
       - ZMS_URL=http://zms:8080
       - API_V1=true
       - API_V3=true
+      - API_RQ=true
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RQ_NAME=default
       - PORTAL_MASTER=/unibe/content
     ports:
       - "5055:8000"
@@ -109,5 +117,12 @@ services:
         limits:
           cpus: "1.0"
           memory: 768M
+    networks:
+      - worker
+  
+  redis:
+    image: redis:7.4-alpine
+    ports:
+      - "6379:6379"
     networks:
       - worker

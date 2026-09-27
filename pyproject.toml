@@ -90,6 +90,9 @@ dependencies = [
 fastapi = [
     "FastAPI[standard]",                # https://fastapi.tiangolo.com
     "uvicorn[standard]",                # https://www.uvicorn.org
+    "redis",                            # https://github.com/redis/redis-py
+    "rq",                               # https://github.com/rq/rq
+    "rq-dashboard-fast",                # https://github.com/Hannes221/rq-dashboard-fast
 ]
 msgraphapi = [
     "msgraph-sdk",                      # https://github.com/microsoftgraph/msgraph-sdk-python
