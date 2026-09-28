@@ -2,7 +2,8 @@ import os
 
 from fastapi import APIRouter, Query, HTTPException
 
-from zms.unibe.utils.zope.context import create_zope_app_context, get_zmsindex
+from zms.unibe.utils.zope.context import get_zmsindex
+from zms.unibe.utils.dependencies import ContextDependency
 from zms.unibe.fastapi.meta import Tags
 from zms.unibe.utils.enums import ContentModel
 
@@ -14,12 +15,12 @@ router = APIRouter(prefix="/zms/content", tags=[Tags.content])
     summary="Get installed content models filtered by content model or substring in name or package",
 )
 def get_installed_content_models(
+        context: ContextDependency,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
                                           description="Portal master with ZMSIndex"),
         content_model: ContentModel | None = None,
         substring: str | None = None,
 ):
-    context = create_zope_app_context()
     zmsindex = get_zmsindex(portal_master, context)
     content = zmsindex.content
     
@@ -50,12 +51,12 @@ def get_installed_content_models(
     summary="Get installed content actions filtered by content model or substring in name or package",
 )
 def get_installed_content_actions(
+        context: ContextDependency,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
                                           description="Portal master with ZMSIndex"),
         content_model: ContentModel | None = None,
         substring: str | None = None,
 ):
-    context = create_zope_app_context()
     zmsindex = get_zmsindex(portal_master, context)
     content = zmsindex.content
 

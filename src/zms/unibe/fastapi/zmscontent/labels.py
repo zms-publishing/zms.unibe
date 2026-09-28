@@ -5,7 +5,8 @@ from fastapi import APIRouter, Query, Response
 from Products.zms._multilangmanager import exportXml
 from zms.unibe.fastapi.meta import Tags
 from zms.unibe.utils.enums import ContentModel, LabelPrefix, Lang, Locale
-from zms.unibe.utils.zope.context import create_zope_app_context, get_zmsindex
+from zms.unibe.utils.zope.context import get_zmsindex
+from zms.unibe.utils.dependencies import ContextDependency
 
 router = APIRouter(prefix="/zms/content", tags=[Tags.content])
 
@@ -15,13 +16,13 @@ router = APIRouter(prefix="/zms/content", tags=[Tags.content])
     # response_model=schema.ZMSAgendaResponse,
 )
 def get_content_labels(
+        context: ContextDependency,
         locale: Locale = Locale.de,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
                                           description="Portal master with ZMSIndex"),
         content_model: ContentModel | None = None,
         prefix: str | None = None,
 ):
-    context = create_zope_app_context()
     zmsindex = get_zmsindex(portal_master, context)
     
     lang = Lang[locale].value

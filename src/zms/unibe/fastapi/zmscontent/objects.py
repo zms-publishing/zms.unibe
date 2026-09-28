@@ -10,7 +10,8 @@ from zms.unibe.agenda.schemas.ZMSAgendaEventSchema import ZMSAgendaEventSchema
 from zms.unibe.fastapi.meta import Tags
 from zms.unibe.utils.enums import ContentModel, ImageVariant, Lang, Locale
 from zms.unibe.utils.helpers import get_data, is_activated_by_checkbox_and_timeline, local_timezone, get_when
-from zms.unibe.utils.zope.context import create_zope_app_context, get_zmsindex
+from zms.unibe.utils.zope.context import get_zmsindex
+from zms.unibe.utils.dependencies import ContextDependency
 
 router = APIRouter(prefix="/zms/content", tags=[Tags.content])
 
@@ -39,6 +40,7 @@ def _get_entry_for_uuid(zmsindex, uuid: UUID):
     summary="Get content objects by model type and filtered by path",
 )
 def get_content_objects(
+        context: ContextDependency,
         locale: Locale = Locale.de,
         content_model: ContentModel | None = None,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
@@ -48,7 +50,6 @@ def get_content_objects(
         offset: int = 0,
         limit: int = 20,
 ):
-    context = create_zope_app_context()
     zmsindex = get_zmsindex(portal_master, context)
     
     results = zmsindex({
@@ -85,12 +86,12 @@ def get_content_objects(
     summary="Get attributes of the given content object uuid",
 )
 def get_content_object_by_uuid(
+        context: ContextDependency,
         uuid: UUID,
         locale: Locale = Locale.de,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
                                           description="Portal master with ZMSIndex"),
 ):
-    context = create_zope_app_context()
     zmsindex = get_zmsindex(portal_master, context)
     
     entry = _get_entry_for_uuid(zmsindex, uuid)
@@ -116,6 +117,7 @@ def get_content_object_by_uuid(
     #response_model=schema.ZMSAgendaResponse  # TODO: handle appropriate response_model according to the processed content_object
 )
 def get_content_object_data_by_uuid(
+        context: ContextDependency,
         uuid: UUID,
         locale: Locale = Locale.de,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
@@ -125,7 +127,6 @@ def get_content_object_data_by_uuid(
         offset: int = 0,
         limit: int = 20,
 ):
-    context = create_zope_app_context()
     zmsindex = get_zmsindex(portal_master, context)
     
     entry = _get_entry_for_uuid(zmsindex, uuid)
@@ -178,12 +179,12 @@ def get_content_object_data_by_uuid(
     summary="Get change log for the given content object uuid",
 )
 def get_content_object_log_by_uuid(
+        context: ContextDependency,
         uuid: UUID,
         locale: Locale = Locale.de,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
                                           description="Portal master with ZMSIndex"),
 ):
-    context = create_zope_app_context()
     zmsindex = get_zmsindex(portal_master, context)
 
     entry = _get_entry_for_uuid(zmsindex, uuid)

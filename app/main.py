@@ -1,23 +1,42 @@
-import importlib
 import pkgutil
 import os
 
 from fastapi import FastAPI
+from sqlmodel import SQLModel
 from redis import Redis
 from rq import Queue
 from rq_dashboard_fast import RedisQueueDashboard
 from contextlib import asynccontextmanager
+from pathlib import Path
+from importlib import import_module
 
+from zms.unibe.utils.db import connect_sqldb
 from Products.zms.standard import pybool
 
 import zms.unibe.fastapi as endpoints
-
 
 # https://stackoverflow.com/questions/3365740/how-to-import-all-submodules#65021760
 def import_submodules_recursively(module):
     for loader, module_name, is_pkg in pkgutil.walk_packages(
             module.__path__, module.__name__ + '.'):
-        importlib.import_module(module_name)
+        import_module(module_name)
+
+def import_sqlmodels_recursively():
+    """
+    Import all Python modules matching:
+        ../src/zms/unibe/**/sqlmodels/*.py
+    Skips __main__.py and __init__.py.
+    Path resolution is based on this file's location.
+    """
+    root_path = (Path(__file__).resolve().parent.parent / "src/zms/unibe").resolve()
+    root_package = "zms.unibe"
+    for py_file in root_path.rglob("sqlmodels/*.py"):
+        if py_file.name in ("__main__.py", "__init__.py"):
+            continue
+        rel = py_file.relative_to(root_path).with_suffix("")
+        module_name = ".".join((root_package, *rel.parts))
+        print("SQLModel:", module_name)
+        import_module(module_name)
 
 # https://fastapi.tiangolo.com/#run-it
 # https://fastapi.tiangolo.com/fastapi-cli/
@@ -35,13 +54,19 @@ REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 REDIS_CONN = None
 RQ_NAME = os.getenv("RQ_NAME", "default")
 RQ_JOBS = None
+SQLDB_ENGINE = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     
     global REDIS_HOST, REDIS_PORT, REDIS_CONN
     global RQ_NAME, RQ_JOBS
+    global SQLDB_ENGINE
     try:
+        import_submodules_recursively(endpoints)
+        import_sqlmodels_recursively()
+        SQLDB_ENGINE = connect_sqldb(verbose=True)
+        SQLModel.metadata.create_all(SQLDB_ENGINE)
         if pybool(os.getenv("API_RQ")):
             REDIS_CONN = Redis(host=REDIS_HOST, port=REDIS_PORT)
             RQ_JOBS = Queue(RQ_NAME, connection=REDIS_CONN)
@@ -53,6 +78,8 @@ async def lifespan(app: FastAPI):
     finally:
         if REDIS_CONN:
             REDIS_CONN.close()
+        if SQLDB_ENGINE:
+            SQLDB_ENGINE.dispose()
 
 api = FastAPI(
     openapi_url=None,
@@ -67,5 +94,3 @@ if pybool(os.getenv("API_RQ")):
     dashboard = RedisQueueDashboard(f"redis://{REDIS_HOST}:{REDIS_PORT}", 
                                     "/rq-dashboard")
     api.mount("/rq-dashboard", dashboard)
-
-import_submodules_recursively(endpoints)

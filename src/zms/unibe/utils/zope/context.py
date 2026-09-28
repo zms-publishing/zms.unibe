@@ -14,7 +14,7 @@ _zope_initialized = False
 def create_zope_app_context():
     """
     Initializes Zope, creates a new DB connection, adds an HTTPRequest
-    at app.REQUEST and returns app.unibe.content (ZMS context).
+    at app.REQUEST and returns app root context.
 
     This method should be called once per client request in multi-threaded
     applications (e.g. web applications). This way each client request will get
