@@ -301,7 +301,7 @@ def update_newsevents():
 
             for res in results.all():
                 
-                events_json = json.loads(res.cached_data)
+                events_json = json.loads(res.cached_data or '[]')
                 # include only given categories if set
                 events_json = AgendaBridge.include_only(events_json, res.categories_include_only)
                 # filter out given categories if set
