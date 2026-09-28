@@ -7,7 +7,7 @@ from Products.zms.standard import pybool
 from app.main import api
 from zms.unibe.fastapi.meta import tags
 from .mobileapp import mediareleases, newsevents, servicelinks, uniaktuell
-from .zmscontent import labels, managers, objects, scheduler, system
+from .zmscontent import labels, managers, objects, scheduler, system, queue
 
 # https://fastapi.tiangolo.com/advanced/sub-applications/
 # https://fastapi.tiangolo.com/advanced/behind-a-proxy/#enable-proxy-forwarded-headers
@@ -70,3 +70,7 @@ v3.include_router(newsevents.router)
 v3.include_router(uniaktuell.router)
 v3.include_router(mediareleases.router)
 v3.include_router(servicelinks.router)
+
+if pybool(os.getenv("API_RQ")):
+    v1.include_router(queue.router)
+    v3.include_router(queue.router)

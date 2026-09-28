@@ -5,8 +5,9 @@ from enum import Enum
 class Tags(Enum):
     content = "content"
     mobile = "mobile"
-    scheduler = "scheduler"
     system = "system"
+    scheduler = "scheduler"
+    queue = "queue"
 
 
 # https://fastapi.tiangolo.com/tutorial/metadata/#metadata-for-tags
@@ -28,9 +29,12 @@ tags = [
         #},
     },
     {
+        "name": "system",
+    },
+    {
         "name": "scheduler",
     },
     {
-        "name": "system",
+        "name": "queue",
     },
 ]
