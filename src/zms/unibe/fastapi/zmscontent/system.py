@@ -2,10 +2,12 @@ from fastapi import APIRouter, HTTPException
 
 from zms.unibe.utils.zope.context import create_zope_app_context
 from zms.unibe.fastapi.meta import Tags
-from zms.unibe.utils.enums import VirtualHosting
+from zms.unibe.utils.enums import VirtualHosting, PipCmd
 
 from Products.zms.standard import get_installed_packages
 from Products.ZODBMountPoint.MountedObject import manage_getMountStatus
+
+import re
 
 router = APIRouter(prefix="/zms", tags=[Tags.system])
 
@@ -15,14 +17,31 @@ router = APIRouter(prefix="/zms", tags=[Tags.system])
     summary="Get installed Python packages",
 )
 def get_installed_python_packages(
-
+    mode: PipCmd = PipCmd.list,
 ):
     packages = list(filter(lambda x:
                            len(x) > 0 and x[0] not in ('#', ''),
-                           get_installed_packages().splitlines()))
+                           get_installed_packages(pip_cmd=mode).splitlines()))
     
-    return {packages[0]: packages[1:]}
+    if mode == PipCmd.freeze:
+        return {
+            'runtime': packages[0],
+            'packages': packages[1:],
+        }
+    
+    package_dict = {}
 
+    for item in packages[3:]:
+        # capture: package name + version, ignore anything after the version
+        m = re.match(r"^\s*(.+?)\s+([0-9][^\s]*)", item)
+        if m:
+            name, version = m.groups()
+            package_dict[name.strip()] = version.strip()
+    
+    return {
+        'runtime': packages[0],
+        'packages': package_dict,
+    }
 
 @router.get(
     path="/database/mounts",
@@ -38,11 +57,11 @@ def get_zope_object_databases():
             'zodb_location': mount.db_name(),
             'zodb_objects': mount.database_size(),
             'zodb_size': mount.db_size(),
-            'zodb_mount': mount_status if mount_status else [{'path': '/', 
-                                                                    'name': zodb,
-                                                                    'exists': 1,
-                                                                    'status': 'Ok',
-                                                                    }],
+            'zodb_mount': mount_status if mount_status else [{'path': '/',
+                                                              'name': zodb,
+                                                              'exists': 1,
+                                                              'status': 'Ok',
+                                                              }],
             'cache_size': mount.cache_size(),
             'cache_length': mount.cache_length(),
             'cache_length_bytes': mount.cache_length_bytes(),

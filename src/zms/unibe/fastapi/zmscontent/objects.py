@@ -9,10 +9,30 @@ from zms.unibe.agenda.schemas import ZMSAgendaSchema as schema
 from zms.unibe.agenda.schemas.ZMSAgendaEventSchema import ZMSAgendaEventSchema
 from zms.unibe.fastapi.meta import Tags
 from zms.unibe.utils.enums import ContentModel, ImageVariant, Lang, Locale
-from zms.unibe.utils.helpers import get_data, is_activated_by_checkbox_and_timeline
+from zms.unibe.utils.helpers import get_data, is_activated_by_checkbox_and_timeline, local_timezone, get_when
 from zms.unibe.utils.zope.context import create_zope_app_context, get_zmsindex
 
 router = APIRouter(prefix="/zms/content", tags=[Tags.content])
+
+def _get_entry_for_uuid(zmsindex, uuid: UUID):
+    results = zmsindex({
+        "get_uid": f"uid:{uuid}",
+    })
+
+    if len(results) == 0:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Object with uuid '{uuid}' not found",
+        )
+
+    if len(results) > 1:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Multiple objects found for uuid '{uuid}'",
+        )
+
+    return results[0]
+
 
 @router.get(
     path="/objects",
@@ -73,19 +93,7 @@ def get_content_object_by_uuid(
     context = create_zope_app_context()
     zmsindex = get_zmsindex(portal_master, context)
     
-    results = zmsindex({ 
-        "get_uid": f"uid:{uuid}",
-    })
-
-    if len(results) == 0:
-        raise HTTPException(status_code=404,
-                            detail=f"Object with uuid '{uuid}' not found")
-
-    if len(results) > 1:
-        raise HTTPException(status_code=500,
-                            detail=f"Multiple objects found for uuid '{uuid}'")
-    
-    entry = results[0]
+    entry = _get_entry_for_uuid(zmsindex, uuid)
     obj = entry.getObject()
     meta_id = entry.meta_id
 
@@ -120,19 +128,7 @@ def get_content_object_data_by_uuid(
     context = create_zope_app_context()
     zmsindex = get_zmsindex(portal_master, context)
     
-    results = zmsindex({
-        "get_uid": f"uid:{uuid}",
-    })
-    
-    if len(results) == 0:
-        raise HTTPException(status_code=404,
-                            detail=f"Object with uuid '{uuid}' not found")
-
-    if len(results) > 1:
-        raise HTTPException(status_code=500,
-                            detail=f"Multiple objects found for uuid '{uuid}'")
-    
-    entry = results[0]
+    entry = _get_entry_for_uuid(zmsindex, uuid)
     obj = entry.getObject()
     meta_id = entry.meta_id
     site_path = entry.getPath()
@@ -148,6 +144,8 @@ def get_content_object_data_by_uuid(
     if meta_id in ContentModel._member_names_:
         if meta_id in ("ZMSDataTable", "ZMSBoris", "ZMSAgenda"):
             attr = "_datafilecached"
+        elif meta_id in ("ZMS", "ZMSFolder", "ZMSDocument"):
+            attr = "titleimage"
         elif meta_id == "ZMSGraphic":
             attr = image_variant.value
 
@@ -173,3 +171,32 @@ def get_content_object_data_by_uuid(
     return Response(data,
                     headers=headers,
                     media_type=headers['Content-Type'])
+
+
+@router.get(
+    path="/object/{uuid}/log",
+    summary="Get change log for the given content object uuid",
+)
+def get_content_object_log_by_uuid(
+        uuid: UUID,
+        locale: Locale = Locale.de,
+        portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
+                                          description="Portal master with ZMSIndex"),
+):
+    context = create_zope_app_context()
+    zmsindex = get_zmsindex(portal_master, context)
+
+    entry = _get_entry_for_uuid(zmsindex, uuid)
+    zodb = context.Control_Panel.Database['main']
+    transactions = zodb.undoable_transactions()
+
+    now = local_timezone()
+
+    return sorted([
+        {
+            "changed": local_timezone(tx.get("time")),
+            "delta": get_when(local_timezone(tx.get("time")) - now, locale=locale, threshold=5),
+            "user": str(tx.get("user_name")).strip(),
+            "action": str(tx.get("description")).strip(),
+        } for tx in transactions if entry.getPath() in str(tx.get("description", ""))
+    ], key=lambda x: x["changed"], reverse=True)

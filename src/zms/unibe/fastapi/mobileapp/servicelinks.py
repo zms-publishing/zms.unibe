@@ -11,7 +11,7 @@ from zms.unibe.utils.enums import Locale
 from zms.unibe.utils.helpers import get_attr_by_lang
 from zms.unibe.utils.helpers import local_timezone
 
-router = APIRouter(tags=[Tags.mobile])
+router = APIRouter(prefix="/app", tags=[Tags.mobile])
 
 
 def _retrieve_service_links(lang, uuid):

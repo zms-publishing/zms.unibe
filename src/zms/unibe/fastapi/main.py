@@ -19,7 +19,7 @@ from .zmscontent import labels, managers, objects, scheduler, system
 v1 = FastAPI(
     title="zms.unibe.fastapi",
     summary="Python-based REST API to connect unibe.ch and unibe.app with ZMS",
-    version="1.0.1",
+    version="1.0.2",
     openapi_tags=tags,
     redoc_url="/redoc",
     proxy_headers=True,
@@ -67,6 +67,6 @@ v1.include_router(managers.router)
 v1.include_router(scheduler.router)
 v1.include_router(system.router)
 v3.include_router(newsevents.router)
-v3.include_router(servicelinks.router)
 v3.include_router(uniaktuell.router)
 v3.include_router(mediareleases.router)
+v3.include_router(servicelinks.router)
