@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 
-from zms.unibe.utils.zope.context import create_zope_app_context
 from zms.unibe.fastapi.meta import Tags
 from zms.unibe.utils.enums import VirtualHosting, PipCmd
+from zms.unibe.utils.dependencies import ContextDependency
 
 from Products.zms.standard import get_installed_packages
 from Products.ZODBMountPoint.MountedObject import manage_getMountStatus
@@ -47,8 +47,9 @@ def get_installed_python_packages(
     path="/database/mounts",
     summary="Get mounted Zope Object Databases (ZODB)",
 )
-def get_zope_object_databases():
-    context = create_zope_app_context()
+def get_zope_object_databases(
+        context: ContextDependency,
+):
     mounts = {}
     for zodb in context.Control_Panel.Database.getDatabaseNames():
         mount = context.Control_Panel.Database[zodb]
@@ -75,9 +76,9 @@ def get_zope_object_databases():
     summary="Get virtual host Domain/Path mappings",
 )
 def get_virtual_hosting_mappings(
-    filter_by: VirtualHosting | None = None,
+        context: ContextDependency,
+        filter_by: VirtualHosting | None = None,
 ):
-    context = create_zope_app_context()
     flipped = False
     
     match filter_by:
@@ -111,9 +112,9 @@ def get_virtual_hosting_mappings(
     summary="Set virtual host Domain/Path mappings",
 )
 def set_virtual_hosting_mappings(
+        context: ContextDependency,
         mapping: str
 ):
-    context = create_zope_app_context()
     mappings = '\n'.join(context.virtual_hosting.lines)
     
     context.virtual_hosting.set_map(mapping)
