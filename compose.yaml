@@ -103,9 +103,8 @@ services:
       - API_V1=true
       - API_V3=true
       - API_RQ=true
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - RQ_NAME=default
+      - REDIS_URL=redis://redis:6379
+      - QUEUE_NAME=default
       - PORTAL_MASTER=/unibe/content
     ports:
       - "5055:8000"

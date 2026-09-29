@@ -129,6 +129,10 @@ $ git pull origin main
     - Port: `5055` (mapped to `8000` internally)
     - v1: [http://127.0.0.1:5055/v1/docs](http://127.0.0.1:5055/v1/docs) (content and scheduler endpoints)
     - v3: [http://127.0.0.1:5055/v3/docs](http://127.0.0.1:5055/v3/docs) (mobile app endpoints)
+  - **`redis`**: The [Redis](https://redis.io/) in-memory key-value data structure store
+    - Image: `docker.io/redis:7.4-alpine`
+    - Ports: `6379` (mapped to `6379` internally)
+    - Used as message broker for background jobs (queue endpoints) and caching (cache endpoints)
 
 ## Images
 

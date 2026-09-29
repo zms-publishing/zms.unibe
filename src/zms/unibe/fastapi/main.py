@@ -7,7 +7,8 @@ from Products.zms.standard import pybool
 from app.main import api
 from zms.unibe.fastapi.meta import tags
 from .mobileapp import mediareleases, newsevents, servicelinks, uniaktuell
-from .zmscontent import labels, managers, objects, scheduler, system, queue
+from .zmscontent import labels, managers, objects, scheduler, system
+from . import queue, cache
 
 # https://fastapi.tiangolo.com/advanced/sub-applications/
 # https://fastapi.tiangolo.com/advanced/behind-a-proxy/#enable-proxy-forwarded-headers
@@ -32,6 +33,7 @@ v1 = FastAPI(
     ]
 )
 if pybool(os.getenv("API_V1")):
+    v1.main_state = api.state   # to access parent api.state state in mounted subapp v1
     api.mount("/v1", v1)
 
 v3 = FastAPI(
@@ -50,6 +52,7 @@ v3 = FastAPI(
     ]
 )
 if pybool(os.getenv("API_V3")):
+    v3.main_state = api.state  # to access parent api.state state in mounted subapp v3
     api.mount("/v3", v3)
 
 
@@ -70,6 +73,9 @@ v3.include_router(newsevents.router)
 v3.include_router(uniaktuell.router)
 v3.include_router(mediareleases.router)
 v3.include_router(servicelinks.router)
+
+v1.include_router(cache.router)
+v3.include_router(cache.router)
 
 if pybool(os.getenv("API_RQ")):
     v1.include_router(queue.router)
