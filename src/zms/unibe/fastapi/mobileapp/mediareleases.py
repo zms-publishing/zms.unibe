@@ -19,7 +19,7 @@ router = APIRouter(tags=[Tags.mobile])
             description='Media releases from '
                         '<a href="https://www.unibe.ch/news/media_news/media_relations_e/media_releases" '
                         'target="_blank">unibe.ch/medien</a>')
-async def get_mediareleases(
+def get_mediareleases(
         session: SessionDependency,
         lang: Locale = Locale.de,
         date_after: datetime | None = Query(None, description='Filter by date after (UTC)'),

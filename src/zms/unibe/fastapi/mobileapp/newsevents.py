@@ -23,7 +23,7 @@ router = APIRouter(tags=[Tags.mobile])
             description='News from portal at <a href="https://www.unibe.ch" target="_blank">unibe.ch</a> '
                         'and faculties at <a href="https://www.unibe.ch/fakultaeteninstitute" '
                         'target="_blank">unibe.ch/fakultaeteninstitute</a>')
-async def get_news(
+def get_news(
         session: SessionDependency,
         lang: Locale = Locale.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
@@ -210,7 +210,7 @@ def get_sections_tree(data, lang):
                         'target="_blank">unibe.ch/fakultaeteninstitute</a> as well as '
                         '<a href="https://agenda.unibe.ch" target="_blank">agenda.unibe.ch</a> and '
                         '<a href="https://agenda.ub.unibe.ch" target="_blank">agenda.ub.unibe.ch</a>')
-async def get_events(
+def get_events(
         session: SessionDependency,
         lang: Locale = Locale.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
@@ -289,7 +289,7 @@ async def get_events(
 
 
 @router.get("/sections", summary='Sections to filter News and Events')
-async def get_sections(
+def get_sections(
         session: SessionDependency,
         lang: Locale = Locale.de,
         tree: bool = False,
@@ -382,7 +382,7 @@ async def get_sections(
 @router.get("/statusmessages", summary='IT Status messages', response_model=schema.StatusMessageResponse,
             description='IT Status messages from '
                         '<a href="https://id.unibe.ch/statusmeldungen" target="_blank">id.unibe.ch/statusmeldungen</a>')
-async def get_statusmessages(
+def get_statusmessages(
         session: SessionDependency,
         start_after: datetime | None = Query(None, description='Filter by start after (UTC)'),
         end_before: datetime | None = Query(None, description='Filter by end before (UTC)'),
