@@ -91,42 +91,42 @@ def _retrieve_service_links(session, lang, uuid):
 
 
 @router.get("/contact", summary='Contact', response_model=list[schema.ServiceLink])
-async def get_app_contact(
+def get_app_contact(
         session: SessionDependency,
         lang: Locale = Locale.de):
     return _retrieve_service_links(session, lang, UUID('urn:uuid:58115e60-e80b-44c1-9a7d-bc65a42c9d5a'))
 
 
 @router.get("/imprint", summary='Imprint', response_model=list[schema.ServiceLink])
-async def get_app_imprint(
+def get_app_imprint(
         session: SessionDependency,
         lang: Locale = Locale.de):
     return _retrieve_service_links(session, lang, UUID('urn:uuid:d15e37f5-b317-4b47-baf1-c203a34bd0ad'))
 
 
 @router.get("/indexaz", summary='Index A-Z', response_model=list[schema.ServiceLink])
-async def get_app_indexaz(
+def get_app_indexaz(
         session: SessionDependency,
         lang: Locale = Locale.de):
     return _retrieve_service_links(session, lang, UUID('urn:uuid:27bfdd98-c79b-4dd4-b69a-dd1bde958d0b'))
 
 
 @router.get("/locations", summary='Locations', response_model=list[schema.ServiceLink])
-async def get_app_locations(
+def get_app_locations(
         session: SessionDependency,
         lang: Locale = Locale.de):
     return _retrieve_service_links(session, Locale.de, UUID('urn:uuid:1c0a8927-bfb4-4215-a8fd-c41bba079d21'))
 
 
 @router.get("/privacypolicy", summary='Privacy Policy', response_model=list[schema.ServiceLink])
-async def get_app_privacypolicy(
+def get_app_privacypolicy(
         session: SessionDependency,
         lang: Locale = Locale.de):
     return _retrieve_service_links(session, lang, UUID('urn:uuid:a7f29281-43e0-4607-871b-39e66204bb31'))
 
 
 @router.get("/termsofservice", summary='Terms of Service', response_model=list[schema.ServiceLink])
-async def get_app_termsofservice(
+def get_app_termsofservice(
         session: SessionDependency,
         lang: Locale = Locale.de):
     return _retrieve_service_links(session, lang, UUID('urn:uuid:4b570198-0485-4f75-8242-9e5a7528351a'))

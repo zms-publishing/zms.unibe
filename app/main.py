@@ -1,9 +1,10 @@
 import pkgutil
 import os
+import traceback
 
 from fastapi import FastAPI
 from sqlmodel import SQLModel
-from redis import Redis
+from redis import Redis, ConnectionPool
 from rq import Queue
 from rq_dashboard_fast import RedisQueueDashboard
 from contextlib import asynccontextmanager
@@ -48,38 +49,55 @@ def import_sqlmodels_recursively():
 # - The ignore_trailing_slashes and to not redirect_slashes must be set for all mounted sub-applications as well.
 # - Keep in mind that lifespan events (startup and shutdown) will only be executed for the main application,
 #   not for mounted sub-applications.
+# - The state of the main application must be passed to the mounted sub-applications to access shared resources
+#   like database, cache, and queue connections on dependency injection.
+#   -> see src/zms/unibe/fastapi/main.py: v1.main_state = api.state | v3.main_state = api.state
 
-REDIS_HOST = os.getenv("REDIS_HOST", "redis")
-REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
-REDIS_CONN = None
-RQ_NAME = os.getenv("RQ_NAME", "default")
-RQ_JOBS = None
-SQLDB_ENGINE = None
+REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379")
+QUEUE_NAME = os.getenv("QUEUE_NAME", "default")
+QUEUE_POOL = ConnectionPool.from_url(REDIS_URL,
+                                     db=0,
+                                     max_connections=20,
+                                     socket_connect_timeout=2.0,  # time to establish the initial connection
+                                     socket_timeout=5.0,  # time to wait for individual command responses
+                                     decode_responses=False)  # RQ uses bytes for job data
+CACHE_POOL = ConnectionPool.from_url(REDIS_URL,
+                                     db=1,
+                                     max_connections=20,
+                                     socket_connect_timeout=2.0,  # time to establish the initial connection
+                                     socket_timeout=5.0,  # time to wait for individual command responses
+                                     decode_responses=True)  # converts bytes to str for cache data
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    
-    global REDIS_HOST, REDIS_PORT, REDIS_CONN
-    global RQ_NAME, RQ_JOBS
-    global SQLDB_ENGINE
     try:
         import_submodules_recursively(endpoints)
         import_sqlmodels_recursively()
-        SQLDB_ENGINE = connect_sqldb(verbose=True)
-        SQLModel.metadata.create_all(SQLDB_ENGINE)
+        app.state.sqldb_engine = connect_sqldb(verbose=True)
+        SQLModel.metadata.create_all(app.state.sqldb_engine)
+        app.state.redis_cache_conn = Redis(connection_pool=CACHE_POOL)
         if pybool(os.getenv("API_RQ")):
-            REDIS_CONN = Redis(host=REDIS_HOST, port=REDIS_PORT)
-            RQ_JOBS = Queue(RQ_NAME, connection=REDIS_CONN)
-            print(f"    connected: RQ queue '{RQ_NAME}' at redis://{REDIS_HOST}:{REDIS_PORT}")
+            app.state.redis_queue_conn = Redis(connection_pool=QUEUE_POOL)
+            app.state.redis_queue_jobs = Queue(QUEUE_NAME,
+                                               connection=app.state.redis_queue_conn)
+            print(f"    connected: RQ queue '{QUEUE_NAME}' at {REDIS_URL}")
         yield
     except Exception as e:
         print("ERROR:", e)
-        yield
+        traceback.print_exc()
+        os._exit(1)  # Bypasses the further exception handling that would occur with sys.exit().
+                     # Prevents any cleanup – which is fine in this case, however, since the
+                     # error occurred at startup (before yield) – so the app is not yet running
+                     # and no resources have been allocated that would need to be cleaned up.
     finally:
-        if REDIS_CONN:
-            REDIS_CONN.close()
-        if SQLDB_ENGINE:
-            SQLDB_ENGINE.dispose()
+        if getattr(app.state, "sqldb_engine", None):
+            app.state.sqldb_engine.dispose()
+        if getattr(app.state, "redis_cache_conn", None):
+            app.state.redis_cache_conn.close()
+        if getattr(app.state, "redis_queue_conn", None):
+            app.state.redis_queue_conn.close()
+        CACHE_POOL.disconnect()
+        QUEUE_POOL.disconnect()
 
 api = FastAPI(
     openapi_url=None,
@@ -91,6 +109,5 @@ api = FastAPI(
 )
 
 if pybool(os.getenv("API_RQ")):
-    dashboard = RedisQueueDashboard(f"redis://{REDIS_HOST}:{REDIS_PORT}", 
-                                    "/rq-dashboard")
+    dashboard = RedisQueueDashboard(REDIS_URL, "/rq-dashboard")
     api.mount("/rq-dashboard", dashboard)

@@ -19,7 +19,7 @@ router = APIRouter(tags=[Tags.mobile])
 @router.get("/uniaktuell", summary='Magazine articles', response_model=schema.UniaktuellArticleResponse,
             description='Magazine articles from <a href="https://www.uniaktuell.unibe.ch" '
                         'target="_blank">uniaktuell.unibe.ch</a>')
-async def get_uniaktuell(
+def get_uniaktuell(
         session: SessionDependency,
         context: ContextDependency,
         lang: Locale = Locale.de,
