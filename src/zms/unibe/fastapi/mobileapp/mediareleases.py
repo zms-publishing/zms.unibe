@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Query
-from sqlmodel import Session, not_, select
+from fastapi_cache.decorator import cache
+from sqlmodel import not_, select
 
 from zms.unibe.announcements.schemas import MediaReleasesSchema as schema
 from zms.unibe.announcements.sqlmodels import MediaNews as model
@@ -19,6 +20,7 @@ router = APIRouter(tags=[Tags.mobile])
             description='Media releases from '
                         '<a href="https://www.unibe.ch/news/media_news/media_relations_e/media_releases" '
                         'target="_blank">unibe.ch/medien</a>')
+@cache(expire=600)
 def get_mediareleases(
         session: SessionDependency,
         lang: Locale = Locale.de,

@@ -3,6 +3,7 @@ from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Query
+from fastapi_cache.decorator import cache
 from sqlmodel import select
 
 from zms.unibe.fastapi.meta import Tags
@@ -19,6 +20,7 @@ router = APIRouter(prefix="/zms/scheduler", tags=[Tags.scheduler])
     path="/tasks",
     summary="Get tasks that will be processed by scheduler",
 )
+@cache(expire=60)
 def get_scheduler_tasks(
         session: SessionDependency,
 ):

@@ -20,7 +20,7 @@ from . import queue, cache
 v1 = FastAPI(
     title="zms.unibe.fastapi",
     summary="Python-based REST API to connect unibe.ch and unibe.app with ZMS",
-    version="1.0.2",
+    version="1.0.3",
     openapi_tags=tags,
     redoc_url="/redoc",
     proxy_headers=True,
@@ -33,13 +33,13 @@ v1 = FastAPI(
     ]
 )
 if pybool(os.getenv("API_V1")):
-    v1.main_state = api.state   # to access parent api.state state in mounted subapp v1
+    v1.main_state = api.state  # to access parent api.state in mounted subapp v1
     api.mount("/v1", v1)
 
 v3 = FastAPI(
     title="zms.unibe.fastapi",
     summary="Python-based REST API to connect unibe.ch and unibe.app with ZMS",
-    version="3.4.0",
+    version="3.4.1",
     openapi_tags=tags,
     redoc_url="/redoc",
     proxy_headers=True,
@@ -52,7 +52,7 @@ v3 = FastAPI(
     ]
 )
 if pybool(os.getenv("API_V3")):
-    v3.main_state = api.state  # to access parent api.state state in mounted subapp v3
+    v3.main_state = api.state  # to access parent api.state in mounted subapp v3
     api.mount("/v3", v3)
 
 
@@ -74,9 +74,9 @@ v3.include_router(uniaktuell.router)
 v3.include_router(mediareleases.router)
 v3.include_router(servicelinks.router)
 
-v1.include_router(cache.router)
-v3.include_router(cache.router)
-
 if pybool(os.getenv("API_RQ")):
     v1.include_router(queue.router)
     v3.include_router(queue.router)
+
+v1.include_router(cache.router)
+v3.include_router(cache.router)
