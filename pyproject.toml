@@ -93,6 +93,13 @@ fastapi = [
     "redis",                            # https://github.com/redis/redis-py
     "rq",                               # https://github.com/rq/rq
     "rq-dashboard-fast",                # https://github.com/Hannes221/rq-dashboard-fast
+    "fastapi-cache2",                   # https://github.com/long2ice/fastapi-cache 
+                                        # PLEASE NOTE: fastapi-cache2 is the package name on PyPI (due conflict with outdated fastapi-cache),
+                                        # but the repo name on GitHub is long2ice/fastapi-cache and the import name in code is fastapi_cache.
+                                        # ATTENTION: There is another fastapi-cache3 package on PyPI, which is a fork by melihi/fastapi-cache.
+]
+alembic = [
+    "alembic",                          # https://github.com/sqlalchemy/alembic
 ]
 msgraphapi = [
     "msgraph-sdk",                      # https://github.com/microsoftgraph/msgraph-sdk-python
