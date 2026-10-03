@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Query
+from fastapi_cache.decorator import cache
 from sqlmodel import not_, select
 
 from zms.unibe.fastapi.meta import Tags
@@ -19,6 +20,7 @@ router = APIRouter(tags=[Tags.mobile])
 @router.get("/uniaktuell", summary='Magazine articles', response_model=schema.UniaktuellArticleResponse,
             description='Magazine articles from <a href="https://www.uniaktuell.unibe.ch" '
                         'target="_blank">uniaktuell.unibe.ch</a>')
+@cache(expire=600)
 def get_uniaktuell(
         session: SessionDependency,
         context: ContextDependency,

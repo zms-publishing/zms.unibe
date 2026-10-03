@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from fastapi_cache.decorator import cache
 
 from zms.unibe.fastapi.meta import Tags
 from zms.unibe.utils.enums import VirtualHosting, PipCmd
@@ -16,6 +17,7 @@ router = APIRouter(prefix="/zms", tags=[Tags.system])
     path="/python/packages",
     summary="Get installed Python packages",
 )
+@cache(expire=60)
 def get_installed_python_packages(
     mode: PipCmd = PipCmd.list,
 ):
@@ -47,6 +49,7 @@ def get_installed_python_packages(
     path="/database/mounts",
     summary="Get mounted Zope Object Databases (ZODB)",
 )
+@cache(expire=60)
 def get_zope_object_databases(
         context: ContextDependency,
 ):
@@ -75,6 +78,7 @@ def get_zope_object_databases(
     path="/domain/mappings",
     summary="Get virtual host Domain/Path mappings",
 )
+@cache(expire=60)
 def get_virtual_hosting_mappings(
         context: ContextDependency,
         filter_by: VirtualHosting | None = None,

@@ -82,12 +82,8 @@ services:
       # [BUG] develop.watch initial_sync: true does not fire at container start
       # https://github.com/docker/compose/issues/13725
       watch:
-        - path: ./src/zms/unibe/fastapi
-          target: /app/zope/src/zms-unibe/src/zms/unibe/fastapi
-          action: sync+restart
-          initial_sync: true
-        - path: ./src/zms/unibe/utils
-          target: /app/zope/src/zms-unibe/src/zms/unibe/utils
+        - path: ./src
+          target: /app/zope/src/zms-unibe/src
           action: sync+restart
           initial_sync: true
         - path: ./app

@@ -7,6 +7,8 @@ from sqlmodel import SQLModel
 from redis import Redis, ConnectionPool
 from rq import Queue
 from rq_dashboard_fast import RedisQueueDashboard
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
 from contextlib import asynccontextmanager
 from pathlib import Path
 from importlib import import_module
@@ -54,19 +56,13 @@ def import_sqlmodels_recursively():
 #   -> see src/zms/unibe/fastapi/main.py: v1.main_state = api.state | v3.main_state = api.state
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379")
+REDIS_POOL = ConnectionPool.from_url(REDIS_URL,
+                                     db=0,  # only a single database (database 0) is supported by Azure Managed Redis
+                                     max_connections=20,
+                                     socket_connect_timeout=2.0,  # time to establish the initial connection
+                                     socket_timeout=5.0,  # time to wait for individual command responses
+                                     decode_responses=False)  # do not convert bytes to str for RQ and fastapi-cache
 QUEUE_NAME = os.getenv("QUEUE_NAME", "default")
-QUEUE_POOL = ConnectionPool.from_url(REDIS_URL,
-                                     db=0,
-                                     max_connections=20,
-                                     socket_connect_timeout=2.0,  # time to establish the initial connection
-                                     socket_timeout=5.0,  # time to wait for individual command responses
-                                     decode_responses=False)  # RQ uses bytes for job data
-CACHE_POOL = ConnectionPool.from_url(REDIS_URL,
-                                     db=1,
-                                     max_connections=20,
-                                     socket_connect_timeout=2.0,  # time to establish the initial connection
-                                     socket_timeout=5.0,  # time to wait for individual command responses
-                                     decode_responses=True)  # converts bytes to str for cache data
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -75,11 +71,11 @@ async def lifespan(app: FastAPI):
         import_sqlmodels_recursively()
         app.state.sqldb_engine = connect_sqldb(verbose=True)
         SQLModel.metadata.create_all(app.state.sqldb_engine)
-        app.state.redis_cache_conn = Redis(connection_pool=CACHE_POOL)
+        app.state.redis_connection = Redis(connection_pool=REDIS_POOL)
+        FastAPICache.init(RedisBackend(app.state.redis_connection), prefix="fastapi-cache")
         if pybool(os.getenv("API_RQ")):
-            app.state.redis_queue_conn = Redis(connection_pool=QUEUE_POOL)
-            app.state.redis_queue_jobs = Queue(QUEUE_NAME,
-                                               connection=app.state.redis_queue_conn)
+            app.state.redis_queue = Queue(QUEUE_NAME,
+                                          connection=app.state.redis_connection)
             print(f"    connected: RQ queue '{QUEUE_NAME}' at {REDIS_URL}")
         yield
     except Exception as e:
@@ -92,12 +88,9 @@ async def lifespan(app: FastAPI):
     finally:
         if getattr(app.state, "sqldb_engine", None):
             app.state.sqldb_engine.dispose()
-        if getattr(app.state, "redis_cache_conn", None):
-            app.state.redis_cache_conn.close()
-        if getattr(app.state, "redis_queue_conn", None):
-            app.state.redis_queue_conn.close()
-        CACHE_POOL.disconnect()
-        QUEUE_POOL.disconnect()
+        if getattr(app.state, "redis_connection", None):
+            app.state.redis_connection.close()
+        REDIS_POOL.disconnect()
 
 api = FastAPI(
     openapi_url=None,

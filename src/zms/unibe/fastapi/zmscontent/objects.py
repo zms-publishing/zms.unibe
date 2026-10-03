@@ -3,6 +3,7 @@ from uuid import UUID
 
 import xmltodict
 from fastapi import APIRouter, Query, Response, HTTPException
+from fastapi_cache.decorator import cache
 
 # TODO: this is an example to prove the concept with ZMSAgendaResponse
 from zms.unibe.agenda.schemas import ZMSAgendaSchema as schema
@@ -14,6 +15,7 @@ from zms.unibe.utils.zope.context import get_zmsindex
 from zms.unibe.utils.dependencies import ContextDependency
 
 router = APIRouter(prefix="/zms/content", tags=[Tags.content])
+
 
 def _get_entry_for_uuid(zmsindex, uuid: UUID):
     results = zmsindex({
@@ -39,6 +41,7 @@ def _get_entry_for_uuid(zmsindex, uuid: UUID):
     path="/objects",
     summary="Get content objects by model type and filtered by path",
 )
+@cache(expire=60)
 def get_content_objects(
         context: ContextDependency,
         locale: Locale = Locale.de,
@@ -85,6 +88,7 @@ def get_content_objects(
     path="/object/{uuid}",
     summary="Get attributes of the given content object uuid",
 )
+@cache(expire=60)
 def get_content_object_by_uuid(
         context: ContextDependency,
         uuid: UUID,
@@ -116,6 +120,7 @@ def get_content_object_by_uuid(
     summary="Get data stored for the given content object uuid",
     #response_model=schema.ZMSAgendaResponse  # TODO: handle appropriate response_model according to the processed content_object
 )
+@cache(expire=60)
 def get_content_object_data_by_uuid(
         context: ContextDependency,
         uuid: UUID,
@@ -178,6 +183,7 @@ def get_content_object_data_by_uuid(
     path="/object/{uuid}/log",
     summary="Get change log for the given content object uuid",
 )
+@cache(expire=60)
 def get_content_object_log_by_uuid(
         context: ContextDependency,
         uuid: UUID,

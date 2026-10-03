@@ -43,6 +43,7 @@ Events==0.5
 executing==2.2.1
 ExtensionClass==6.2
 fastapi==0.136.1
+fastapi-cache2==0.2.2
 fastapi-cli==0.0.24
 fastapi-cloud-cli==0.17.1
 fastar==0.11.0

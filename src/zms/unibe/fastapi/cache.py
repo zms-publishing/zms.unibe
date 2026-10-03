@@ -9,57 +9,77 @@ router = APIRouter(prefix="/cache", tags=[Tags.redis])
 
 
 @router.post(
-    path="/data/{key}",
-    summary="Set a key-value pair in Redis Cache (with optional TTL)",
+    path="/{prefix}/{key}",
+    summary="Set a key-value pair with a prefix in Redis Cache (with optional TTL in seconds)",
 )
-def set_cached_data(
+def set_cached_value(
         cache: CacheDependency,
+        prefix: str,
         key: str,
-        value: dict,
-        ttl: Optional[int] = 60,  # default TTL of 60 seconds if not provided
+        value: dict = {'data': 'demo'},
+        ttl: Optional[int] = None,
+        overwrite: Optional[bool] = False,
 ):
-    cache.set(key, json.dumps(value), ex=ttl)
+    prefix_key = f"{prefix}:{key}"
+    if not overwrite and cache.get(prefix_key):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Key '{prefix_key}' already exists. Set 'overwrite=True' to update.",
+        )
+    
+    cache.set(prefix_key, json.dumps(value), ex=ttl, nx=not overwrite)
+    expiry = f"for {ttl} seconds" if ttl else "indefinitely"
 
     return {
         "status": "success",
-        "message": f"Data for '{key}' successfully cached for {ttl} seconds.",
+        "message": f"Value for '{prefix_key}' successfully cached {expiry}.",
     }
 
 
 @router.get(
-    path="/data/{key}",
-    summary="Get a key-value pair from Redis Cache",
+    path="/{prefix}/{key}",
+    summary="Get a key-value pair with a prefix from Redis Cache",
 )
-def get_cached_data(
+def get_cached_value(
         cache: CacheDependency,
+        prefix: str,
         key: str,
 ):
-    cached_value = cache.get(key)
+    prefix_key = f"{prefix}:{key}"
+    cached_value = cache.get(prefix_key)
 
     if cached_value:
         return {
-            "source": "cache",
+            "prefix": prefix,
             "key": key,
             "value": json.loads(cached_value),
         }
 
-    raise HTTPException(status_code=404, detail=f"Key '{key}' not found in cache.")
+    raise HTTPException(
+        status_code=404,
+        detail=f"Key '{prefix_key}' not found in cache."
+    )
 
 
 @router.delete(
-    path="/data/{key}",
-    summary="Delete a key-value pair from Redis Cache",
+    path="/{prefix}/{key}",
+    summary="Delete a key-value pair with a prefix from Redis Cache",
 )
-def delete_cached_data(
+def delete_cached_value(
         cache: CacheDependency,
+        prefix: str,
         key: str,
 ):
-    deleted = cache.delete(key)
+    prefix_key = f"{prefix}:{key}"
+    deleted = cache.delete(prefix_key)
 
     if deleted:
         return {
             "status": "success",
-            "message": f"Key '{key}' deleted.",
+            "message": f"Key '{prefix_key}' deleted.",
         }
 
-    raise HTTPException(status_code=404, detail=f"Key '{key}' did not exist.")
+    raise HTTPException(
+        status_code=404,
+        detail=f"Key '{prefix_key}' does not exist."
+    )

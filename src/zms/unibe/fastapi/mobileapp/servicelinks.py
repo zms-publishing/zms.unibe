@@ -1,7 +1,8 @@
 from uuid import UUID
 
 from fastapi import APIRouter
-from sqlmodel import Session, select
+from fastapi_cache.decorator import cache
+from sqlmodel import select
 
 from zms.unibe.fastapi.meta import Tags
 from zms.unibe.mobileapp.schemas import ServiceLinksSchema as schema
@@ -91,6 +92,7 @@ def _retrieve_service_links(session, lang, uuid):
 
 
 @router.get("/contact", summary='Contact', response_model=list[schema.ServiceLink])
+@cache(expire=600)
 def get_app_contact(
         session: SessionDependency,
         lang: Locale = Locale.de):
@@ -98,6 +100,7 @@ def get_app_contact(
 
 
 @router.get("/imprint", summary='Imprint', response_model=list[schema.ServiceLink])
+@cache(expire=600)
 def get_app_imprint(
         session: SessionDependency,
         lang: Locale = Locale.de):
@@ -105,6 +108,7 @@ def get_app_imprint(
 
 
 @router.get("/indexaz", summary='Index A-Z', response_model=list[schema.ServiceLink])
+@cache(expire=600)
 def get_app_indexaz(
         session: SessionDependency,
         lang: Locale = Locale.de):
@@ -112,6 +116,7 @@ def get_app_indexaz(
 
 
 @router.get("/locations", summary='Locations', response_model=list[schema.ServiceLink])
+@cache(expire=600)
 def get_app_locations(
         session: SessionDependency,
         lang: Locale = Locale.de):
@@ -119,6 +124,7 @@ def get_app_locations(
 
 
 @router.get("/privacypolicy", summary='Privacy Policy', response_model=list[schema.ServiceLink])
+@cache(expire=600)
 def get_app_privacypolicy(
         session: SessionDependency,
         lang: Locale = Locale.de):
@@ -126,6 +132,7 @@ def get_app_privacypolicy(
 
 
 @router.get("/termsofservice", summary='Terms of Service', response_model=list[schema.ServiceLink])
+@cache(expire=600)
 def get_app_termsofservice(
         session: SessionDependency,
         lang: Locale = Locale.de):
