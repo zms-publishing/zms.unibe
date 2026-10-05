@@ -91,7 +91,7 @@ class OutlookConnector(ObjectManager):
                                     f"/users/{self.upn}/calendarView"
                                     f"?startDateTime={local_timezone(begin_date, tz='UTC').isoformat()[:-6]}"
                                     f"&endDateTime={local_timezone(end_date, tz='UTC', days_delta=1).isoformat()[:-6]}"
-                                    f"&$top=100",
+                                    f"&$top=1000",
                                 headers=self.headers)
         response_json = response.json()
 
