@@ -39,11 +39,11 @@ This solution architecture, based on modern [Python](https://www.python.org) fra
 ### The package requires [Python 3.11+](https://www.python.org/downloads/) and depends on
 
 - **Application Server**: `Zope`, `Products.PluggableAuthService`, `Products.mcdutils`
-- **Database**: `SQLAlchemy`, `SQLModel`, `psycopg2`
+- **Database**: `SQLAlchemy`, `SQLModel`, `psycopg2`, migration with `[alembic]` extra
 - **Web/API**: `FastAPI`, `starlette`, `pydantic`, `requests`, `uvicorn` with `[fastapi]` extra
 - **Utilities**: `typer`, `rich`, `python-dotenv`, `devtools`, debugger with `[pydevd-pycharm]` extra
 - **Office Integration**: `XlsxWriter`, `azure-identity`, `msgraph-sdk` with `[msgraphapi]` extra
-- **Data Processing**: `pandas`, `beautifulsoup4`, `lxml`, `MarkItDown`
+- **Data Processing**: `pandas`, `beautifulsoup4`, `lxml`, `MarkItDown`, `rq` with `rq-dashboard-fast`
 
 See [`pyproject.toml`](https://github.com/zms-publishing/zms.unibe/blob/main/pyproject.toml) for the complete list and references of dependencies and [`constraints.txt`](https://github.com/zms-publishing/zms.unibe/blob/main/constraints.txt) for their pinned versions.
 
@@ -75,11 +75,17 @@ zms.unibe
 ├── constraints.txt
 ├── Dockerfile.fastapi
 ├── Dockerfile.zms
+├── alembic.ini
 ├── compose.yaml
 ├── compose.dev.yaml
 ├── compose.empty.yaml
 ├── versions.env
+├── alembic
+│   ├── versions
+│   ├── env.py
+│   └── README.md
 ├── app
+│   └── main.py [FastAPI main app]
 ├── cron
 │   ├── [scheduled jobs]
 │   └── ...
@@ -99,17 +105,21 @@ zms.unibe
             ├── ...
             ├── fastapi
             │   ├── mobileapp
-            │   └── zmscontent
+            │   ├── zmscontent
+            │   └── main.py [FastAPI sub apps]
             ├── ...
             ├── patches
             │   ├── monkey
-            │   └── security
+            │   ├── security
+            │   └── configure.zcml
             └── utils
                 ├── zms2sql
                 ├── zope
                 ├── db.py
+                ├── dependencies.py
                 ├── enums.py
-                └── helpers.py
+                ├── helpers.py
+                └── subscribers.py
 ```
 
 ## License
