@@ -1,4 +1,6 @@
 from enum import Enum
+from Products.zms.standard import pybool
+import os
 
 
 # https://fastapi.tiangolo.com/tutorial/path-operation-configuration/#tags-with-enums
@@ -36,5 +38,6 @@ tags = [
     },
     {
         "name": "redis",
+        "description": f"{"<a href='/rq-dashboard/jobs' target='_blank'>RQ-Dashboard</a>" if pybool(os.getenv("API_RQ")) else ""}",
     },
 ]

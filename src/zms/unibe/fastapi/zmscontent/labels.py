@@ -1,6 +1,7 @@
 import os
 import xmltodict
 from fastapi import APIRouter, Query, Response
+from fastapi_cache.decorator import cache
 
 from Products.zms._multilangmanager import exportXml
 from zms.unibe.fastapi.meta import Tags
@@ -15,6 +16,7 @@ router = APIRouter(prefix="/zms/content", tags=[Tags.content])
     summary="Get label translations from language dictionary filtered by content model or prefix",
     # response_model=schema.ZMSAgendaResponse,
 )
+@cache(expire=60)
 def get_content_labels(
         context: ContextDependency,
         locale: Locale = Locale.de,

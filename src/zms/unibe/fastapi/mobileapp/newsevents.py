@@ -5,7 +5,8 @@ from anytree import Node, RenderTree
 from anytree.exporter import DictExporter, JsonExporter
 from devtools import debug
 from fastapi import APIRouter, Query
-from sqlmodel import Session, not_, or_, select
+from fastapi_cache.decorator import cache
+from sqlmodel import not_, or_, select
 
 from zms.unibe.agenda.sqlmodels.StatusMessages import StatusMessage
 from zms.unibe.fastapi.meta import Tags
@@ -23,6 +24,7 @@ router = APIRouter(tags=[Tags.mobile])
             description='News from portal at <a href="https://www.unibe.ch" target="_blank">unibe.ch</a> '
                         'and faculties at <a href="https://www.unibe.ch/fakultaeteninstitute" '
                         'target="_blank">unibe.ch/fakultaeteninstitute</a>')
+@cache(expire=600)
 def get_news(
         session: SessionDependency,
         lang: Locale = Locale.de,
@@ -210,6 +212,7 @@ def get_sections_tree(data, lang):
                         'target="_blank">unibe.ch/fakultaeteninstitute</a> as well as '
                         '<a href="https://agenda.unibe.ch" target="_blank">agenda.unibe.ch</a> and '
                         '<a href="https://agenda.ub.unibe.ch" target="_blank">agenda.ub.unibe.ch</a>')
+@cache(expire=600)
 def get_events(
         session: SessionDependency,
         lang: Locale = Locale.de,
@@ -289,6 +292,7 @@ def get_events(
 
 
 @router.get("/sections", summary='Sections to filter News and Events')
+@cache(expire=600)
 def get_sections(
         session: SessionDependency,
         lang: Locale = Locale.de,
@@ -382,6 +386,7 @@ def get_sections(
 @router.get("/statusmessages", summary='IT Status messages', response_model=schema.StatusMessageResponse,
             description='IT Status messages from '
                         '<a href="https://id.unibe.ch/statusmeldungen" target="_blank">id.unibe.ch/statusmeldungen</a>')
+@cache(expire=600)
 def get_statusmessages(
         session: SessionDependency,
         start_after: datetime | None = Query(None, description='Filter by start after (UTC)'),

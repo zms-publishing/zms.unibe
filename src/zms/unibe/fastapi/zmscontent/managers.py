@@ -1,6 +1,7 @@
 import os
 
 from fastapi import APIRouter, Query, HTTPException
+from fastapi_cache.decorator import cache
 
 from zms.unibe.utils.zope.context import get_zmsindex
 from zms.unibe.utils.dependencies import ContextDependency
@@ -14,6 +15,7 @@ router = APIRouter(prefix="/zms/content", tags=[Tags.content])
     path="/models",
     summary="Get installed content models filtered by content model or substring in name or package",
 )
+@cache(expire=60)
 def get_installed_content_models(
         context: ContextDependency,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
@@ -50,6 +52,7 @@ def get_installed_content_models(
     path="/actions",
     summary="Get installed content actions filtered by content model or substring in name or package",
 )
+@cache(expire=60)
 def get_installed_content_actions(
         context: ContextDependency,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
