@@ -117,6 +117,10 @@ $ echo 'frontend/zms/models' >> .git/info/sparse-checkout
 $ git pull origin main
 ```
 
+### SQL Database schema migrations
+
+- see [`alembic/README.md`](https://github.com/zms-publishing/zms.unibe/blob/main/alembic/README.md)
+
 ## Services
 
 - **`unibe-cms-dev`**

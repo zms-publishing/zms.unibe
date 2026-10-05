@@ -26,8 +26,8 @@ def set_cached_value(
             status_code=400,
             detail=f"Key '{prefix_key}' already exists. Set 'overwrite=True' to update.",
         )
-    
-    cache.set(prefix_key, json.dumps(value), ex=ttl, nx=not overwrite)
+
+    cache.set(prefix_key, json.dumps(value), ex=None if ttl==0 else ttl, nx=not overwrite)
     expiry = f"for {ttl} seconds" if ttl else "indefinitely"
 
     return {

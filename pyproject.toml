@@ -98,6 +98,9 @@ fastapi = [
                                         # but the repo name on GitHub is long2ice/fastapi-cache and the import name in code is fastapi_cache.
                                         # ATTENTION: There is another fastapi-cache3 package on PyPI, which is a fork by melihi/fastapi-cache.
 ]
+alembic = [
+    "alembic",                          # https://github.com/sqlalchemy/alembic
+]
 msgraphapi = [
     "msgraph-sdk",                      # https://github.com/microsoftgraph/msgraph-sdk-python
     "azure-identity",                   # https://pypi.org/project/azure-identity/
