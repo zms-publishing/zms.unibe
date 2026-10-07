@@ -1,5 +1,4 @@
 import pathlib
-import os
 import Zope2
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.users import system as user
@@ -27,8 +26,6 @@ def create_zope_app_context():
     """
     global _zope_initialized
     if not _zope_initialized:
-        if not zope_conf_path.is_file():
-            setup_conf()
         make_wsgi_app({}, zope_conf_path.as_posix())
         _zope_initialized = True
     # Create new DB connection: app = connection.root()['Application'] (OFS.Application.Application)
@@ -59,13 +56,4 @@ def get_zmsindex(portal_master, context):
         raise HTTPException(status_code=404,
                             detail=f"Portal master '{portal_master}' not found.")
     return zmsindex
-
-def setup_conf():
-    print('Setup zope.conf')
-    zope_conf_template_path = pathlib.Path(__file__).parent.joinpath('zope.conf.template').resolve()
-    with open(zope_conf_template_path) as f:
-        config = f.read()
-    config = config.replace('{{ ZEO_URL }}', os.environ.get('ZEO_URL', '127.0.0.1:8000'))
-    with open(zope_conf_path, 'w') as f:
-        f.write(config)
     

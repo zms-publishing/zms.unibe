@@ -24,11 +24,9 @@ RUN set -- \
       set -- "$@" -e "zms.unibe[$UPDATE_EXTRAS] @ git+https://github.com/zms-publishing/zms.unibe.git@$ZMS_UNIBE_BRANCH_OR_COMMIT"; \
     fi; \
     set -- "$@" -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt"; \
-    $VENV_HOME/bin/pip install --upgrade "$@"
+    $VENV_HOME/bin/pip install --upgrade --upgrade-strategy eager "$@"
 
-COPY --chown=$USERNAME:$GROUPNAME ./conf/site.zcml $VENV_HOME/etc/site.zcml
-COPY --chown=$USERNAME:$GROUPNAME ./conf/zope.conf $VENV_HOME/etc/zope.conf
-COPY --chown=$USERNAME:$GROUPNAME ./conf/zope.ini $VENV_HOME/etc/zope.ini
+COPY --chown=$USERNAME:$GROUPNAME ./conf/* $VENV_HOME/etc/
 
 # include assets from multi-stage build and align path hierarchy
 # -> prerequisite: set build.target to unibe-cms (instead of cms-backend)
