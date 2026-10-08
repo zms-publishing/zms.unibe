@@ -50,6 +50,8 @@ These directories are synchronized into the containers - see `develop.watch` in 
   - Changes in `src/` to `/app/zope/src/zms-unibe/src`
 - Config Sync for Zope application server:
   - Changes in `conf/` to `/app/zope/etc`
+- Lifecycle Manager for the FastAPI main app:
+  - Changes in `app/` to `/app/zope/src/zms-unibe/app`
 - Editable Dependencies for Zope/ZMS:
   - Changes in `dev/zope` and/or `dev/products-zms` if checked out and set `COMPOSE_INCLUDE=dev` in `versions.env`
 
@@ -71,7 +73,7 @@ $ export $(xargs < versions.env) && ./.venv/bin/pip install --upgrade pip wheel 
 $ export $(xargs < versions.env) && ./.venv/bin/pip install --upgrade --upgrade-strategy eager \
     --src ./dev -e "Zope @ git+https://github.com/zopefoundation/Zope.git@$ZOPE_VERSION" \
     --src ./dev -e "ZMS @ git+https://github.com/zms-publishing/ZMS.git@$ZMS_CORE_BRANCH_OR_COMMIT" \
-    -e ../"zms.unibe[fastapi,msgraphapi,pydevd-pycharm]" \
+    -e ../"zms.unibe[fastapi,msgraphapi,pydevd-pycharm,alembic]" \
     -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt"
 ```
 
@@ -151,10 +153,12 @@ $ git pull origin main
     - [Entrypoint](https://www.docker.com/blog/docker-best-practices-choosing-between-run-cmd-and-entrypoint/): Runs `fastapi dev` on port 8000.
 
 ## Configuration
-
-- **`site.zcml`**: Zope Component registration and package includes
-- **`zope.conf`**: Zope Database connections, settings, policies, etc.
-- **`zope.ini`**: Zope Configuration for wsgi, waitress, waitress.queue, etc.
+- **`configure.zcml`**: Zope Component Architecture registrations and dependencies
+- **`site.zcml`**: Zope Component Architecture initialization as main entry point
+- **`zodb-relstorage.conf`**: Zope Object Database connection settings for RelStorage
+- **`zodb-zeo.conf`**: Zope Object Database connection settings for ZEO
+- **`zope.conf`**: Zope Server Settings with directives, policies, etc.
+- **`zope.ini`**: Zope Server Configs for wsgi, waitress, waitress.queue, etc.
 
 ## License
 

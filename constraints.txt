@@ -29,7 +29,7 @@ charset-normalizer==3.4.7
 click==8.3.3
 cobble==0.1.4
 configparser==7.2.0
-croniter==6.2.4 
+croniter==6.2.4
 cryptography==47.0.0
 DateTime==6.0
 defusedxml==0.7.1
@@ -153,6 +153,7 @@ pytz==2026.1.post1
 PyYAML==6.0.3
 Record==4.2
 redis==8.1.0
+relstorage==4.3.0
 requests==2.33.1
 requests-oauthlib==2.0.0
 RestrictedPython==8.1

@@ -39,7 +39,7 @@ This solution architecture, based on modern [Python](https://www.python.org) fra
 ### The package requires [Python 3.11+](https://www.python.org/downloads/) and depends on
 
 - **Application Server**: `Zope`, `Products.PluggableAuthService`, `Products.mcdutils`
-- **Database**: `SQLAlchemy`, `SQLModel`, `psycopg2`, migration with `[alembic]` extra
+- **Database**: `SQLAlchemy`, `SQLModel`, `relstorage`, `psycopg2`, migration with `[alembic]` extra
 - **Web/API**: `FastAPI`, `starlette`, `pydantic`, `requests`, `uvicorn` with `[fastapi]` extra
 - **Utilities**: `typer`, `rich`, `python-dotenv`, `devtools`, debugger with `[pydevd-pycharm]` extra
 - **Office Integration**: `XlsxWriter`, `azure-identity`, `msgraph-sdk` with `[msgraphapi]` extra
@@ -90,7 +90,10 @@ zms.unibe
 │   ├── [scheduled jobs]
 │   └── ...
 ├── conf
-│   ├── [local config files]
+│   ├── zodb-relstorage.conf
+│   ├── zodb-zeo.conf
+│   ├── zope.conf
+│   ├── zope.ini
 │   └── ...
 ├── dev
 │   ├── [local checkouts in editable mode]
