@@ -20,4 +20,9 @@
       handler="zms.unibe.utils.subscribers.transform_html_to_markdown"
       />
 
+  <subscriber
+      for="ZPublisher.interfaces.IPubSuccess"
+      handler="zms.unibe.utils.subscribers.add_csp_headers"
+      />
+
 </configure>

@@ -7,30 +7,58 @@ from Products.zms.standard import pybool
 from ZPublisher.interfaces import IPubSuccess
 
 global MD_CONVERTER
-global IS_ENABLED
+global IS_MD_ENABLED
 
 def initialize():
 
-    global IS_ENABLED
-    IS_ENABLED = pybool(os.getenv('ZMS_ENABLE_MARKDOWN_RENDERING'))
+    global IS_MD_ENABLED
+    IS_MD_ENABLED = pybool(os.getenv('ZMS_ENABLE_MARKDOWN_RENDERING'))
 
-    if not IS_ENABLED:
-        return
-    
-    print('Handler: zms.unibe.utils.subscribers.transform_html_to_markdown'
+    if IS_MD_ENABLED:    
+        print('Handler: zms.unibe.utils.subscribers.transform_html_to_markdown'
+              ' registered for ZPublisher.interfaces.IPubSuccess')
+        
+        global MD_CONVERTER
+        MD_CONVERTER = MarkItDown()
+
+    print('Handler: zms.unibe.utils.subscribers.add_csp_headers'
           ' registered for ZPublisher.interfaces.IPubSuccess')
     
-    global MD_CONVERTER
-    MD_CONVERTER = MarkItDown()
-    
 initialize()
+
+
+def add_csp_headers(event):
+    """
+    Subscribes to IPubSuccess (guaranteed execution at request end).
+    """
+    request = event.request
+    response = request.response
+    parents = request.get('PARENTS', [])
+    path = request.get('PATH_INFO', '').lower()
+    
+    # add CSP headers only for index_*.html pages
+    # e.g. index_ger.html, index_eng.html, index_fra.html
+    if not path.endswith('.html') or 'index_' not in path:
+        return
+
+    csp_header = "frame-ancestors 'self' https://unibe.ch https://*.unibe.ch; report-uri /csp-report; report-to csp;"
+
+    try:
+        csp_header = parents[0].content.getConfProperty('csp_header', csp_header)
+    except Exception:
+        pass
+
+    if csp_header:
+        response.setHeader('Reporting-Endpoints', 'csp="/csp-report"')
+        response.setHeader('Content-Security-Policy', csp_header)
+
 
 
 def transform_html_to_markdown(event):
     """
     Subscribes to IPubSuccess (guaranteed execution at request end).
     """
-    if not IS_ENABLED:
+    if not IS_MD_ENABLED:
         return
 
     request = event.request
