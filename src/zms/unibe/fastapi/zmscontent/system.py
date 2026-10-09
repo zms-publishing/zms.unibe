@@ -111,10 +111,10 @@ def get_virtual_hosting_mappings(
     
     return mappings
 
-@router.post(
-    path="/domain/mappings",
-    summary="Set virtual host Domain/Path mappings",
-)
+# @router.post(
+#     path="/domain/mappings",
+#     summary="Set virtual host Domain/Path mappings",
+# ) # TODO: restrict access to change the mappings
 def set_virtual_hosting_mappings(
         context: ContextDependency,
         mapping: str
