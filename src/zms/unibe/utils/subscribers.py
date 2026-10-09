@@ -35,6 +35,11 @@ def add_csp_headers(event):
     response = request.response
     parents = request.get('PARENTS', [])
     path = request.get('PATH_INFO', '').lower()
+    host = request.get('HTTP_HOST')
+    
+    # Skip on localhost
+    if host.startswith('127.0.0.1') or host.startswith('localhost'):
+        return
     
     # Add CSP headers only for index_*.html pages
     # e.g. index_ger.html, index_eng.html, index_fra.html
