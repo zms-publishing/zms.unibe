@@ -6,23 +6,28 @@ from markitdown import MarkItDown  #, StreamInfo
 from Products.zms.standard import pybool
 from ZPublisher.interfaces import IPubSuccess
 
+global CSP_ENABLED
+global MD_ENABLED
 global MD_CONVERTER
-global IS_MD_ENABLED
 
 def initialize():
 
-    global IS_MD_ENABLED
-    IS_MD_ENABLED = pybool(os.getenv('ZMS_ENABLE_MARKDOWN_RENDERING'))
+    global MD_ENABLED
+    MD_ENABLED = pybool(os.getenv('ZMS_ENABLE_MARKDOWN_RENDERING'))
 
-    if IS_MD_ENABLED:    
+    if MD_ENABLED:    
         print('Handler: zms.unibe.utils.subscribers.transform_html_to_markdown'
               ' registered for ZPublisher.interfaces.IPubSuccess')
         
         global MD_CONVERTER
         MD_CONVERTER = MarkItDown()
 
-    print('Handler: zms.unibe.utils.subscribers.add_csp_headers'
-          ' registered for ZPublisher.interfaces.IPubSuccess')
+    global CSP_ENABLED
+    CSP_ENABLED = pybool(os.getenv('ZMS_ENABLE_CSP_HEADERS'))
+
+    if CSP_ENABLED:
+        print('Handler: zms.unibe.utils.subscribers.add_csp_headers'
+              ' registered for ZPublisher.interfaces.IPubSuccess')
     
 initialize()
 
@@ -31,6 +36,9 @@ def add_csp_headers(event):
     """
     Subscribes to IPubSuccess (guaranteed execution at request end).
     """
+    if not CSP_ENABLED:
+        return
+    
     request = event.request
     response = request.response
     parents = request.get('PARENTS', [])
@@ -66,7 +74,7 @@ def transform_html_to_markdown(event):
     """
     Subscribes to IPubSuccess (guaranteed execution at request end).
     """
-    if not IS_MD_ENABLED:
+    if not MD_ENABLED:
         return
 
     request = event.request

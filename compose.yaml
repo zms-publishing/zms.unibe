@@ -54,6 +54,7 @@ services:
       - ZEO_URL=host.docker.internal:8000
       - AGENDA_CATEGORIES_URL=http://zms:8080/unibe/agenda-categories.json
       - ZMS_ENABLE_MARKDOWN_RENDERING=true
+      - ZMS_ENABLE_CSP_HEADERS=true
     ports:
       - "8088:8080"
     deploy:
