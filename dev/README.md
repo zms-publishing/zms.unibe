@@ -1,30 +1,175 @@
-# zms.unibe 2026+ / Development Environment
+# zms.unibe / Development Environment
 
-### Python-based extensions to integrate ZMS with unibe.ch and unibe.app
+### Integrate ZMS with unibe.ch and unibe.app
 
-This document describes the Docker-based development environment for the [ZMS](https://github.com/zms-publishing/ZMS) content management system, including the [zms.unibe](https://github.com/zms-publishing/zms.unibe) extension package.
+- <https://github.com/zms-publishing/zms.unibe>
+- <https://github.com/zms-publishing/zms.unibe/releases>
+
+This `zms.unibe` comprehensive library extends [ZMS](https://github.com/zms-publishing/ZMS) and the underlying [Zope](https://github.com/zopefoundation/Zope) functionality.
+
+It includes several modules specific for the [University of Bern (UniBE)](https://unibe.ch) in Switzerland – as well as a set of [helper functions](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md) that can be useful in `Page Templates` or `Python Scripts` in any ZMS/Zope-based CMS.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Usage](#usage)
+- [Environments](#environments)
+  - [Start the container environment](#start-the-container-environment)
+  - [Checkout and install on localhost](#checkout-and-install-on-localhost)
+  - [Setup and run on localhost](#setup-and-run-on-localhost)
+  - [Checkout and link the content models](#checkout-and-link-the-content-models)
+- [Services](#services)
+- [Images](#images)
+- [Configs](#configs)
+- [License](#license)
+
+## Overview
+
+This package includes modules for agenda management, announcements, contacts, data tables, forms and surveys, layouts, mobile app support, and more.
+
+It features a fully decoupled, [headless RESTful API](https://idasm-unibe-ch.github.io/unibe-web-mobile/CMSAPI/) for accessing the content objects stored in [ZODB](https://zodb.org), using the ~~web application (micro)framework Flask~~ [FastAPI](https://fastapi.tiangolo.com) framework, which is served by [Uvicorn](https://www.uvicorn.dev).
+
+In addition, it relies on ~~Flasgger to generate the documentation~~ [SQLModel](https://sqlmodel.tiangolo.com) for implementing an object-relational mapping.
+
+Furthermore, it can connect to [Microsoft Graph API](https://learn.microsoft.com/en-us/graph/api/overview) as the gateway to data and intelligence in Microsoft cloud services like [M365](https://learn.microsoft.com/en-us/graph/overview) or [Entra](https://learn.microsoft.com/en-us/graph/identity-network-access-overview) if the `[msgraphapi]` extra has been applied on installation.
+
+This solution architecture, based on modern [Python](https://www.python.org) frameworks, unlocks a more lightweight development mode alongside the historically grown Zope stack.
+
+<img src="https://raw.githubusercontent.com/zms-publishing/zms.unibe/assets/zms6.png" width="33%" /> <img src="https://raw.githubusercontent.com/zms-publishing/zms.unibe/assets/fastapi1.png" width="33%" /> <img src="https://raw.githubusercontent.com/zms-publishing/zms.unibe/assets/fastapi3.png" width="33%" />
+
+## Usage
 
 This project provides two specialized `Dockerfiles` to support both the legacy [Zope](https://github.com/zopefoundation/Zope) stack and the modern [FastAPI](https://fastapi.tiangolo.com) stack. The `conf/` directory contains essential configuration for the Zope application server.
 
 The [`compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml) file orchestrates a [multi-container environment](https://docs.docker.com/compose/intro/compose-application-model/) for local development. The services use [Docker Compose Watch](https://docs.docker.com/compose/how-tos/file-watch/) reflecting the changes to local code/configs in the containers instantly and restart the servers automatically.
 
-<img src="https://raw.githubusercontent.com/zms-publishing/zms.unibe/assets/pycharm2026.png" width="100%" />
+<details>
+<summary>Project Structure</summary>
 
-## Repository
+```
+zms.unibe
+├── LICENSE
+├── README.md
+├── pyproject.toml
+├── constraints.txt
+├── Dockerfile.fastapi
+├── Dockerfile.zms
+├── alembic.ini
+├── compose.yaml
+├── compose.dev.yaml
+├── compose.empty.yaml
+├── versions.env
+├── alembic
+│   ├── versions
+│   ├── env.py
+│   └── README.md
+├── app
+│   └── main.py [FastAPI main app]
+├── cron
+│   ├── [scheduled jobs]
+│   └── ...
+├── conf
+│   ├── zodb-relstorage.conf
+│   ├── zodb-zeo.conf
+│   ├── zope.conf
+│   ├── zope.ini
+│   └── ...
+├── dev
+│   ├── [local checkouts in editable mode]
+│   ├── README.md
+│   └── ...
+└── src
+    └── zms
+        └── unibe
+            ├── agenda
+            │   ├── schemas
+            │   └── sqlmodels
+            ├── ...
+            ├── fastapi
+            │   ├── mobileapp
+            │   ├── zmscontent
+            │   └── main.py [FastAPI sub apps]
+            ├── ...
+            ├── patches
+            │   ├── monkey
+            │   ├── security
+            │   └── configure.zcml
+            └── utils
+                ├── zms2sql
+                ├── zope
+                ├── db.py
+                ├── dependencies.py
+                ├── enums.py
+                ├── helpers.py
+                └── subscribers.py
+```
 
-- <https://github.com/zms-publishing/zms.unibe>
-- <https://github.com/zms-publishing/zms.unibe/releases>
+</details>
 
-## Features
+<details>
+<summary>Feature Overview</summary>
+<br />
 
-- see [`README.md`](https://github.com/zms-publishing/zms.unibe/blob/main/README.md)
+| <nobr>Integrate with other services</nobr>                                                                                                                 | <nobr>Extend existing funtionality</nobr> | <nobr>Handle content objects</nobr>                                                          |
+|:-----------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------|:---------------------------------------------------------------------------------------------|
+| [DataTables.net](https://datatables.net) samples                                                                                                           | Database utilities                        | [SQLModels](https://sqlmodel.tiangolo.com/) (ZMSBase, ZMSSite, ZMSFolder, ZMSDocument, etc.) |
+| [BORIS](https://boris.unibe.ch) connector                                                                                                                  | Helper functions and enums                | Graphic and File handling, Content panes and tabs                                            |
+| Outlook connector for [calendar integration via MS Graph API](https://learn.microsoft.com/en-us/graph/api/resources/calendar-overview?view=graph-rest-1.0) | Context management                        | Tables and Text areas, Code blocks                                                           |
+| Agenda bridge for flexible data aggregation                                                                                                                | Scheduler registry                        | Alert boxes, Info boxes, News boxes                                                          |
+| Event schemas and SQL models                                                                                                                               | `zms2sql` command-line tool               | Hero components, Teaser containers and elements                                              |
+| Library and news integration                                                                                                                               | `MemCached` error handling                | Media releases, Article management and Factsheet layouts                                     |
+| IT status messages                                                                                                                                         | <nobr>`ExternalMethod` auto-reload</nobr> | Contact boxes and sections, Persons and Team sections                                        |
+| Form management based on [JSON Editor](https://github.com/json-editor/json-editor) and [SurveyJS](https://surveyjs.io)                                     | Security assertions                       | Two-column layouts                                                                           |
 
-## Usage
+</details>
 
-### Start the `unibe-cms-dev` container environment
+<details>
+<summary>Dependencies</summary>
+<br />
+
+The package requires [Python 3.11+](https://www.python.org/downloads/) and depends on
+
+- **Application Server**: `Zope`, `Products.PluggableAuthService`, `Products.mcdutils`
+- **Database**: `SQLAlchemy`, `SQLModel`, `relstorage`, `psycopg2`, migration with `[alembic]` extra
+- **Web/API**: `FastAPI`, `starlette`, `pydantic`, `requests`, `uvicorn` with `[fastapi]` extra
+- **Utilities**: `typer`, `rich`, `python-dotenv`, `devtools`, debugger with `[pydevd-pycharm]` extra
+- **Office Integration**: `XlsxWriter`, `azure-identity`, `msgraph-sdk` with `[msgraphapi]` extra
+- **Data Processing**: `pandas`, `beautifulsoup4`, `lxml`, `MarkItDown`, `rq` with `rq-dashboard-fast`
+
+See [`pyproject.toml`](https://github.com/zms-publishing/zms.unibe/blob/main/pyproject.toml) for the complete list and references of dependencies and [`constraints.txt`](https://github.com/zms-publishing/zms.unibe/blob/main/constraints.txt) for their pinned versions.
+
+</details>
+
+<details>
+<summary>Utilities</summary>
+<br />
+
+The package provides the `zms2sql` command-line tool for object-relational mappings to mirror selected data from the [ZODB](https://zodb.org) to [PostgreSQL](https://www.postgresql.org), for example:
+
+```bash
+$ ./.venv/bin/zms2sql --help
+```
+
+To apply the [monkey patches](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/monkey) for customizing other installed packages as well as the [security assertions](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/security) for using the helper utilities in [RestrictedPython](https://github.com/zopefoundation/RestrictedPython) code (py, zpt, dtml), the following package include must be added to the `./.venv/etc/site.zcml` file:
+
+```xml
+<include zcml:condition="installed zms.unibe.patches" package="zms.unibe.patches" />
+```
+
+This allows editing via the web using [ZMI](https://zope.readthedocs.io/en/latest/zopebook/UsingZope.html) or synchronize code changes via the [ZMSRepositoryManager](https://github.com/zms-publishing/ZMS/tree/main/Products/zms/zpt/ZMSRepositoryManager/readme.md).
+
+To enable support for [Remote Debugging with PyCharm](https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html) you can include the `[pydevd-pycharm]` extra on installation.
+
+See [`alembic/README.md`](https://github.com/zms-publishing/zms.unibe/blob/main/alembic/README.md) for SQL Database schema migrations.
+
+</details>
+
+## Environments
+
+### Start the container environment
 
 > [!NOTE]
-> The revisions to be used as containers can be customized to your needs by setting the variables `BASE_IMAGE`, `ZOPE_VERSION`, `ZMS_CORE_BRANCH_OR_COMMIT`, `ZMS_UNIBE_BRANCH_OR_COMMIT`, and `SETUPTOOLS_VERSION` in the [`versions.env` file](https://github.com/zms-publishing/zms.unibe/blob/main/versions.env) and their dafaults in [`build.args` in `compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml#L18). The container installation procedures can be customized in [`Dockerfile.zms`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.zms) and [`Dockerfile.fastapi`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.fastapi).
+> The revisions to be used as containers can be customized to your needs by setting the variables `BASE_IMAGE`, `ZOPE_VERSION`, `ZMS_CORE_BRANCH_OR_COMMIT`, `ZMS_UNIBE_BRANCH_OR_COMMIT`, and `SETUPTOOLS_VERSION` in the [`versions.env`](https://github.com/zms-publishing/zms.unibe/blob/main/versions.env) file and their defaults in [`build.args` in `compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml#L18). The container installation procedures can be customized in [`Dockerfile.zms`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.zms) and [`Dockerfile.fastapi`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.fastapi).
 
 > [!IMPORTANT]
 > The base image `ghcr.io/idasm-unibe-ch/unibe-cms` is required to build on top of – permission is required to check it out. In addition, it is expected that the `zeo`, `memcached`, and `psql` containers from the `unibe-cms` stack are running to provide the data storages.
@@ -119,10 +264,6 @@ $ echo 'frontend/zms/models' >> .git/info/sparse-checkout
 $ git pull origin main
 ```
 
-### SQL Database schema migrations
-
-- see [`alembic/README.md`](https://github.com/zms-publishing/zms.unibe/blob/main/alembic/README.md)
-
 ## Services
 
 - **`unibe-cms-dev`**
@@ -152,7 +293,7 @@ $ git pull origin main
     - Extras: Installs `zms.unibe` with `fastapi` support.
     - [Entrypoint](https://www.docker.com/blog/docker-best-practices-choosing-between-run-cmd-and-entrypoint/): Runs `fastapi dev` on port 8000.
 
-## Configuration
+## Configs
 - **`configure.zcml`**: Zope Component Architecture registrations and dependencies
 - **`site.zcml`**: Zope Component Architecture initialization as main entry point
 - **`zodb-relstorage.conf`**: Zope Object Database connection settings for RelStorage

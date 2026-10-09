@@ -1,129 +1,38 @@
-# zms.unibe 2026+
+# zms.unibe / Add-on Package
 
-### Python-based extensions to integrate ZMS with unibe.ch and unibe.app
-
-This `zms.unibe` add-on package is a comprehensive library that extends [ZMS](https://github.com/zms-publishing/ZMS) and the underlying [Zope](https://github.com/zopefoundation/Zope) functionality with generally applicable features and utilities as well as integrations specific for [UniBE](https://unibe.ch). It includes modules for agenda management, announcements, contacts, data tables, forms and surveys, layouts, mobile app support, and more.
-
-It features a fully decoupled, [headless RESTful API](https://idasm-unibe-ch.github.io/unibe-web-mobile/CMSAPI/) for accessing the content objects stored in [ZODB](https://zodb.org), using the ~~web application (micro)framework Flask~~ [FastAPI](https://fastapi.tiangolo.com) framework, which is served by [Uvicorn](https://www.uvicorn.dev). In addition, it relies on ~~Flasgger to generate the documentation~~ [SQLModel](https://sqlmodel.tiangolo.com) for implementing an object-relational mapping.
-
-Furthermore, it can connect to [Microsoft Graph API](https://learn.microsoft.com/en-us/graph/api/overview) as the gateway to data and intelligence in Microsoft cloud services like [M365](https://learn.microsoft.com/en-us/graph/overview) or [Entra](https://learn.microsoft.com/en-us/graph/identity-network-access-overview) if the `[msgraphapi]` extra has been applied on installation.
-
-This solution architecture, based on modern [Python](https://www.python.org) frameworks, unlocks a more lightweight development mode alongside the historically grown Zope stack.
-
-<img src="https://raw.githubusercontent.com/zms-publishing/zms.unibe/assets/zms6.png" width="33%" /> <img src="https://raw.githubusercontent.com/zms-publishing/zms.unibe/assets/fastapi1.png" width="33%" /> <img src="https://raw.githubusercontent.com/zms-publishing/zms.unibe/assets/fastapi3.png" width="33%" />
-
-## Repository
+### Integrate ZMS with unibe.ch and unibe.app
 
 - <https://github.com/zms-publishing/zms.unibe>
 - <https://github.com/zms-publishing/zms.unibe/releases>
 
-## Development
+This `zms.unibe` comprehensive library extends [ZMS](https://github.com/zms-publishing/ZMS) and the underlying [Zope](https://github.com/zopefoundation/Zope) functionality.
 
-- see [`dev/README.md`](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md)
+It includes several modules specific for the [University of Bern (UniBE)](https://unibe.ch) in Switzerland – as well as a set of [helper functions](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md) that can be useful in `Page Templates` or `Python Scripts` in any ZMS/Zope-based CMS.
 
-## Features
+## Installation
 
-| <nobr>Integrate with other services</nobr>                                                                                                                 | <nobr>Extend existing funtionality</nobr> | <nobr>Handle content objects</nobr>                                                          |
-|:-----------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------|:---------------------------------------------------------------------------------------------|
-| [DataTables.net](https://datatables.net) samples                                                                                                           | Database utilities                        | [SQLModels](https://sqlmodel.tiangolo.com/) (ZMSBase, ZMSSite, ZMSFolder, ZMSDocument, etc.) |
-| [BORIS](https://boris.unibe.ch) connector                                                                                                                  | Helper functions and enums                | Graphic and File handling, Content panes and tabs                                            |
-| Outlook connector for [calendar integration via MS Graph API](https://learn.microsoft.com/en-us/graph/api/resources/calendar-overview?view=graph-rest-1.0) | Context management                        | Tables and Text areas, Code blocks                                                           |
-| Agenda bridge for flexible data aggregation                                                                                                                | Scheduler registry                        | Alert boxes, Info boxes, News boxes                                                          |
-| Event schemas and SQL models                                                                                                                               | `zms2sql` command-line tool               | Hero components, Teaser containers and elements                                              |
-| Library and news integration                                                                                                                               | `MemCached` error handling                | Media releases, Article management and Factsheet layouts                                     |
-| IT status messages                                                                                                                                         | <nobr>`ExternalMethod` auto-reload</nobr> | Contact boxes and sections, Persons and Team sections                                        |
-| Form management based on [JSON Editor](https://github.com/json-editor/json-editor) and [SurveyJS](https://surveyjs.io)                                     | Security assertions                       | Two-column layouts                                                                           |
-
-## Dependencies
-
-### The package requires [Python 3.11+](https://www.python.org/downloads/) and depends on
-
-- **Application Server**: `Zope`, `Products.PluggableAuthService`, `Products.mcdutils`
-- **Database**: `SQLAlchemy`, `SQLModel`, `relstorage`, `psycopg2`, migration with `[alembic]` extra
-- **Web/API**: `FastAPI`, `starlette`, `pydantic`, `requests`, `uvicorn` with `[fastapi]` extra
-- **Utilities**: `typer`, `rich`, `python-dotenv`, `devtools`, debugger with `[pydevd-pycharm]` extra
-- **Office Integration**: `XlsxWriter`, `azure-identity`, `msgraph-sdk` with `[msgraphapi]` extra
-- **Data Processing**: `pandas`, `beautifulsoup4`, `lxml`, `MarkItDown`, `rq` with `rq-dashboard-fast`
-
-See [`pyproject.toml`](https://github.com/zms-publishing/zms.unibe/blob/main/pyproject.toml) for the complete list and references of dependencies and [`constraints.txt`](https://github.com/zms-publishing/zms.unibe/blob/main/constraints.txt) for their pinned versions.
-
-### Utilities
-
-The package provides the `zms2sql` command-line tool for object-relational mappings to mirror selected data from the [ZODB](https://zodb.org) to [PostgreSQL](https://www.postgresql.org), for example:
+This example assumes you have a working ZMS/Zope installation in a virtual environment.
 
 ```bash
-$ ./.venv/bin/zms2sql --help
+$ cd /path/to/your/virtualenv
+$ ./bin/pip install "zms.unibe @ git+https://github.com/zms-publishing/zms.unibe.git"
+
+# add to ./etc/site.zcml
+<configure xmlns:zcml="http://namespaces.zope.org/zcml">
+  <include zcml:condition="installed zms.unibe.patches" package="zms.unibe.patches" />
+</configure>
 ```
 
-To apply the [monkey patches](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/monkey) for customizing other installed packages as well as the [security assertions](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/security) for using the helper utilities in [RestrictedPython](https://github.com/zopefoundation/RestrictedPython) code (py, zpt, dtml), the following package include must be added to the `./.venv/etc/site.zcml` file:
+## Helper Functions
 
-```xml
-<include zcml:condition="installed zms.unibe.patches" package="zms.unibe.patches" />
-```
+- [Code Examples](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md)
+  - [Date/Time handling](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md#datetime-handling)
+  - [Date/Time formatting](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md#datetime-formatting)
+  - [Output sanitization](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md#output-sanitization)
 
-This allows editing via the web using [ZMI](https://zope.readthedocs.io/en/latest/zopebook/UsingZope.html) or synchronize code changes via the [ZMSRepositoryManager](https://github.com/zms-publishing/ZMS/tree/main/Products/zms/zpt/ZMSRepositoryManager/readme.md).
+## Development Environment
 
-To enable support for [Remote Debugging with PyCharm](https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html) you can include the `[pydevd-pycharm]` extra on installation.
-
-## Structure
-
-```
-zms.unibe
-├── LICENSE
-├── README.md
-├── pyproject.toml
-├── constraints.txt
-├── Dockerfile.fastapi
-├── Dockerfile.zms
-├── alembic.ini
-├── compose.yaml
-├── compose.dev.yaml
-├── compose.empty.yaml
-├── versions.env
-├── alembic
-│   ├── versions
-│   ├── env.py
-│   └── README.md
-├── app
-│   └── main.py [FastAPI main app]
-├── cron
-│   ├── [scheduled jobs]
-│   └── ...
-├── conf
-│   ├── zodb-relstorage.conf
-│   ├── zodb-zeo.conf
-│   ├── zope.conf
-│   ├── zope.ini
-│   └── ...
-├── dev
-│   ├── [local checkouts in editable mode]
-│   ├── README.md
-│   └── ...
-└── src
-    └── zms
-        └── unibe
-            ├── agenda
-            │   ├── schemas
-            │   └── sqlmodels
-            ├── ...
-            ├── fastapi
-            │   ├── mobileapp
-            │   ├── zmscontent
-            │   └── main.py [FastAPI sub apps]
-            ├── ...
-            ├── patches
-            │   ├── monkey
-            │   ├── security
-            │   └── configure.zcml
-            └── utils
-                ├── zms2sql
-                ├── zope
-                ├── db.py
-                ├── dependencies.py
-                ├── enums.py
-                ├── helpers.py
-                └── subscribers.py
-```
+- see [`dev/README.md`](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md)
 
 ## License
 
