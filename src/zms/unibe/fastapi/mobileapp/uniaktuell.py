@@ -1,3 +1,5 @@
+import asyncio
+
 from datetime import datetime
 
 from fastapi import APIRouter, Query
@@ -32,7 +34,9 @@ def get_uniaktuell(
     data = []
 
     # get translations from unibe langdict
-    labels = get_content_labels(context, lang, '/unibe/content', ContentModel.UniaktuellArticle)
+    labels = asyncio.run(get_content_labels(context, lang, 
+                                            '/unibe/content', 
+                                            ContentModel.UniaktuellArticle))
 
     statement = [select(model.UniaktuellArticle, ZMSSite).join(ZMSSite).
                  where(get_attr_by_lang(lang,

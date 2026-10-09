@@ -6,31 +6,75 @@ from markitdown import MarkItDown  #, StreamInfo
 from Products.zms.standard import pybool
 from ZPublisher.interfaces import IPubSuccess
 
+global CSP_ENABLED
+global MD_ENABLED
 global MD_CONVERTER
-global IS_ENABLED
 
 def initialize():
 
-    global IS_ENABLED
-    IS_ENABLED = pybool(os.getenv('ZMS_ENABLE_MARKDOWN_RENDERING'))
+    global MD_ENABLED
+    MD_ENABLED = pybool(os.getenv('ZMS_ENABLE_MARKDOWN_RENDERING'))
 
-    if not IS_ENABLED:
-        return
-    
-    print('Handler: zms.unibe.utils.subscribers.transform_html_to_markdown'
-          ' registered for ZPublisher.interfaces.IPubSuccess')
-    
-    global MD_CONVERTER
-    MD_CONVERTER = MarkItDown()
+    if MD_ENABLED:    
+        print('Handler: zms.unibe.utils.subscribers.transform_html_to_markdown'
+              ' registered for ZPublisher.interfaces.IPubSuccess')
+        
+        global MD_CONVERTER
+        MD_CONVERTER = MarkItDown()
+
+    global CSP_ENABLED
+    CSP_ENABLED = pybool(os.getenv('ZMS_ENABLE_CSP_HEADERS'))
+
+    if CSP_ENABLED:
+        print('Handler: zms.unibe.utils.subscribers.add_csp_headers'
+              ' registered for ZPublisher.interfaces.IPubSuccess')
     
 initialize()
+
+
+def add_csp_headers(event):
+    """
+    Subscribes to IPubSuccess (guaranteed execution at request end).
+    """
+    if not CSP_ENABLED:
+        return
+    
+    request = event.request
+    response = request.response
+    parents = request.get('PARENTS', [])
+    path = request.get('PATH_INFO', '').lower()
+    host = request.get('HTTP_HOST')
+    
+    # Skip on localhost
+    if host.startswith('127.0.0.1') or host.startswith('localhost'):
+        return
+    
+    # Add CSP headers only for index_*.html pages
+    # e.g. index_ger.html, index_eng.html, index_fra.html
+    if 'index_' not in path or not path.endswith('.html'):
+        return
+
+    # This default CSP header will be set at portal master as ZMS system property 'csp_header'
+    # and can be overridden in each client's ZMS system properties.
+    # csp_header = "frame-ancestors 'self' https://unibe.ch https://*.unibe.ch; report-uri /csp-report; report-to csp;"
+
+    try:
+        csp_header = parents[0].content.getConfProperty('csp_header', None)
+    except Exception:
+        csp_header = None
+        pass
+
+    if csp_header:
+        response.setHeader('Reporting-Endpoints', 'csp="/csp-report"')
+        response.setHeader('Content-Security-Policy', csp_header)
+
 
 
 def transform_html_to_markdown(event):
     """
     Subscribes to IPubSuccess (guaranteed execution at request end).
     """
-    if not IS_ENABLED:
+    if not MD_ENABLED:
         return
 
     request = event.request
