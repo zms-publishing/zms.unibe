@@ -17,4 +17,4 @@ try:
         allow_module('pdb')
     
 except Exception as e:
-    print("ERROR [zms.unibe.patches]:", e)
+    print(f"Ignore: {e} in zms.unibe.patches")
