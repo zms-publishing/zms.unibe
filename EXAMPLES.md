@@ -187,11 +187,11 @@ get_when(diff, locale='en')
 get_when(-diff, locale='en')
 # '3 months ago'
 
-get_when(diff, threshold=20)
-# 'in 82 Tagen'
-
 get_when(diff, threshold=10)
 # 'in 12 Wochen'
+
+get_when(diff, threshold=20)
+# 'in 82 Tagen'
 
 get_when(diff, threshold=100)
 # 'in 1976 Stunden'
@@ -279,7 +279,7 @@ div.WordSection1
 
 </div>
 
-<p><a href="link.html">Letzter Link im Dokument</a></p>
+<p><a href="link2.html">Link 2</a></p>
 
 <div><img src="screenshot.png" alt="Screenshot" /></div>
 
@@ -361,6 +361,6 @@ sanitize_html('<html>'+content, 'href')
 
 ## License
 
-Copyright (c) 2020-2026 [University of Bern, IT Services Department](https://id.unibe.ch). All rights reserved.
+Copyright (c) 2020-2026 [UniBE, University of Bern, IT Services Department](https://id.unibe.ch). All rights reserved.
 
 Licensed under the [MIT license](https://github.com/zms-publishing/zms.unibe/blob/main/LICENSE).

@@ -12,7 +12,7 @@ ARG UPDATE_EXTRAS
 
 USER $USERNAME
 
-RUN python3 -m venv $VENV_HOME \
+RUN $VENV_HOME/bin/pip uninstall -y Products.zms || true \
  && $VENV_HOME/bin/pip install --upgrade pip wheel setuptools==$SETUPTOOLS_VERSION
 RUN set -- \
       -e "Zope[wsgi] @ git+https://github.com/zopefoundation/Zope.git@$ZOPE_VERSION" \

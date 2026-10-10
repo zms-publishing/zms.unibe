@@ -5,7 +5,7 @@
 - <https://github.com/zms-publishing/zms.unibe>
 - <https://github.com/zms-publishing/zms.unibe/releases>
 
-This `zms.unibe` comprehensive library extends [ZMS](https://github.com/zms-publishing/ZMS) and the underlying [Zope](https://github.com/zopefoundation/Zope) functionality.
+This `zms.unibe` comprehensive Python library extends [ZMS](https://github.com/zms-publishing/ZMS) and the underlying [Zope](https://github.com/zopefoundation/Zope) functionality.
 
 It includes several modules specific for the [University of Bern (UniBE)](https://unibe.ch) in Switzerland – as well as a set of [helper functions](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md) that can be useful in `Page Templates` or `Python Scripts` in any ZMS/Zope-based CMS.
 
@@ -278,7 +278,7 @@ $ git pull origin main
     - v3: [http://127.0.0.1:5055/v3/docs](http://127.0.0.1:5055/v3/docs) (mobile app endpoints)
   - **`redis`**: The [Redis](https://redis.io/) in-memory key-value data structure store
     - Image: `docker.io/redis:7.4-alpine`
-    - Ports: `6379` (mapped to `6379` internally)
+    - Port: `6379` (mapped to `6379` internally)
     - Used as message broker for background jobs (queue endpoints) and caching (cache endpoints)
 
 ## Images
@@ -303,6 +303,6 @@ $ git pull origin main
 
 ## License
 
-Copyright (c) 2020-2026 [University of Bern, IT Services Department](https://id.unibe.ch). All rights reserved.
+Copyright (c) 2020-2026 [UniBE, University of Bern, IT Services Department](https://id.unibe.ch). All rights reserved.
 
 Licensed under the [MIT license](https://github.com/zms-publishing/zms.unibe/blob/main/LICENSE).
