@@ -54,6 +54,7 @@ dependencies = [
     "babel",                            # https://github.com/python-babel/babel
     "beautifulsoup4",                   # https://beautiful-soup-4.readthedocs.io/en/latest/
     "chardet",                          # https://github.com/chardet/chardet
+    "DateTime",                         # https://github.com/zopefoundation/DateTime -> LEGACY
     "devtools",                         # https://python-devtools.helpmanual.io/install/
     "email-validator",                  # https://github.com/JoshData/python-email-validator -> https://docs.pydantic.dev/latest/api/networks/#pydantic.networks.EmailStr
     "ftfy",                             # https://github.com/rspeer/python-ftfy
@@ -65,29 +66,34 @@ dependencies = [
     "opensearch-py",                    # https://github.com/opensearch-project/opensearch-py
     "pandas",                           # https://github.com/pandas-dev/pandas
     "pdfminer.six",                     # https://github.com/pdfminer/pdfminer.six
-    "Products.mcdutils",                # https://github.com/dataflake/Products.mcdutils
-    "Products.ExternalMethod",          # https://github.com/zopefoundation/Products.ExternalMethod
-    "Products.PluggableAuthService",    # https://github.com/zopefoundation/Products.PluggableAuthService
-    "Products.PluginRegistry",          # https://github.com/zopefoundation/Products.PluginRegistry
-    "Products.ZSQLMethods",             # https://github.com/zopefoundation/Products.ZSQLMethods
     "psycopg2",                         # https://www.psycopg.org/docs/install.html#psycopg-vs-psycopg-binary
     "pydantic",                         # https://pydantic-docs.helpmanual.io
-    "relstorage",                       # https://github.com/zodb/relstorage
+    "pytz",                             # https://github.com/stub42/pytz -> LEGACY
     "requests",                         # https://requests.readthedocs.io
     "requests-oauthlib",                # https://github.com/requests/requests-oauthlib
     "rich",                             # https://github.com/Textualize/rich
     "SQLAlchemy",                       # https://www.sqlalchemy.org/
     "SQLModel",                         # https://sqlmodel.tiangolo.com
     "tabulate",                         # https://github.com/astanin/python-tabulate
-    "trio",                             # https://github.com/python-trio/trio -> see https://github.com/idasm-unibe-ch/zms-base/issues/5
     "typer",                            # https://typer.tiangolo.com
     "XlsxWriter",                       # https://github.com/jmcnamara/XlsxWriter
     "xmltodict",                        # https://github.com/martinblech/xmltodict
-    "zeo",                              # https://github.com/zopefoundation/ZEO
-    "zodburi",                          # https://docs.pylonsproject.org/projects/zodburi/en/latest/
 ]
 
 [project.optional-dependencies]
+zope = [
+    "Products.mcdutils",                # https://github.com/dataflake/Products.mcdutils
+    "Products.ExternalMethod",          # https://github.com/zopefoundation/Products.ExternalMethod
+    "Products.PluggableAuthService",    # https://github.com/zopefoundation/Products.PluggableAuthService
+    "Products.PluginRegistry",          # https://github.com/zopefoundation/Products.PluginRegistry
+    "Products.ZSQLMethods",             # https://github.com/zopefoundation/Products.ZSQLMethods
+    "relstorage",                       # https://github.com/zodb/relstorage
+    "trio",                             # https://github.com/python-trio/trio -> see https://github.com/idasm-unibe-ch/zms-base/issues/5
+    "ZMS",                              # http://github.com/zms-publishing/ZMS
+    "zeo",                              # https://github.com/zopefoundation/ZEO
+    "zodburi",                          # https://docs.pylonsproject.org/projects/zodburi/en/latest/
+    "Zope[wsgi]",                       # https://github.com/zopefoundation/Zope
+]
 fastapi = [
     "FastAPI[standard]",                # https://fastapi.tiangolo.com
     "uvicorn[standard]",                # https://www.uvicorn.org

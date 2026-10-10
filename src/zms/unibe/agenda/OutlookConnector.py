@@ -25,7 +25,7 @@ from zms.unibe.utils.helpers import DotDict, local_timezone
 from zms.unibe.agenda.schemas.ZMSAgendaOutlookSchema import ZMSAgendaOutlookSchema
 
 if not MS_GRAPH_API_AVAILABLE:
-    print("Addon: zms.unibe.agenda.OutlookConnector will be disabled - MS Graph API not available -> pip install 'zms.unibe[msgraphapi] @ git+https://github.com/zms-publishing/zms.unibe.git'")
+    print("Addon: zms.unibe.agenda.OutlookConnector disabled -> zms.unibe[msgraphapi] extra required")
 else:
     print('Addon: zms.unibe.agenda.OutlookConnector')
 security = ModuleSecurityInfo('zms.unibe.agenda.OutlookConnector')  # allow module import in RestrictedPython
