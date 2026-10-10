@@ -4,7 +4,6 @@ import pytz
 import re
 import requests
 import time
-import zExceptions
 
 from bs4 import BeautifulSoup
 from babel.dates import (format_date, 
@@ -20,14 +19,26 @@ from DateTime import DateTime  # legacy Zope implementation, returned e.g. by Zo
 from markitdown import MarkItDown
 from markdown import markdown as render_as_html
 from io import BytesIO
+from unittest.mock import MagicMock
 from uuid import UUID
-
-from AccessControl import ModuleSecurityInfo
-from Products.zms import standard, _blobfields
 
 from .enums import SiteType
 
-security = ModuleSecurityInfo('zms.unibe.utils.helpers')  # allow module import in RestrictedPython
+try:
+    import zExceptions
+    from AccessControl import ModuleSecurityInfo
+    from Products.zms import standard, _blobfields
+
+    security = ModuleSecurityInfo('zms.unibe.utils.helpers')  # allow module import in RestrictedPython
+except:
+    class MockDecorator:
+        def __call__(self, func):
+            return func
+        def apply(self, *args, **kwargs):
+            return lambda func: func
+
+    security = MagicMock()  # fallback if no Zope/ZMS context available
+    security.public = MagicMock(wraps=MockDecorator())
 
 LOGGER = logging.getLogger('zms.unibe.utils.helpers')
 
@@ -88,7 +99,7 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
     if dt is None:
         dt = datetime.now()
     elif isinstance(dt, time.struct_time):
-        dt = standard.format_datetime_iso(dt)
+        dt = datetime.fromtimestamp(time.mktime(dt))
     elif isinstance(dt, DateTime):  # legacy Zope implementation, returned e.g. by ZopeTime()
         dt = dt.ISO8601()
     try:
@@ -374,7 +385,7 @@ def get_json_schema(obj, lang=None):
 
 print('Addon: zms.unibe.utils.helpers.get_when')
 @security.public
-def get_when(dt, mode=None,
+def get_when(dt=None, mode=None,
              locale='de_CH', tz='Europe/Zurich', 
              granularity='second', threshold=0.85,
              format='long', add_direction=True):
