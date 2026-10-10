@@ -5,9 +5,9 @@
 - <https://github.com/zms-publishing/zms.unibe>
 - <https://github.com/zms-publishing/zms.unibe/releases>
 
-This `zms.unibe` comprehensive library extends [ZMS](https://github.com/zms-publishing/ZMS) and the underlying [Zope](https://github.com/zopefoundation/Zope) functionality.
+This `zms.unibe` comprehensive Python library extends [ZMS](https://github.com/zms-publishing/ZMS) and the underlying [Zope](https://github.com/zopefoundation/Zope) functionality.
 
-It includes several modules specific for the [University of Bern (UniBE)](https://unibe.ch) in Switzerland – as well as a set of [helper functions](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md) that can be useful in `Page Templates` or `Python Scripts` in any ZMS/Zope-based CMS.
+It includes several modules specific for the [UniBE, University of Bern](https://unibe.ch) in Switzerland – as well as a set of [helper functions](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md) that can be useful in `Page Templates` or `Python Scripts` in any ZMS/Zope-based CMS.
 
 ## Installation
 
@@ -36,6 +36,6 @@ $ ./bin/pip install "zms.unibe @ git+https://github.com/zms-publishing/zms.unibe
 
 ## License
 
-Copyright (c) 2020-2026 [University of Bern, IT Services Department](https://id.unibe.ch). All rights reserved.
+Copyright (c) 2020-2026 [UniBE, University of Bern, IT Services Department](https://id.unibe.ch). All rights reserved.
 
 Licensed under the [MIT license](https://github.com/zms-publishing/zms.unibe/blob/main/LICENSE).
