@@ -8,7 +8,18 @@
 
 These helper functions can be used in any ZMS/Zope-based system with the `zms.unibe` [add-on package installed](https://github.com/zms-publishing/zms.unibe/blob/main/README.md#installation).
 
-The code snippets below are `Python Scripts` – but the examples can be used in `Page Templates` as well, e.g.
+The code snippets below are `Python Scripts` – but the examples can be used in `Page Templates` as well.
+
+<details>
+<summary>Prerequisite for use in <a href="https://github.com/zopefoundation/RestrictedPython" target="_blank"><code>RestrictedPython</code></a> code as <code>py, zpt, dtml</code></summary>
+
+Add the following config to `./.venv/etc/site.zcml`:
+```xml
+<configure xmlns:zcml="http://namespaces.zope.org/zcml">
+  <include zcml:condition="installed zms.unibe.patches" package="zms.unibe.patches" />
+</configure>
+```
+</details>
 
 ```html
 <tal:block tal:define="

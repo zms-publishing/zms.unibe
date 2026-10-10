@@ -11,16 +11,20 @@ It includes several modules specific for the [UniBE, University of Bern](https:/
 
 ## Installation
 
-This example assumes you have a working ZMS/Zope installation in a virtual environment.
+These instructions assume you have [Python](https://www.python.org/downloads/) > 3.11 installed.
 
+Using as Standalone Library to access the [Helper Functions](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md):
 ```bash
-$ cd /path/to/your/virtualenv
 $ ./bin/pip install "zms.unibe @ git+https://github.com/zms-publishing/zms.unibe.git"
-
-# add to ./etc/site.zcml
-<configure xmlns:zcml="http://namespaces.zope.org/zcml">
-  <include zcml:condition="installed zms.unibe.patches" package="zms.unibe.patches" />
-</configure>
+```
+Install and run ZMS content management system based on Zope application server:
+```bash
+$ cd /path/to/your-project
+$ python3 -m venv .venv
+$ ./.venv/bin/pip install "zms.unibe[zope] @ git+https://github.com/zms-publishing/zms.unibe.git" \
+  -c https://raw.githubusercontent.com/zms-publishing/zms.unibe/main/constraints.txt
+$ ./.venv/bin/mkwsgiinstance -d . -u admin:admin 
+$ ./.venv/bin/runwsgi -v ./etc/zope.ini
 ```
 
 ## Helper Functions

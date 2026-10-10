@@ -153,7 +153,9 @@ $ ./.venv/bin/zms2sql --help
 To apply the [monkey patches](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/monkey) for customizing other installed packages as well as the [security assertions](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/security) for using the helper utilities in [RestrictedPython](https://github.com/zopefoundation/RestrictedPython) code (py, zpt, dtml), the following package include must be added to the `./.venv/etc/site.zcml` file:
 
 ```xml
-<include zcml:condition="installed zms.unibe.patches" package="zms.unibe.patches" />
+<configure xmlns:zcml="http://namespaces.zope.org/zcml">
+  <include zcml:condition="installed zms.unibe.patches" package="zms.unibe.patches" />
+</configure>
 ```
 
 This allows editing via the web using [ZMI](https://zope.readthedocs.io/en/latest/zopebook/UsingZope.html) or synchronize code changes via the [ZMSRepositoryManager](https://github.com/zms-publishing/ZMS/tree/main/Products/zms/zpt/ZMSRepositoryManager/readme.md).
@@ -218,7 +220,7 @@ $ export $(xargs < versions.env) && ./.venv/bin/pip install --upgrade pip wheel 
 $ export $(xargs < versions.env) && ./.venv/bin/pip install --upgrade --upgrade-strategy eager \
     --src ./dev -e "Zope @ git+https://github.com/zopefoundation/Zope.git@$ZOPE_VERSION" \
     --src ./dev -e "ZMS @ git+https://github.com/zms-publishing/ZMS.git@$ZMS_CORE_BRANCH_OR_COMMIT" \
-    -e ../"zms.unibe[fastapi,msgraphapi,pydevd-pycharm,alembic]" \
+    -e ../"zms.unibe[zope,fastapi,msgraphapi,pydevd-pycharm,alembic]" \
     -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt"
 ```
 
