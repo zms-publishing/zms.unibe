@@ -7,7 +7,7 @@
 
 This `zms.unibe` comprehensive Python library extends [ZMS](https://github.com/zms-publishing/ZMS) and the underlying [Zope](https://github.com/zopefoundation/Zope) functionality.
 
-It includes several modules specific for the [University of Bern (UniBE)](https://unibe.ch) in Switzerland – as well as a set of [helper functions](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md) that can be useful in `Page Templates` or `Python Scripts` in any ZMS/Zope-based CMS.
+It includes several modules developed to power the [Web/Mobile Platform](https://idasm-unibe-ch.github.io/unibe-web-mobile/) of the University of Bern, [UniBE](https://unibe.ch) in Switzerland – but also a set of [Helper Functions](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md) that can be used as standalone library in any Python project.
 
 ## Table of Contents
 
@@ -136,7 +136,7 @@ The package requires [Python 3.11+](https://www.python.org/downloads/) and depen
 - **Office Integration**: `XlsxWriter`, `azure-identity`, `msgraph-sdk` with `[msgraphapi]` extra
 - **Data Processing**: `pandas`, `beautifulsoup4`, `lxml`, `MarkItDown`, `rq` with `rq-dashboard-fast`
 
-See [`pyproject.toml`](https://github.com/zms-publishing/zms.unibe/blob/main/pyproject.toml) for the complete list and references of dependencies and [`constraints.txt`](https://github.com/zms-publishing/zms.unibe/blob/main/constraints.txt) for their pinned versions.
+See [`pyproject.toml`](https://github.com/zms-publishing/zms.unibe/blob/main/pyproject.toml) for the complete list and references of dependencies and `zms.unibe/constraints-Zope-*.txt` for their pinned versions.
 
 </details>
 
@@ -205,7 +205,7 @@ These directories are synchronized into the containers - see `develop.watch` in 
 ### Checkout and install on localhost
 
 > [!CAUTION]
-> The following commands demonstrate how to set up a new virtual environment on the local machine with the [latest revisions of the dependencies](https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-U) omitting the pinned versions in [`zms.unibe/constraints.txt`](https://github.com/zms-publishing/zms.unibe/blob/main/constraints.txt) – these may be work-in-progress and unstable.
+> The following commands demonstrate how to set up a new virtual environment on the local machine with the [latest revisions of the dependencies](https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-U) omitting the pinned versions in `zms.unibe/constraints-Zope-*.txt` – these may be work-in-progress and unstable.
 
 ```bash
 # Create a local virtual environment

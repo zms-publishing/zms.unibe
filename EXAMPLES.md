@@ -6,15 +6,14 @@
 - [Date/Time formatting](#datetime-formatting)
 - [Output sanitization](#output-sanitization)
 
-These helper functions can be used in any ZMS/Zope-based system with the `zms.unibe` [add-on package installed](https://github.com/zms-publishing/zms.unibe/blob/main/README.md#installation).
-
 The code snippets below are `Python Scripts` – but the examples can be used in `Page Templates` as well.
 
 <details>
 <summary>Prerequisite for use in <a href="https://github.com/zopefoundation/RestrictedPython" target="_blank"><code>RestrictedPython</code></a> code as <code>py, zpt, dtml</code></summary>
 
-Add the following config to `./.venv/etc/site.zcml`:
-```xml
+```html
+# Add this config to ./etc/site.zcml:
+
 <configure xmlns:zcml="http://namespaces.zope.org/zcml">
   <include zcml:condition="installed zms.unibe.patches" package="zms.unibe.patches" />
 </configure>
@@ -105,7 +104,7 @@ local_timezone('2027-01-01', tz='Atlantic/Bermuda')
 <summary><code>zms.unibe.utils.helpers.get_when</code></summary>
 
 ```python
-def get_when(dt, mode=None,
+def get_when(dt=None, mode=None,
              locale='de_CH', tz='Europe/Zurich', 
              granularity='second', threshold=0.85,
              format='long', add_direction=True):

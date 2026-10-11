@@ -7,22 +7,23 @@
 
 This `zms.unibe` comprehensive Python library extends [ZMS](https://github.com/zms-publishing/ZMS) and the underlying [Zope](https://github.com/zopefoundation/Zope) functionality.
 
-It includes several modules specific for the [UniBE, University of Bern](https://unibe.ch) in Switzerland – as well as a set of [helper functions](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md) that can be useful in `Page Templates` or `Python Scripts` in any ZMS/Zope-based CMS.
+It includes several modules developed to power the [Web/Mobile Platform](https://idasm-unibe-ch.github.io/unibe-web-mobile/) of the University of Bern, [UniBE](https://unibe.ch) in Switzerland – but also a set of [Helper Functions](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md) that can be used as standalone library in any Python project.
 
 ## Installation
 
-These instructions assume you have [Python](https://www.python.org/downloads/) > 3.11 installed.
+These instructions assume you have [Python 3.11+](https://www.python.org/downloads/) installed.
 
-Using as Standalone Library to access the [Helper Functions](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md):
+(A) Using as standalone library to access the [Helper Functions](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md):
 ```bash
 $ ./bin/pip install "zms.unibe @ git+https://github.com/zms-publishing/zms.unibe.git"
 ```
-Install and run ZMS content management system based on Zope application server:
+(B) Install and run ZMS content management system based on Zope application server:
 ```bash
 $ cd /path/to/your-project
 $ python3 -m venv .venv
-$ ./.venv/bin/pip install "zms.unibe[zope] @ git+https://github.com/zms-publishing/zms.unibe.git" \
-  -c https://raw.githubusercontent.com/zms-publishing/zms.unibe/main/constraints.txt
+$ ./.venv/bin/pip install \
+  "zms.unibe[zope] @ git+https://github.com/zms-publishing/zms.unibe.git" \
+  -c https://raw.githubusercontent.com/zms-publishing/zms.unibe/main/constraints-Zope-6.2.txt
 $ ./.venv/bin/mkwsgiinstance -d . -u admin:admin 
 $ ./.venv/bin/runwsgi -v ./etc/zope.ini
 ```
