@@ -6,11 +6,11 @@ import requests
 import time
 
 from bs4 import BeautifulSoup
-from babel.dates import (format_date, 
-                         format_time, 
-                         format_datetime, 
-                         format_timedelta, 
-                         get_timezone, 
+from babel.dates import (format_date,
+                         format_time,
+                         format_datetime,
+                         format_timedelta,
+                         get_timezone,
                          get_timezone_name)
 from datetime import (datetime,
                       date,
@@ -191,15 +191,15 @@ def is_authorized(context, roles, acquired=False, raise_exception=True):
 print('Addon: zms.unibe.utils.helpers.is_dev_or_test')
 @security.public
 def is_dev_or_test(context):
-    
     url = context.REQUEST.get('URL', '')
-    
+
     return (
         url.startswith('https://edit.cmstest')  # 1, 2, 3, ...
         or url.startswith('https://edit.cmsint.')
         or url.startswith('http://localhost:')
         or url.startswith('http://127.0.0.1:')
     )
+
 
 def strip_cmstest(domain):
     if domain is None:
@@ -393,7 +393,7 @@ def get_when(dt=None, mode=None,
     Determines and returns a formatted representation of the input date, time, or timedelta 
     based on the specified `mode` and formatting criteria. Handles localization, time zone 
     adjustments, and granularity for delta formats.
-    
+
     It is basically a wrapper for https://babel.pocoo.org/en/latest/dates.html
 
     :param dt: Input date, time, or timedelta. Can be a `datetime`, `date`, or a number 
@@ -445,10 +445,10 @@ def get_when(dt=None, mode=None,
             tz = get_timezone('Europe/Zurich')
 
     tzname = get_timezone_name(tz, return_zone=True)
-    
+
     if isinstance(dt, timedelta):
         mode = 'delta'
-    
+
     match mode:
         case 'date':
             return format_date(local_timezone(dt, tz=tzname),
