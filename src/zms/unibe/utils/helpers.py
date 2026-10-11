@@ -386,7 +386,7 @@ def get_json_schema(obj, lang=None):
 print('Addon: zms.unibe.utils.helpers.get_when')
 @security.public
 def get_when(dt=None, mode=None,
-             locale='de_CH', tz='Europe/Zurich', 
+             locale='de_CH', tz=None,
              granularity='second', threshold=0.85,
              format='long', add_direction=True):
     """
@@ -406,13 +406,15 @@ def get_when(dt=None, mode=None,
                  - 'day': Formats the day of the month.
                  - 'weekday': Formats the name of the weekday.
                  - 'delta': Formats timedelta with varying granularity and threshold.
+                 - 'utcoffset': Returns the UTC offset in hours.
                  - Other values are interpreted as explicit format strings or defaulted
                    to ISO8601 if not recognized.
     :type mode: str | None
     :param locale: Locale string for localized formatting. Defaults to 'de_CH'.
     :type locale: str
-    :param tz: Timezone information for adjusting the datetime. Defaults to 'Europe/Zurich' 
-               if the provided timezone is unrecognized or `None`.
+    :param tz: Timezone information for adjusting the datetime. If `None` is provided,
+               attempts to extract the timezone from `dt`. If provided `tz` is unrecognized,
+               it defaults to 'Europe/Zurich', as it does if errors occur.
     :type tz: str | None
     :param granularity: Defines the smallest time unit (e.g., 'second', 'minute', 'day') 
                         for timedelta formatting when the mode is 'delta'. Defaults to 'second'.
@@ -431,10 +433,17 @@ def get_when(dt=None, mode=None,
              dates, times, weekdays, and timedelta durations.
     :rtype: str
     """
-    try:
-        tz = get_timezone(tz)
-    except LookupError:
-        tz = get_timezone('Europe/Zurich')
+    if tz is None:
+        try:  # extract timezone from dt if no explicit tz is provided
+            tz = get_timezone(dt.tzinfo)
+        except (AttributeError, LookupError):
+            tz = get_timezone('Europe/Zurich')
+    else:
+        try:  # use explicit tz if provided
+            tz = get_timezone(tz)
+        except (AttributeError, LookupError):
+            tz = get_timezone('Europe/Zurich')
+
     tzname = get_timezone_name(tz, return_zone=True)
     
     if isinstance(dt, timedelta):
@@ -471,6 +480,8 @@ def get_when(dt=None, mode=None,
                                     threshold=threshold,
                                     format=format,
                                     add_direction=add_direction)
+        case 'utcoffset':
+            return local_timezone(dt, tz=tzname).utcoffset().total_seconds() / 3600
         case x if x not in (
             None, 'iso', 'iso8601'):
             # https://babel.pocoo.org/en/latest/dates.html#pattern-syntax
