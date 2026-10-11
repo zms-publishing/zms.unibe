@@ -11,7 +11,7 @@ It includes several modules developed to power the [Web/Mobile Platform](https:/
 
 ## Installation
 
-These instructions assume you have [Python 3.11+](https://www.python.org/downloads/) installed.
+These instructions assume you have [Python 3.12+](https://www.python.org/downloads/) installed.
 
 (A) Using as standalone library to access the [Helper Functions](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md):
 ```bash

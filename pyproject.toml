@@ -18,20 +18,18 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "zms.unibe"
 dynamic = ["version"]
-description = "Addons package for ZMS at UniBE"
-readme = { text = "Python-based extensions for and integrations with the ZMS publishing system", content-type = "text/plain" }
+description = "Python-based extensions to integrate ZMS with unibe.ch and unibe.app"
+readme = { text = "Python-based extensions to integrate ZMS with unibe.ch and unibe.app", content-type = "text/plain" }
 authors = [
-    { name = "University of Bern, IT Services Department" }
+    { name = "UniBE, University of Bern, IT Services Department" }
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Framework :: Zope :: 6",
     "Framework :: FastAPI",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
@@ -123,7 +121,7 @@ zms2sql = "zms.unibe.utils.zms2sql.cli:main"
 Homepage = "https://github.com/zms-publishing/zms.unibe"
 Issues = "https://github.com/zms-publishing/zms.unibe/issues"
 Changelog = "https://github.com/zms-publishing/zms.unibe/releases"
-Documentation = "https://idasm-unibe-ch.github.io/unibe-web-mobile/integration/hub/"
+Documentation = "https://idasm-unibe-ch.github.io/unibe-web-mobile"
 
 [tool.setuptools]
 zip-safe = false

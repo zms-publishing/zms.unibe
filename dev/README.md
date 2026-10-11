@@ -127,7 +127,7 @@ zms.unibe
 <summary>Dependencies</summary>
 <br />
 
-The package requires [Python 3.11+](https://www.python.org/downloads/) and depends on
+The package requires [Python 3.12+](https://www.python.org/downloads/) and depends on
 
 - **Application Server**: `Zope`, `Products.PluggableAuthService`, `Products.mcdutils`
 - **Database**: `SQLAlchemy`, `SQLModel`, `relstorage`, `psycopg2`, migration with `[alembic]` extra
