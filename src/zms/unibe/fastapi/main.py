@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
 from Products.zms.standard import pybool
 
-from app.main import api
+from zms.unibe.fastapi.app import api
 from zms.unibe.fastapi.meta import tags
 from .mobileapp import mediareleases, newsevents, servicelinks, uniaktuell
 from .zmscontent import labels, managers, objects, scheduler, system
