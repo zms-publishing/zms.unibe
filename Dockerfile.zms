@@ -26,7 +26,7 @@ RUN set -- \
     set -- "$@" -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt"; \
     $VENV_HOME/bin/pip install --upgrade --upgrade-strategy eager "$@"
 
-COPY --chown=$USERNAME:$GROUPNAME ./conf/* $VENV_HOME/etc/
+COPY --chown=$USERNAME:$GROUPNAME ./src/zms/unibe/conf/* $VENV_HOME/etc/
 
 # include assets from multi-stage build and align path hierarchy
 # -> prerequisite: set build.target to unibe-cms (instead of cms-backend)

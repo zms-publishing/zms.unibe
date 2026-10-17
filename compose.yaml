@@ -35,7 +35,7 @@ services:
           ignore:
             - zms/unibe/fastapi
           initial_sync: true
-        - path: ./conf
+        - path: ./src/zms/unibe/conf/
           target: /app/zope/etc
           action: sync+restart
           initial_sync: true
@@ -94,11 +94,7 @@ services:
           target: /app/zope/src/zms-unibe/src
           action: sync+restart
           initial_sync: true
-        - path: ./app
-          target: /app/zope/src/zms-unibe/app
-          action: sync+restart
-          initial_sync: true
-        - path: ./conf
+        - path: ./src/zms/unibe/conf/
           target: /app/zope/etc
           action: sync+restart
           initial_sync: true
