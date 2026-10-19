@@ -19,7 +19,7 @@ router = APIRouter(prefix="/zms", tags=[Tags.system])
 )
 @cache(expire=60)
 def get_installed_python_packages(
-    mode: PipCmd = PipCmd.list,
+    mode: PipCmd = PipCmd.freeze,
 ):
     packages = list(filter(lambda x:
                            len(x) > 0 and x[0] not in ('#', ''),

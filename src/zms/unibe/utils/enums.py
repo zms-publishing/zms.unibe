@@ -72,5 +72,5 @@ class VirtualHosting(str, Enum):
     paths = "paths"
     
 class PipCmd(str, Enum):
-    list = "list"
     freeze = "freeze"
+    list = "list"
