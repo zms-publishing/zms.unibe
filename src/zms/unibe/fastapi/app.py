@@ -67,6 +67,8 @@ QUEUE_NAME = os.getenv("QUEUE_NAME", "default")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
+        if pybool(os.getenv('ZMS_UV_PACKAGE_MANAGER')):
+            from ..patches.monkey import Products_zms_standard_get_installed_packages
         import_submodules_recursively(endpoints)
         import_sqlmodels_recursively()
         app.state.sqldb_engine = connect_sqldb(verbose=True)
