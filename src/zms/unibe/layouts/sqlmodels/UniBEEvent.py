@@ -1,7 +1,9 @@
 from datetime import datetime
-from sqlmodel import Field, Column, Date, Time
-from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_url, get_size, parse_datetime, get_children_count
+
+from sqlmodel import Column, Date, Field, Time
+
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from ...utils.helpers import get_attr, get_children_count, get_size, get_url, parse_datetime
 
 
 class UniBEEvent(ZMSBase, table=True):

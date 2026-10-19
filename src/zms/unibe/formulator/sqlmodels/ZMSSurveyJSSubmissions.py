@@ -1,12 +1,12 @@
-import json
 import hashlib
+import json
 import re
-
 from datetime import datetime
 from uuid import UUID
-from sqlmodel import SQLModel, Field, Column, DateTime
 
-from zms.unibe.utils.helpers import parse_uuid, local_timezone
+from sqlmodel import Column, DateTime, Field, SQLModel
+
+from ...utils.helpers import local_timezone, parse_uuid
 
 
 class ZMSSurveyJSSubmissions(SQLModel, table=True):

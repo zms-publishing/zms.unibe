@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlmodel import SQLModel, Field, Column, DateTime
+from sqlmodel import Column, DateTime, Field, SQLModel
 
 
 class StatusMessage(SQLModel, table=True):  # to import data of http://id.unibe.ch/statusmeldungen provided by https://api.epc.unibe.ch/announcements/api/ServiceAnnouncements

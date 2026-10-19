@@ -1,22 +1,22 @@
-import pkgutil
 import os
+import pkgutil
 import traceback
+from contextlib import asynccontextmanager
+from importlib import import_module
+from pathlib import Path
 
 from fastapi import FastAPI
-from sqlmodel import SQLModel
-from redis import Redis, ConnectionPool
-from rq import Queue
-from rq_dashboard_fast import RedisQueueDashboard
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
-from contextlib import asynccontextmanager
-from pathlib import Path
-from importlib import import_module
+from redis import ConnectionPool, Redis
+from rq import Queue
+from rq_dashboard_fast import RedisQueueDashboard
+from sqlmodel import SQLModel
 
-from zms.unibe.utils.db import connect_sqldb
 from Products.zms.standard import pybool
+from .. import fastapi as endpoints
+from ..utils.db import connect_sqldb
 
-import zms.unibe.fastapi as endpoints
 
 # https://stackoverflow.com/questions/3365740/how-to-import-all-submodules#65021760
 def import_submodules_recursively(module):
@@ -104,5 +104,6 @@ api = FastAPI(
 )
 
 if pybool(os.getenv("API_RQ")):
+    print("FastAPI: Mounted /rq-dashboard/jobs for Redis Queue (RQ)")
     dashboard = RedisQueueDashboard(REDIS_URL, "/rq-dashboard")
     api.mount("/rq-dashboard", dashboard)

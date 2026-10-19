@@ -1,7 +1,7 @@
-from zms.unibe.utils.zms2sql import zms2sql
 from .MediaNews import MediaNews
 from .NewsBox import NewsBox
 from .NewsContainer import NewsContainer
+from ...utils.zms2sql import zms2sql
 
 
 def update_newsboxes(zms_context):

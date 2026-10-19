@@ -1,26 +1,19 @@
 import logging
 import os
-import pytz
 import re
-import requests
 import time
-
-from bs4 import BeautifulSoup
-from babel.dates import (format_date, 
-                         format_time, 
-                         format_datetime, 
-                         format_timedelta, 
-                         get_timezone, 
-                         get_timezone_name)
-from datetime import (datetime,
-                      date,
-                      timedelta)
-from DateTime import DateTime  # legacy Zope implementation, returned e.g. by ZopeTime()
-from markitdown import MarkItDown
-from markdown import markdown as render_as_html
+from datetime import date, datetime, timedelta
 from io import BytesIO
 from unittest.mock import MagicMock
 from uuid import UUID
+
+import pytz
+import requests
+from DateTime import DateTime  # legacy Zope implementation, returned e.g. by ZopeTime()
+from babel.dates import format_date, format_datetime, format_time, format_timedelta, get_timezone, get_timezone_name
+from bs4 import BeautifulSoup
+from markdown import markdown as render_as_html
+from markitdown import MarkItDown
 
 from .enums import SiteType
 

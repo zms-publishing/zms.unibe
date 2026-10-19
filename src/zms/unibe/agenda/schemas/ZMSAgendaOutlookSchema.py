@@ -1,8 +1,10 @@
-from bs4 import BeautifulSoup
-from Products.zms import standard
-from zms.unibe.utils.helpers import local_timezone, get_when, sanitize_html
 import datetime as dt
 import html
+
+from bs4 import BeautifulSoup
+
+from Products.zms import standard
+from ...utils.helpers import get_when, local_timezone, sanitize_html
 
 
 class ZMSAgendaOutlookSchema:

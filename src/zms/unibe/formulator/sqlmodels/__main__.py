@@ -1,5 +1,5 @@
-from zms.unibe.utils.zms2sql import zms2sql
 from .ZMSFormulator import ZMSFormulator
+from ...utils.zms2sql import zms2sql
 
 
 def update_formulator(zms_context):

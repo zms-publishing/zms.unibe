@@ -1,7 +1,9 @@
 from datetime import datetime
-from sqlmodel import Field, Column, DateTime
-from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_url, get_data, parse_datetime
+
+from sqlmodel import Column, DateTime, Field
+
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from ...utils.helpers import get_attr, get_data, get_url, parse_datetime
 
 
 class ZMSBoris(ZMSBase, table=True):

@@ -1,5 +1,5 @@
-from zms.unibe.utils.zms2sql import zms2sql
 from .UniaktuellArticle import UniaktuellArticle
+from ...utils.zms2sql import zms2sql
 
 
 def update_uniaktuell(zms_context):

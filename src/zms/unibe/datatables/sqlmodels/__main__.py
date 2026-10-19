@@ -1,6 +1,6 @@
-from zms.unibe.utils.zms2sql import zms2sql
 from .ZMSBoris import ZMSBoris
 from .ZMSDataTable import ZMSDataTable
+from ...utils.zms2sql import zms2sql
 
 
 def update_datatables(zms_context):

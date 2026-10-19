@@ -1,8 +1,9 @@
 from datetime import datetime
 from uuid import UUID
-from sqlmodel import SQLModel, Field, Column, DateTime
 
-from zms.unibe.utils.helpers import parse_uuid
+from sqlmodel import Column, DateTime, Field, SQLModel
+
+from ...utils.helpers import parse_uuid
 
 
 class ZMSSchedulerRegistry(SQLModel, table=True):

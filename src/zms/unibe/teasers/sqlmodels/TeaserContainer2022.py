@@ -1,5 +1,5 @@
-from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from ...utils.helpers import get_attr
 
 
 class TeaserContainer2022(ZMSBase, table=True):

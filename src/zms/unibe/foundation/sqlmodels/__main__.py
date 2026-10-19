@@ -1,4 +1,3 @@
-from zms.unibe.utils.zms2sql import zms2sql
 from .CodeBlock import CodeBlock
 from .ZMSDocument import ZMSDocument
 from .ZMSFile import ZMSFile
@@ -7,6 +6,7 @@ from .ZMSGraphic import ZMSGraphic
 from .ZMSSite import ZMSSite
 from .ZMSTable import ZMSTable
 from .ZMSTextarea import ZMSTextarea
+from ...utils.zms2sql import zms2sql
 
 
 def update_zmssites(zms_context):

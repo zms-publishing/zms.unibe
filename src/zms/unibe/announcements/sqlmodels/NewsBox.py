@@ -1,8 +1,10 @@
 from datetime import datetime
 from uuid import UUID
-from sqlmodel import Field, Column, DateTime
-from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_url, parse_datetime, get_parent_node_uuid
+
+from sqlmodel import Column, DateTime, Field
+
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from ...utils.helpers import get_attr, get_parent_node_uuid, get_url, parse_datetime
 
 
 class NewsBox(ZMSBase, table=True):

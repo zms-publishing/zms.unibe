@@ -1,8 +1,10 @@
 from datetime import datetime
-from sqlmodel import Field, Column, DateTime, Date, String
+
 from sqlalchemy.dialects import postgresql
-from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_data, parse_datetime, local_timezone
+from sqlmodel import Column, DateTime, Field, String
+
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from ...utils.helpers import get_attr, get_data, local_timezone, parse_datetime
 
 
 class ZMSAgenda(ZMSBase, table=True):

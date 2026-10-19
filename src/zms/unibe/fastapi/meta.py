@@ -1,6 +1,7 @@
-from enum import Enum
-from Products.zms.standard import pybool
 import os
+from enum import Enum
+
+from Products.zms.standard import pybool
 
 
 # https://fastapi.tiangolo.com/tutorial/path-operation-configuration/#tags-with-enums

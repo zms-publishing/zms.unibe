@@ -3,8 +3,8 @@
 # https://python-rq.org/docs/jobs/
 
 from rq.cron import register
-from zms.unibe.tasks.demo import intensive_data_process
 
+from .demo import intensive_data_process
 
 register(
     intensive_data_process,

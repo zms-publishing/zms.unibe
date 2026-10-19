@@ -1,11 +1,12 @@
-from fastapi import APIRouter, HTTPException
-from uuid import UUID
 from datetime import datetime, timedelta
+from uuid import UUID
 
-from zms.unibe.utils.helpers import local_timezone
-from zms.unibe.fastapi.meta import Tags
-from zms.unibe.utils.dependencies import QueueDependency
-from zms.unibe.tasks.task_config import register
+from fastapi import APIRouter, HTTPException
+
+from .meta import Tags
+from ..tasks.task_config import register
+from ..utils.dependencies import QueueDependency
+from ..utils.helpers import local_timezone
 
 router = APIRouter(prefix="/queue", tags=[Tags.redis])
 

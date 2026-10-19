@@ -4,14 +4,14 @@ from fastapi import APIRouter, Query
 from fastapi_cache.decorator import cache
 from sqlmodel import not_, select
 
-from zms.unibe.announcements.schemas import MediaReleasesSchema as schema
-from zms.unibe.announcements.sqlmodels import MediaNews as model
-from zms.unibe.fastapi.meta import Tags
-from zms.unibe.foundation.sqlmodels.ZMSSite import ZMSSite
-from zms.unibe.mobileapp.schemas.NewsEventsSchema import Section
-from zms.unibe.utils.dependencies import SessionDependency
-from zms.unibe.utils.enums import Locale
-from zms.unibe.utils.helpers import get_attr_by_lang, strip_cmstest
+from ...announcements.schemas import MediaReleasesSchema as schema
+from ...announcements.sqlmodels import MediaNews as model
+from ...fastapi.meta import Tags
+from ...foundation.sqlmodels.ZMSSite import ZMSSite
+from ...mobileapp.schemas.NewsEventsSchema import Section
+from ...utils.dependencies import SessionDependency
+from ...utils.enums import Locale
+from ...utils.helpers import get_attr_by_lang, strip_cmstest
 
 router = APIRouter(tags=[Tags.mobile])
 

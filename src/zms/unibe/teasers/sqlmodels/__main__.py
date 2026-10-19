@@ -1,14 +1,14 @@
-from zms.unibe.utils.zms2sql import zms2sql
+from .Hero import Hero
+from .Hero2022 import Hero2022
 from .TeaserContainer2022 import TeaserContainer2022
 from .TeaserElement2022 import TeaserElement2022
-from .Hero2022 import Hero2022
-from .Hero import Hero
+from ...utils.zms2sql import zms2sql
 
 
 def update_teasers(zms_context):
     # Example: Drop all sql tables and init ZMSSite to link using foreign keys
     #
-    # from zms.unibe.utils.zms2sql.tables import drop_all
+    # ...utils.zms2sql.tables import drop_all
     # drop_all(verbose=True)
     # zms2sql([ZMSSite], zms_context, verbose=True)
     
