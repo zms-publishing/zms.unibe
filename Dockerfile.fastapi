@@ -26,8 +26,6 @@ RUN set -- \
     set -- "$@" -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt"; \
     $VENV_HOME/bin/pip install --upgrade --upgrade-strategy eager "$@"
 
-COPY ./conf/* $VENV_HOME/etc/
-# to detect app/main.py automatically
-WORKDIR /app/zope/src/zms-unibe
+COPY ./src/zms/unibe/conf/* $VENV_HOME/etc/
 
-CMD ["/app/zope/bin/fastapi", "dev", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["/app/zope/bin/fastapi", "dev", "--entrypoint", "zms.unibe.fastapi.app:api", "--host", "0.0.0.0", "--port", "8000"]
