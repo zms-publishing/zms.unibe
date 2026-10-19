@@ -6,7 +6,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from sqlmodel import SQLModel
 
-from ..fastapi.app import import_sqlmodels_recursively
+from zms.unibe.fastapi.app import import_sqlmodels_recursively
 
 import_sqlmodels_recursively()
 

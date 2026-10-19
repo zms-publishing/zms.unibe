@@ -4,7 +4,7 @@
 
 from rq.cron import register
 
-from .demo import intensive_data_process
+from zms.unibe.tasks.demo import intensive_data_process
 
 register(
     intensive_data_process,
