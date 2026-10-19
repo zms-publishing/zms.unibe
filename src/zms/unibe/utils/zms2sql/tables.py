@@ -1,12 +1,12 @@
-import time
-import uuid
 import collections
+import time
 import traceback
+import uuid
 
 from devtools import debug
-from sqlmodel import SQLModel, Session, select, inspect
+from sqlmodel import SQLModel, Session, inspect, select
 
-from zms.unibe.utils.db import connect_sqldb
+from ...utils.db import connect_sqldb
 
 
 def drop_all(verbose=False):

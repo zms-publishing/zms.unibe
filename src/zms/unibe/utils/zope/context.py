@@ -1,11 +1,13 @@
 import pathlib
-import Zope2
+
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.users import system as user
+from fastapi import HTTPException
+from zope.globalrequest import setRequest
+
+import Zope2
 from Testing.makerequest import makerequest
 from Zope2.Startup.run import make_wsgi_app
-from zope.globalrequest import setRequest
-from fastapi import HTTPException
 
 zope_conf_path = pathlib.Path(__file__).parent.joinpath('zope.conf').resolve()
 _zope_initialized = False

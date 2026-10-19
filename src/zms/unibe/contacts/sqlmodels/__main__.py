@@ -1,9 +1,9 @@
-from zms.unibe.utils.zms2sql import zms2sql
 from .ContactBox import ContactBox
 from .ContactBoxSection import ContactBoxSection
 from .Person import Person
 from .Team import Team
 from .TeamSection import TeamSection
+from ...utils.zms2sql import zms2sql
 
 
 def update_contacts(zms_context):

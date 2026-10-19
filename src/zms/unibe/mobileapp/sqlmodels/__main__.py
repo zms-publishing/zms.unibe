@@ -1,20 +1,20 @@
-import uuid
 import json
+import uuid
 from datetime import datetime, timezone
 
-from sqlmodel import Session, inspect, select, or_
+from sqlmodel import Session, inspect, or_, select
 
-from zms.unibe.agenda.AgendaBridge import AgendaBridge
-from zms.unibe.agenda.sqlmodels.AgendaFilemaker import AgendaFilemaker
-from zms.unibe.agenda.sqlmodels.AgendaLibraryDE import AgendaLibraryDE
-from zms.unibe.agenda.sqlmodels.AgendaLibraryEN import AgendaLibraryEN
-from zms.unibe.agenda.sqlmodels.ZMSAgenda import ZMSAgenda
-from zms.unibe.teasers.sqlmodels.TeaserElement2022 import TeaserElement2022
-from zms.unibe.announcements.sqlmodels.NewsBox import NewsBox
-from zms.unibe.mobileapp.sqlmodels.ServiceLinks import ServiceLink
-from zms.unibe.utils.db import connect_sqldb
-from zms.unibe.utils.zms2sql import zms2sql
 from .NewsEvents import NewsEvents
+from ...agenda.AgendaBridge import AgendaBridge
+from ...agenda.sqlmodels.AgendaFilemaker import AgendaFilemaker
+from ...agenda.sqlmodels.AgendaLibraryDE import AgendaLibraryDE
+from ...agenda.sqlmodels.AgendaLibraryEN import AgendaLibraryEN
+from ...agenda.sqlmodels.ZMSAgenda import ZMSAgenda
+from ...announcements.sqlmodels.NewsBox import NewsBox
+from ...mobileapp.sqlmodels.ServiceLinks import ServiceLink
+from ...teasers.sqlmodels.TeaserElement2022 import TeaserElement2022
+from ...utils.db import connect_sqldb
+from ...utils.zms2sql import zms2sql
 
 
 def update_newsevents():

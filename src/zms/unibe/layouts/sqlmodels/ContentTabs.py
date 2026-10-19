@@ -1,4 +1,4 @@
-from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 
 class ContentTabs(ZMSBase, table=True):

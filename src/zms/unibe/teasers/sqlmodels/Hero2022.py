@@ -1,5 +1,5 @@
-from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_url, get_size
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from ...utils.helpers import get_attr, get_size, get_url
 
 
 class Hero2022(ZMSBase, table=True):

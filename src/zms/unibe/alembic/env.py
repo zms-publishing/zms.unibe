@@ -1,12 +1,12 @@
+import os
 from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from alembic import context
-
-import os
 from sqlmodel import SQLModel
-from app.main import import_sqlmodels_recursively
+
+from zms.unibe.fastapi.app import import_sqlmodels_recursively
 
 import_sqlmodels_recursively()
 

@@ -7,7 +7,7 @@ def register(task: str, *args, **kwargs):
     
     match task:
         case "intensive_data_process":
-            from zms.unibe.tasks.demo import intensive_data_process
+            from .demo import intensive_data_process
             return intensive_data_process(*args, **kwargs)
         case _:
             raise ValueError(f"Unknown task: {task}")

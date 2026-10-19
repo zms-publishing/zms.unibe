@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException
-from typing import Optional
 import json
+from typing import Optional
 
-from zms.unibe.fastapi.meta import Tags
-from zms.unibe.utils .dependencies import CacheDependency
+from fastapi import APIRouter, HTTPException
+
+from .meta import Tags
+from ..utils.dependencies import CacheDependency
 
 router = APIRouter(prefix="/cache", tags=[Tags.redis])
 

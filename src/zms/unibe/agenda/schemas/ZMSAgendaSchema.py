@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from zms.unibe.agenda.schemas.ZMSAgendaEventSchema import ZMSAgendaEventSchema
+
+from ...agenda.schemas.ZMSAgendaEventSchema import ZMSAgendaEventSchema
 
 
 # TODO: this is an example to prove the concept with ZMSAgendaResponse

@@ -1,8 +1,10 @@
 from datetime import date
-from sqlmodel import Field, Column, DateTime, String
+
 from sqlalchemy.dialects import postgresql
-from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_url, parse_datetime
+from sqlmodel import Column, DateTime, Field, String
+
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from ...utils.helpers import get_attr, get_url, parse_datetime
 
 
 class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=UniaktuellArticle&types=%2A

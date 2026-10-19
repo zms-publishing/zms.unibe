@@ -2,9 +2,9 @@
 # by applying ClassSecurityInfo and ModuleSecurityInfo
 # for the following classes and methods
 
-from zms.unibe.agenda import OutlookConnector
-from zms.unibe.agenda import AgendaBridge
+from ...agenda import OutlookConnector
+from ...agenda import AgendaBridge
 
-from zms.unibe.foundation import ZMSSiteOverview
+from ...foundation import ZMSSiteOverview
 
-from zms.unibe.utils import helpers
+from ...utils import helpers

@@ -3,18 +3,17 @@ import time
 from datetime import datetime
 
 import requests
-from sqlmodel import inspect, Session
 from devtools import debug
+from sqlmodel import Session, inspect
 
-from zms.unibe.utils.db import connect_sqldb
-from zms.unibe.utils.helpers import local_timezone
 from .AgendaFilemaker import AgendaFilemaker
 from .AgendaLibraryDE import AgendaLibraryDE
 from .AgendaLibraryEN import AgendaLibraryEN
 from .StatusMessages import StatusMessage
-
-from zms.unibe.utils.zms2sql import zms2sql
 from .ZMSAgenda import ZMSAgenda
+from ...utils.db import connect_sqldb
+from ...utils.helpers import local_timezone
+from ...utils.zms2sql import zms2sql
 
 
 def update_agendas(zms_context):

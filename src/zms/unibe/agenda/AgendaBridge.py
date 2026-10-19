@@ -1,20 +1,19 @@
 # AgendaBridge aggregates events from different data sources
 # see also sqlmodels/__main__.py to store in PostgreSQL for unibe.app
 
-import requests
 import json
 import logging
 import os
-
-from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
-from AccessControl.class_init import InitializeClass
-from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
-from ZTUtils.Lazy import LazyMap
 from operator import attrgetter
 
-from ..utils.helpers import DotDict, local_timezone
-from .OutlookConnector import OutlookConnector
+import requests
+from AccessControl import ClassSecurityInfo, ModuleSecurityInfo
+from AccessControl.class_init import InitializeClass
 
+from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
+from ZTUtils.Lazy import LazyMap
+from .OutlookConnector import OutlookConnector
+from ..utils.helpers import DotDict, local_timezone
 
 print('Addon: zms.unibe.agenda.AgendaBridge')
 security = ModuleSecurityInfo('zms.unibe.agenda.AgendaBridge')  # allow module import in RestrictedPython

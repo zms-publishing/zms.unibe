@@ -1,15 +1,16 @@
 import typer
-from zms.unibe.agenda.sqlmodels.__main__ import update_agendas, fetch_agendas, fetch_statusmessages
-from zms.unibe.mobileapp.sqlmodels.__main__ import update_newsevents, update_servicelinks
-from zms.unibe.foundation.sqlmodels.__main__ import update_zmssites, update_zmsobjects
-from zms.unibe.teasers.sqlmodels.__main__ import update_teasers, update_heros
-from zms.unibe.announcements.sqlmodels.__main__ import update_newsboxes, update_mediareleases
-from zms.unibe.uniaktuell.sqlmodels.__main__ import update_uniaktuell
-from zms.unibe.datatables.sqlmodels.__main__ import update_datatables, update_boris
-from zms.unibe.formulator.sqlmodels.__main__ import update_formulator
-from zms.unibe.contacts.sqlmodels.__main__ import update_contacts
-from zms.unibe.layouts.sqlmodels.__main__ import update_layouts
-from zms.unibe.utils.zope.context import create_zope_app_context
+
+from ...agenda.sqlmodels.__main__ import fetch_agendas, fetch_statusmessages, update_agendas
+from ...announcements.sqlmodels.__main__ import update_mediareleases, update_newsboxes
+from ...contacts.sqlmodels.__main__ import update_contacts
+from ...datatables.sqlmodels.__main__ import update_boris, update_datatables
+from ...formulator.sqlmodels.__main__ import update_formulator
+from ...foundation.sqlmodels.__main__ import update_zmsobjects, update_zmssites
+from ...layouts.sqlmodels.__main__ import update_layouts
+from ...mobileapp.sqlmodels.__main__ import update_newsevents, update_servicelinks
+from ...teasers.sqlmodels.__main__ import update_heros, update_teasers
+from ...uniaktuell.sqlmodels.__main__ import update_uniaktuell
+from ...utils.zope.context import create_zope_app_context
 
 AVAILABLE_COMMANDS = {
     # DEFAULT

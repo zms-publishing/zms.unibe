@@ -1,7 +1,9 @@
 from datetime import datetime
 from uuid import UUID
-from sqlmodel import SQLModel, Field, DateTime
-from zms.unibe.utils.helpers import (
+
+from sqlmodel import DateTime, Field, SQLModel
+
+from ...utils.helpers import (
     get_attr,
     get_level,
     get_parent_node_sort_id,

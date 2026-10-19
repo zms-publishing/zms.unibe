@@ -1,7 +1,9 @@
 from uuid import UUID
-from sqlmodel import SQLModel, Field
-from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import (
+
+from sqlmodel import Field, SQLModel
+
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from ...utils.helpers import (
     get_attr,
     get_children_count,
     get_parent_home_uuid,

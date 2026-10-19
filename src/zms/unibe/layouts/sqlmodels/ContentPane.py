@@ -1,6 +1,7 @@
 from uuid import UUID
-from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_children_count, get_parent_node_uuid
+
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from ...utils.helpers import get_attr, get_children_count, get_parent_node_uuid
 
 
 class ContentPane(ZMSBase, table=True):

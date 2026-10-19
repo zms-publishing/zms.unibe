@@ -8,14 +8,14 @@ from fastapi import APIRouter, Query
 from fastapi_cache.decorator import cache
 from sqlmodel import not_, or_, select
 
-from zms.unibe.agenda.sqlmodels.StatusMessages import StatusMessage
-from zms.unibe.fastapi.meta import Tags
-from zms.unibe.foundation.sqlmodels.ZMSSite import ZMSSite
-from zms.unibe.mobileapp.schemas import NewsEventsSchema as schema
-from zms.unibe.mobileapp.sqlmodels.NewsEvents import NewsEvents
-from zms.unibe.utils.dependencies import SessionDependency
-from zms.unibe.utils.enums import Locale, SiteType
-from zms.unibe.utils.helpers import get_attr_by_lang, local_timezone, strip_cmstest
+from ...agenda.sqlmodels.StatusMessages import StatusMessage
+from ...fastapi.meta import Tags
+from ...foundation.sqlmodels.ZMSSite import ZMSSite
+from ...mobileapp.schemas import NewsEventsSchema as schema
+from ...mobileapp.sqlmodels.NewsEvents import NewsEvents
+from ...utils.dependencies import SessionDependency
+from ...utils.enums import Locale, SiteType
+from ...utils.helpers import get_attr_by_lang, local_timezone, strip_cmstest
 
 router = APIRouter(tags=[Tags.mobile])
 

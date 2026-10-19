@@ -2,11 +2,13 @@
 # https://learn.microsoft.com/en-us/graph/api/resources/calendar-overview?view=graph-rest-1.0
 
 import asyncio
-import json
-import requests
 import base64
+import json
 import logging
+
+import requests
 from dotenv import load_dotenv
+
 try:
     from azure.identity import EnvironmentCredential
     from msgraph import GraphServiceClient
@@ -21,8 +23,8 @@ from AccessControl.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
 
 from Products.zms.standard import pybool
-from zms.unibe.utils.helpers import DotDict, local_timezone
-from zms.unibe.agenda.schemas.ZMSAgendaOutlookSchema import ZMSAgendaOutlookSchema
+from ..utils.helpers import DotDict, local_timezone
+from ..agenda.schemas.ZMSAgendaOutlookSchema import ZMSAgendaOutlookSchema
 
 if not MS_GRAPH_API_AVAILABLE:
     print("Addon: zms.unibe.agenda.OutlookConnector disabled -> zms.unibe[msgraphapi] extra required")

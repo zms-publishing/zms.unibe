@@ -1,5 +1,5 @@
-from zms.unibe.foundation.sqlmodels.ZMSBase import ZMSBase
-from zms.unibe.utils.helpers import get_attr, get_children_count, get_json_schema
+from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from ...utils.helpers import get_attr, get_children_count, get_json_schema
 
 
 class ZMSFormulator(ZMSBase, table=True):

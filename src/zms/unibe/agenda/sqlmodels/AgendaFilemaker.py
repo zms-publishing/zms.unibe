@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlmodel import SQLModel, Field, Column, DateTime
+from sqlmodel import Column, DateTime, Field, SQLModel
 
 
 class AgendaFilemaker(SQLModel, table=True):  # to import https://agenda.unibe.ch/agenda.json

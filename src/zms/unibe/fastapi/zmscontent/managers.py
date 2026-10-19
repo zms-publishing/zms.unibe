@@ -1,12 +1,12 @@
 import os
 
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from fastapi_cache.decorator import cache
 
-from zms.unibe.utils.zope.context import get_zmsindex
-from zms.unibe.utils.dependencies import ContextDependency
-from zms.unibe.fastapi.meta import Tags
-from zms.unibe.utils.enums import ContentModel
+from ...fastapi.meta import Tags
+from ...utils.dependencies import ContextDependency
+from ...utils.enums import ContentModel
+from ...utils.zope.context import get_zmsindex
 
 router = APIRouter(prefix="/zms/content", tags=[Tags.content])
 

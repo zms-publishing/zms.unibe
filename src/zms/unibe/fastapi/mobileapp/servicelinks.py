@@ -4,13 +4,13 @@ from fastapi import APIRouter
 from fastapi_cache.decorator import cache
 from sqlmodel import select
 
-from zms.unibe.fastapi.meta import Tags
-from zms.unibe.mobileapp.schemas import ServiceLinksSchema as schema
-from zms.unibe.mobileapp.sqlmodels.ServiceLinks import ServiceLink
-from zms.unibe.utils.dependencies import SessionDependency
-from zms.unibe.utils.enums import Locale
-from zms.unibe.utils.helpers import get_attr_by_lang
-from zms.unibe.utils.helpers import local_timezone
+from ...fastapi.meta import Tags
+from ...mobileapp.schemas import ServiceLinksSchema as schema
+from ...mobileapp.sqlmodels.ServiceLinks import ServiceLink
+from ...utils.dependencies import SessionDependency
+from ...utils.enums import Locale
+from ...utils.helpers import get_attr_by_lang
+from ...utils.helpers import local_timezone
 
 router = APIRouter(prefix="/app", tags=[Tags.mobile])
 

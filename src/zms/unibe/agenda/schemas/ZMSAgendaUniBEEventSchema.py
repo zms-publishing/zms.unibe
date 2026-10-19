@@ -1,5 +1,5 @@
 from Products.zms import _blobfields
-from zms.unibe.utils.helpers import local_timezone, get_when
+from ...utils.helpers import get_when, local_timezone
 
 
 class ZMSAgendaUniBEEventSchema:
@@ -33,7 +33,7 @@ class ZMSAgendaUniBEEventSchema:
             'eventInfosPreview': None,
             'eventTagline': None,
             'eventCategories': event.attr('attr_dc_subject', REQUEST={'lang': lang}).split('\r\n'),
-            'eventImage': event.attr('titleimage', REQUEST={'lang': lang}).getHef(REQUEST={'lang': lang}) if isinstance(
+            'eventImage': event.attr('titleimage', REQUEST={'lang': lang}).getHref(REQUEST={'lang': lang}) if isinstance(
                 event.attr('titleimage', REQUEST={'lang': lang}), _blobfields.MyImage) else None,
             'eventUrl': context.getLinkUrl(event.attr('eventUrl'), REQUEST={'lang': lang}),
         }

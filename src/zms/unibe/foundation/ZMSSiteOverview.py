@@ -1,11 +1,12 @@
 import json
-import xmltodict
 import logging
-from anytree import Node, RenderTree
-from anytree.exporter import JsonExporter, DictExporter
 
-from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
+import xmltodict
+from AccessControl import ClassSecurityInfo, ModuleSecurityInfo
 from AccessControl.class_init import InitializeClass
+from anytree import Node, RenderTree
+from anytree.exporter import DictExporter, JsonExporter
+
 from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
 
 print("Addon: zms.unibe.foundation.ZMSSiteOverview")

@@ -6,10 +6,10 @@ from fastapi import APIRouter, Query
 from fastapi_cache.decorator import cache
 from sqlmodel import select
 
-from zms.unibe.fastapi.meta import Tags
-from zms.unibe.maintenance.sqlmodels.ZMSSchedulerRegistry import ZMSSchedulerRegistry
-from zms.unibe.utils.zope.context import get_zmsindex
-from zms.unibe.utils.dependencies import ContextDependency, SessionDependency
+from ...fastapi.meta import Tags
+from ...maintenance.sqlmodels.ZMSSchedulerRegistry import ZMSSchedulerRegistry
+from ...utils.dependencies import ContextDependency, SessionDependency
+from ...utils.zope.context import get_zmsindex
 
 router = APIRouter(prefix="/zms/scheduler", tags=[Tags.scheduler])
 # See sequence diagram:

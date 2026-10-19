@@ -2,9 +2,10 @@
 
 import io
 import os
-from markitdown import MarkItDown  #, StreamInfo
+
+from markitdown import MarkItDown  # , StreamInfo
+
 from Products.zms.standard import pybool
-from ZPublisher.interfaces import IPubSuccess
 
 global CSP_ENABLED
 global MD_ENABLED

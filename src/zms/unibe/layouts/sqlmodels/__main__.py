@@ -1,10 +1,10 @@
-from zms.unibe.utils.zms2sql import zms2sql
 from .ContentPane import ContentPane
 from .ContentTabs import ContentTabs
 from .TwoCols import TwoCols
 from .UniBEEvent import UniBEEvent
 from .UniBEFactsheet import UniBEFactsheet
 from .WeiterbildungStudiengang import WeiterbildungStudiengang
+from ...utils.zms2sql import zms2sql
 
 
 def update_layouts(zms_context):

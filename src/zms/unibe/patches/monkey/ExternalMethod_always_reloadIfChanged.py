@@ -1,5 +1,7 @@
+import os
+import sys
+
 from Products.ExternalMethod.ExternalMethod import ExternalMethod
-import os, sys
 
 """
 Load changes from filesystem even if not in debug mode. So changes to files 
