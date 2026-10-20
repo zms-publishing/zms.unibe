@@ -1,4 +1,5 @@
 import json
+import logging
 import uuid
 from datetime import datetime, timezone
 
@@ -15,6 +16,8 @@ from ...mobileapp.sqlmodels.ServiceLinks import ServiceLink
 from ...teasers.sqlmodels.TeaserElement2022 import TeaserElement2022
 from ...utils.db import connect_sqldb
 from ...utils.zms2sql import zms2sql
+
+LOGGER = logging.getLogger('zms.unibe.mobileapp.sqlmodels.__main__')
 
 
 def update_newsevents():
@@ -301,7 +304,12 @@ def update_newsevents():
 
             for res in results.all():
                 
-                events_json = json.loads(res.cached_data or '[]')
+                try:
+                    events_json = json.loads(res.cached_data or '[]')
+                except Exception as e:
+                    events_json = []
+                    LOGGER.error(f'Error on update_newsevents: ZMSAgenda {res.uuid} at {res.path} - {e}')
+
                 # include only given categories if set
                 events_json = AgendaBridge.include_only(events_json, res.categories_include_only)
                 # filter out given categories if set
