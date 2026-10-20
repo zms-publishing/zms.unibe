@@ -64,6 +64,7 @@ dependencies = [
     "opensearch-py",                    # https://github.com/opensearch-project/opensearch-py
     "pandas",                           # https://github.com/pandas-dev/pandas
     "pdfminer.six",                     # https://github.com/pdfminer/pdfminer.six
+    "psycopg[binary]",                  # https://github.com/psycopg/psycopg
     "psycopg2-binary",                  # https://github.com/psycopg/psycopg2
     "pydantic",                         # https://github.com/pydantic
     "pytz",                             # https://github.com/stub42/pytz -> LEGACY
