@@ -1,29 +1,25 @@
-from datetime import datetime
-
-from sqlalchemy.dialects import postgresql
-from sqlmodel import Column, DateTime, Field, String
-
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
 from ...utils.helpers import get_attr, get_data, local_timezone, parse_datetime
+from ...utils.types import OptionalUTCNow, PostgreSQLArray
 
 
 class ZMSAgenda(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
     attr_dc_type: str | None
     hide_past_events: bool
-    categories: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
-    categories_include_only: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
-    categories_filter_out: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
+    categories: PostgreSQLArray
+    categories_include_only: PostgreSQLArray
+    categories_filter_out: PostgreSQLArray
     include_filemaker: bool
     include_library: bool
     include_itstatusmessages: bool
     include_outlook: bool
     outlook_upn: str | None
     limit_time_range: bool
-    begin_date: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))  # TODO: Date() stores 2026-01-30 instead of 2026-01-30 23:00:00.000000 +00:00 UTC = 31.01.2026 00:00 CET
-    end_date: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))  # TODO: Date() stores 2025-09-29 instead of 2025-09-29 22:00:00.000000 +00:00 UTC = 30.09.2025 00:00 CET
+    begin_date: OptionalUTCNow  # TODO: Date() stores 2026-01-30 instead of 2026-01-30 23:00:00.000000 +00:00 UTC = 31.01.2026 00:00 CET
+    end_date: OptionalUTCNow  # TODO: Date() stores 2025-09-29 instead of 2025-09-29 22:00:00.000000 +00:00 UTC = 30.09.2025 00:00 CET
     cached_data: str | None
-    lastupdate: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    lastupdate: OptionalUTCNow
 
     @staticmethod
     def get_zms_catalog_query():

@@ -4,9 +4,10 @@ import re
 from datetime import datetime
 from uuid import UUID
 
-from sqlmodel import Column, DateTime, Field, SQLModel
+from sqlmodel import Field, SQLModel
 
 from ...utils.helpers import local_timezone, parse_uuid
+from ...utils.types import OptionalUTCNow
 
 
 class ZMSSurveyJSSubmissions(SQLModel, table=True):
@@ -15,7 +16,7 @@ class ZMSSurveyJSSubmissions(SQLModel, table=True):
     survey_uuid_zms: UUID
     survey_path_zms: str
     survey_data_json: str
-    survey_submitted_at: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    survey_submitted_at: OptionalUTCNow
 
     @classmethod
     def from_submit(cls, survey_obj, survey_uuid_submit):

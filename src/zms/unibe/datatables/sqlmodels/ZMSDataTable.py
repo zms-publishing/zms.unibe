@@ -1,9 +1,6 @@
-from datetime import datetime
-
-from sqlmodel import Column, DateTime, Field
-
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
 from ...utils.helpers import get_data, get_url, parse_datetime
+from ...utils.types import OptionalUTCNow
 
 
 class ZMSDataTable(ZMSBase, table=True):
@@ -23,7 +20,7 @@ class ZMSDataTable(ZMSBase, table=True):
     upload_data_de: str | None
     upload_data_en: str | None
     upload_data_fr: str | None
-    lastupdate: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    lastupdate: OptionalUTCNow
 
     @staticmethod
     def get_zms_catalog_query():

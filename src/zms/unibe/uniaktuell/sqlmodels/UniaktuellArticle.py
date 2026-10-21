@@ -1,10 +1,6 @@
-from datetime import date
-
-from sqlalchemy.dialects import postgresql
-from sqlmodel import Column, DateTime, Field, String
-
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
 from ...utils.helpers import get_attr, get_url, parse_datetime
+from ...utils.types import OptionalUTCNow, PostgreSQLArray
 
 
 class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=UniaktuellArticle&types=%2A
@@ -12,15 +8,15 @@ class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
     title_de: str
     title_en: str
     title_fr: str
-    publish_dt_de: date | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    publish_dt_en: date | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    publish_dt_fr: date | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    publish_dt_de: OptionalUTCNow
+    publish_dt_en: OptionalUTCNow
+    publish_dt_fr: OptionalUTCNow
     abstract_de: str | None
     abstract_en: str | None
     abstract_fr: str | None
-    category_de: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
-    category_en: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
-    category_fr: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
+    category_de: PostgreSQLArray
+    category_en: PostgreSQLArray
+    category_fr: PostgreSQLArray
     topics_de: str | None
     topics_en: str | None
     topics_fr: str | None

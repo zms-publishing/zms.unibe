@@ -1,10 +1,10 @@
-from datetime import datetime
 from uuid import UUID
 
-from sqlmodel import Column, DateTime, Field
+from sqlmodel import Field
 
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
 from ...utils.helpers import get_attr, get_parent_node_uuid, get_url, parse_datetime
+from ...utils.types import OptionalUTCNow
 
 
 class TeaserElement2022(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=teaser_element_2022&types=%2A
@@ -13,8 +13,8 @@ class TeaserElement2022(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
     title_en: str
     title_fr: str
     type: str
-    start_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    end_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    start_dt: OptionalUTCNow
+    end_dt: OptionalUTCNow
     location: str | None
 
     url_de: str | None
