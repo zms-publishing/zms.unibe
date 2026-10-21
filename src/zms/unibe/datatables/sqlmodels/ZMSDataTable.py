@@ -1,5 +1,5 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_data, get_url, parse_datetime
+from ...utils.helpers import get_data, get_url, local_timezone
 from ...utils.types import OptionalUTCNow
 
 
@@ -46,6 +46,6 @@ class ZMSDataTable(ZMSBase, table=True):
             'upload_data_de':   get_data(obj, 'datafile', 'ger', json_as_py=False)[0],
             'upload_data_en':   get_data(obj, 'datafile', 'eng', json_as_py=False)[0],
             'upload_data_fr':   get_data(obj, 'datafile', 'fra', json_as_py=False)[0],
-            'lastupdate':       parse_datetime(obj.attr('_datalastupdated')),
+            'lastupdate':       local_timezone(obj.attr('_datalastupdated')),
         }
         return cls.model_validate(mapping)

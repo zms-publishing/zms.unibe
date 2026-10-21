@@ -1,5 +1,5 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_url, parse_datetime
+from ...utils.helpers import get_attr, get_url, local_timezone
 from ...utils.types import OptionalUTCNow, PostgreSQLArray
 
 
@@ -42,9 +42,12 @@ class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
             'title_de':         get_attr(obj, 'title', 'ger'),
             'title_en':         get_attr(obj, 'title', 'eng'),
             'title_fr':         get_attr(obj, 'title', 'fra'),
-            'publish_dt_de':    parse_datetime(get_attr(obj, 'publishdate', 'ger')),
-            'publish_dt_en':    parse_datetime(get_attr(obj, 'publishdate', 'eng')),
-            'publish_dt_fr':    parse_datetime(get_attr(obj, 'publishdate', 'fra')),
+            'publish_dt_de':    local_timezone(
+                local_timezone(get_attr(obj, 'publishdate', 'ger')).date()),
+            'publish_dt_en':    local_timezone(
+                local_timezone(get_attr(obj, 'publishdate', 'eng')).date()),
+            'publish_dt_fr':    local_timezone(
+                local_timezone(get_attr(obj, 'publishdate', 'fra')).date()),
             'abstract_de':      get_attr(obj, 'attr_dc_description', 'ger'),
             'abstract_en':      get_attr(obj, 'attr_dc_description', 'eng'),
             'abstract_fr':      get_attr(obj, 'attr_dc_description', 'fra'),

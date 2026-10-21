@@ -1,9 +1,8 @@
 from datetime import datetime
 
-from sqlmodel import Column, Date, Field, Time
-
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_children_count, get_size, get_url, parse_datetime
+from ...utils.helpers import get_attr, get_children_count, get_size, get_url, local_timezone
+from ...utils.types import OptionalUTCNow
 
 
 class UniBEEvent(ZMSBase, table=True):
@@ -20,10 +19,8 @@ class UniBEEvent(ZMSBase, table=True):
     img_size_de: int | None
     img_size_en: int | None
     img_size_fr: int | None
-    start_at_date: datetime | None = Field(sa_column=Column(Date(), nullable=True))
-    start_at_time: datetime | None = Field(sa_column=Column(Time(timezone=False), nullable=True))
-    end_at_date: datetime | None = Field(sa_column=Column(Date(), nullable=True))
-    end_at_time: datetime | None = Field(sa_column=Column(Time(timezone=False), nullable=True))
+    start_datetime: OptionalUTCNow
+    end_datetime: OptionalUTCNow
     elements: int
 
     @staticmethod
@@ -47,10 +44,14 @@ class UniBEEvent(ZMSBase, table=True):
             'img_size_de':      get_size(obj, 'eventBild', 'ger'),
             'img_size_en':      get_size(obj, 'eventBild', 'eng'),
             'img_size_fr':      get_size(obj, 'eventBild', 'fra'),
-            'start_at_date':    parse_datetime(obj.attr('eventStart')),
-            'start_at_time':    parse_datetime(obj.attr('eventStarttime')),
-            'end_at_date':      parse_datetime(obj.attr('eventEnd')),
-            'end_at_time':      parse_datetime(obj.attr('eventEndtime')),
+            'start_datetime': local_timezone(
+                datetime.combine(
+                    local_timezone(obj.attr('eventStart')).date(),
+                    local_timezone(obj.attr('eventStarttime')).time())),
+            'end_datetime': local_timezone(
+                datetime.combine(
+                    local_timezone(obj.attr('eventEnd')).date(),
+                    local_timezone(obj.attr('eventEndtime')).time())),
             'elements':         get_children_count(obj),
         }
         return cls.model_validate(mapping)
