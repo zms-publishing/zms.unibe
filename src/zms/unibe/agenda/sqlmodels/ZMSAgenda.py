@@ -1,5 +1,5 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_data, local_timezone, parse_datetime
+from ...utils.helpers import get_attr, get_data, local_timezone
 from ...utils.types import OptionalUTCNow, PostgreSQLArray
 
 
@@ -16,8 +16,8 @@ class ZMSAgenda(ZMSBase, table=True):
     include_outlook: bool
     outlook_upn: str | None
     limit_time_range: bool
-    begin_date: OptionalUTCNow  # TODO: Date() stores 2026-01-30 instead of 2026-01-30 23:00:00.000000 +00:00 UTC = 31.01.2026 00:00 CET
-    end_date: OptionalUTCNow  # TODO: Date() stores 2025-09-29 instead of 2025-09-29 22:00:00.000000 +00:00 UTC = 30.09.2025 00:00 CET
+    begin_date: OptionalUTCNow
+    end_date: OptionalUTCNow
     cached_data: str | None
     lastupdate: OptionalUTCNow
 
@@ -41,9 +41,11 @@ class ZMSAgenda(ZMSBase, table=True):
             'include_outlook':          get_attr(obj, 'include_outlook'),
             'outlook_upn':              get_attr(obj, 'outlook_upn'),
             'limit_time_range':         get_attr(obj, 'limit_time_range'),
-            'begin_date':               local_timezone(parse_datetime(obj.attr('begin_date')), tz='UTC'),
-            'end_date':                 local_timezone(parse_datetime(obj.attr('end_date')), tz='UTC'),  # TODO: days_delta=1 to include end_date (="bis und mit") here as in OutlookConnector.get_calendar_events...?!
+            'begin_date':               local_timezone(
+                local_timezone(obj.attr('begin_date')).date()),
+            'end_date':                 local_timezone(
+                local_timezone(obj.attr('end_date')).date()),
             'cached_data':              get_data(obj, '_datafilecached', json_as_py=False)[0],
-            'lastupdate':               parse_datetime(obj.attr('_datalastupdated')),
+            'lastupdate':               local_timezone(obj.attr('_datalastupdated')),
         }
         return cls.model_validate(mapping)

@@ -1,8 +1,8 @@
 import logging
 import os
 import re
-import time
-from datetime import date, datetime, timedelta
+import time as t
+from datetime import date, datetime, time, timedelta
 from io import BytesIO
 from unittest.mock import MagicMock
 from uuid import UUID
@@ -89,12 +89,6 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
         tz = pytz.timezone(tz)
     except pytz.UnknownTimeZoneError:
         tz = pytz.timezone('Europe/Zurich')
-    if dt is None:
-        dt = datetime.now()
-    elif isinstance(dt, time.struct_time):
-        dt = datetime.fromtimestamp(time.mktime(dt))
-    elif isinstance(dt, DateTime):  # legacy Zope implementation, returned e.g. by ZopeTime()
-        dt = dt.ISO8601()
     try:
         if isinstance(dt, str):
             dt = datetime.fromisoformat(dt)
@@ -102,11 +96,19 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
             dt = datetime.fromtimestamp(dt)
     except (ValueError, TypeError):
         dt = datetime.fromtimestamp(0)  # datetime.datetime(1970, 1, 1, 1, 0)
-    dt = dt + timedelta(days=days_delta)
-    if type(dt) is date:
+    if dt is None:
+        dt = datetime.now()
+    elif isinstance(dt, t.struct_time):
+        dt = datetime.fromtimestamp(t.mktime(dt))
+    elif isinstance(dt, DateTime):  # legacy Zope implementation, returned e.g. by ZopeTime()
+        dt = dt.ISO8601()
+    elif type(dt) is date:
         # Please note: isinstance(dt, date) is also True for datetime objects, because datetime is a subclass of date
         # add 00:00:00 to a plain date object so that the time zone can be set to the datetime object in the next step
         dt = datetime.combine(dt, datetime.min.time())
+    elif type(dt) is time:
+        dt = datetime.combine(datetime.now().date(), dt)
+    dt = dt + timedelta(days=days_delta)
     return dt.astimezone(tz)
 
 
@@ -272,13 +274,6 @@ def get_children_count(obj, meta_id=None):
 
 def parse_uuid(uuid):
     return UUID(f'urn:uuid:{uuid.replace("uid:", "")}')
-
-
-def parse_datetime(value):
-    try:
-        return pytz.timezone('Europe/Zurich').localize(datetime(*value[:6]))
-    except (ValueError, TypeError):
-        return datetime(1970, 1, 1)
 
 
 def is_activated_by_checkbox_and_timeline(obj, lang=None):

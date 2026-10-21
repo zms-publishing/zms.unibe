@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlmodel import Field
 
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_parent_node_uuid, get_url, parse_datetime
+from ...utils.helpers import get_attr, get_parent_node_uuid, get_url, local_timezone
 from ...utils.types import OptionalUTCNow
 
 
@@ -52,8 +52,8 @@ class TeaserElement2022(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
             'title_en':         get_attr(obj, 'title', 'eng'),
             'title_fr':         get_attr(obj, 'title', 'fra'),
             'type':             obj.attr('teaser_type'),
-            'start_dt':         parse_datetime(obj.attr('event_date_start')),
-            'end_dt':           parse_datetime(obj.attr('event_date_end')),
+            'start_dt':         local_timezone(obj.attr('event_date_start')),
+            'end_dt':           local_timezone(obj.attr('event_date_end')),
             'location':         obj.attr('event_location'),
 
             'url_de':           get_url(obj, 'url', 'ger'),

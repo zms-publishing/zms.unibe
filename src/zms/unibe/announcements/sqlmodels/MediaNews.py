@@ -1,5 +1,5 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_url, parse_datetime
+from ...utils.helpers import get_attr, get_url, local_timezone
 from ...utils.types import OptionalUTCNow
 
 class MediaNews(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=media_news&types=%2A
@@ -38,9 +38,12 @@ class MediaNews(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?met
             'title_de':         get_attr(obj, 'title', 'ger'),
             'title_en':         get_attr(obj, 'title', 'eng'),
             'title_fr':         get_attr(obj, 'title', 'fra'),
-            'publish_dt_de':    parse_datetime(get_attr(obj, 'media_date', 'ger')),
-            'publish_dt_en':    parse_datetime(get_attr(obj, 'media_date', 'eng')),
-            'publish_dt_fr':    parse_datetime(get_attr(obj, 'media_date', 'fra')),
+            'publish_dt_de':    local_timezone(
+                local_timezone(get_attr(obj, 'media_date', 'ger')).date()),
+            'publish_dt_en':    local_timezone(
+                local_timezone(get_attr(obj, 'media_date', 'eng')).date()),
+            'publish_dt_fr':    local_timezone(
+                local_timezone(get_attr(obj, 'media_date', 'fra')).date()),
             'abstract_de':      get_attr(obj, 'media_lead', 'ger'),
             'abstract_en':      get_attr(obj, 'media_lead', 'eng'),
             'abstract_fr':      get_attr(obj, 'media_lead', 'fra'),
