@@ -1,7 +1,6 @@
-from datetime import datetime
 from uuid import UUID
 
-from sqlmodel import DateTime, Field, SQLModel
+from sqlmodel import Field, SQLModel
 
 from ...utils.helpers import (
     get_attr,
@@ -11,6 +10,7 @@ from ...utils.helpers import (
     parse_datetime,
     parse_uuid,
 )
+from ...utils.types import OptionalUTCNow
 
 
 class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inherit
@@ -19,18 +19,18 @@ class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inheri
     active_de: bool
     active_en: bool
     active_fr: bool
-    active_start_de: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
-    active_start_en: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
-    active_start_fr: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
-    active_end_de: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
-    active_end_en: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
-    active_end_fr: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
-    created_dt_de: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
-    created_dt_en: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
-    created_dt_fr: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
-    lastmod_dt_de: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
-    lastmod_dt_en: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
-    lastmod_dt_fr: datetime | None = Field(sa_type=DateTime(timezone=True), nullable=True)
+    active_start_de: OptionalUTCNow
+    active_start_en: OptionalUTCNow
+    active_start_fr: OptionalUTCNow
+    active_end_de: OptionalUTCNow
+    active_end_en: OptionalUTCNow
+    active_end_fr: OptionalUTCNow
+    created_dt_de: OptionalUTCNow
+    created_dt_en: OptionalUTCNow
+    created_dt_fr: OptionalUTCNow
+    lastmod_dt_de: OptionalUTCNow
+    lastmod_dt_en: OptionalUTCNow
+    lastmod_dt_fr: OptionalUTCNow
     sort_id_parent: int
     sort_id: int
     level: int

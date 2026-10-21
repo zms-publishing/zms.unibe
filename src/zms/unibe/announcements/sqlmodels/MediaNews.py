@@ -1,19 +1,15 @@
-from datetime import date
-
-from sqlmodel import Column, DateTime, Field
-
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
 from ...utils.helpers import get_attr, get_url, parse_datetime
-
+from ...utils.types import OptionalUTCNow
 
 class MediaNews(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=media_news&types=%2A
     __table_args__ = {'extend_existing': True}
     title_de: str
     title_en: str
     title_fr: str
-    publish_dt_de: date | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    publish_dt_en: date | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    publish_dt_fr: date | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    publish_dt_de: OptionalUTCNow
+    publish_dt_en: OptionalUTCNow
+    publish_dt_fr: OptionalUTCNow
     abstract_de: str | None
     abstract_en: str | None
     abstract_fr: str | None

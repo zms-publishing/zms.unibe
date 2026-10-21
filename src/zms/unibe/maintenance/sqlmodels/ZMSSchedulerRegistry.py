@@ -1,9 +1,10 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlmodel import Column, DateTime, Field, SQLModel
+from sqlmodel import Field, SQLModel
 
 from ...utils.helpers import parse_uuid
+from ...utils.types import OptionalUTCNow
 
 
 class ZMSSchedulerRegistry(SQLModel, table=True):
@@ -15,8 +16,8 @@ class ZMSSchedulerRegistry(SQLModel, table=True):
     exec_onchange: bool = False
     exec_zms2sql: bool = False
     exec_opensearch: bool = False
-    added_dt: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    processed_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    added_dt: OptionalUTCNow
+    processed_dt: OptionalUTCNow
 
     @classmethod
     def from_agenda(cls, obj):

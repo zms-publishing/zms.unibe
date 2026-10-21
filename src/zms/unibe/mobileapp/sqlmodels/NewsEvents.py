@@ -1,7 +1,8 @@
-from datetime import datetime
 from uuid import UUID
 
-from sqlmodel import Column, DateTime, Field, SQLModel
+from sqlmodel import Field, SQLModel
+
+from ...utils.types import OptionalUTCNow
 
 
 class NewsEvents(SQLModel, table=True):  # intermediate consolidation of Agendas, NewsBox, TeaserElement2022 for queries
@@ -11,9 +12,9 @@ class NewsEvents(SQLModel, table=True):  # intermediate consolidation of Agendas
     active_de: bool
     active_en: bool
     active_fr: bool
-    lastmod_dt_de: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    lastmod_dt_en: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    lastmod_dt_fr: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    lastmod_dt_de: OptionalUTCNow
+    lastmod_dt_en: OptionalUTCNow
+    lastmod_dt_fr: OptionalUTCNow
 
     title_de: str | None
     title_en: str | None
@@ -26,8 +27,8 @@ class NewsEvents(SQLModel, table=True):  # intermediate consolidation of Agendas
     level: int
     sort_id: int
     sort_id_parent: int
-    start_dt: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    end_dt: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    start_dt: OptionalUTCNow
+    end_dt: OptionalUTCNow
     location_de: str | None
     location_en: str | None
     location_fr: str | None

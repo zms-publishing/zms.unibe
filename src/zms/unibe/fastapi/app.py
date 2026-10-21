@@ -32,8 +32,9 @@ def import_sqlmodels_recursively():
     Skips __main__.py and __init__.py.
     Path resolution is based on this file's location.
     """
-    root_path = (Path(__file__).resolve().parent.parent / "src/zms/unibe").resolve()
+    root_path = Path(__file__).resolve().parent.parent.resolve()
     root_package = "zms.unibe"
+    print("SQLModel:", f"{root_path}/**/sqlmodels/*.py")
     for py_file in root_path.rglob("sqlmodels/*.py"):
         if py_file.name in ("__main__.py", "__init__.py"):
             continue
