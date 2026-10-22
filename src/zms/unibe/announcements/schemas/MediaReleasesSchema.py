@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -8,7 +8,7 @@ from ...mobileapp.schemas.NewsEventsSchema import Section
 
 class MediaRelease(BaseModel):
     title: str                      # title
-    date: datetime | None           # media_date
+    date: date | None               # media_date
 
     infos: str | None               # media_lead
     topics: str | None              # attr_schlagworte

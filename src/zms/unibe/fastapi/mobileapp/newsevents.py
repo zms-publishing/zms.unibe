@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timezone
 from uuid import UUID
 
 from anytree import Node, RenderTree
@@ -29,7 +29,7 @@ def get_news(
         session: SessionDependency,
         lang: Locale = Locale.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
-        date_after: datetime | None = Query(None, description='Filter by date after (UTC)'),
+        date_after: date | None = Query(None, description='Filter by date after'),
         offset: int = 0,
         limit: int = 20):
 
@@ -41,7 +41,7 @@ def get_news(
                                         de=NewsEvents.active_de,
                                         en=NewsEvents.active_en,
                                         fr=NewsEvents.active_fr)).
-                 where(date_after is None and True or (NewsEvents.lastmod_dt_de > date_after)).
+                 where(date_after is None and True or (NewsEvents.lastmod_dt_de > local_timezone(date_after))).
                  where(not_(ZMSSite.path.contains('/arbeitgeberin'))).
                  where(not_(ZMSSite.path.contains('/images'))).
                  where(not_(ZMSSite.path.contains('/jahresberichte'))).
@@ -124,8 +124,8 @@ def fetch_events(session, lang, sections, start_after, end_before, offset, limit
                                         de=NewsEvents.active_de,
                                         en=NewsEvents.active_en,
                                         fr=NewsEvents.active_fr)).
-                 where(start_after is None and True or (NewsEvents.start_dt > start_after)).
-                 where(end_before is None and True or (NewsEvents.end_dt < end_before)).
+                 where(start_after is None and True or (NewsEvents.start_dt > local_timezone(start_after))).
+                 where(end_before is None and True or (NewsEvents.end_dt < local_timezone(end_before))).
                  where(NewsEvents.end_dt > datetime.now(timezone.utc)).
                  where(not_(ZMSSite.path.contains('/arbeitgeberin'))).
                  where(not_(ZMSSite.path.contains('/images'))).
@@ -220,8 +220,8 @@ def get_events(
         session: SessionDependency,
         lang: Locale = Locale.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
-        start_after: datetime | None = Query(None, description='Filter by start after (UTC)'),
-        end_before: datetime | None = Query(None, description='Filter by end before (UTC)'),
+        start_after: date | None = Query(None, description='Filter by start after'),
+        end_before: date | None = Query(None, description='Filter by end before'),
         offset: int = 0,
         limit: int = 20):
 
@@ -395,18 +395,18 @@ def get_sections(
 @cache(expire=600)
 def get_statusmessages(
         session: SessionDependency,
-        start_after: datetime | None = Query(None, description='Filter by start after (UTC)'),
-        end_before: datetime | None = Query(None, description='Filter by end before (UTC)'),
+        start_after: date | None = Query(None, description='Filter by start after'),
+        end_before: date | None = Query(None, description='Filter by end before'),
         offset: int = 0,
         limit: int = 20):
 
     data = []
 
     statement = [select(StatusMessage).
-                 where(start_after is None and True or (StatusMessage.begin > start_after)).
-                 where(end_before is None and True or (StatusMessage.end < end_before)).
-                 where(or_(StatusMessage.end > datetime.now(timezone.utc) - timedelta(days=1),  # show resolved by yesterday
-                           StatusMessage.end == datetime.fromisoformat('1970-01-01T00:00:00'))).  # show open issues
+                 where(start_after is None and True or (StatusMessage.begin > local_timezone(start_after))).
+                 where(end_before is None and True or (StatusMessage.end < local_timezone(end_before))).
+                 where(or_(StatusMessage.end > local_timezone(days_delta=-1),  # show resolved by yesterday
+                           StatusMessage.end == local_timezone('1970-01-01T00:00:00'))).  # show open issues
                  order_by(StatusMessage.begin).
                  order_by(StatusMessage.end.desc())]
 
@@ -428,7 +428,7 @@ def get_statusmessages(
         data.append(schema.StatusMessage.model_validate({
             'title': res.subject,
             'start': local_timezone(res.begin),
-            'end': res.end > local_timezone(datetime.fromisoformat('1970-01-01T00:00:00+00:00'))
+            'end': res.end > local_timezone('1970-01-01T00:00:00+00:00')
                    and local_timezone(res.end) or None,
             'infos': f'{res.description}\n\n{res.service} \n\n{res.info}',
             'categories': categories,

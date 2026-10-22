@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -8,7 +8,7 @@ from ...mobileapp.schemas.NewsEventsSchema import Section
 
 class UniaktuellArticle(BaseModel):
     title: str                      # title
-    date: datetime | None           # publish_dt
+    date: date | None               # publish_dt
 
     infos: str | None               # abstract
     topics: str | None              # category + topics
