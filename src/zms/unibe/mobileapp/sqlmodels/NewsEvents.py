@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlmodel import Field, SQLModel
 
-from ...utils.types import OptionalDateTime
+from ...utils.types import OptionalDateTime, PostgreSQLArray
 
 
 class NewsEvents(SQLModel, table=True):  # intermediate consolidation of Agendas, NewsBox, TeaserElement2022 for queries
@@ -39,9 +39,9 @@ class NewsEvents(SQLModel, table=True):  # intermediate consolidation of Agendas
     infos_de: str | None = None
     infos_en: str | None = None
     infos_fr: str | None = None
-    topics_de: str | None = None
-    topics_en: str | None = None
-    topics_fr: str | None = None
+    topics_de: PostgreSQLArray
+    topics_en: PostgreSQLArray
+    topics_fr: PostgreSQLArray
     image_de: str | None = None
     image_en: str | None = None
     image_fr: str | None = None

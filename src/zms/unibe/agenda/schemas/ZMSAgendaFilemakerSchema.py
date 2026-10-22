@@ -5,6 +5,7 @@ from ...utils.helpers import get_when, local_timezone
 
 class ZMSAgendaFilemakerSchema:
     def mapping(self, event, locale):
+        
         begin = local_timezone(event.json_datum_zeit_start)
         end = local_timezone(event.json_datum_zeit_end)
 
