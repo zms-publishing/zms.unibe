@@ -534,6 +534,39 @@ def sanitize_html(content, return_type='html'):
     return text.strip()
 
 
+print('Addon: zms.unibe.utils.helpers.flatten_to_str_list')
+@security.public
+def flatten_to_str_list(*values):
+    """Flatten the given values (scalars or lists) into a sorted, deduplicated
+    list of strings, dropping non-string values like None or numbers."""
+    
+    flattened = set()
+    for value in values:
+        flattened.update(value if isinstance(value, list) else [value])
+    return sorted(x for x in flattened if isinstance(x, str))
+
+
+print('Addon: zms.unibe.utils.helpers.normalize_split_by')
+@security.public
+def normalize_split_by(text, delimiters=',;|', splitlines=True, keepends=False, maxsplit=0):
+    """Split a string based on multiple delimiters, optionally splitting by lines first
+    with or without keeping the line endings, and limiting the maximum number of splits. Returns a list of strings."""
+
+    strings = str(text)
+    pattern = '|'.join(map(re.escape, delimiters))
+
+    if splitlines:
+        strings = strings.splitlines(keepends=keepends)
+
+    strings = [strings] if not isinstance(strings, list) else strings
+    splitup = []
+
+    for string in strings:
+        splitup.extend(re.split(pattern, str(string), maxsplit=maxsplit))
+
+    return [s.strip() for s in splitup if len(s) > 0]
+
+
 # Apply security assertions by ModuleSecurityInfo()
 # https://zope.readthedocs.io/en/latest/zdgbook/Security.html#external-modulesecurityinfo-declarations
 security.apply(globals())
