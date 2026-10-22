@@ -30,14 +30,14 @@ v1 = FastAPI(
     ]
 )
 if pybool(os.getenv("API_V1")):
-    print("FastAPI: Mounted /v1/docs for ZMS Content")
+    print("FastAPI: Mounted /v1/docs for UniBE Content Management")
     v1.main_state = api.state  # to access parent api.state in mounted subapp v1
     api.mount("/v1", v1)
 
 v3 = FastAPI(
     title="zms.unibe.fastapi",
     summary="Python-based REST API to connect unibe.ch and unibe.app with ZMS",
-    version="3.4.1",
+    version="3.4.2",
     openapi_tags=tags,
     redoc_url="/redoc",
     redirect_slashes=False,
@@ -47,7 +47,7 @@ v3 = FastAPI(
     ]
 )
 if pybool(os.getenv("API_V3")):
-    print("FastAPI: Mounted /v3/docs for Mobile App")
+    print("FastAPI: Mounted /v3/docs for UniBE Mobile App")
     v3.main_state = api.state  # to access parent api.state in mounted subapp v3
     api.mount("/v3", v3)
 
