@@ -15,7 +15,7 @@ from ...mobileapp.schemas import NewsEventsSchema as schema
 from ...mobileapp.sqlmodels.NewsEvents import NewsEvents
 from ...utils.dependencies import SessionDependency
 from ...utils.enums import Locale, SiteType
-from ...utils.helpers import get_attr_by_lang, local_timezone, strip_cmstest
+from ...utils.helpers import flatten_to_str_list, get_attr_by_lang, local_timezone, normalize_split_by, strip_cmstest
 
 router = APIRouter(tags=[Tags.mobile])
 
@@ -72,6 +72,11 @@ def get_news(
             uuid=res.ZMSSite.uuid
         )
 
+        categories = get_attr_by_lang(lang,
+                                      de=res.NewsEvents.topics_de,
+                                      en=res.NewsEvents.topics_en,
+                                      fr=res.NewsEvents.topics_fr)
+
         data.append(schema.News.model_validate({
             'date': local_timezone(get_attr_by_lang(lang,
                                                     de=res.NewsEvents.lastmod_dt_de,
@@ -89,10 +94,8 @@ def get_news(
                                       de=res.NewsEvents.infos_de,
                                       en=res.NewsEvents.infos_en,
                                       fr=res.NewsEvents.infos_fr),
-            'topics': ', '.join(get_attr_by_lang(lang,
-                                                 de=res.NewsEvents.topics_de,
-                                                 en=res.NewsEvents.topics_en,
-                                                 fr=res.NewsEvents.topics_fr)),
+            'categories': categories,
+            'topics': ', '.join(categories),
             'image': get_attr_by_lang(lang,
                                       de=res.NewsEvents.image_de,
                                       en=res.NewsEvents.image_en,
@@ -250,6 +253,11 @@ def get_events(
             section.type = 'Agenda Library'
             data_uuid = None
 
+        categories = get_attr_by_lang(lang,
+                                      de=res.NewsEvents.topics_de,
+                                      en=res.NewsEvents.topics_en,
+                                      fr=res.NewsEvents.topics_fr)
+
         data.append(schema.Event.model_validate({
             'start': local_timezone(res.NewsEvents.start_dt),
             'end': local_timezone(res.NewsEvents.end_dt),
@@ -269,10 +277,8 @@ def get_events(
                                       de=res.NewsEvents.infos_de,
                                       en=res.NewsEvents.infos_en,
                                       fr=res.NewsEvents.infos_fr),
-            'topics': ', '.join(get_attr_by_lang(lang,
-                                                 de=res.NewsEvents.topics_de,
-                                                 en=res.NewsEvents.topics_en,
-                                                 fr=res.NewsEvents.topics_fr)),
+            'categories': categories,
+            'topics': ', '.join(categories),
             'image': get_attr_by_lang(lang,
                                       de=res.NewsEvents.image_de,
                                       en=res.NewsEvents.image_en,
@@ -408,20 +414,25 @@ def get_statusmessages(
     total = session.exec(statement[0])
 
     for res in results.all():
+        
         section = schema.Section(
-            type=res.type,
-            title='IT Services',
+            type='IT Services Status',
+            title='IT Services Status',
             domain='https://id.unibe.ch/statusmeldungen',
             path=None,
             uuid=None
         )
+        
+        categories = flatten_to_str_list(normalize_split_by(res.type))
+        
         data.append(schema.StatusMessage.model_validate({
             'title': res.subject,
             'start': local_timezone(res.begin),
             'end': res.end > local_timezone(datetime.fromisoformat('1970-01-01T00:00:00+00:00'))
                    and local_timezone(res.end) or None,
-            'infos': f'{res.description}\n\n{res.info}',
-            'topics': res.service,
+            'infos': f'{res.description}\n\n{res.service} \n\n{res.info}',
+            'categories': categories,
+            'topics': ', '.join(categories),
             'section': section,
             'dataSource': 'https://api.epc.unibe.ch/announcements/api/ServiceAnnouncements',
             'dataLevel': 1,

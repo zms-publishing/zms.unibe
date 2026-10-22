@@ -26,6 +26,7 @@ class News(BaseModel):              # TEASER ELEMENT 2022
 
     url: str | None                 # url
     infos: str | None               # text + source
+    categories: list[str] | None
     topics: str | None              # topic
     image: str | None               # img
 
@@ -55,6 +56,7 @@ class Event(BaseModel):             # TEASER ELEMENT 2022   AGENDA PORTAL       
 
     url: str | None                 # url                   veranstalter_info_link          url
     infos: str | None               # text + source         veranstaltung_referenten        subjects [list]
+    categories: list[str] | None
     topics: str | None              # topic                 veranstaltung_zyklus            event-type => eventType
     image: str | None               # img                   -                               -
 
@@ -78,10 +80,12 @@ class StatusMessage(BaseModel):
     end: datetime | None            # "end": "2021-02-25T22:00:00",
 
     infos: str | None               # "description": "Die Komponenten des Telefoniesystems (Avaya Aura) werden auf die neusten Softwareversionen aktualisiert. Weitere Wartungsfenster folgen.\r\n\r\nTrotz der Redundanz der Systeme k\u00f6nnten kurze Performance-Einbussen oder minimale Unterbr\u00fcche entstehen.",
+                                    # "service": "Telefonie +41 31 631 xx xx",
                                     # "info": "Gegebenenfalls verlangen einzelne Deskphones sich neu anzumelden. Dazu sind die Zugangsdaten gem\u00e4ss Bedienungsanleitung einzugeben. www.telecom.unibe.ch/bedienungsanleitungen"
-    topics: str | None              # "service": "Telefonie +41 31 631 xx xx",
+    categories: list[str] | None
+    topics: str | None              # "type": "WARTUNG",
 
-    section: Section                # "type": "WARTUNG",
+    section: Section
 
     dataSource: str
     dataLevel: int
