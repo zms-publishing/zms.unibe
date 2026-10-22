@@ -15,6 +15,7 @@ def _extract_href(value):
 
 class ZMSAgendaInfotageSchema:
     def mapping(self, event, locale):
+        
         begin = local_timezone(event.eventBeginDateTime)
         end = local_timezone(event.eventEndDateTime)
 

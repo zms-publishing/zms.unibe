@@ -89,10 +89,10 @@ def get_news(
                                       de=res.NewsEvents.infos_de,
                                       en=res.NewsEvents.infos_en,
                                       fr=res.NewsEvents.infos_fr),
-            'topics': get_attr_by_lang(lang,
-                                       de=res.NewsEvents.topics_de,
-                                       en=res.NewsEvents.topics_en,
-                                       fr=res.NewsEvents.topics_fr),
+            'topics': ', '.join(get_attr_by_lang(lang,
+                                                 de=res.NewsEvents.topics_de,
+                                                 en=res.NewsEvents.topics_en,
+                                                 fr=res.NewsEvents.topics_fr)),
             'image': get_attr_by_lang(lang,
                                       de=res.NewsEvents.image_de,
                                       en=res.NewsEvents.image_en,
@@ -194,11 +194,11 @@ def get_sections_tree(data, lang):
         elif obj.parent_uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
             debug(obj.parent_uuid, obj.uuid)
 
-    for pre, fill, node in RenderTree(root):
-        # print("%s%s" % (pre, node.title))
-        pass
-
-    jsonexporter = JsonExporter(indent=2, sort_keys=True, ensure_ascii=False)
+    # for pre, fill, node in RenderTree(root):
+    #     print("%s%s" % (pre, node.title))
+    #     pass
+    # 
+    # jsonexporter = JsonExporter(indent=2, sort_keys=True, ensure_ascii=False)
     # print(jsonexporter.export(root))
 
     dictexporter = DictExporter(attriter=lambda attrs: [(k, v) for k, v in attrs if k != "name"])
@@ -269,10 +269,10 @@ def get_events(
                                       de=res.NewsEvents.infos_de,
                                       en=res.NewsEvents.infos_en,
                                       fr=res.NewsEvents.infos_fr),
-            'topics': get_attr_by_lang(lang,
-                                       de=res.NewsEvents.topics_de,
-                                       en=res.NewsEvents.topics_en,
-                                       fr=res.NewsEvents.topics_fr),
+            'topics': ', '.join(get_attr_by_lang(lang,
+                                                 de=res.NewsEvents.topics_de,
+                                                 en=res.NewsEvents.topics_en,
+                                                 fr=res.NewsEvents.topics_fr)),
             'image': get_attr_by_lang(lang,
                                       de=res.NewsEvents.image_de,
                                       en=res.NewsEvents.image_en,

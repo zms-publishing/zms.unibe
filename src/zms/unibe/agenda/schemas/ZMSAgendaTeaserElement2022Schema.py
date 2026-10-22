@@ -1,14 +1,16 @@
 from Products.zms import _blobfields
-from ...utils.helpers import get_when, local_timezone
+from ...utils.helpers import flatten_to_str_list, get_when, local_timezone, normalize_split_by
 
 
 class ZMSAgendaTeaserElement2022Schema:
     def mapping(self, event, context, lang, locale):
+        
         if event.attr('teaser_type') != 'event':
             return None
 
         begin = local_timezone(event.attr('event_date_start', REQUEST={'lang': lang}))
         end = local_timezone(event.attr('event_date_end', REQUEST={'lang': lang}))
+        categories = flatten_to_str_list(normalize_split_by(event.attr('topic')))
 
         return {
             'eventId': event.get_uid().replace('uid:', ''),
@@ -33,7 +35,7 @@ class ZMSAgendaTeaserElement2022Schema:
             'eventInfos': event.attr('text'),
             'eventInfosPreview': None,
             'eventTagline': None,
-            'eventCategories': event.attr('topic').split('\r\n'),
+            'eventCategories': categories,
             'eventImage': event.attr('img').getHref(REQUEST={'lang': lang}) if isinstance(event.attr('img'),
                                                                                           _blobfields.MyImage) else None,
             'eventUrl': context.getLinkUrl(event.attr('url'), REQUEST={'lang': lang}),
