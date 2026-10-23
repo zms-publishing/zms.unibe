@@ -10,18 +10,18 @@ class ServiceLink(ZMSBase, table=True):
     title_de: str
     title_en: str
     title_fr: str
-    text_de: str | None
-    text_en: str | None
-    text_fr: str | None
-    keywords_de: str | None
-    keywords_en: str | None
-    keywords_fr: str | None
-    href_de: str | None
-    href_en: str | None
-    href_fr: str | None
-    url_de: str | None
-    url_en: str | None
-    url_fr: str | None
+    text_de: str | None = None
+    text_en: str | None = None
+    text_fr: str | None = None
+    keywords_de: str | None = None
+    keywords_en: str | None = None
+    keywords_fr: str | None = None
+    href_de: str | None = None
+    href_en: str | None = None
+    href_fr: str | None = None
+    url_de: str | None = None
+    url_en: str | None = None
+    url_fr: str | None = None
     parent_uuid: UUID
     parent_title_de: str
     parent_title_en: str

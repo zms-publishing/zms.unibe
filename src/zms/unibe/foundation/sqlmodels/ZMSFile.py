@@ -4,22 +4,22 @@ from ...utils.helpers import get_attr, get_size, get_url
 
 class ZMSFile(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    title_de: str | None
-    title_en: str | None
-    title_fr: str | None
-    file_de: str | None
-    file_en: str | None
-    file_fr: str | None
-    file_size_de: int | None
-    file_size_en: int | None
-    file_size_fr: int | None
+    title_de: str | None = None
+    title_en: str | None = None
+    title_fr: str | None = None
+    file_de: str | None = None
+    file_en: str | None = None
+    file_fr: str | None = None
+    file_size_de: int | None = None
+    file_size_en: int | None = None
+    file_size_fr: int | None = None
     filetype: str
-    descr_de: str | None
-    descr_en: str | None
-    descr_fr: str | None
-    amount_de: str | None
-    amount_en: str | None
-    amount_fr: str | None
+    descr_de: str | None = None
+    descr_en: str | None = None
+    descr_fr: str | None = None
+    amount_de: str | None = None
+    amount_en: str | None = None
+    amount_fr: str | None = None
 
     @staticmethod
     def get_zms_catalog_query():

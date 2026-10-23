@@ -4,15 +4,15 @@ from ...utils.helpers import get_attr
 
 class Person(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    lastname: str | None
-    firstname: str | None
-    honorificSuffix: str | None
-    position_de: str | None
-    position_en: str | None
-    position_fr: str | None
-    department_de: str | None
-    department_en: str | None
-    department_fr: str | None
+    lastname: str | None = None
+    firstname: str | None = None
+    honorificSuffix: str | None = None
+    position_de: str | None = None
+    position_en: str | None = None
+    position_fr: str | None = None
+    department_de: str | None = None
+    department_en: str | None = None
+    department_fr: str | None = None
 
     @staticmethod
     def get_zms_catalog_query():

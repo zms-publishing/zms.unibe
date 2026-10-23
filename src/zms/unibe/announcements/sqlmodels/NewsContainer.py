@@ -7,7 +7,7 @@ class NewsContainer(ZMSBase, table=True):
     title_de: str
     title_en: str
     title_fr: str
-    type: str | None
+    type: str | None = None
 
     @staticmethod
     def get_zms_catalog_query():

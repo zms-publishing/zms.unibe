@@ -7,7 +7,7 @@ from uuid import UUID
 from sqlmodel import Field, SQLModel
 
 from ...utils.helpers import local_timezone, parse_uuid
-from ...utils.types import OptionalUTCNow
+from ...utils.types import OptionalDateTime
 
 
 class ZMSSurveyJSSubmissions(SQLModel, table=True):
@@ -16,7 +16,7 @@ class ZMSSurveyJSSubmissions(SQLModel, table=True):
     survey_uuid_zms: UUID
     survey_path_zms: str
     survey_data_json: str
-    survey_submitted_at: OptionalUTCNow
+    survey_submitted_at: OptionalDateTime
 
     @classmethod
     def from_submit(cls, survey_obj, survey_uuid_submit):

@@ -4,13 +4,13 @@ from ...utils.helpers import get_attr
 
 class AlertBox(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    type: str | None
-    text_de: str | None
-    text_en: str | None
-    text_fr: str | None
-    url_de: str | None
-    url_en: str | None
-    url_fr: str | None
+    type: str | None = None
+    text_de: str | None = None
+    text_en: str | None = None
+    text_fr: str | None = None
+    url_de: str | None = None
+    url_en: str | None = None
+    url_fr: str | None = None
 
     @staticmethod
     def get_zms_catalog_query():

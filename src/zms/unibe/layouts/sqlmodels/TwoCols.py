@@ -4,9 +4,9 @@ from ...utils.helpers import get_attr
 
 class TwoCols(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    title_de: str | None
-    title_en: str | None
-    title_fr: str | None
+    title_de: str | None = None
+    title_en: str | None = None
+    title_fr: str | None = None
 
     @staticmethod
     def get_zms_catalog_query():

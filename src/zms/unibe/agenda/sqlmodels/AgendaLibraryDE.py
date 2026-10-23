@@ -1,6 +1,6 @@
 from sqlmodel import Field, SQLModel
 
-from ...utils.types import OptionalUTCNow, PostgreSQLArray
+from ...utils.types import OptionalDateTime, PostgreSQLArray
 
 
 class AgendaLibraryDE(SQLModel, table=True):  # to import https://agenda.ub.unibe.ch/de/api/event
@@ -9,8 +9,8 @@ class AgendaLibraryDE(SQLModel, table=True):  # to import https://agenda.ub.unib
     title: str
     eventType: str
     subjects: PostgreSQLArray
-    series: str | None
+    series: str | None = None
     venue: str
-    startsAt: OptionalUTCNow
-    endsAt: OptionalUTCNow
+    startsAt: OptionalDateTime
+    endsAt: OptionalDateTime
     url: str

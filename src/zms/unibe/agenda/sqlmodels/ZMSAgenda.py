@@ -1,11 +1,11 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
 from ...utils.helpers import get_attr, get_data, local_timezone
-from ...utils.types import OptionalUTCNow, PostgreSQLArray
+from ...utils.types import OptionalDateTime, PostgreSQLArray
 
 
 class ZMSAgenda(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    attr_dc_type: str | None
+    attr_dc_type: str | None = None
     hide_past_events: bool
     categories: PostgreSQLArray
     categories_include_only: PostgreSQLArray
@@ -14,12 +14,12 @@ class ZMSAgenda(ZMSBase, table=True):
     include_library: bool
     include_itstatusmessages: bool
     include_outlook: bool
-    outlook_upn: str | None
+    outlook_upn: str | None = None
     limit_time_range: bool
-    begin_date: OptionalUTCNow
-    end_date: OptionalUTCNow
-    cached_data: str | None
-    lastupdate: OptionalUTCNow
+    begin_date: OptionalDateTime
+    end_date: OptionalDateTime
+    cached_data: str | None = None
+    lastupdate: OptionalDateTime
 
     @staticmethod
     def get_zms_catalog_query():
