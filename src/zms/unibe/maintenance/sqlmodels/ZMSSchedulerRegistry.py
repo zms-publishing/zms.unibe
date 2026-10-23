@@ -16,7 +16,7 @@ class ZMSSchedulerRegistry(SQLModel, table=True):
     exec_zms2sql: bool = False
     exec_opensearch: bool = False
     added_dt: OptionalDateTime
-    processed_dt: OptionalDateTime | None = None
+    processed_dt: OptionalDateTime = None
 
     @classmethod
     def from_agenda(cls, obj):
