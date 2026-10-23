@@ -23,6 +23,9 @@ def update_agendas(zms_context):
 def fetch_agendas():
     print("fetch_agendas")
 
+    agenda_portal = None
+    agenda_library_de = None
+    agenda_library_en = None
     try:
         response = requests.get(url='https://agenda.unibe.ch/agenda.json', timeout=5)
         if response.status_code == 200:
