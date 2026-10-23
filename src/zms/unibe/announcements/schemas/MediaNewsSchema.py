@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from ...mobileapp.schemas.NewsEventsSchema import Section
 
 
-class MediaRelease(BaseModel):
+class MediaNews(BaseModel):
     title: str                      # title
     date: date | None               # media_date
 
@@ -22,8 +22,8 @@ class MediaRelease(BaseModel):
     dataUuid: UUID                  # ZMS uuid
 
 
-class MediaReleaseResponse(BaseModel):
+class MediaNewsResponse(BaseModel):
     offset: int
     limit: int
     total: int
-    data: list[MediaRelease]
+    data: list[MediaNews]

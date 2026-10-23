@@ -5,7 +5,7 @@ from sqlmodel import Field
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
 from ...utils.helpers import flatten_to_str_list, normalize_split_by
 from ...utils.helpers import get_attr, get_parent_node_uuid, get_url, local_timezone
-from ...utils.types import OptionalDateTime
+from ...utils.types import OptionalDateTime, PostgreSQLArray
 
 
 class NewsBox(ZMSBase, table=True):
@@ -20,9 +20,9 @@ class NewsBox(ZMSBase, table=True):
     text_de: str | None = None
     text_en: str | None = None
     text_fr: str | None = None
-    topic_de: str | None = None
-    topic_en: str | None = None
-    topic_fr: str | None = None
+    topic_de: PostgreSQLArray
+    topic_en: PostgreSQLArray
+    topic_fr: PostgreSQLArray
     url_de: str | None = None
     url_en: str | None = None
     url_fr: str | None = None

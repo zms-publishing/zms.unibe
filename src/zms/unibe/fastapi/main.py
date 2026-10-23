@@ -5,7 +5,7 @@ from fastapi.responses import PlainTextResponse
 
 from Products.zms.standard import pybool
 from . import cache, queue
-from .mobileapp import mediareleases, newsevents, servicelinks, uniaktuell
+from .mobileapp import medianews, newsevents, servicelinks, uniaktuell
 from .zmscontent import labels, managers, objects, scheduler, system
 from ..fastapi.app import api
 from ..fastapi.meta import tags
@@ -67,7 +67,7 @@ v1.include_router(scheduler.router)
 v1.include_router(system.router)
 v3.include_router(newsevents.router)
 v3.include_router(uniaktuell.router)
-v3.include_router(mediareleases.router)
+v3.include_router(medianews.router)
 v3.include_router(servicelinks.router)
 
 if pybool(os.getenv("API_RQ")):

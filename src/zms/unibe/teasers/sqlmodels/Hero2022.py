@@ -1,5 +1,7 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
+from ...utils.helpers import flatten_to_str_list, normalize_split_by
 from ...utils.helpers import get_attr, get_size, get_url
+from ...utils.types import PostgreSQLArray
 
 
 class Hero2022(ZMSBase, table=True):
@@ -15,9 +17,9 @@ class Hero2022(ZMSBase, table=True):
     title_de: str
     title_en: str
     title_fr: str
-    topic_de: str | None = None
-    topic_en: str | None = None
-    topic_fr: str | None = None
+    topic_de: PostgreSQLArray
+    topic_en: PostgreSQLArray
+    topic_fr: PostgreSQLArray
     source_de: str | None = None
     source_en: str | None = None
     source_fr: str | None = None
@@ -34,6 +36,14 @@ class Hero2022(ZMSBase, table=True):
 
     @classmethod
     def from_zms_obj(cls, obj):
+        
+        topic_de = flatten_to_str_list(normalize_split_by(
+            get_attr(obj, 'topic', 'ger')))
+        topic_en = flatten_to_str_list(normalize_split_by(
+            get_attr(obj, 'topic', 'eng')))
+        topic_fr = flatten_to_str_list(normalize_split_by(
+            get_attr(obj, 'topic', 'fra')))
+        
         mapping = {
             **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
@@ -48,9 +58,9 @@ class Hero2022(ZMSBase, table=True):
             'title_de':         get_attr(obj, 'title', 'ger'),
             'title_en':         get_attr(obj, 'title', 'eng'),
             'title_fr':         get_attr(obj, 'title', 'fra'),
-            'topic_de':         get_attr(obj, 'topic', 'ger'),
-            'topic_en':         get_attr(obj, 'topic', 'eng'),
-            'topic_fr':         get_attr(obj, 'topic', 'fra'),
+            'topic_de':         topic_de,
+            'topic_en':         topic_en,
+            'topic_fr':         topic_fr,
             'text_de':          get_attr(obj, 'text', 'ger'),
             'text_en':          get_attr(obj, 'text', 'eng'),
             'text_fr':          get_attr(obj, 'text', 'fra'),
