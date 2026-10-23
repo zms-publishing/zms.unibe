@@ -101,7 +101,7 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
     elif isinstance(dt, t.struct_time):
         dt = datetime.fromtimestamp(t.mktime(dt))
     elif isinstance(dt, DateTime):  # legacy Zope implementation, returned e.g. by ZopeTime()
-        dt = dt.ISO8601()
+        dt = datetime.fromisoformat(dt.ISO8601())
     elif type(dt) is date:
         # Please note: isinstance(dt, date) is also True for datetime objects, because datetime is a subclass of date
         # add 00:00:00 to a plain date object so that the time zone can be set to the datetime object in the next step
