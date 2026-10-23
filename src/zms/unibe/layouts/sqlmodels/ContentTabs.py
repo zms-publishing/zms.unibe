@@ -3,8 +3,8 @@ from ...foundation.sqlmodels.ZMSBase import ZMSBase
 
 class ContentTabs(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    layout: str | None
-    orientation: str | None
+    layout: str | None = None
+    orientation: str | None = None
 
     @staticmethod
     def get_zms_catalog_query():

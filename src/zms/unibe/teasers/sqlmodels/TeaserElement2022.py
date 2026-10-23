@@ -1,10 +1,10 @@
-from datetime import datetime
 from uuid import UUID
 
-from sqlmodel import Column, DateTime, Field
+from sqlmodel import Field
 
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_parent_node_uuid, get_url, parse_datetime
+from ...utils.helpers import get_attr, get_parent_node_uuid, get_url, local_timezone
+from ...utils.types import OptionalDateTime
 
 
 class TeaserElement2022(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=teaser_element_2022&types=%2A
@@ -13,29 +13,29 @@ class TeaserElement2022(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
     title_en: str
     title_fr: str
     type: str
-    start_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    end_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    location: str | None
+    start_dt: OptionalDateTime
+    end_dt: OptionalDateTime
+    location: str | None = None
 
-    url_de: str | None
-    url_en: str | None
-    url_fr: str | None
+    url_de: str | None = None
+    url_en: str | None = None
+    url_fr: str | None = None
     text_de: str
     text_en: str
     text_fr: str
-    topic_de: str | None
-    topic_en: str | None
-    topic_fr: str | None
-    source_de: str | None
-    source_en: str | None
-    source_fr: str | None
+    topic_de: str | None = None
+    topic_en: str | None = None
+    topic_fr: str | None = None
+    source_de: str | None = None
+    source_en: str | None = None
+    source_fr: str | None = None
 
-    img_de: str | None
-    img_en: str | None
-    img_fr: str | None
-    img_alt_de: str | None
-    img_alt_en: str | None
-    img_alt_fr: str | None
+    img_de: str | None = None
+    img_en: str | None = None
+    img_fr: str | None = None
+    img_alt_de: str | None = None
+    img_alt_en: str | None = None
+    img_alt_fr: str | None = None
 
     container_uuid: UUID = Field(foreign_key="teasercontainer2022.uuid", ondelete="CASCADE")
 
@@ -52,8 +52,8 @@ class TeaserElement2022(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
             'title_en':         get_attr(obj, 'title', 'eng'),
             'title_fr':         get_attr(obj, 'title', 'fra'),
             'type':             obj.attr('teaser_type'),
-            'start_dt':         parse_datetime(obj.attr('event_date_start')),
-            'end_dt':           parse_datetime(obj.attr('event_date_end')),
+            'start_dt':         local_timezone(obj.attr('event_date_start')),
+            'end_dt':           local_timezone(obj.attr('event_date_end')),
             'location':         obj.attr('event_location'),
 
             'url_de':           get_url(obj, 'url', 'ger'),

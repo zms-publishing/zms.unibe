@@ -4,29 +4,29 @@ from ...utils.helpers import get_attr, get_size, get_url
 
 class Hero2022(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    img: str | None
-    img_size: int | None
-    video: str | None
-    video_size: int | None
+    img: str | None = None
+    img_size: int | None = None
+    video: str | None = None
+    video_size: int | None = None
     overlay: bool
-    img_alt_de: str | None
-    img_alt_en: str | None
-    img_alt_fr: str | None
+    img_alt_de: str | None = None
+    img_alt_en: str | None = None
+    img_alt_fr: str | None = None
     title_de: str
     title_en: str
     title_fr: str
-    topic_de: str | None
-    topic_en: str | None
-    topic_fr: str | None
-    source_de: str | None
-    source_en: str | None
-    source_fr: str | None
-    url_de: str | None
-    url_en: str | None
-    url_fr: str | None
-    url_text_de: str | None
-    url_text_en: str | None
-    url_text_fr: str | None
+    topic_de: str | None = None
+    topic_en: str | None = None
+    topic_fr: str | None = None
+    source_de: str | None = None
+    source_en: str | None = None
+    source_fr: str | None = None
+    url_de: str | None = None
+    url_en: str | None = None
+    url_fr: str | None = None
+    url_text_de: str | None = None
+    url_text_en: str | None = None
+    url_text_fr: str | None = None
 
     @staticmethod
     def get_zms_catalog_query():

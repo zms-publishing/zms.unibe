@@ -1,9 +1,9 @@
-from datetime import datetime
 from uuid import UUID
 
-from sqlmodel import Column, DateTime, Field, SQLModel
+from sqlmodel import Field, SQLModel
 
-from ...utils.helpers import parse_uuid
+from ...utils.helpers import local_timezone, parse_uuid
+from ...utils.types import OptionalDateTime
 
 
 class ZMSSchedulerRegistry(SQLModel, table=True):
@@ -11,12 +11,12 @@ class ZMSSchedulerRegistry(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     task_uuid: UUID
     task_path: str
-    task_title: str | None
+    task_title: str | None = None
     exec_onchange: bool = False
     exec_zms2sql: bool = False
     exec_opensearch: bool = False
-    added_dt: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    processed_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    added_dt: OptionalDateTime
+    processed_dt: OptionalDateTime = None
 
     @classmethod
     def from_agenda(cls, obj):
@@ -28,7 +28,7 @@ class ZMSSchedulerRegistry(SQLModel, table=True):
             'exec_onchange':    True,
             'exec_zms2sql':     False,
             'exec_opensearch':  False,
-            'added_dt':         datetime.now(),
+            'added_dt':         local_timezone(),
             'processed_dt':     None,
         }
         return cls.model_validate(mapping)

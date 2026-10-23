@@ -4,12 +4,12 @@ from ...utils.helpers import get_attr, get_children_count
 
 class ContactBox(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    titlealt_de: str | None
-    titlealt_en: str | None
-    titlealt_fr: str | None
-    title_de: str | None
-    title_en: str | None
-    title_fr: str | None
+    titlealt_de: str | None = None
+    titlealt_en: str | None = None
+    titlealt_fr: str | None = None
+    title_de: str | None = None
+    title_en: str | None = None
+    title_fr: str | None = None
     sections: int
 
     @staticmethod

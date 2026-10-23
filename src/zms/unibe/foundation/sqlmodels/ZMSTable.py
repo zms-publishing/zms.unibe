@@ -4,12 +4,12 @@ from ...utils.helpers import get_attr
 
 class ZMSTable(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    caption_de: str | None
-    caption_en: str | None
-    caption_fr: str | None
-    descr_de: str | None
-    descr_en: str | None
-    descr_fr: str | None
+    caption_de: str | None = None
+    caption_en: str | None = None
+    caption_fr: str | None = None
+    descr_de: str | None = None
+    descr_en: str | None = None
+    descr_fr: str | None = None
 
     @staticmethod
     def get_zms_catalog_query():

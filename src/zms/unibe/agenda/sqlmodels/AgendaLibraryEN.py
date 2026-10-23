@@ -1,7 +1,6 @@
-from datetime import datetime
+from sqlmodel import Field, SQLModel
 
-from sqlalchemy.dialects import postgresql
-from sqlmodel import Column, DateTime, Field, SQLModel, String
+from ...utils.types import OptionalDateTime, PostgreSQLArray
 
 
 class AgendaLibraryEN(SQLModel, table=True):  # to import https://agenda.ub.unibe.ch/en/api/event
@@ -9,9 +8,9 @@ class AgendaLibraryEN(SQLModel, table=True):  # to import https://agenda.ub.unib
     id: int | None = Field(default=None, primary_key=True)
     title: str
     eventType: str
-    subjects: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
-    series: str | None
+    subjects: PostgreSQLArray
+    series: str | None = None
     venue: str
-    startsAt: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    endsAt: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    startsAt: OptionalDateTime
+    endsAt: OptionalDateTime
     url: str

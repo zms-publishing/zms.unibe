@@ -7,7 +7,7 @@ class ZMSFormulator(ZMSBase, table=True):
     title_de: str
     title_en: str
     title_fr: str
-    items: int | None
+    items: int | None = None
     json_schema: str
 
     @staticmethod

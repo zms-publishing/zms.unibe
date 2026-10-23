@@ -4,9 +4,9 @@ from ...utils.helpers import get_attr
 
 class CodeBlock(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    code_de: str | None
-    code_en: str | None
-    code_fr: str | None
+    code_de: str | None = None
+    code_en: str | None = None
+    code_fr: str | None = None
     render_as_newscontainer_de: bool
     render_as_newscontainer_en: bool
     render_as_newscontainer_fr: bool

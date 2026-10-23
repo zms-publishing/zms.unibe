@@ -6,12 +6,12 @@ from ...utils.helpers import get_attr, get_parent_node_uuid
 
 class ContactBoxSection(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    intersection_title_de: str | None
-    intersection_title_en: str | None
-    intersection_title_fr: str | None
-    interpara_title_de: str | None
-    interpara_title_en: str | None
-    interpara_title_fr: str | None
+    intersection_title_de: str | None = None
+    intersection_title_en: str | None = None
+    intersection_title_fr: str | None = None
+    interpara_title_de: str | None = None
+    interpara_title_en: str | None = None
+    interpara_title_fr: str | None = None
     contactbox_uuid: UUID
 
     @staticmethod

@@ -1,10 +1,6 @@
-from datetime import date
-
-from sqlalchemy.dialects import postgresql
-from sqlmodel import Column, DateTime, Field, String
-
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_url, parse_datetime
+from ...utils.helpers import get_attr, get_url, local_timezone
+from ...utils.types import OptionalDateTime, PostgreSQLArray
 
 
 class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=UniaktuellArticle&types=%2A
@@ -12,24 +8,24 @@ class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
     title_de: str
     title_en: str
     title_fr: str
-    publish_dt_de: date | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    publish_dt_en: date | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    publish_dt_fr: date | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    abstract_de: str | None
-    abstract_en: str | None
-    abstract_fr: str | None
-    category_de: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
-    category_en: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
-    category_fr: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
-    topics_de: str | None
-    topics_en: str | None
-    topics_fr: str | None
-    img_de: str | None
-    img_en: str | None
-    img_fr: str | None
-    url_de: str | None
-    url_en: str | None
-    url_fr: str | None
+    publish_dt_de: OptionalDateTime
+    publish_dt_en: OptionalDateTime
+    publish_dt_fr: OptionalDateTime
+    abstract_de: str | None = None
+    abstract_en: str | None = None
+    abstract_fr: str | None = None
+    category_de: PostgreSQLArray
+    category_en: PostgreSQLArray
+    category_fr: PostgreSQLArray
+    topics_de: str | None = None
+    topics_en: str | None = None
+    topics_fr: str | None = None
+    img_de: str | None = None
+    img_en: str | None = None
+    img_fr: str | None = None
+    url_de: str | None = None
+    url_en: str | None = None
+    url_fr: str | None = None
 
     @staticmethod
     def get_zms_catalog_query():
@@ -46,9 +42,12 @@ class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
             'title_de':         get_attr(obj, 'title', 'ger'),
             'title_en':         get_attr(obj, 'title', 'eng'),
             'title_fr':         get_attr(obj, 'title', 'fra'),
-            'publish_dt_de':    parse_datetime(get_attr(obj, 'publishdate', 'ger')),
-            'publish_dt_en':    parse_datetime(get_attr(obj, 'publishdate', 'eng')),
-            'publish_dt_fr':    parse_datetime(get_attr(obj, 'publishdate', 'fra')),
+            'publish_dt_de':    local_timezone(
+                local_timezone(get_attr(obj, 'publishdate', 'ger')).date()),
+            'publish_dt_en':    local_timezone(
+                local_timezone(get_attr(obj, 'publishdate', 'eng')).date()),
+            'publish_dt_fr':    local_timezone(
+                local_timezone(get_attr(obj, 'publishdate', 'fra')).date()),
             'abstract_de':      get_attr(obj, 'attr_dc_description', 'ger'),
             'abstract_en':      get_attr(obj, 'attr_dc_description', 'eng'),
             'abstract_fr':      get_attr(obj, 'attr_dc_description', 'fra'),
