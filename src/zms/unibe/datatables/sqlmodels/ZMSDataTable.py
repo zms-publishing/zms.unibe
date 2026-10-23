@@ -1,26 +1,26 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
 from ...utils.helpers import get_data, get_url, local_timezone
-from ...utils.types import OptionalUTCNow
+from ...utils.types import OptionalDateTime
 
 
 class ZMSDataTable(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
     datatype: str
     dataremote: bool
-    datawebservice: str | None
-    dataurl_de: str | None
-    dataurl_en: str | None
-    dataurl_fr: str | None
-    datafile_de: str | None
-    datafile_en: str | None
-    datafile_fr: str | None
-    cached_data_de: str | None
-    cached_data_en: str | None
-    cached_data_fr: str | None
-    upload_data_de: str | None
-    upload_data_en: str | None
-    upload_data_fr: str | None
-    lastupdate: OptionalUTCNow
+    datawebservice: str | None = None
+    dataurl_de: str | None = None
+    dataurl_en: str | None = None
+    dataurl_fr: str | None = None
+    datafile_de: str | None = None
+    datafile_en: str | None = None
+    datafile_fr: str | None = None
+    cached_data_de: str | None = None
+    cached_data_en: str | None = None
+    cached_data_fr: str | None = None
+    upload_data_de: str | None = None
+    upload_data_en: str | None = None
+    upload_data_fr: str | None = None
+    lastupdate: OptionalDateTime
 
     @staticmethod
     def get_zms_catalog_query():

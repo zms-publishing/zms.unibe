@@ -13,35 +13,39 @@ PostgreSQLArray = Annotated[
     )
 ]
 
-OptionalUTCNow = Annotated[
+OptionalDateTime = Annotated[
     AwareDatetime | None,
     Field(
         nullable=True,
-        default_factory=lambda: datetime.now(timezone.utc),
+        sa_type=postgresql.TIMESTAMP(timezone=True),
+        default_factory=None,
     )
 ]
 
-OptionalUTCUpdate = Annotated[
+OptionalDateTimeOnUpdate = Annotated[
     AwareDatetime | None,
     Field(
         nullable=True,
-        default_factory=lambda: datetime.now(timezone.utc),
+        sa_type=postgresql.TIMESTAMP(timezone=True),
+        default_factory=None,
         sa_column_kwargs={"onupdate": lambda: datetime.now(timezone.utc)}
     )
 ]
 
-RequiredUTCNow = Annotated[
+RequiredDateTimeNow = Annotated[
     AwareDatetime,
     Field(
         nullable=False,
+        sa_type=postgresql.TIMESTAMP(timezone=True),
         default_factory=lambda: datetime.now(timezone.utc)
     )
 ]
 
-RequiredUTCUpdate = Annotated[
+RequiredDateTimeOnUpdate = Annotated[
     AwareDatetime,
     Field(
         nullable=False,
+        sa_type=postgresql.TIMESTAMP(timezone=True),
         default_factory=lambda: datetime.now(timezone.utc),
         sa_column_kwargs={"onupdate": lambda: datetime.now(timezone.utc)}
     )

@@ -4,26 +4,26 @@ from ...utils.helpers import get_attr, get_size, get_url
 
 class Hero(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    img: str | None
-    img_size: int | None
+    img: str | None = None
+    img_size: int | None = None
     name_de: str
     name_en: str
     name_fr: str
-    title_de: str | None
-    title_en: str | None
-    title_fr: str | None
-    quote_de: str | None
-    quote_en: str | None
-    quote_fr: str | None
-    url_de: str | None
-    url_en: str | None
-    url_fr: str | None
-    url_type_de: str | None
-    url_type_en: str | None
-    url_type_fr: str | None
-    url_title_de: str | None
-    url_title_en: str | None
-    url_title_fr: str | None
+    title_de: str | None = None
+    title_en: str | None = None
+    title_fr: str | None = None
+    quote_de: str | None = None
+    quote_en: str | None = None
+    quote_fr: str | None = None
+    url_de: str | None = None
+    url_en: str | None = None
+    url_fr: str | None = None
+    url_type_de: str | None = None
+    url_type_en: str | None = None
+    url_type_fr: str | None = None
+    url_title_de: str | None = None
+    url_title_en: str | None = None
+    url_title_fr: str | None = None
 
     @staticmethod
     def get_zms_catalog_query():

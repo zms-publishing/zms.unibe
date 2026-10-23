@@ -4,24 +4,24 @@ from ...utils.helpers import get_attr, get_children_count, get_size, get_url
 
 class WeiterbildungStudiengang(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    title_de: str | None
-    title_en: str | None
-    title_fr: str | None
-    category: str | None
-    subject_de: str | None
-    subject_en: str | None
-    subject_fr: str | None
-    descr_de: str | None
-    descr_en: str | None
-    descr_fr: str | None
-    img: str | None
-    img_size: int | None
-    titleimg_de: str | None
-    titleimg_en: str | None
-    titleimg_fr: str | None
-    titleimg_size_de: int | None
-    titleimg_size_en: int | None
-    titleimg_size_fr: int | None
+    title_de: str | None = None
+    title_en: str | None = None
+    title_fr: str | None = None
+    category: str | None = None
+    subject_de: str | None = None
+    subject_en: str | None = None
+    subject_fr: str | None = None
+    descr_de: str | None = None
+    descr_en: str | None = None
+    descr_fr: str | None = None
+    img: str | None = None
+    img_size: int | None = None
+    titleimg_de: str | None = None
+    titleimg_en: str | None = None
+    titleimg_fr: str | None = None
+    titleimg_size_de: int | None = None
+    titleimg_size_en: int | None = None
+    titleimg_size_fr: int | None = None
     elements: int
 
     @staticmethod

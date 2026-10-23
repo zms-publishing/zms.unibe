@@ -6,10 +6,10 @@ from ...utils.helpers import get_attr, get_children_count, get_parent_node_uuid
 
 class ContentPane(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    title_de: str | None
-    title_en: str | None
-    title_fr: str | None
-    elements: int | None
+    title_de: str | None = None
+    title_en: str | None = None
+    title_fr: str | None = None
+    elements: int | None = None
     contenttabs_uuid: UUID
 
     @staticmethod

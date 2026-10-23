@@ -10,7 +10,7 @@ from ...utils.helpers import (
     local_timezone,
     parse_uuid,
 )
-from ...utils.types import OptionalUTCNow
+from ...utils.types import OptionalDateTime
 
 
 class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inherit
@@ -19,18 +19,18 @@ class ZMSBase(SQLModel, table=False):  # Base class from which ZMSObjects inheri
     active_de: bool
     active_en: bool
     active_fr: bool
-    active_start_de: OptionalUTCNow
-    active_start_en: OptionalUTCNow
-    active_start_fr: OptionalUTCNow
-    active_end_de: OptionalUTCNow
-    active_end_en: OptionalUTCNow
-    active_end_fr: OptionalUTCNow
-    created_dt_de: OptionalUTCNow
-    created_dt_en: OptionalUTCNow
-    created_dt_fr: OptionalUTCNow
-    lastmod_dt_de: OptionalUTCNow
-    lastmod_dt_en: OptionalUTCNow
-    lastmod_dt_fr: OptionalUTCNow
+    active_start_de: OptionalDateTime
+    active_start_en: OptionalDateTime
+    active_start_fr: OptionalDateTime
+    active_end_de: OptionalDateTime
+    active_end_en: OptionalDateTime
+    active_end_fr: OptionalDateTime
+    created_dt_de: OptionalDateTime
+    created_dt_en: OptionalDateTime
+    created_dt_fr: OptionalDateTime
+    lastmod_dt_de: OptionalDateTime
+    lastmod_dt_en: OptionalDateTime
+    lastmod_dt_fr: OptionalDateTime
     sort_id_parent: int
     sort_id: int
     level: int

@@ -1,6 +1,6 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
 from ...utils.helpers import get_attr, get_url, local_timezone
-from ...utils.types import OptionalUTCNow, PostgreSQLArray
+from ...utils.types import OptionalDateTime, PostgreSQLArray
 
 
 class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=UniaktuellArticle&types=%2A
@@ -8,24 +8,24 @@ class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/mo
     title_de: str
     title_en: str
     title_fr: str
-    publish_dt_de: OptionalUTCNow
-    publish_dt_en: OptionalUTCNow
-    publish_dt_fr: OptionalUTCNow
-    abstract_de: str | None
-    abstract_en: str | None
-    abstract_fr: str | None
+    publish_dt_de: OptionalDateTime
+    publish_dt_en: OptionalDateTime
+    publish_dt_fr: OptionalDateTime
+    abstract_de: str | None = None
+    abstract_en: str | None = None
+    abstract_fr: str | None = None
     category_de: PostgreSQLArray
     category_en: PostgreSQLArray
     category_fr: PostgreSQLArray
-    topics_de: str | None
-    topics_en: str | None
-    topics_fr: str | None
-    img_de: str | None
-    img_en: str | None
-    img_fr: str | None
-    url_de: str | None
-    url_en: str | None
-    url_fr: str | None
+    topics_de: str | None = None
+    topics_en: str | None = None
+    topics_fr: str | None = None
+    img_de: str | None = None
+    img_en: str | None = None
+    img_fr: str | None = None
+    url_de: str | None = None
+    url_en: str | None = None
+    url_fr: str | None = None
 
     @staticmethod
     def get_zms_catalog_query():

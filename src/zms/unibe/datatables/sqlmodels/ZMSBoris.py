@@ -1,16 +1,16 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
 from ...utils.helpers import get_attr, get_data, get_url, local_timezone
-from ...utils.types import OptionalUTCNow
+from ...utils.types import OptionalDateTime
 
 
 class ZMSBoris(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    dataurl: str | None
-    descr_de: str | None
-    descr_en: str | None
-    descr_fr: str | None
+    dataurl: str | None = None
+    descr_de: str | None = None
+    descr_en: str | None = None
+    descr_fr: str | None = None
     boris_data: str | None  # = Field(sa_column=Column(JSONB), default_factory=dict)
-    lastupdate: OptionalUTCNow
+    lastupdate: OptionalDateTime
 
     @staticmethod
     def get_zms_catalog_query():
