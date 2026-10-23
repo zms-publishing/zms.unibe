@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from importlib import import_module
 from pathlib import Path
 
+import uvicorn
 from fastapi import FastAPI
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
@@ -96,9 +97,6 @@ async def lifespan(app: FastAPI):
 
 api = FastAPI(
     openapi_url=None,
-    proxy_headers=True,
-    forwarded_allow_ips=["*"],
-    ignore_trailing_slashes=True,
     redirect_slashes=False,
     lifespan=lifespan,
 )
@@ -107,3 +105,11 @@ if pybool(os.getenv("API_RQ")):
     print("FastAPI: Mounted /rq-dashboard/jobs for Redis Queue (RQ)")
     dashboard = RedisQueueDashboard(REDIS_URL, "/rq-dashboard")
     api.mount("/rq-dashboard", dashboard)
+
+if __name__ == "__main__":
+    uvicorn.run("zms.unibe.fastapi.app:api",
+                host="0.0.0.0",
+                port=8000,
+                proxy_headers=True,
+                forwarded_allow_ips="*",
+                )
