@@ -4,7 +4,7 @@ import html
 from bs4 import BeautifulSoup
 
 from Products.zms import standard
-from ...utils.helpers import get_when, local_timezone, sanitize_html
+from ...helpers import get_when, local_timezone, sanitize_html
 
 
 class ZMSAgendaOutlookSchema:

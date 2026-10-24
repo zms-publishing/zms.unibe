@@ -7,7 +7,14 @@ import json
 import logging
 
 import requests
+from AccessControl import ClassSecurityInfo, ModuleSecurityInfo
+from AccessControl.class_init import InitializeClass
 from dotenv import load_dotenv
+
+from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
+from Products.zms.standard import pybool
+from ..agenda.schemas.ZMSAgendaOutlookSchema import ZMSAgendaOutlookSchema
+from ..helpers import DotDict, local_timezone
 
 try:
     from azure.identity import EnvironmentCredential
@@ -18,20 +25,12 @@ try:
 except ImportError:
     MS_GRAPH_API_AVAILABLE = False
 
-from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
-from AccessControl.class_init import InitializeClass
-from OFS.ObjectManager import ObjectManager  # inherit from to use ClassSecurityInfo
-
-from Products.zms.standard import pybool
-from ..utils.helpers import DotDict, local_timezone
-from ..agenda.schemas.ZMSAgendaOutlookSchema import ZMSAgendaOutlookSchema
-
 if not MS_GRAPH_API_AVAILABLE:
     print("Addon: zms.unibe.agenda.OutlookConnector disabled -> zms.unibe[msgraphapi] extra required")
 else:
     print('Addon: zms.unibe.agenda.OutlookConnector')
-security = ModuleSecurityInfo('zms.unibe.agenda.OutlookConnector')  # allow module import in RestrictedPython
 
+security = ModuleSecurityInfo('zms.unibe.agenda.OutlookConnector')  # allow module import in RestrictedPython
 LOGGER = logging.getLogger('OutlookConnector')
 
 load_dotenv()

@@ -1,6 +1,7 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_url, local_timezone
+from ...helpers import local_timezone
 from ...utils.types import OptionalDateTime, PostgreSQLArray
+from ...utils.zms2sql.getters import get_attr, get_url
 
 
 class UniaktuellArticle(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=UniaktuellArticle&types=%2A

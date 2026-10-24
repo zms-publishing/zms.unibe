@@ -1,5 +1,5 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_url
+from ...utils.zms2sql.getters import get_attr, get_url
 
 
 class InfoBox(ZMSBase, table=True):

@@ -7,9 +7,10 @@ from fastapi_cache.decorator import cache
 
 from ...agenda.schemas.ZMSAgendaEventSchema import ZMSAgendaEventSchema
 from ...fastapi.meta import Tags
+from ...helpers import get_when, local_timezone
 from ...utils.dependencies import ContextDependency
 from ...utils.enums import ContentModel, ImageVariant, Lang, Locale
-from ...utils.helpers import get_data, get_when, is_activated_by_checkbox_and_timeline, local_timezone
+from ...utils.zms2sql.getters import get_data, is_activated_by_checkbox_and_timeline
 from ...utils.zope.context import get_zmsindex
 
 router = APIRouter(prefix="/zms/content", tags=[Tags.content])

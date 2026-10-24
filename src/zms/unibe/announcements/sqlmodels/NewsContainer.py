@@ -1,5 +1,5 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr
+from ...utils.zms2sql.getters import get_attr
 
 
 class NewsContainer(ZMSBase, table=True):

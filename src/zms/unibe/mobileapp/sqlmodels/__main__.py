@@ -15,7 +15,7 @@ from ...announcements.sqlmodels.NewsBox import NewsBox
 from ...mobileapp.sqlmodels.ServiceLinks import ServiceLink
 from ...teasers.sqlmodels.TeaserElement2022 import TeaserElement2022
 from ...utils.db import connect_sqldb
-from ...utils.helpers import flatten_to_str_list
+from ...helpers import flatten_to_str_list
 from ...utils.zms2sql import zms2sql
 
 LOGGER = logging.getLogger('zms.unibe.mobileapp.sqlmodels.__main__')
