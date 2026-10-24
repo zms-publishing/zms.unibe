@@ -2,9 +2,9 @@
 # by applying ClassSecurityInfo and ModuleSecurityInfo
 # for the following classes and methods
 
-from ...agenda import OutlookConnector
 from ...agenda import AgendaBridge
+from ...agenda import OutlookConnector
 
 from ...foundation import ZMSSiteOverview
 
-from ...utils import helpers
+from ...helpers import *
