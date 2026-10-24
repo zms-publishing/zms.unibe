@@ -9,8 +9,9 @@ import Zope2
 from Testing.makerequest import makerequest
 from Zope2.Startup.run import make_wsgi_app
 
-zope_conf_path = pathlib.Path(__file__).parent.joinpath('zope.conf').resolve()
+zope_conf_path = pathlib.Path(__file__).parent.joinpath('zodb.conf').resolve()
 _zope_initialized = False
+
 
 def create_zope_app_context():
     """
@@ -39,6 +40,7 @@ def create_zope_app_context():
     setRequest(app.REQUEST)
     newSecurityManager(None, user)
     return app
+
 
 def get_zmsindex(portal_master, context):
     
