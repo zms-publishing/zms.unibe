@@ -5,7 +5,10 @@ from uuid import UUID
 
 import requests
 
-from Products.zms import _blobfields, standard
+try:
+    from Products.zms import _blobfields, standard
+except ImportError:
+    pass  # ZMS-dependent getters require the optional zope extra.
 from ..enums import SiteType
 
 LOGGER = logging.getLogger('zms.unibe.utils.zms2sql.getters')
