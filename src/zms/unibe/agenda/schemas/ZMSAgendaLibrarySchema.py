@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from ...utils.helpers import flatten_to_str_list, get_when, local_timezone
+from ...helpers import flatten_to_str_list, get_when, local_timezone
 
 
 class ZMSAgendaLibrarySchema:

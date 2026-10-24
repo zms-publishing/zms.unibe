@@ -6,8 +6,9 @@ from uuid import UUID
 
 from sqlmodel import Field, SQLModel
 
-from ...utils.helpers import local_timezone, parse_uuid
+from ...helpers import local_timezone
 from ...utils.types import OptionalDateTime
+from ...utils.zms2sql.getters import parse_uuid
 
 
 class ZMSSurveyJSSubmissions(SQLModel, table=True):

@@ -1,7 +1,7 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import flatten_to_str_list, normalize_split_by
-from ...utils.helpers import get_attr, get_size, get_url
+from ...helpers import flatten_to_str_list, normalize_split_by
 from ...utils.types import PostgreSQLArray
+from ...utils.zms2sql.getters import get_attr, get_size, get_url
 
 
 class Hero2022(ZMSBase, table=True):

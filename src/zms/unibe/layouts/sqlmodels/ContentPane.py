@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_children_count, get_parent_node_uuid
+from ...utils.zms2sql.getters import get_attr, get_children_count, get_parent_node_uuid
 
 
 class ContentPane(ZMSBase, table=True):

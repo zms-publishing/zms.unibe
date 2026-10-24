@@ -11,11 +11,12 @@ from sqlmodel import not_, or_, select
 from ...agenda.sqlmodels.StatusMessages import StatusMessage
 from ...fastapi.meta import Tags
 from ...foundation.sqlmodels.ZMSSite import ZMSSite
+from ...helpers import flatten_to_str_list, local_timezone, normalize_split_by
 from ...mobileapp.schemas import NewsEventsSchema as schema
 from ...mobileapp.sqlmodels.NewsEvents import NewsEvents
 from ...utils.dependencies import SessionDependency
 from ...utils.enums import Locale, SiteType
-from ...utils.helpers import flatten_to_str_list, get_attr_by_lang, local_timezone, normalize_split_by, strip_cmstest
+from ...utils.zms2sql.getters import get_attr_by_lang, strip_cmstest
 
 router = APIRouter(tags=[Tags.mobile])
 

@@ -119,7 +119,7 @@ pydevd-pycharm = [                      # https://www.jetbrains.com/help/pycharm
 
 [project.scripts]
 zms2sql = "zms.unibe.utils.zms2sql.cli:main"
-update-zope-constraints = "zms.unibe.utils.zope.update_constraint_dependencies:main"
+update-zope-constraints = "zms.unibe.utils.zope.update:main"
 
 [project.urls]
 Homepage = "https://github.com/zms-publishing/zms.unibe"

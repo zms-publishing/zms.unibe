@@ -1,5 +1,5 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_size, get_url
+from ...utils.zms2sql.getters import get_attr, get_size, get_url
 
 
 class ZMSGraphic(ZMSBase, table=True):

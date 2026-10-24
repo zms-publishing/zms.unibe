@@ -1,6 +1,7 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_data, get_url, local_timezone
+from ...helpers import local_timezone
 from ...utils.types import OptionalDateTime
+from ...utils.zms2sql.getters import get_data, get_url
 
 
 class ZMSDataTable(ZMSBase, table=True):

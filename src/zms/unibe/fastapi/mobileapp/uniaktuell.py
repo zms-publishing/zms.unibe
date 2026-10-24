@@ -8,12 +8,13 @@ from sqlmodel import not_, select
 from ...fastapi.meta import Tags
 from ...fastapi.zmscontent.labels import get_content_labels
 from ...foundation.sqlmodels.ZMSSite import ZMSSite
+from ...helpers import local_timezone
 from ...mobileapp.schemas.NewsEventsSchema import Section
 from ...uniaktuell.schemas import UniaktuellSchema as schema
 from ...uniaktuell.sqlmodels import UniaktuellArticle as model
 from ...utils.dependencies import ContextDependency, SessionDependency
 from ...utils.enums import ContentModel, Locale
-from ...utils.helpers import get_attr_by_lang, local_timezone, strip_cmstest
+from ...utils.zms2sql.getters import get_attr_by_lang, strip_cmstest
 
 router = APIRouter(tags=[Tags.mobile])
 
