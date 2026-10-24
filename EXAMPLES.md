@@ -5,6 +5,7 @@
 - [Date/Time handling](#datetime-handling)
 - [Date/Time formatting](#datetime-formatting)
 - [Output sanitization](#output-sanitization)
+- [String splitting](#string-splitting)
 
 The code snippets below are `Python Scripts` – but the examples can be used in `Page Templates` as well.
 
@@ -22,21 +23,38 @@ The code snippets below are `Python Scripts` – but the examples can be used in
 
 ```html
 <tal:block tal:define="
-    helpers modules/zms.unibe.utils/helpers;
-    tomorrow python:helpers.local_timezone(context.ZopeTime()+1);">
-    <p tal:content="python:helpers.get_when(tomorrow)">2026-10-10T20:33:00+02:00</p>
-    <p tal:content="python:helpers.get_when(tomorrow, mode='date', locale='en_GB')">10 October 2026</p>
-    <p tal:content="python:helpers.get_when(tomorrow, mode='date', locale='en_US')">October 10, 2026</p>
-    <p tal:content="python:helpers.get_when(tomorrow, mode='weekday', locale='de_DE')">Sa</p>
-    <p tal:content="python:helpers.get_when(tomorrow, mode='EEEE', locale='ru')">суббота</p>
+    datetime modules/zms.unibe.helpers/datetime;
+    tomorrow python:datetime.local_timezone(context.ZopeTime()+1);">
+    <p tal:content="python:datetime.get_when(tomorrow)">2026-10-10T20:33:00+02:00</p>
+    <p tal:content="python:datetime.get_when(tomorrow, mode='date', locale='en_GB')">10 October 2026</p>
+    <p tal:content="python:datetime.get_when(tomorrow, mode='date', locale='en_US')">October 10, 2026</p>
+    <p tal:content="python:datetime.get_when(tomorrow, mode='weekday', locale='de_DE')">Sa</p>
+    <p tal:content="python:datetime.get_when(tomorrow, mode='EEEE', locale='ru')">суббота</p>
     
     <tal:block tal:define="
-        newyear_bermuda python:helpers.local_timezone('2027-01-01', tz='Atlantic/Bermuda');">
+        newyear_bermuda python:datetime.local_timezone('2027-01-01', tz='Atlantic/Bermuda');">
         <p tal:content="python:newyear_bermuda">2026-12-31 19:00:00-04:00</p>
-        <p tal:content="python:helpers.get_when(newyear_bermuda)">2027-01-01T00:00:00+01:00</p>
+        <p tal:content="python:datetime.get_when(newyear_bermuda)">2027-01-01T00:00:00+01:00</p>
     </tal:block>
 </tal:block>
 ```
+
+> [!TIP]
+> In `Python Scripts` you can use the following shorthand to import all helper functions at once and start using them straight away:
+> ```python
+> Python 3.14.9 (main, Oct 21 2026, 17:47:42) [Clang 23.1.3 ] on darwin
+> 
+> >>> from zms.unibe.helpers import *
+> 
+> Helper: zms.unibe.helpers.datetime.local_timezone
+> Helper: zms.unibe.helpers.datetime.get_when
+> Helper: zms.unibe.helpers.string.sanitize_html
+> Helper: zms.unibe.helpers.string.flatten_to_str_list
+> Helper: zms.unibe.helpers.string.normalize_split_by
+> 
+> >>> get_when()
+> '2026-10-24T13:40:47+02:00'
+> ```
 
 ## Date/Time handling
 
@@ -46,10 +64,12 @@ The code snippets below are `Python Scripts` – but the examples can be used in
 - You can also adjust the datetime by a number of days given as delta.
 
 <details>
-<summary><code>zms.unibe.utils.helpers.local_timezone</code></summary>
+<summary><code>zms.unibe.utils.helpers.datetime.local_timezone</code></summary>
 
 ```python
-def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
+def local_timezone(dt: Any = None,
+                   tz: str = 'Europe/Zurich',
+                   days_delta: int = 0) -> datetime:
     """
     Convert a datetime, timestamp, or ISO8601 string to the specified local timezone.
 
@@ -79,7 +99,7 @@ def local_timezone(dt=None, tz='Europe/Zurich', days_delta=0):
 </details>
 
 ```python
-from zms.unibe.utils.helpers import local_timezone
+from zms.unibe.helpers.datetime import local_timezone
 
 now = local_timezone()
 
@@ -101,18 +121,22 @@ local_timezone('2027-01-01', tz='Atlantic/Bermuda')
 - It is basically a wrapper for the [`Babel`](https://babel.pocoo.org/en/latest/dates.html) library.
 
 <details>
-<summary><code>zms.unibe.utils.helpers.get_when</code></summary>
+<summary><code>zms.unibe.helpers.datetime.get_when</code></summary>
 
 ```python
-def get_when(dt=None, mode=None,
-             locale='de_CH', tz='Europe/Zurich', 
-             granularity='second', threshold=0.85,
-             format='long', add_direction=True):
+def get_when(dt: Any = None,
+             mode: str | None = None,
+             locale: str = 'de_CH',
+             tz: str = 'Europe/Zurich',
+             granularity: str = 'second',
+             threshold: float | int = 0.85,
+             format: str = 'long',
+             add_direction: bool = True) -> str:
     """
     Determines and returns a formatted representation of the input date, time, or timedelta 
     based on the specified `mode` and formatting criteria. Handles localization, time zone 
     adjustments, and granularity for delta formats.
-    
+
     It is basically a wrapper for https://babel.pocoo.org/en/latest/dates.html
 
     :param dt: Input date, time, or timedelta. Can be a `datetime`, `date`, or a number 
@@ -154,7 +178,7 @@ def get_when(dt=None, mode=None,
 </details>
 
 ```python
-from zms.unibe.utils.helpers import local_timezone, get_when
+from zms.unibe.helpers.datetime import get_when, local_timezone
 
 now = local_timezone()
 
@@ -180,7 +204,7 @@ get_when(now, mode='EEEE', locale='ru')
 # 'пятница'
 ```
 ```python
-from zms.unibe.utils.helpers import local_timezone, get_when
+from zms.unibe.helpers.datetime import get_when, local_timezone
 
 now = local_timezone()
 diff = local_timezone('2026-12-31') - now
@@ -304,30 +328,30 @@ div.WordSection1
 - Can also extract and return the last hyperlink `<a href="...">` present in the HTML to create 'more...' links easily.
 
 <details>
-<summary><code>zms.unibe.utils.helpers.sanitize_html</code></summary>
+<summary><code>zms.unibe.helpers.string.sanitize_html</code></summary>
 
 ```python
-def sanitize_html(content, return_type='html'):
+def sanitize_html(content: Any = None,
+                  return_type: str ='html') -> str:
     """
-    Sanitizes HTML content by converting it into either plain markdown or sanitized HTML.
-    If the content starts with <html>, it uses the MarkItDown library to sanitize and
-    convert it to markdown. Alternatively, the markdown is converted back to HTML,
-    performing additional cleaning such as removing images, empty paragraphs, and
-    unwanted newline characters.
+    Sanitizes HTML content by converting it into either plain Markdown or sanitized HTML.
+    It uses the ``MarkItDown`` library to sanitize and convert it to Markdown.
+    By default, the Markdown is converted back to HTML, performing additional cleaning
+    such as removing images, empty paragraphs, and unwanted newline characters.
 
-    If errors occur, it uses BeautifulSoup to extract text content.
+    If errors occur, it uses ``BeautifulSoup`` to extract text content.
 
     Parameters:
     content (str): The input HTML content to be sanitized or processed.
 
     return_type (str, optional): Specifies the type of value to return:
-        - 'markdown': Converts the HTML to Markdown and returns it.
-        - 'html': Sanitizes the HTML, removing unwanted elements, and returns cleaned HTML.
-        - 'href': Extracts and returns the last hyperlink ('<a href="...">') present in the HTML.
-        Default is 'html'.
+        - ``markdown``: Converts the HTML to Markdown and returns it.
+        - ``html``: Sanitizes the HTML, removing unwanted elements, and returns cleaned HTML.
+        - ``href``: Extracts and returns the last hyperlink ('<a href="...">') present in the HTML.
+        Default is ``html``.
 
     Returns:
-    str: The output in the format specified by `return_type`.
+    str: The output in the format specified by ``return_type``.
 
     Raises:
     Does not explicitly raise errors but logs any exceptions that occur during processing.
@@ -336,11 +360,11 @@ def sanitize_html(content, return_type='html'):
 </details>
 
 ```python
-from zms.unibe.utils.helpers import sanitize_html
+from zms.unibe.helpers.string import sanitize_html
 
 content = '...'   # see the example HTML content above
 
-sanitize_html('<html>'+content)
+sanitize_html(content)
 # <p><strong>Hallo Team</strong></p>
 # <p>Das ist ein typischer Inhalt, der mit dem <a href="https://microsoft.com">Outlook WYSIWYG-Editor</a> erstellt wurde. 
 # Er enthält eine Liste und Textformatierungen.</p> 
@@ -348,7 +372,7 @@ sanitize_html('<html>'+content)
 # <p>Mit freundlichen Grüßen, <strong>Max Mustermann</strong> Abteilung für digitale Kommunikation</p> 
 # <p><a href="link2.html">Link 2</a></p>
 
-sanitize_html('<html>'+content, 'markdown')
+sanitize_html(content, 'markdown')
 # **Hallo Team**
 #
 # Das ist ein typischer Inhalt, der mit dem [Outlook WYSIWYG-Editor](https://microsoft.com) erstellt wurde.
@@ -365,12 +389,56 @@ sanitize_html('<html>'+content, 'markdown')
 #
 # ![Screenshot](screenshot.png)
 
-sanitize_html('<html>'+content, 'href')
+sanitize_html(content, 'href')
 # link2.html
 ```
 
-## License
 
-Copyright (c) 2020-2026 [UniBE, University of Bern, IT Services Department](https://id.unibe.ch). All rights reserved.
+## String splitting
 
-Licensed under the [MIT license](https://github.com/zms-publishing/zms.unibe/blob/main/LICENSE).
+- Split any values, first by line if text and then using multiple delimiters (by default `,` `;` or `|`)
+- Convert the specified values into a sorted list of strings with duplicates removed
+
+<details>
+<summary><code>zms.unibe.helpers.string</code></summary>
+
+```python
+def flatten_to_str_list(*values) -> list[str]:
+    """Flatten the given values (scalars or lists) into a sorted, deduplicated
+    list of strings, dropping non-string values like None or numbers."""
+
+def normalize_split_by(values: Any = None,
+                       delimiters: str = ',;|',
+                       splitlines: bool = True,
+                       keepends: bool = False,
+                       maxsplit: int = 0) -> list[str]:
+    """Split arbitrary values based on multiple delimiters,
+    split lines of text first, with or without keeping the line endings,
+    and limiting the maximum number of splits. Returns a list of strings."""
+```
+</details>
+
+```python
+from zms.unibe.helpers.string import flatten_to_str_list, normalize_split_by
+
+
+splitted = normalize_split_by("""Line 1
+                              Line 2    , Word B     | Word C
+                              Word A; Line 3""")
+# ['Line 1', 'Line 2', 'Word B', 'Word C', 'Word A', 'Line 3']
+
+flatten_to_str_list(splitted, 'Word A', 'Line 4', 'Word A', ['1', '2', '3'], '3', '2')
+# ['1', '2', '3', 'Line 1', 'Line 2', 'Line 3', 'Line 4', 'Word A', 'Word B', 'Word C']
+
+normalize_split_by('0 1 2 3')
+# ['0 1 2 3']
+
+normalize_split_by('0 1 2 3', delimiters=' ')
+# ['0', '1', '2', '3']
+
+normalize_split_by((3,4,1,2,1,1,2,3))
+# ['3', '4', '1', '2', '1', '1', '2', '3']
+
+flatten_to_str_list(normalize_split_by((3,4,1,2,1,1,2,3)))
+# ['1', '2', '3', '4']
+```
