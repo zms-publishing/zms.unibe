@@ -1,7 +1,7 @@
 import typer
 
 from ...agenda.sqlmodels.__main__ import fetch_agendas, fetch_statusmessages, update_agendas
-from ...announcements.sqlmodels.__main__ import update_mediareleases, update_newsboxes
+from ...announcements.sqlmodels.__main__ import update_medianews, update_newsboxes
 from ...contacts.sqlmodels.__main__ import update_contacts
 from ...datatables.sqlmodels.__main__ import update_boris, update_datatables
 from ...formulator.sqlmodels.__main__ import update_formulator
@@ -25,7 +25,7 @@ AVAILABLE_COMMANDS = {
     'fetch-statusmessages': fetch_statusmessages,
     'update-newsevents': update_newsevents,         #  (11,594) => aggregates above to access via zms-fastapi
     # NICE-TO-HAVE
-    'update-mediareleases': update_mediareleases,   #   (2,069) =  0.72 min
+    'update-medianews': update_medianews,   #   (2,069) =  0.72 min
     'update-uniaktuell': update_uniaktuell,         #   (2,180) =  0.72 min
     # OPTIONAL
     'update-datatables': update_datatables,         #     (150) =  0.11 min (w/o data in mediadb on localhost)

@@ -1,4 +1,4 @@
-from ...utils.helpers import get_when, local_timezone
+from ...utils.helpers import flatten_to_str_list, get_when, local_timezone, normalize_split_by
 
 
 class ZMSAgendaITStatusMessageSchema:
@@ -7,6 +7,7 @@ class ZMSAgendaITStatusMessageSchema:
         begin = local_timezone(event.begin)
         # set the end date to next week if none is specified to ongoing outage
         end = local_timezone(days_delta=7) if event.end is None else local_timezone(event.end)
+        categories = flatten_to_str_list(normalize_split_by(event.type))
 
         return {
             'eventId': event.id,
@@ -31,7 +32,7 @@ class ZMSAgendaITStatusMessageSchema:
             'eventInfos': f"{event.description} {event.service} {event.info}",
             'eventInfosPreview': None,
             'eventTagline': None,
-            'eventCategories': event.type.split('\r\n'),
+            'eventCategories': categories,
             'eventImage': None,
             'eventUrl': None,
         }

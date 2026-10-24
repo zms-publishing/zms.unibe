@@ -71,12 +71,17 @@ async def lifespan(app: FastAPI):
     try:
         if pybool(os.getenv('ZMS_UV_PACKAGE_MANAGER')):
             from ..patches.monkey import Products_zms_standard_get_installed_packages
+        app.state.redis_connection = Redis(connection_pool=REDIS_POOL)
+        FastAPICache.init(
+            RedisBackend(app.state.redis_connection),
+            prefix="fastapi-cache",
+            enable=pybool(os.getenv("FASTAPI_CACHE_ENABLED", True)),
+        )
+        print(f"FastAPI: Endpoint caching is {'enabled' if FastAPICache.get_enable() else 'disabled'}")
         import_submodules_recursively(endpoints)
         import_sqlmodels_recursively()
         app.state.sqldb_engine = connect_sqldb(verbose=True)
         SQLModel.metadata.create_all(app.state.sqldb_engine)
-        app.state.redis_connection = Redis(connection_pool=REDIS_POOL)
-        FastAPICache.init(RedisBackend(app.state.redis_connection), prefix="fastapi-cache")
         if pybool(os.getenv("API_RQ")):
             app.state.redis_queue = Queue(QUEUE_NAME,
                                           connection=app.state.redis_connection)
@@ -109,8 +114,8 @@ if pybool(os.getenv("API_RQ")):
 
 if __name__ == "__main__":
     uvicorn.run("zms.unibe.fastapi.app:api",
-                host="0.0.0.0",
-                port=8000,
-                proxy_headers=True,
-                forwarded_allow_ips="*",
+                host="0.0.0.0",             # UVICORN_HOST
+                port=5555,                  # UVICORN_PORT
+                proxy_headers=True,         # enabled by default
+                forwarded_allow_ips="*",    # FORWARDED_ALLOW_IPS="*"
                 )

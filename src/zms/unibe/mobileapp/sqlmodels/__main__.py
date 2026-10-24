@@ -15,6 +15,7 @@ from ...announcements.sqlmodels.NewsBox import NewsBox
 from ...mobileapp.sqlmodels.ServiceLinks import ServiceLink
 from ...teasers.sqlmodels.TeaserElement2022 import TeaserElement2022
 from ...utils.db import connect_sqldb
+from ...utils.helpers import flatten_to_str_list
 from ...utils.zms2sql import zms2sql
 
 LOGGER = logging.getLogger('zms.unibe.mobileapp.sqlmodels.__main__')
@@ -61,7 +62,7 @@ def update_newsevents():
 
                 obj.url_de = res.veranstalter_info_link
                 obj.infos_de = res.veranstaltung_referenten
-                obj.topics_de = res.veranstaltung_zyklus
+                obj.topics_de = [res.veranstaltung_zyklus]
 
                 session.add(obj)
             session.commit()
@@ -94,7 +95,7 @@ def update_newsevents():
 
                 obj.url_en = res.veranstalter_info_link
                 obj.infos_en = res.veranstaltung_referenten
-                obj.topics_en = res.veranstaltung_zyklus
+                obj.topics_en = [res.veranstaltung_zyklus]
 
                 session.add(obj)
             session.commit()
@@ -124,8 +125,8 @@ def update_newsevents():
                 obj.location_de = res.venue
 
                 obj.url_de = res.url
-                obj.infos_de = ', '.join(res.subjects)
-                obj.topics_de = res.eventType
+                obj.infos_de = None
+                obj.topics_de = flatten_to_str_list(res.subjects, res.eventType, res.series)
 
                 session.add(obj)
             session.commit()
@@ -155,8 +156,8 @@ def update_newsevents():
                 obj.location_en = res.venue
 
                 obj.url_en = res.url
-                obj.infos_en = ', '.join(res.subjects)
-                obj.topics_en = res.eventType
+                obj.infos_en = None
+                obj.topics_en = flatten_to_str_list(res.subjects, res.eventType, res.series)
 
                 session.add(obj)
             session.commit()

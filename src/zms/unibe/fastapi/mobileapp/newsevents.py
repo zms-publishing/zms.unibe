@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timezone
 from uuid import UUID
 
 from anytree import Node, RenderTree
@@ -15,7 +15,7 @@ from ...mobileapp.schemas import NewsEventsSchema as schema
 from ...mobileapp.sqlmodels.NewsEvents import NewsEvents
 from ...utils.dependencies import SessionDependency
 from ...utils.enums import Locale, SiteType
-from ...utils.helpers import get_attr_by_lang, local_timezone, strip_cmstest
+from ...utils.helpers import flatten_to_str_list, get_attr_by_lang, local_timezone, normalize_split_by, strip_cmstest
 
 router = APIRouter(tags=[Tags.mobile])
 
@@ -29,7 +29,7 @@ def get_news(
         session: SessionDependency,
         lang: Locale = Locale.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
-        date_after: datetime | None = Query(None, description='Filter by date after (UTC)'),
+        date_after: date | None = Query(None, description='Filter by date after'),
         offset: int = 0,
         limit: int = 20):
 
@@ -41,7 +41,7 @@ def get_news(
                                         de=NewsEvents.active_de,
                                         en=NewsEvents.active_en,
                                         fr=NewsEvents.active_fr)).
-                 where(date_after is None and True or (NewsEvents.lastmod_dt_de > date_after)).
+                 where(date_after is None and True or (NewsEvents.lastmod_dt_de > local_timezone(date_after))).
                  where(not_(ZMSSite.path.contains('/arbeitgeberin'))).
                  where(not_(ZMSSite.path.contains('/images'))).
                  where(not_(ZMSSite.path.contains('/jahresberichte'))).
@@ -72,6 +72,11 @@ def get_news(
             uuid=res.ZMSSite.uuid
         )
 
+        categories = get_attr_by_lang(lang,
+                                      de=res.NewsEvents.topics_de,
+                                      en=res.NewsEvents.topics_en,
+                                      fr=res.NewsEvents.topics_fr)
+
         data.append(schema.News.model_validate({
             'date': local_timezone(get_attr_by_lang(lang,
                                                     de=res.NewsEvents.lastmod_dt_de,
@@ -89,10 +94,8 @@ def get_news(
                                       de=res.NewsEvents.infos_de,
                                       en=res.NewsEvents.infos_en,
                                       fr=res.NewsEvents.infos_fr),
-            'topics': get_attr_by_lang(lang,
-                                       de=res.NewsEvents.topics_de,
-                                       en=res.NewsEvents.topics_en,
-                                       fr=res.NewsEvents.topics_fr),
+            'categories': categories,
+            'topics': ', '.join(categories) if categories is not None else None,
             'image': get_attr_by_lang(lang,
                                       de=res.NewsEvents.image_de,
                                       en=res.NewsEvents.image_en,
@@ -121,8 +124,8 @@ def fetch_events(session, lang, sections, start_after, end_before, offset, limit
                                         de=NewsEvents.active_de,
                                         en=NewsEvents.active_en,
                                         fr=NewsEvents.active_fr)).
-                 where(start_after is None and True or (NewsEvents.start_dt > start_after)).
-                 where(end_before is None and True or (NewsEvents.end_dt < end_before)).
+                 where(start_after is None and True or (NewsEvents.start_dt > local_timezone(start_after))).
+                 where(end_before is None and True or (NewsEvents.end_dt < local_timezone(end_before))).
                  where(NewsEvents.end_dt > datetime.now(timezone.utc)).
                  where(not_(ZMSSite.path.contains('/arbeitgeberin'))).
                  where(not_(ZMSSite.path.contains('/images'))).
@@ -194,11 +197,11 @@ def get_sections_tree(data, lang):
         elif obj.parent_uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
             debug(obj.parent_uuid, obj.uuid)
 
-    for pre, fill, node in RenderTree(root):
-        # print("%s%s" % (pre, node.title))
-        pass
-
-    jsonexporter = JsonExporter(indent=2, sort_keys=True, ensure_ascii=False)
+    # for pre, fill, node in RenderTree(root):
+    #     print("%s%s" % (pre, node.title))
+    #     pass
+    # 
+    # jsonexporter = JsonExporter(indent=2, sort_keys=True, ensure_ascii=False)
     # print(jsonexporter.export(root))
 
     dictexporter = DictExporter(attriter=lambda attrs: [(k, v) for k, v in attrs if k != "name"])
@@ -217,8 +220,8 @@ def get_events(
         session: SessionDependency,
         lang: Locale = Locale.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
-        start_after: datetime | None = Query(None, description='Filter by start after (UTC)'),
-        end_before: datetime | None = Query(None, description='Filter by end before (UTC)'),
+        start_after: date | None = Query(None, description='Filter by start after'),
+        end_before: date | None = Query(None, description='Filter by end before'),
         offset: int = 0,
         limit: int = 20):
 
@@ -250,6 +253,11 @@ def get_events(
             section.type = 'Agenda Library'
             data_uuid = None
 
+        categories = get_attr_by_lang(lang,
+                                      de=res.NewsEvents.topics_de,
+                                      en=res.NewsEvents.topics_en,
+                                      fr=res.NewsEvents.topics_fr)
+
         data.append(schema.Event.model_validate({
             'start': local_timezone(res.NewsEvents.start_dt),
             'end': local_timezone(res.NewsEvents.end_dt),
@@ -269,10 +277,8 @@ def get_events(
                                       de=res.NewsEvents.infos_de,
                                       en=res.NewsEvents.infos_en,
                                       fr=res.NewsEvents.infos_fr),
-            'topics': get_attr_by_lang(lang,
-                                       de=res.NewsEvents.topics_de,
-                                       en=res.NewsEvents.topics_en,
-                                       fr=res.NewsEvents.topics_fr),
+            'categories': categories,
+            'topics': ', '.join(categories) if categories is not None else None,
             'image': get_attr_by_lang(lang,
                                       de=res.NewsEvents.image_de,
                                       en=res.NewsEvents.image_en,
@@ -389,18 +395,18 @@ def get_sections(
 @cache(expire=600)
 def get_statusmessages(
         session: SessionDependency,
-        start_after: datetime | None = Query(None, description='Filter by start after (UTC)'),
-        end_before: datetime | None = Query(None, description='Filter by end before (UTC)'),
+        start_after: date | None = Query(None, description='Filter by start after'),
+        end_before: date | None = Query(None, description='Filter by end before'),
         offset: int = 0,
         limit: int = 20):
 
     data = []
 
     statement = [select(StatusMessage).
-                 where(start_after is None and True or (StatusMessage.begin > start_after)).
-                 where(end_before is None and True or (StatusMessage.end < end_before)).
-                 where(or_(StatusMessage.end > datetime.now(timezone.utc) - timedelta(days=1),  # show resolved by yesterday
-                           StatusMessage.end == datetime.fromisoformat('1970-01-01T00:00:00'))).  # show open issues
+                 where(start_after is None and True or (StatusMessage.begin > local_timezone(start_after))).
+                 where(end_before is None and True or (StatusMessage.end < local_timezone(end_before))).
+                 where(or_(StatusMessage.end > local_timezone(days_delta=-1),  # show resolved by yesterday
+                           StatusMessage.end == local_timezone('1970-01-01T00:00:00'))).  # show open issues
                  order_by(StatusMessage.begin).
                  order_by(StatusMessage.end.desc())]
 
@@ -408,20 +414,25 @@ def get_statusmessages(
     total = session.exec(statement[0])
 
     for res in results.all():
+        
         section = schema.Section(
-            type=res.type,
-            title='IT Services',
+            type='IT Services Status',
+            title='IT Services Status',
             domain='https://id.unibe.ch/statusmeldungen',
             path=None,
             uuid=None
         )
+        
+        categories = flatten_to_str_list(normalize_split_by(res.type))
+        
         data.append(schema.StatusMessage.model_validate({
             'title': res.subject,
             'start': local_timezone(res.begin),
-            'end': res.end > local_timezone(datetime.fromisoformat('1970-01-01T00:00:00+00:00'))
+            'end': res.end > local_timezone('1970-01-01T00:00:00+00:00')
                    and local_timezone(res.end) or None,
-            'infos': f'{res.description}\n\n{res.info}',
-            'topics': res.service,
+            'infos': f'{res.description}\n\n{res.service} \n\n{res.info}',
+            'categories': categories,
+            'topics': ', '.join(categories) if categories is not None else None,
             'section': section,
             'dataSource': 'https://api.epc.unibe.ch/announcements/api/ServiceAnnouncements',
             'dataLevel': 1,
