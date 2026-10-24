@@ -40,7 +40,7 @@ The code snippets below are `Python Scripts` – but the examples can be used in
 ```
 
 > [!TIP]
-> In `Python Scripts` you can use the following shorthand to import all helper functions at once and start using them straight away:
+> In `Python Console` you can use the following shorthand to import all helper functions at once and start using them straight away:
 > ```python
 > Python 3.14.9 (main, Oct 21 2026, 17:47:42) [Clang 23.1.3 ] on darwin
 > 
@@ -64,7 +64,7 @@ The code snippets below are `Python Scripts` – but the examples can be used in
 - You can also adjust the datetime by a number of days given as delta.
 
 <details>
-<summary><code>zms.unibe.utils.helpers.datetime.local_timezone</code></summary>
+<summary><code>zms.unibe.helpers.datetime.local_timezone</code></summary>
 
 ```python
 def local_timezone(dt: Any = None,
