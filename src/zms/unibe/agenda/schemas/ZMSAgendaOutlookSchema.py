@@ -25,7 +25,7 @@ class ZMSAgendaOutlookSchema:
         href = sanitize_html(event.body.content, 'href')
         href = href if href.startswith('http') else None
         
-        preview = sanitize_html(event.bodyPreview)
+        preview = (event.bodyPreview or '').strip()
         content = sanitize_html(event.body.content)
 
         # make all links open in a new tab
