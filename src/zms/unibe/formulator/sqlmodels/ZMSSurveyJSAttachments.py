@@ -2,7 +2,7 @@ from uuid import UUID, uuid4
 
 from sqlmodel import Field, SQLModel
 
-from ...utils.helpers import parse_uuid
+from ...utils.zms2sql.getters import parse_uuid
 
 
 class ZMSSurveyJSAttachments(SQLModel, table=True):

@@ -3,12 +3,7 @@ from uuid import UUID
 from sqlmodel import Field, SQLModel
 
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import (
-    get_attr,
-    get_children_count,
-    get_parent_home_uuid,
-    get_type,
-)
+from ...utils.zms2sql.getters import get_attr, get_children_count, get_parent_home_uuid, get_type
 
 
 class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?metaobj=ZMS&types=%2A

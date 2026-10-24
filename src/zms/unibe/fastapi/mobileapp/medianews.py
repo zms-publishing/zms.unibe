@@ -8,10 +8,11 @@ from ...announcements.schemas import MediaNewsSchema as schema
 from ...announcements.sqlmodels import MediaNews as model
 from ...fastapi.meta import Tags
 from ...foundation.sqlmodels.ZMSSite import ZMSSite
+from ...helpers import local_timezone
 from ...mobileapp.schemas.NewsEventsSchema import Section
 from ...utils.dependencies import SessionDependency
 from ...utils.enums import Locale
-from ...utils.helpers import get_attr_by_lang, local_timezone, strip_cmstest
+from ...utils.zms2sql.getters import get_attr_by_lang, strip_cmstest
 
 router = APIRouter(tags=[Tags.mobile])
 

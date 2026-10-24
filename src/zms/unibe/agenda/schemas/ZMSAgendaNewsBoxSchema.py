@@ -1,5 +1,5 @@
 from Products.zms import _blobfields
-from ...utils.helpers import flatten_to_str_list, get_when, local_timezone, normalize_split_by
+from ...helpers import get_when, local_timezone, flatten_to_str_list, normalize_split_by
 
 
 class ZMSAgendaNewsBoxSchema:

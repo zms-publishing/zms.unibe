@@ -1,6 +1,8 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_url, local_timezone
+from ...helpers import local_timezone
 from ...utils.types import OptionalDateTime
+from ...utils.zms2sql.getters import get_attr, get_url
+
 
 class MediaNews(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=media_news&types=%2A
     __table_args__ = {'extend_existing': True}

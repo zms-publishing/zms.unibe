@@ -1,5 +1,5 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_children_count
+from ...utils.zms2sql.getters import get_children_count
 
 class Team(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
