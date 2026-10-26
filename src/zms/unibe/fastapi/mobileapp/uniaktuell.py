@@ -69,6 +69,7 @@ def get_uniaktuell(
                                    fr=res.ZMSSite.title_fr),
             domain=f'https://{strip_cmstest(res.ZMSSite.domain)}',
             path=res.ZMSSite.path,
+            categories=None,
             uuid=res.ZMSSite.uuid
         )
         category = get_attr_by_lang(lang,
