@@ -9,6 +9,7 @@ class Section(BaseModel):
     title: str                      # ZMS gettitle
     type: str                       # ZMS sitetype
     path: str | None                # ZMS sitepath
+    categories: dict | None
     uuid: UUID | None               # ZMS siteuuid
 
 
