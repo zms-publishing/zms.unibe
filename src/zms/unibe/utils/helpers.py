@@ -4,6 +4,7 @@ import re
 import time as t
 from datetime import date, datetime, time, timedelta
 from io import BytesIO
+from typing import Any
 from unittest.mock import MagicMock
 from uuid import UUID
 
@@ -532,6 +533,45 @@ def sanitize_html(content, return_type='html'):
     text = text.replace('\n', '')
     text = text.replace('  ', ' ')
     return text.strip()
+
+
+print('Addon: zms.unibe.utils.helpers.flatten_to_str_list')
+@security.public
+def flatten_to_str_list(*values) -> list[str]:
+    """Flatten the given values (scalars or lists) into a sorted, deduplicated
+    list of strings, dropping non-string values like None or numbers."""
+    
+    flattened = set()
+    for value in values:
+        flattened.update(value if isinstance(value, list) else [value])
+    return sorted(x for x in flattened if isinstance(x, str))
+
+
+print('Addon: zms.unibe.utils.helpers.normalize_split_by')
+@security.public
+def normalize_split_by(values: Any,
+                       delimiters: str = ',;|',
+                       splitlines: bool = True,
+                       keepends: bool = False,
+                       maxsplit: int = 0) -> list[str]:
+    """Split arbitrary values based on multiple delimiters,
+    split lines of text first, with or without keeping the line endings,
+    and limiting the maximum number of splits. Returns a list of strings."""
+
+    if values is None:
+        return []
+
+    if isinstance(values, str) and splitlines:
+        values = values.splitlines(keepends=keepends)
+
+    strings = values if isinstance(values, list) or isinstance(values, tuple) else [str(values)]
+    pattern = '|'.join(map(re.escape, delimiters))
+    splitup = []
+
+    for string in strings:
+        splitup.extend(re.split(pattern, str(string), maxsplit=maxsplit))
+
+    return [s.strip() for s in splitup if s.strip()]
 
 
 # Apply security assertions by ModuleSecurityInfo()

@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import date
 
 from fastapi import APIRouter, Query
 from fastapi_cache.decorator import cache
@@ -13,7 +13,7 @@ from ...uniaktuell.schemas import UniaktuellSchema as schema
 from ...uniaktuell.sqlmodels import UniaktuellArticle as model
 from ...utils.dependencies import ContextDependency, SessionDependency
 from ...utils.enums import ContentModel, Locale
-from ...utils.helpers import get_attr_by_lang, strip_cmstest
+from ...utils.helpers import get_attr_by_lang, local_timezone, strip_cmstest
 
 router = APIRouter(tags=[Tags.mobile])
 
@@ -26,7 +26,7 @@ def get_uniaktuell(
         session: SessionDependency,
         context: ContextDependency,
         lang: Locale = Locale.de,
-        date_after: datetime | None = Query(None, description='Filter by date after (UTC)'),
+        date_after: date | None = Query(None, description='Filter by date after'),
         offset: int = 0,
         limit: int = 20):
 
@@ -50,7 +50,7 @@ def get_uniaktuell(
                  where(not_(ZMSSite.path.contains('/zms_schulung'))).
                  where(not_(model.UniaktuellArticle.path.contains('/trashcan'))).
                  where(ZMSSite.path.like('%uni%aktuell%')).
-                 where(date_after is None and True or (model.UniaktuellArticle.publish_dt_de > date_after)).
+                 where(date_after is None and True or (model.UniaktuellArticle.publish_dt_de > local_timezone(date_after))).
                  order_by(get_attr_by_lang(lang,
                                            de=model.UniaktuellArticle.publish_dt_de,
                                            en=model.UniaktuellArticle.publish_dt_en,
@@ -93,10 +93,10 @@ def get_uniaktuell(
                                       res.UniaktuellArticle.title_de,
                                       res.UniaktuellArticle.title_en,
                                       res.UniaktuellArticle.title_fr),
-            'date': get_attr_by_lang(lang,
-                                     res.UniaktuellArticle.publish_dt_de,
-                                     res.UniaktuellArticle.publish_dt_en,
-                                     res.UniaktuellArticle.publish_dt_fr),
+            'date': local_timezone(get_attr_by_lang(lang,
+                                                    res.UniaktuellArticle.publish_dt_de,
+                                                    res.UniaktuellArticle.publish_dt_en,
+                                                    res.UniaktuellArticle.publish_dt_fr)).date(),
             'infos': get_attr_by_lang(lang,
                                       res.UniaktuellArticle.abstract_de,
                                       res.UniaktuellArticle.abstract_en,

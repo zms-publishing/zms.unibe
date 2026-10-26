@@ -1,10 +1,11 @@
-from ...utils.helpers import get_when, local_timezone
-
+from ...utils.helpers import flatten_to_str_list, get_when, local_timezone, normalize_split_by
 
 class ZMSAgendaRecordsetSchema:
     def mapping(self, event, context, lang, locale):
+        
         begin = local_timezone(event.eventBegin)
         end = local_timezone(event.eventEnd)
+        categories = flatten_to_str_list(normalize_split_by(event.eventCategories))
 
         event_infos = f'{event.eventInfos or ""}'.strip()
         event_url = context.getLinkUrl(event.eventUrl, REQUEST={'lang': lang})
@@ -35,7 +36,7 @@ class ZMSAgendaRecordsetSchema:
             'eventInfos': event_infos,
             'eventInfosPreview': None,
             'eventTagline': None,
-            'eventCategories': event.eventCategories.splitlines(),
+            'eventCategories': categories,
             'eventImage': None,  # n/a
             'eventUrl': event_url,
         }

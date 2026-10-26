@@ -3,10 +3,10 @@ from typing import Annotated
 
 from pydantic import AwareDatetime
 from sqlalchemy.dialects import postgresql
-from sqlmodel import Column, Field, String
+from sqlmodel import Field, String
 
 PostgreSQLArray = Annotated[
-    list,
+    list | None,
     Field(
         default=None,
         sa_type=postgresql.ARRAY(String()),

@@ -1,30 +1,30 @@
-from datetime import datetime
+from datetime import date
 
 from fastapi import APIRouter, Query
 from fastapi_cache.decorator import cache
 from sqlmodel import not_, select
 
-from ...announcements.schemas import MediaReleasesSchema as schema
+from ...announcements.schemas import MediaNewsSchema as schema
 from ...announcements.sqlmodels import MediaNews as model
 from ...fastapi.meta import Tags
 from ...foundation.sqlmodels.ZMSSite import ZMSSite
 from ...mobileapp.schemas.NewsEventsSchema import Section
 from ...utils.dependencies import SessionDependency
 from ...utils.enums import Locale
-from ...utils.helpers import get_attr_by_lang, strip_cmstest
+from ...utils.helpers import get_attr_by_lang, local_timezone, strip_cmstest
 
 router = APIRouter(tags=[Tags.mobile])
 
 
-@router.get("/mediareleases", summary='Media releases', response_model=schema.MediaReleaseResponse,
-            description='Media releases from '
+@router.get("/medianews", summary='Media news', response_model=schema.MediaNewsResponse,
+            description='Media news from '
                         '<a href="https://www.unibe.ch/news/media_news/media_relations_e/media_releases" '
                         'target="_blank">unibe.ch/medien</a>')
 @cache(expire=600)
-def get_mediareleases(
+def get_medianews(
         session: SessionDependency,
         lang: Locale = Locale.de,
-        date_after: datetime | None = Query(None, description='Filter by date after (UTC)'),
+        date_after: date | None = Query(None, description='Filter by date after'),
         offset: int = 0,
         limit: int = 20):
 
@@ -42,7 +42,7 @@ def get_mediareleases(
                  where(not_(ZMSSite.path.contains('/uniintern'))).
                  where(not_(ZMSSite.path.contains('/zms_schulung'))).
                  where(not_(model.MediaNews.path.contains('/trashcan'))).
-                 where(date_after is None and True or (model.MediaNews.publish_dt_de > date_after)).
+                 where(date_after is None and True or (model.MediaNews.publish_dt_de > local_timezone(date_after))).
                  order_by(get_attr_by_lang(lang,
                                            de=model.MediaNews.publish_dt_de,
                                            en=model.MediaNews.publish_dt_en,
@@ -63,15 +63,15 @@ def get_mediareleases(
             uuid=res.ZMSSite.uuid
         )
 
-        data.append(schema.MediaRelease.model_validate({
+        data.append(schema.MediaNews.model_validate({
             'title': get_attr_by_lang(lang,
                                       res.MediaNews.title_de,
                                       res.MediaNews.title_en,
                                       res.MediaNews.title_fr),
-            'date': get_attr_by_lang(lang,
-                                     res.MediaNews.publish_dt_de,
-                                     res.MediaNews.publish_dt_en,
-                                     res.MediaNews.publish_dt_fr),
+            'date': local_timezone(get_attr_by_lang(lang,
+                                                    res.MediaNews.publish_dt_de,
+                                                    res.MediaNews.publish_dt_en,
+                                                    res.MediaNews.publish_dt_fr)).date(),
             'infos': get_attr_by_lang(lang,
                                       res.MediaNews.abstract_de,
                                       res.MediaNews.abstract_en,

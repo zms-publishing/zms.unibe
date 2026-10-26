@@ -23,23 +23,32 @@ def update_agendas(zms_context):
 def fetch_agendas():
     print("fetch_agendas")
 
-    response = requests.get(url='https://agenda.unibe.ch/agenda.json')
-    if response.status_code == 200:
-        agenda_portal = response.json()
-    else:
-        raise ImportError
-
-    response = requests.get(url='https://agenda.ub.unibe.ch/de/api/event?limit=100')
-    if response.status_code == 200:
-        agenda_library_de = json.loads(response.text.replace('event-type', 'eventType'))['events']  # TODO: eventType
-    else:
-        raise ImportError
-
-    response = requests.get(url='https://agenda.ub.unibe.ch/en/api/event?limit=100')
-    if response.status_code == 200:
-        agenda_library_en = json.loads(response.text.replace('event-type', 'eventType'))['events']  # TODO: eventType
-    else:
-        raise ImportError
+    agenda_portal = None
+    agenda_library_de = None
+    agenda_library_en = None
+    try:
+        response = requests.get(url='https://agenda.unibe.ch/agenda.json', timeout=5)
+        if response.status_code == 200:
+            agenda_portal = response.json()
+    except Exception as e:
+        print(f"Error fetching agendas: {e}")
+        agenda_portal = None
+    
+    try:
+        response = requests.get(url='https://agenda.ub.unibe.ch/de/api/event?limit=100', timeout=5)
+        if response.status_code == 200:
+            agenda_library_de = response.json()['events']
+    except Exception as e:
+        print(f"Error fetching agendas: {e}")
+        agenda_library_de = None
+    
+    try:
+        response = requests.get(url='https://agenda.ub.unibe.ch/en/api/event?limit=100', timeout=5)
+        if response.status_code == 200:
+            agenda_library_en = response.json()['events']
+    except Exception as e:
+        print(f"Error fetching agendas: {e}")
+        agenda_library_en = None
 
     sqlengine = connect_sqldb()
     session = Session(sqlengine)
