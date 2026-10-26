@@ -3,9 +3,9 @@ from uuid import UUID
 from sqlmodel import Field
 
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import flatten_to_str_list, normalize_split_by
-from ...utils.helpers import get_attr, get_parent_node_uuid, get_url, local_timezone
+from ...helpers import flatten_to_str_list, local_timezone, normalize_split_by
 from ...utils.types import OptionalDateTime, PostgreSQLArray
+from ...utils.zms2sql.getters import get_attr, get_parent_node_uuid, get_url
 
 
 class TeaserElement2022(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?metaobj=teaser_element_2022&types=%2A

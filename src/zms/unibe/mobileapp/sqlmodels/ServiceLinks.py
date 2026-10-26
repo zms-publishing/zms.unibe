@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_parent_node_attr, get_parent_node_uuid, get_url
+from ...utils.zms2sql.getters import get_attr, get_parent_node_attr, get_parent_node_uuid, get_url
 
 
 class ServiceLink(ZMSBase, table=True):

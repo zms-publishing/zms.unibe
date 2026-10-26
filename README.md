@@ -34,6 +34,7 @@ $ ./.venv/bin/runwsgi -v ./etc/zope.ini
   - [Date/Time handling](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md#datetime-handling)
   - [Date/Time formatting](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md#datetime-formatting)
   - [Output sanitization](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md#output-sanitization)
+  - [String splitting](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md#string-splitting)
 
 ## Development Environment
 

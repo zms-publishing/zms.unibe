@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from ...utils.helpers import get_when, local_timezone
+from ...helpers import get_when, local_timezone
 
 
 class ZMSAgendaFilemakerSchema:

@@ -21,6 +21,6 @@ try:
         print("Debug: import pdb; pdb.set_trace() allowed in Restricted Python")
         from AccessControl import allow_module
         allow_module('pdb')
-    
+
 except Exception as e:
     print(f"Ignore: {e} in zms.unibe.patches")

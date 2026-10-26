@@ -1,6 +1,7 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_data, local_timezone
+from ...helpers import local_timezone
 from ...utils.types import OptionalDateTime, PostgreSQLArray
+from ...utils.zms2sql.getters import get_attr, get_data
 
 
 class ZMSAgenda(ZMSBase, table=True):
