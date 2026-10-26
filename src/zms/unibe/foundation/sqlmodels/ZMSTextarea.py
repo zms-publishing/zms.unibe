@@ -4,11 +4,11 @@ from ...utils.helpers import get_attr
 
 class ZMSTextarea(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    text_de: str | None
-    text_en: str | None
-    text_fr: str | None
+    text_de: str | None = None
+    text_en: str | None = None
+    text_fr: str | None = None
     format: str
-    layout: str | None
+    layout: str | None = None
 
     @staticmethod
     def get_zms_catalog_query():

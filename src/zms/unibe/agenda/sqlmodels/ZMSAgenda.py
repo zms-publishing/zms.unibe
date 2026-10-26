@@ -1,29 +1,25 @@
-from datetime import datetime
-
-from sqlalchemy.dialects import postgresql
-from sqlmodel import Column, DateTime, Field, String
-
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_data, local_timezone, parse_datetime
+from ...utils.helpers import get_attr, get_data, local_timezone
+from ...utils.types import OptionalDateTime, PostgreSQLArray
 
 
 class ZMSAgenda(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    attr_dc_type: str | None
+    attr_dc_type: str | None = None
     hide_past_events: bool
-    categories: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
-    categories_include_only: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
-    categories_filter_out: list = Field(default=None, sa_column=Column(postgresql.ARRAY(String())))
+    categories: PostgreSQLArray
+    categories_include_only: PostgreSQLArray
+    categories_filter_out: PostgreSQLArray
     include_filemaker: bool
     include_library: bool
     include_itstatusmessages: bool
     include_outlook: bool
-    outlook_upn: str | None
+    outlook_upn: str | None = None
     limit_time_range: bool
-    begin_date: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))  # TODO: Date() stores 2026-01-30 instead of 2026-01-30 23:00:00.000000 +00:00 UTC = 31.01.2026 00:00 CET
-    end_date: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))  # TODO: Date() stores 2025-09-29 instead of 2025-09-29 22:00:00.000000 +00:00 UTC = 30.09.2025 00:00 CET
-    cached_data: str | None
-    lastupdate: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
+    begin_date: OptionalDateTime
+    end_date: OptionalDateTime
+    cached_data: str | None = None
+    lastupdate: OptionalDateTime
 
     @staticmethod
     def get_zms_catalog_query():
@@ -45,9 +41,11 @@ class ZMSAgenda(ZMSBase, table=True):
             'include_outlook':          get_attr(obj, 'include_outlook'),
             'outlook_upn':              get_attr(obj, 'outlook_upn'),
             'limit_time_range':         get_attr(obj, 'limit_time_range'),
-            'begin_date':               local_timezone(parse_datetime(obj.attr('begin_date')), tz='UTC'),
-            'end_date':                 local_timezone(parse_datetime(obj.attr('end_date')), tz='UTC'),  # TODO: days_delta=1 to include end_date (="bis und mit") here as in OutlookConnector.get_calendar_events...?!
+            'begin_date':               local_timezone(
+                local_timezone(obj.attr('begin_date')).date()),
+            'end_date':                 local_timezone(
+                local_timezone(obj.attr('end_date')).date()),
             'cached_data':              get_data(obj, '_datafilecached', json_as_py=False)[0],
-            'lastupdate':               parse_datetime(obj.attr('_datalastupdated')),
+            'lastupdate':               local_timezone(obj.attr('_datalastupdated')),
         }
         return cls.model_validate(mapping)

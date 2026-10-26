@@ -1,10 +1,10 @@
-from datetime import datetime
 from uuid import UUID
 
-from sqlmodel import Column, DateTime, Field
+from sqlmodel import Field
 
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...utils.helpers import get_attr, get_parent_node_uuid, get_url, parse_datetime
+from ...utils.helpers import get_attr, get_parent_node_uuid, get_url, local_timezone
+from ...utils.types import OptionalDateTime
 
 
 class NewsBox(ZMSBase, table=True):
@@ -12,19 +12,19 @@ class NewsBox(ZMSBase, table=True):
     title_de: str
     title_en: str
     title_fr: str
-    type: str | None
-    img: str | None
-    start_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    end_dt: datetime | None = Field(sa_column=Column(DateTime(timezone=True), nullable=True))
-    text_de: str | None
-    text_en: str | None
-    text_fr: str | None
-    topic_de: str | None
-    topic_en: str | None
-    topic_fr: str | None
-    url_de: str | None
-    url_en: str | None
-    url_fr: str | None
+    type: str | None = None
+    img: str | None = None
+    start_dt: OptionalDateTime
+    end_dt: OptionalDateTime
+    text_de: str | None = None
+    text_en: str | None = None
+    text_fr: str | None = None
+    topic_de: str | None = None
+    topic_en: str | None = None
+    topic_fr: str | None = None
+    url_de: str | None = None
+    url_en: str | None = None
+    url_fr: str | None = None
     container_uuid: UUID = Field(foreign_key="newscontainer.uuid", ondelete="CASCADE")
 
     @staticmethod
@@ -41,8 +41,8 @@ class NewsBox(ZMSBase, table=True):
             'title_fr':         get_attr(obj, 'title', 'fra'),
             'type':             obj.attr('boxtype'),
             'img':              get_url(obj, 'img'),
-            'start_dt':         parse_datetime(obj.attr('attr_event_start')),
-            'end_dt':           parse_datetime(obj.attr('attr_event_end')),
+            'start_dt':         local_timezone(obj.attr('attr_event_start')),
+            'end_dt':           local_timezone(obj.attr('attr_event_end')),
             'text_de':          get_attr(obj, 'text', 'ger'),
             'text_en':          get_attr(obj, 'text', 'eng'),
             'text_fr':          get_attr(obj, 'text', 'fra'),

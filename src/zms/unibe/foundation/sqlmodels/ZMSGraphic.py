@@ -4,34 +4,34 @@ from ...utils.helpers import get_attr, get_size, get_url
 
 class ZMSGraphic(ZMSBase, table=True):
     __table_args__ = {'extend_existing': True}
-    img_de: str | None
-    img_en: str | None
-    img_fr: str | None
-    imghires_de: str | None
-    imghires_en: str | None
-    imghires_fr: str | None
-    imgsuperres_de: str | None
-    imgsuperres_en: str | None
-    imgsuperres_fr: str | None
-    img_size_de: int | None
-    img_size_en: int | None
-    img_size_fr: int | None
-    imghires_size_de: int | None
-    imghires_size_en: int | None
-    imghires_size_fr: int | None
-    imgsuperres_size_de: int | None
-    imgsuperres_size_en: int | None
-    imgsuperres_size_fr: int | None
-    img_attrs_spec: str | None
-    attr_url_de: str | None
-    attr_url_en: str | None
-    attr_url_fr: str | None
-    text_de: str | None
-    text_en: str | None
-    text_fr: str | None
-    captionaddon_de: str | None
-    captionaddon_en: str | None
-    captionaddon_fr: str | None
+    img_de: str | None = None
+    img_en: str | None = None
+    img_fr: str | None = None
+    imghires_de: str | None = None
+    imghires_en: str | None = None
+    imghires_fr: str | None = None
+    imgsuperres_de: str | None = None
+    imgsuperres_en: str | None = None
+    imgsuperres_fr: str | None = None
+    img_size_de: int | None = None
+    img_size_en: int | None = None
+    img_size_fr: int | None = None
+    imghires_size_de: int | None = None
+    imghires_size_en: int | None = None
+    imghires_size_fr: int | None = None
+    imgsuperres_size_de: int | None = None
+    imgsuperres_size_en: int | None = None
+    imgsuperres_size_fr: int | None = None
+    img_attrs_spec: str | None = None
+    attr_url_de: str | None = None
+    attr_url_en: str | None = None
+    attr_url_fr: str | None = None
+    text_de: str | None = None
+    text_en: str | None = None
+    text_fr: str | None = None
+    captionaddon_de: str | None = None
+    captionaddon_en: str | None = None
+    captionaddon_fr: str | None = None
 
     @staticmethod
     def get_zms_catalog_query():

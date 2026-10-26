@@ -20,8 +20,8 @@ class ZMSSite(SQLModel, table=True):  # http://localhost:5003/v3/zms/models?meta
     title_de: str
     title_en: str
     title_fr: str
-    domain: str | None
-    alias: str | None
+    domain: str | None = None
+    alias: str | None = None
     level: int
     path: str
     type: str
