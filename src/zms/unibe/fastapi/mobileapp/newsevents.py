@@ -6,7 +6,7 @@ from anytree.exporter import DictExporter, JsonExporter
 from devtools import debug
 from fastapi import APIRouter, Query
 from fastapi_cache.decorator import cache
-from sqlmodel import not_, or_, select
+from sqlmodel import not_, or_, select, func, desc
 
 from ...agenda.sqlmodels.StatusMessages import StatusMessage
 from ...fastapi.meta import Tags
@@ -15,7 +15,7 @@ from ...helpers import flatten_to_str_list, local_timezone, normalize_split_by
 from ...mobileapp.schemas import NewsEventsSchema as schema
 from ...mobileapp.sqlmodels.NewsEvents import NewsEvents
 from ...utils.dependencies import SessionDependency
-from ...utils.enums import Locale, SiteType
+from ...utils.enums import Locale, SiteType, CategoryType
 from ...utils.zms2sql.getters import get_attr_by_lang, strip_cmstest
 
 router = APIRouter(tags=[Tags.mobile])
@@ -31,12 +31,18 @@ def get_news(
         lang: Locale = Locale.de,
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
         date_after: date | None = Query(None, description='Filter by date after'),
+        categories: list[str] | None = Query(None, description='Filter by categories'),
         offset: int = 0,
         limit: int = 20):
 
     data = []
 
-    statement = [select(NewsEvents, ZMSSite).join(ZMSSite).
+    topics = get_attr_by_lang(lang,
+                              de=NewsEvents.topics_de,
+                              en=NewsEvents.topics_en,
+                              fr=NewsEvents.topics_fr)
+
+    statement = (select(NewsEvents, ZMSSite).join(ZMSSite).
                  where(NewsEvents.type == 'news').
                  where(get_attr_by_lang(lang,
                                         de=NewsEvents.active_de,
@@ -56,10 +62,15 @@ def get_news(
                  order_by(NewsEvents.level).
                  order_by(NewsEvents.sort_id_parent).
                  order_by(NewsEvents.sort_id).
-                 order_by(ZMSSite.type)]
+                 order_by(ZMSSite.type)
+                 )
 
-    results = session.exec(statement[0].offset(offset).limit(limit))
-    total = session.exec(statement[0])
+    if categories:
+        results = session.exec(statement.where(topics.overlap(categories)).offset(offset).limit(limit))
+        total = session.exec(statement.where(topics.overlap(categories)))
+    else:
+        results = session.exec(statement.offset(offset).limit(limit))
+        total = session.exec(statement)
 
     for res in results.all():
         section = schema.Section(
@@ -70,6 +81,7 @@ def get_news(
                                    fr=res.ZMSSite.title_fr),
             domain=f'https://{strip_cmstest(res.ZMSSite.domain)}',
             path=res.ZMSSite.path,
+            categories=None,
             uuid=res.ZMSSite.uuid
         )
 
@@ -117,9 +129,21 @@ def get_news(
     }
 
 
-def fetch_events(session, lang, sections, start_after, end_before, offset, limit):
+def fetch_events(session, 
+                 lang,
+                 sections,
+                 start_after,
+                 end_before,
+                 categories,
+                 offset,
+                 limit):
 
-    statement = [select(NewsEvents, ZMSSite).join(ZMSSite).
+    topics = get_attr_by_lang(lang,
+                              de=NewsEvents.topics_de,
+                              en=NewsEvents.topics_en,
+                              fr=NewsEvents.topics_fr)
+
+    statement = (select(NewsEvents, ZMSSite).join(ZMSSite).
                  where(NewsEvents.type == 'event').
                  where(get_attr_by_lang(lang,
                                         de=NewsEvents.active_de,
@@ -139,10 +163,15 @@ def fetch_events(session, lang, sections, start_after, end_before, offset, limit
                  where(not_(NewsEvents.path.contains('/trashcan'))).
                  where(or_(sections is None and True or (NewsEvents.site_uuid == section for section in sections))).
                  order_by(NewsEvents.start_dt).
-                 order_by(ZMSSite.type)]
+                 order_by(ZMSSite.type)
+                 )
 
-    results = session.exec(statement[0].offset(offset).limit(limit))
-    total = session.exec(statement[0])
+    if categories:
+        results = session.exec(statement.where(topics.overlap(categories)).offset(offset).limit(limit))
+        total = session.exec(statement.where(topics.overlap(categories)))
+    else:
+        results = session.exec(statement.offset(offset).limit(limit))
+        total = session.exec(statement)
 
     return results.all(), total.all()
 
@@ -223,11 +252,14 @@ def get_events(
         sections: list[UUID] | None = Query(None, description='Filter by sections'),
         start_after: date | None = Query(None, description='Filter by start after'),
         end_before: date | None = Query(None, description='Filter by end before'),
+        categories: list[str] | None = Query(None, description='Filter by categories'),
         offset: int = 0,
         limit: int = 20):
 
     data = []
-    results, total = fetch_events(session, lang, sections, start_after, end_before, offset, limit)
+    results, total = fetch_events(
+        session, lang, sections, start_after, end_before, categories, offset, limit
+    )
 
     for res in results:
         section = schema.Section(
@@ -238,6 +270,7 @@ def get_events(
                                    fr=res.ZMSSite.title_fr),
             domain=f'https://{strip_cmstest(res.ZMSSite.domain)}',
             path=res.ZMSSite.path,
+            categories=None,
             uuid=res.ZMSSite.uuid
         )
 
@@ -304,6 +337,8 @@ def get_sections(
         session: SessionDependency,
         lang: Locale = Locale.de,
         tree: bool = False,
+        category_unfold: bool = False,
+        category_type: CategoryType = CategoryType.event.value,
         types: list[SiteType] = Query([SiteType.Fakultaet.value,
                                        SiteType.Departement.value,
                                        SiteType.Institut.value,
@@ -314,7 +349,14 @@ def get_sections(
 
     data = []
 
-    statement = [select(NewsEvents.site_uuid, ZMSSite).join(ZMSSite).
+    topics = get_attr_by_lang(lang,
+                              de=NewsEvents.topics_de,
+                              en=NewsEvents.topics_en,
+                              fr=NewsEvents.topics_fr)
+    # unfold ARRAY of topics
+    categories = func.unnest(topics)
+
+    statement = (select(NewsEvents.site_uuid, ZMSSite).join(ZMSSite).
                  where(get_attr_by_lang(lang,
                                         de=ZMSSite.active_de,
                                         en=ZMSSite.active_en,
@@ -361,7 +403,14 @@ def get_sections(
                  order_by(get_attr_by_lang(lang,
                                            de=ZMSSite.title_de,
                                            en=ZMSSite.title_en,
-                                           fr=ZMSSite.title_fr))]
+                                           fr=ZMSSite.title_fr)),
+                 
+                 select(NewsEvents.site_uuid, categories, func.count()).join(ZMSSite).
+                 where(NewsEvents.type==category_type).
+                 group_by(NewsEvents.site_uuid).
+                 group_by(categories).
+                 order_by(desc(func.count()))
+                 )
 
     if tree:
         results = session.exec(statement[1])
@@ -370,7 +419,24 @@ def get_sections(
     results = session.exec(statement[0].offset(offset).limit(limit))
     total = session.exec(statement[0])
 
+    if category_unfold:
+        results2 = session.exec(statement[2]).all()
+
     for res in results.all():
+
+        if category_unfold:
+            category = {
+                category: count for site_uuid, category, count in results2
+                if site_uuid == res.ZMSSite.uuid and count > 1
+            }
+            categories = sorted(
+                category.items(),
+                key=lambda item: item[1],
+                reverse=True
+            )
+        else:
+            categories = {}
+        
         data.append(schema.Section.model_validate({
             'title': get_attr_by_lang(lang,
                                       de=res.ZMSSite.title_de,
@@ -379,6 +445,7 @@ def get_sections(
             'domain': strip_cmstest(res.ZMSSite.domain),
             'type': res.ZMSSite.type,
             'path': res.ZMSSite.path,
+            'categories': dict({category_type: categories}),
             'uuid': res.ZMSSite.uuid,
         }))
 
@@ -403,16 +470,17 @@ def get_statusmessages(
 
     data = []
 
-    statement = [select(StatusMessage).
+    statement = (select(StatusMessage).
                  where(start_after is None and True or (StatusMessage.begin > local_timezone(start_after))).
                  where(end_before is None and True or (StatusMessage.end < local_timezone(end_before))).
                  where(or_(StatusMessage.end > local_timezone(days_delta=-1),  # show resolved by yesterday
                            StatusMessage.end == local_timezone('1970-01-01T00:00:00'))).  # show open issues
                  order_by(StatusMessage.begin).
-                 order_by(StatusMessage.end.desc())]
+                 order_by(StatusMessage.end.desc())
+                 )
 
-    results = session.exec(statement[0].offset(offset).limit(limit))
-    total = session.exec(statement[0])
+    results = session.exec(statement.offset(offset).limit(limit))
+    total = session.exec(statement)
 
     for res in results.all():
         
@@ -421,6 +489,7 @@ def get_statusmessages(
             title='IT Services Status',
             domain='https://id.unibe.ch/statusmeldungen',
             path=None,
+            categories=None,
             uuid=None
         )
         
