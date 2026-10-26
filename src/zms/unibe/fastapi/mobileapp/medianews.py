@@ -26,12 +26,18 @@ def get_medianews(
         session: SessionDependency,
         lang: Locale = Locale.de,
         date_after: date | None = Query(None, description='Filter by date after'),
+        categories: list[str] | None = Query(None, description='Filter by categories'),
         offset: int = 0,
         limit: int = 20):
 
     data = []
 
-    statement = [select(model.MediaNews, ZMSSite).join(ZMSSite).
+    topics = get_attr_by_lang(lang,
+                              de=model.MediaNews.topics_de,
+                              en=model.MediaNews.topics_en,
+                              fr=model.MediaNews.topics_fr)
+    
+    statement = (select(model.MediaNews, ZMSSite).join(ZMSSite).
                  where(get_attr_by_lang(lang,
                                         de=model.MediaNews.active_de,
                                         en=model.MediaNews.active_en,
@@ -47,10 +53,15 @@ def get_medianews(
                  order_by(get_attr_by_lang(lang,
                                            de=model.MediaNews.publish_dt_de,
                                            en=model.MediaNews.publish_dt_en,
-                                           fr=model.MediaNews.publish_dt_fr).desc())]
+                                           fr=model.MediaNews.publish_dt_fr).desc())
+                 )
 
-    results = session.exec(statement[0].offset(offset).limit(limit))
-    total = session.exec(statement[0])
+    if categories:
+        results = session.exec(statement.where(topics.overlap(categories)).offset(offset).limit(limit))
+        total = session.exec(statement.where(topics.overlap(categories)))
+    else:
+        results = session.exec(statement.offset(offset).limit(limit))
+        total = session.exec(statement)
 
     for res in results.all():
         section = Section(
@@ -61,8 +72,14 @@ def get_medianews(
                                    fr=res.ZMSSite.title_fr),
             domain=f'https://{strip_cmstest(res.ZMSSite.domain)}',
             path=res.ZMSSite.path,
+            categories=None,
             uuid=res.ZMSSite.uuid
         )
+
+        categories = get_attr_by_lang(lang,
+                                      de=res.MediaNews.topics_de,
+                                      en=res.MediaNews.topics_en,
+                                      fr=res.MediaNews.topics_fr)
 
         data.append(schema.MediaNews.model_validate({
             'title': get_attr_by_lang(lang,
@@ -77,10 +94,8 @@ def get_medianews(
                                       res.MediaNews.abstract_de,
                                       res.MediaNews.abstract_en,
                                       res.MediaNews.abstract_fr),
-            'topics': get_attr_by_lang(lang,
-                                       res.MediaNews.topics_de,
-                                       res.MediaNews.topics_en,
-                                       res.MediaNews.topics_fr),
+            'categories': categories,
+            'topics': ', '.join(categories) if categories is not None else None,
             'image': get_attr_by_lang(lang,
                                       res.MediaNews.img_de,
                                       res.MediaNews.img_en,

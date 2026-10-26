@@ -1,6 +1,6 @@
 from ...foundation.sqlmodels.ZMSBase import ZMSBase
-from ...helpers import local_timezone
-from ...utils.types import OptionalDateTime
+from ...helpers import flatten_to_str_list, local_timezone, normalize_split_by
+from ...utils.types import OptionalDateTime, PostgreSQLArray
 from ...utils.zms2sql.getters import get_attr, get_url
 
 
@@ -15,9 +15,9 @@ class MediaNews(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?met
     abstract_de: str | None = None
     abstract_en: str | None = None
     abstract_fr: str | None = None
-    topics_de: str | None = None
-    topics_en: str | None = None
-    topics_fr: str | None = None
+    topics_de: PostgreSQLArray
+    topics_en: PostgreSQLArray
+    topics_fr: PostgreSQLArray
     img_de: str | None = None
     img_en: str | None = None
     img_fr: str | None = None
@@ -34,6 +34,14 @@ class MediaNews(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?met
 
     @classmethod
     def from_zms_obj(cls, obj):
+        
+        topic_de = flatten_to_str_list(normalize_split_by(
+            get_attr(obj, 'attr_schlagworte', 'ger')))
+        topic_en = flatten_to_str_list(normalize_split_by(
+            get_attr(obj, 'attr_schlagworte', 'eng')))
+        topic_fr = flatten_to_str_list(normalize_split_by(
+            get_attr(obj, 'attr_schlagworte', 'fra')))
+        
         mapping = {
             **ZMSBase.get_attr_mappings(obj),
             # sql_attr          # zms_attr
@@ -49,9 +57,9 @@ class MediaNews(ZMSBase, table=True):  # http://localhost:5003/v3/zms/models?met
             'abstract_de':      get_attr(obj, 'media_lead', 'ger'),
             'abstract_en':      get_attr(obj, 'media_lead', 'eng'),
             'abstract_fr':      get_attr(obj, 'media_lead', 'fra'),
-            'topics_de':        get_attr(obj, 'attr_schlagworte', 'ger'),
-            'topics_en':        get_attr(obj, 'attr_schlagworte', 'eng'),
-            'topics_fr':        get_attr(obj, 'attr_schlagworte', 'fra'),
+            'topics_de':        topic_de,
+            'topics_en':        topic_en,
+            'topics_fr':        topic_fr,
             'img_de':           get_url(obj, 'teaser_image', 'ger'),
             'img_en':           get_url(obj, 'teaser_image', 'eng'),
             'img_fr':           get_url(obj, 'teaser_image', 'fra'),
