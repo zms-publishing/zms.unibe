@@ -23,9 +23,6 @@ v1 = FastAPI(
     version="1.0.3",
     openapi_tags=tags,
     redoc_url="/redoc",
-    proxy_headers=True,
-    forwarded_allow_ips=["*"],
-    ignore_trailing_slashes=True,
     redirect_slashes=False,
     servers=[  # TODO: set urls
         {"url": "https://stag.example.com/v1", "description": "Staging environment"},
@@ -43,9 +40,6 @@ v3 = FastAPI(
     version="3.4.1",
     openapi_tags=tags,
     redoc_url="/redoc",
-    proxy_headers=True,
-    forwarded_allow_ips=["*"],
-    ignore_trailing_slashes=True,
     redirect_slashes=False,
     servers=[  # TODO: set urls
         {"url": "https://stag.example.com/v3", "description": "Staging environment"},
