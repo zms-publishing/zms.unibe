@@ -50,34 +50,19 @@ The [`compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compo
 zms.unibe
 ├── LICENSE
 ├── README.md
-├── pyproject.toml
-├── constraints.txt
+├── pyproject.toml [-> for zms.unibe package installation]
 ├── Dockerfile.fastapi
-├── Dockerfile.zms
-├── alembic.ini
+├── Dockerfile.zope
 ├── compose.yaml
 ├── compose.dev.yaml
 ├── compose.empty.yaml
-├── versions.env
-├── alembic
-│   ├── versions
-│   ├── env.py
-│   └── README.md
-├── app
-│   └── main.py [FastAPI main app]
-├── cron
-│   ├── [scheduled jobs]
-│   └── ...
-├── conf
-│   ├── zodb-relstorage.conf
-│   ├── zodb-zeo.conf
-│   ├── zope.conf
-│   ├── zope.ini
-│   └── ...
+├── versions.env 
 ├── dev
-│   ├── [local checkouts in editable mode]
+│   ├── .python-version
+│   ├── pyproject.toml [-> to bootstrap zms.unibe dev environment]
+│   ├── uv.lock
 │   ├── README.md
-│   └── ...
+│   └── ... [-> local checkouts in editable mode]
 └── src
     └── zms
         └── unibe
@@ -85,23 +70,54 @@ zms.unibe
             │   ├── schemas
             │   └── sqlmodels
             ├── ...
+            ├── alembic
+            │   ├── versions
+            │   ├── alembic.ini
+            │   ├── env.py
+            │   └── README.md
+            ├── conf
+            │   ├── zodb-relstorage.conf
+            │   ├── zodb-zeo.conf
+            │   ├── zope.conf
+            │   └── zope.ini
+            ├── ...
             ├── fastapi
             │   ├── mobileapp
             │   ├── zmscontent
-            │   └── main.py [FastAPI sub apps]
+            │   ├── app.py [-> FastAPI main app]
+            │   └── main.py [-> FastAPI sub apps]
+            ├── ...
+            ├── helpers
+            │   ├── DotDict.py
+            │   ├── MockDecorator.py
+            │   ├── datetime.py
+            │   ├── string.py
+            │   └── system.py
             ├── ...
             ├── patches
             │   ├── monkey
             │   ├── security
             │   └── configure.zcml
+            ├── ...
+            ├── tasks
+            │   ├── cron_config.py
+            │   ├── ...
+            │   └── task_config.py
+            ├── ...
             └── utils
                 ├── zms2sql
+                │   ├── cli.py
+                │   ├── getters.py
+                │   └── tables.py
                 ├── zope
+                │   ├── context.py
+                │   ├── update.py
+                │   └── zodb.conf
                 ├── db.py
                 ├── dependencies.py
                 ├── enums.py
-                ├── helpers.py
-                └── subscribers.py
+                ├── subscribers.py
+                └── types.py
 ```
 
 </details>
@@ -171,7 +187,7 @@ See [`alembic/README.md`](https://github.com/zms-publishing/zms.unibe/blob/main/
 ### Start the container environment
 
 > [!NOTE]
-> The revisions to be used as containers can be customized to your needs by setting the variables `BASE_IMAGE`, `ZOPE_VERSION`, `ZMS_CORE_BRANCH_OR_COMMIT`, `ZMS_UNIBE_BRANCH_OR_COMMIT`, and `SETUPTOOLS_VERSION` in the [`versions.env`](https://github.com/zms-publishing/zms.unibe/blob/main/versions.env) file and their defaults in [`build.args` in `compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml#L18). The container installation procedures can be customized in [`Dockerfile.zms`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.zms) and [`Dockerfile.fastapi`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.fastapi).
+> The revisions to be used as containers can be customized to your needs by setting the variables `BASE_IMAGE`, `ZOPE_VERSION`, `ZMS_CORE_BRANCH_OR_COMMIT`, `ZMS_UNIBE_BRANCH_OR_COMMIT`, and `SETUPTOOLS_VERSION` in the [`versions.env`](https://github.com/zms-publishing/zms.unibe/blob/main/versions.env) file and their defaults in [`build.args` in `compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml#L18). The container installation procedures can be customized in [`Dockerfile.zope`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.zope) and [`Dockerfile.fastapi`](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.fastapi).
 
 > [!IMPORTANT]
 > The base image `ghcr.io/idasm-unibe-ch/unibe-cms` is required to build on top of – permission is required to check it out. In addition, it is expected that the `zeo`, `memcached`, and `psql` containers from the `unibe-cms` stack are running to provide the data storages.
@@ -285,7 +301,7 @@ $ git pull origin main
 
 ## Images
 
-- [**`Dockerfile.zms`**](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.zms): Builds the ZMS content management system.
+- [**`Dockerfile.zope`**](https://github.com/zms-publishing/zms.unibe/blob/main/Dockerfile.zope: Builds the ZMS content management system.
     - Base: `ghcr.io/idasm-unibe-ch/unibe-cms:python3.14.4-zope6.1`
     - Extras: Installs `zms.unibe` with `msgraphapi` support.
     - [Entrypoint](https://www.docker.com/blog/docker-best-practices-choosing-between-run-cmd-and-entrypoint/): Runs the Zope WSGI server via `runwsgi` on port 8080.

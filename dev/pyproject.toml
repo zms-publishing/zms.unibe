@@ -8,6 +8,11 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+
+]
+
+[dependency-groups]
+dev = [
     "zope",
     "zms",
     "zms-unibe[zope,msgraphapi,fastapi,rq,alembic,pydevd-pycharm]",
@@ -26,10 +31,10 @@ zms = { path = "./products-zms", editable = true }
 zms-unibe = { path = "../", editable = true }
 
 [tool.uv]
-package = false  # do not expect this zms.unibe project as package -> https://docs.astral.sh/uv/reference/settings/#package
+package = false  # do not expect this zms-unibe-dev project as package -> https://docs.astral.sh/uv/reference/settings/#package
 # CONSTRAINTS by Zope 6.x combined with the dependencies of zms.unibe
 # so that the intended versions are used when running uv sync or uv lock
-# -> .venv/bin/update-zope-constraints --version 6.1
+# -> .venv/bin/update-zope-constraints --version 6.3
 # -> uv sync
 # UPDATE DEPENDENCIES by running the following commands
 # -> .venv/bin/update-zope-constraints --version master --ignore-uv-pip-freeze
