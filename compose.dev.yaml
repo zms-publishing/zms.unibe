@@ -4,17 +4,17 @@
 # - set COMPOSE_INCLUDE=dev in versions.env
 
 services:
-  zms:
+  zope:
     develop:
       # [BUG] develop.watch initial_sync: true does not fire at container start
       # https://github.com/docker/compose/issues/13725
       watch:
         - path: ./dev/zope/src
-          target: /app/zope/src/zope/src
+          target: /app/dev/zope/src/zope/src
           action: sync+restart
           initial_sync: true
         - path: ./dev/products-zms/Products/zms
-          target: /app/zope/src/products-zms/Products/zms
+          target: /app/dev/zope/src/products-zms/Products/zms
           action: sync+restart
           initial_sync: true
     volumes:
@@ -26,10 +26,10 @@ services:
       # https://github.com/docker/compose/issues/13725
       watch:
         - path: ./dev/zope/src
-          target: /app/zope/src/zope/src
+          target: /app/dev/zope/src/zope/src
           action: sync+restart
           initial_sync: true
         - path: ./dev/products-zms/Products/zms
-          target: /app/zope/src/products-zms/Products/zms
+          target: /app/dev/zope/src/products-zms/Products/zms
           action: sync+restart
           initial_sync: true

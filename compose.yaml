@@ -1,4 +1,4 @@
-name: unibe-cms-dev
+name: zms-unibe-dev
 
 include:
   - compose.${COMPOSE_INCLUDE:-empty}.yaml
@@ -7,14 +7,14 @@ networks:
   worker:
 
 services:
-  zms:
-    image: ghcr.io/idasm-unibe-ch/unibe-cms-dev-zms:local
+  zope:
+    image: ghcr.io/idasm-unibe-ch/zms-unibe-dev-zope:local
     init: true
     pull_policy: never
-    user: zope:zope
+    #user: zope:zope
     build:
       context: .
-      dockerfile: ./Dockerfile.zms
+      dockerfile: ./Dockerfile.zope
       args:
         - BASE_IMAGE=${BASE_IMAGE:-python3.14.4-zope6.1}
         - PYTHON_VERSION=${PYTHON_VERSION:-3.14.4}
@@ -30,13 +30,13 @@ services:
       # https://github.com/docker/compose/issues/13725
       watch:
         - path: ./src
-          target: /app/zope/src/zms-unibe/src
+          target: /app/src
           action: sync+restart
           ignore:
             - zms/unibe/fastapi
           initial_sync: true
         - path: ./src/zms/unibe/conf/
-          target: /app/zope/etc
+          target: /app/dev/etc
           action: sync+restart
           initial_sync: true
     volumes:
@@ -69,7 +69,7 @@ services:
       - worker
   
   fastapi:
-    image: ghcr.io/idasm-unibe-ch/unibe-cms-dev-fastapi:local
+    image: ghcr.io/idasm-unibe-ch/zms-unibe-dev-fastapi:local
     init: true
     pull_policy: never
     #user: zope:zope
@@ -91,11 +91,11 @@ services:
       # https://github.com/docker/compose/issues/13725
       watch:
         - path: ./src
-          target: /app/zope/src/zms-unibe/src
+          target: /app/src
           action: sync+restart
           initial_sync: true
         - path: ./src/zms/unibe/conf/
-          target: /app/zope/etc
+          target: /app/dev/etc
           action: sync+restart
           initial_sync: true
     environment:
