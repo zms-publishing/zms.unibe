@@ -27,7 +27,7 @@
 
     <browser:resourceDirectory
       name="zmi"
-      directory="../src/zope/src/zmi/styles/resources"
+      directory="../zope/src/zmi/styles/resources"
       permission="zope.Public" />
       
   </configure>     

@@ -1,31 +1,21 @@
-ARG PYTHON_VERSION=3.14.4
-FROM python:$PYTHON_VERSION
+ARG PYTHON_VERSION=3.14.9
 
-ARG ZOPE_VERSION
-ARG ZMS_CORE_BRANCH_OR_COMMIT
-ARG ZMS_UNIBE_BRANCH_OR_COMMIT
-ARG FASTAPI_EXTRAS
-ARG SETUPTOOLS_VERSION
-ARG UPDATE_DEPENDENCIES
-ARG UPDATE_EXTRAS
-ARG VENV_HOME=/app/zope
+FROM python:3.14.9-slim
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-#USER $USERNAME
+WORKDIR /app/dev
+COPY dev/pyproject.toml dev/uv.lock ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
-RUN python3 -m venv $VENV_HOME \
- && $VENV_HOME/bin/pip install --upgrade pip wheel setuptools==$SETUPTOOLS_VERSION
-RUN set -- \
-      -e "Zope[wsgi] @ git+https://github.com/zopefoundation/Zope.git@$ZOPE_VERSION" \
-      -e "ZMS @ git+https://github.com/zms-publishing/ZMS.git@$ZMS_CORE_BRANCH_OR_COMMIT"; \
-    if [ "$UPDATE_DEPENDENCIES" != "true" ]; then \
-      set -- "$@" -e "zms.unibe[$FASTAPI_EXTRAS] @ git+https://github.com/zms-publishing/zms.unibe.git@$ZMS_UNIBE_BRANCH_OR_COMMIT"; \
-      set -- "$@" -c "https://raw.githubusercontent.com/zms-publishing/zms.unibe/$ZMS_UNIBE_BRANCH_OR_COMMIT/constraints-Zope-$ZOPE_VERSION.txt"; \
-    else \
-      set -- "$@" -e "zms.unibe[$UPDATE_EXTRAS] @ git+https://github.com/zms-publishing/zms.unibe.git@$ZMS_UNIBE_BRANCH_OR_COMMIT"; \
-    fi; \
-    set -- "$@" -c "https://raw.githubusercontent.com/zopefoundation/Zope/$ZOPE_VERSION/constraints.txt"; \
-    $VENV_HOME/bin/pip install --upgrade --upgrade-strategy eager "$@"
+WORKDIR /app
+COPY . .
 
-COPY ./src/zms/unibe/conf/* $VENV_HOME/etc/
+WORKDIR /app/dev
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen
 
-CMD ["/app/zope/bin/fastapi", "dev", "--entrypoint", "zms.unibe.fastapi.app:api", "--host", "0.0.0.0", "--port", "8000"]
+ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
+
+CMD ["/app/dev/.venv/bin/fastapi", "dev", "--entrypoint", "zms.unibe.fastapi.app:api", "--host", "0.0.0.0", "--port", "8000"]
