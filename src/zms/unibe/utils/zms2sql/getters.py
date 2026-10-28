@@ -116,7 +116,7 @@ def get_url(obj, attr, lang=None):
     value = obj.attr(attr)
 
     if isinstance(value, _blobfields.MyImage) or isinstance(value, _blobfields.MyFile):
-        return get_url_from_conf_or_env(obj) + value.getHref(REQUEST=request)
+        return strip_cmstest(get_url_from_conf_or_env(obj)) + value.getHref(REQUEST=request)
 
     if isinstance(value, str) and value.startswith('{$uid:') and value.endswith('}'):
         lang_target = lang
@@ -147,7 +147,7 @@ def get_url_from_conf_or_env(obj):
         prot = 'http'
         host = '127.0.0.1:8080'
     # Overwrite by environment variable if set
-    return os.getenv('ZMS_URL', f'{prot}://{strip_cmstest(host)}')
+    return os.getenv('ZMS_URL', f'{prot}://{host}')
 
 
 def get_data(obj, attr, lang=None, json_as_py=False):
