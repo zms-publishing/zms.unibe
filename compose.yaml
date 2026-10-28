@@ -108,7 +108,7 @@ services:
       - ZODB_RELSTORAGE_DB_HOST=host.docker.internal
       - ZODB_CONF=${ZODB_CONF:-zodb-zeo.conf}
       - ZEO_URL=host.docker.internal:8000
-      - ZMS_URL=http://zms:8080
+      - ZMS_URL=http://zope:8080
       - API_V1=true
       - API_V3=true
       - API_RQ=true

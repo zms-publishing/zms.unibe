@@ -1,7 +1,7 @@
 [project]
 name = "zms-unibe-dev"
 version = "2026.dev"
-description = "Python-based Content Management for Science, Technology and Medicine for unibe.ch"
+description = "Python-based extensions to integrate ZMS with unibe.ch and unibe.app"
 readme = "README.md"
 authors = [
     { name = "UniBE, University of Bern, IT Services Department" }

@@ -18,7 +18,7 @@ services:
           action: sync+restart
           initial_sync: true
     volumes:
-      - ./dev/unibe-cms-models/frontend/zms/models:/app/frontend/zms/models:rw
+      - ./dev/unibe-cms-models/frontend/zms/models:/app/dev/unibe-cms-models/frontend/zms/models:rw
 
   fastapi:
     develop:
