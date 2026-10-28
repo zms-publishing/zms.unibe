@@ -1,7 +1,6 @@
 # Prerequisites:
-# - https://github.com/zms-publishing/zms.unibe/tree/main/dev#checkout-and-install-on-localhost
-# - https://github.com/zms-publishing/zms.unibe/tree/main/dev#checkout-and-link-the-content-models
-# - set COMPOSE_INCLUDE=dev in versions.env
+# - https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#build-and-run-the-container-environment
+# - https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#checkout-and-link-the-content-models
 
 services:
   zope:
@@ -18,7 +17,7 @@ services:
           action: sync+restart
           initial_sync: true
     volumes:
-      - ./dev/unibe-cms-models/frontend/zms/models:/app/frontend/zms/models:rw
+      - ./dev/unibe-cms-models/frontend/zms/models:/app/dev/unibe-cms-models/frontend/zms/models:rw
 
   fastapi:
     develop:
