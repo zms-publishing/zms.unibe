@@ -146,9 +146,16 @@ enabled = true
 # https://setuptools-git-versioning.readthedocs.io/en/stable/options/dev_template.html
 # https://setuptools-git-versioning.readthedocs.io/en/stable/options/dirty_template.html
 # https://setuptools-git-versioning.readthedocs.io/en/stable/substitutions/index.html
-template = "{tag}"  # starting with 2026.4
-dev_template = "{tag}.{ccount}+{full_sha}"
-dirty_template = "{tag}.{ccount}+{full_sha}.dirty"
+# Direct tags in CalVer syntax like 2026.10 or 2026.10.1
+template = "{tag}"
+# E.g. two commits after tags result in 2026.10.post2 or 2026.10.1.post2 (.dirty if uncommitted changes exist)
+dev_template = "{tag}.post{ccount}+{sha}"
+dirty_template = "{tag}.post{ccount}+{sha}.dirty"
+# https://setuptools-git-versioning.readthedocs.io/en/stable/options/tag_filter.html
+# https://setuptools-git-versioning.readthedocs.io/en/stable/options/tag_formatter.html
+# Only allow tags with two or three segment CalVer syntax to avoid e.g. 2026.10.1.2
+tag_filter = "^20\\d{2}\\.\\d+(\\.\\d+)?$"
+tag_formatter = "^(?P<tag>.*)$"
 
 # https://fastapi.tiangolo.com/fastapi-cli/#configure-the-app-entrypoint-in-pyproject-toml
 [tool.fastapi]
