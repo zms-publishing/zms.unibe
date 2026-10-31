@@ -1,13 +1,18 @@
 [project]
 name = "zms-unibe-dev"
 version = "2026.dev"
-description = "Python-based Content Management for Science, Technology and Medicine for unibe.ch"
+description = "Python-based extensions to integrate ZMS with unibe.ch and unibe.app"
 readme = "README.md"
 authors = [
     { name = "UniBE, University of Bern, IT Services Department" }
 ]
 requires-python = ">=3.13"
 dependencies = [
+
+]
+
+[dependency-groups]
+dev = [
     "zope",
     "zms",
     "zms-unibe[zope,msgraphapi,fastapi,rq,alembic,pydevd-pycharm]",
@@ -26,10 +31,10 @@ zms = { path = "./products-zms", editable = true }
 zms-unibe = { path = "../", editable = true }
 
 [tool.uv]
-package = false  # do not expect this zms.unibe project as package -> https://docs.astral.sh/uv/reference/settings/#package
+package = false  # do not expect this zms-unibe-dev project as package -> https://docs.astral.sh/uv/reference/settings/#package
 # CONSTRAINTS by Zope 6.x combined with the dependencies of zms.unibe
 # so that the intended versions are used when running uv sync or uv lock
-# -> .venv/bin/update-zope-constraints --version 6.1
+# -> .venv/bin/update-zope-constraints --version 6.3
 # -> uv sync
 # UPDATE DEPENDENCIES by running the following commands
 # -> .venv/bin/update-zope-constraints --version master --ignore-uv-pip-freeze
@@ -55,7 +60,7 @@ constraint-dependencies = [
     "attrs==26.1.0",
     "authencoding==6.1",
     "azure-core==1.41.0",
-    "azure-identity==1.26.0",
+    "azure-identity==1.27.0",
     "babel==2.18.0",
     "beautifulsoup4==4.15.0",
     "btrees==6.5",
@@ -88,7 +93,7 @@ constraint-dependencies = [
     "fastapi-cache2==0.2.2",
     "fastapi-cli==0.0.32",
     "fastapi-cloud-cli==0.26.0",
-    "fastapi==0.161.0",
+    "fastapi==0.162.0",
     "fastar==0.12.0",
     "filelock==3.32.7; python_version == '3.10'",
     "filelock==4.2.4; python_version > '3.10'",
@@ -97,9 +102,9 @@ constraint-dependencies = [
     "frozenlist==1.8.0",
     "ftfy==6.3.1",
     "furo==2025.12.19",
-    "genshi==0.7.11",
-    "googleapis-common-protos==1.75.5",
-    "grpcio==1.84.1",
+    "genshi==0.7.12",
+    "googleapis-common-protos==1.76.0",
+    "grpcio==1.85.0",
     "h11==0.16.0",
     "h2==4.4.1",
     "hpack==4.2.0",
@@ -125,26 +130,26 @@ constraint-dependencies = [
     "markitdown==0.1.9",
     "markupsafe==3.0.4",
     "mdurl==0.1.2",
-    "microsoft-kiota-abstractions==1.15.0",
-    "microsoft-kiota-authentication-azure==1.15.0",
-    "microsoft-kiota-http==1.15.0",
-    "microsoft-kiota-serialization-form==1.15.0",
-    "microsoft-kiota-serialization-json==1.15.0",
-    "microsoft-kiota-serialization-multipart==1.15.0",
-    "microsoft-kiota-serialization-text==1.15.0",
+    "microsoft-kiota-abstractions==1.16.0",
+    "microsoft-kiota-authentication-azure==1.16.0",
+    "microsoft-kiota-http==1.16.0",
+    "microsoft-kiota-serialization-form==1.16.0",
+    "microsoft-kiota-serialization-json==1.16.0",
+    "microsoft-kiota-serialization-multipart==1.16.0",
+    "microsoft-kiota-serialization-text==1.16.0",
     "missing==5.3",
     "mr-developer==3.0.0",
     "msal-extensions==1.3.1",
     "msal==1.39.0",
     "msgpack==1.2.3",
     "msgraph-core==1.5.2",
-    "msgraph-sdk==1.64.0",
-    "multidict==7.1.0",
+    "msgraph-sdk==1.65.0",
+    "multidict==7.2.1",
     "multimapping==5.1",
     "multipart==2.0.1",
     "numpy==2.5.4",
     "oauthlib==4.0.0",
-    "onnxruntime==1.31.0",
+    "onnxruntime==1.31.1",
     "opensearch-protobufs==1.2.0",
     "opensearch-py==3.2.0",
     "opentelemetry-api==1.45.1",
@@ -174,7 +179,7 @@ constraint-dependencies = [
     "products-genericsetup==5.2",
     "products-mailhost==6.1",
     "products-mcdutils==5.1",
-    "products-pluggableauthservice==4.2.2",
+    "products-pluggableauthservice==4.3",
     "products-pluginregistry==3.1",
     "products-pythonscripts==5.3.1",
     "products-sessions==6.2",
@@ -240,7 +245,7 @@ constraint-dependencies = [
     "sphinxcontrib-serializinghtml==2.0.0",
     "sqlalchemy==2.1.6",
     "sqlmodel==0.0.48",
-    "starlette==1.9.0",
+    "starlette==1.10.0",
     "std-uritemplate==2.0.12",
     "tabulate==0.10.0",
     "tatsu==5.15.1",
@@ -258,7 +263,7 @@ constraint-dependencies = [
     "uvloop==0.23.0",
     "waitress==3.0.2",
     "watchfiles==1.3.0",
-    "wcwidth==0.9.3",
+    "wcwidth==0.9.4",
     "webencodings==0.6.1",
     "webob==1.8.11",
     "websockets==17.3",
