@@ -440,12 +440,12 @@ Installed 40 packages in 26ms
 
 8. Run FastAPI with Uvicorn:
 ```bash
-➜  MyNewProj git:(main) ✗ .venv/bin/fastapi run --entrypoint zms.unibe.fastapi.app:api --port 5555
+➜  MyNewProj git:(main) ✗ API_V1=true API_V3=true .venv/bin/fastapi run --entrypoint zms.unibe.fastapi.app:api --host 127.0.0.1 --port 5555
 
  ⚡️ Starting FastAPI in production mode
  🐍 Using import string: zms.unibe.fastapi.app:api
- 🌐 Server started at http://0.0.0.0:5555
-    Documentation at http://0.0.0.0:5555/docs
+ 🌐 Server started at http://127.0.0.1:5555
+    Documentation at http://127.0.0.1:5555/docs
   Logs:
  ▕  Started server process [6724]
  ▕  Waiting for application startup.
@@ -453,7 +453,7 @@ Installed 40 packages in 26ms
   .venv/lib/python3.15/site-packages/zms/unibe/utils/db.py:31 connect_sqldb
     sqlengine: Engine(postgresql://postgres:***@127.0.0.1:5432/unibeportal) (Engine)
  ▕  Application startup complete.
- ▕  Uvicorn running on http://0.0.0.0:5555 (Press CTRL+C to quit)
+ ▕  Uvicorn running on http://127.0.0.1:5555 (Press CTRL+C to quit)
 ```
 <details>
 <summary>Details</summary>
@@ -464,6 +464,10 @@ Helper: zms.unibe.helpers.datetime.get_when
 Helper: zms.unibe.helpers.string.sanitize_html
 Helper: zms.unibe.helpers.string.flatten_to_str_list
 Helper: zms.unibe.helpers.string.normalize_split_by
+FastAPI: Mounted /v1/docs for UniBE Content Management
+FastAPI: Mounted /v3/docs for UniBE Mobile App
+FastAPI: Mounted /v1/cache for Redis Cache
+FastAPI: Mounted /v3/cache for Redis Cache
 SQLModel: /Users/cmeier/PyProjects/MyNewProj/.venv/lib/python3.15/site-packages/zms/unibe/**/sqlmodels/*.py
 SQLModel: zms.unibe.uniaktuell.sqlmodels.UniaktuellArticle
 SQLModel: zms.unibe.mobileapp.sqlmodels.NewsEvents

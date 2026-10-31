@@ -1,8 +1,5 @@
 name: zms-unibe-dev
 
-include:
-  - compose.dev.yaml
-
 networks:
   worker:
 
@@ -28,6 +25,14 @@ services:
           target: /app/dev/etc
           action: sync+restart
           initial_sync: true
+        - path: ./dev/zope/src
+          target: /app/dev/zope/src
+          action: sync+restart
+          initial_sync: true
+        - path: ./dev/products-zms/Products/zms
+          target: /app/dev/products-zms/Products/zms
+          action: sync+restart
+          initial_sync: true
     volumes:
       - ./dev/extensions:/app/zope/Extensions:rw
     environment:
@@ -41,9 +46,10 @@ services:
       - ZODB_RELSTORAGE_DB_HOST=host.docker.internal
       - ZODB_CONF=${ZODB_CONF:-zodb-zeo.conf}
       - ZEO_URL=host.docker.internal:8000
-      - AGENDA_CATEGORIES_URL=http://zms:8080/unibe/agenda-categories.json
+      - AGENDA_CATEGORIES_URL=http://zope:8080/unibe/agenda-categories.json
       - ZMS_ENABLE_MARKDOWN_RENDERING=true
       - ZMS_ENABLE_CSP_HEADERS=true
+      - ZMS_UV_PACKAGE_MANAGER=true
     ports:
       - "8088:8080"
     deploy:
@@ -74,6 +80,14 @@ services:
           initial_sync: true
         - path: ./src/zms/unibe/conf/
           target: /app/dev/etc
+          action: sync+restart
+          initial_sync: true
+        - path: ./dev/zope/src
+          target: /app/dev/zope/src
+          action: sync+restart
+          initial_sync: true
+        - path: ./dev/products-zms/Products/zms
+          target: /app/dev/products-zms/Products/zms
           action: sync+restart
           initial_sync: true
     environment:

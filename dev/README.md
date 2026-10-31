@@ -53,9 +53,6 @@ zms.unibe
 ├── Dockerfile.fastapi
 ├── Dockerfile.zope
 ├── compose.yaml
-├── compose.dev.yaml
-├── compose.empty.yaml
-├── versions.env 
 ├── dev
 │   ├── .python-version
 │   ├── pyproject.toml [-> to bootstrap zms.unibe dev environment]
@@ -210,7 +207,7 @@ $ docker compose build --no-cache
 $ docker compose up --watch
 ```
 
-These directories are synchronized into the containers - see `develop.watch` in [`compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml#L28) and [`compose.dev.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.dev.yaml)
+These directories are synchronized into the containers - see `develop.watch` in [`compose.yaml`](https://github.com/zms-publishing/zms.unibe/blob/main/compose.yaml#L28)
 - Code Sync for `zms.unibe` library
   - Changes in `./src/` to `/app/src`
 - Config Sync for Zope application server:
