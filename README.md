@@ -5,7 +5,7 @@
 - <https://github.com/zms-publishing/zms.unibe>
 - <https://github.com/zms-publishing/zms.unibe/releases>
 
-This `zms.unibe` comprehensive Python library extends [ZMS](https://github.com/zms-publishing/ZMS) and the underlying [Zope](https://github.com/zopefoundation/Zope) functionality.
+This `zms.unibe` comprehensive Python library extends [ZMS](https://github.com/zms-publishing/ZMS) and the underlying [Zope](https://github.com/zopefoundation/Zope) functionality and adds [FastAPI](https://fastapi.tiangolo.com) support.
 
 It includes several modules developed to power the [Web/Mobile Platform](https://idasm-unibe-ch.github.io/unibe-web-mobile/) of the University of Bern, [UniBE](https://unibe.ch) in Switzerland – but also a set of [Helper Functions](https://github.com/zms-publishing/zms.unibe/blob/main/EXAMPLES.md) that can be used as standalone library in any Python project.
 
@@ -29,14 +29,14 @@ It includes several modules developed to power the [Web/Mobile Platform](https:/
 - see [`dev/README.md`](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md)
   - [Overview](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#overview)
   - [Usage](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#usage)
-  - [Environments](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#environments)
+  - [Environment](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#environment)
     - [Start the container environment](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#start-the-container-environment)
-    - [Checkout and install on localhost](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#checkout-and-install-on-localhost)
-    - [Setup and run on localhost](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#setup-and-run-on-localhost)
     - [Checkout and link the content models](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#checkout-and-link-the-content-models)
   - [Services](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#services)
-  - [Images](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#images)
-  - [Configs](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#configs)
+    - [Compose](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#compose)
+    - [Images](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#images)
+    - [Configs](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#configs)
+  - [License](https://github.com/zms-publishing/zms.unibe/blob/main/dev/README.md#license)
 
 ## Install from scratch
 
@@ -55,6 +55,7 @@ Initialized project `mynewproj` at `/Users/cmeier/PyProjects/MyNewProj`
 3. Add `zms.unibe` to your project:
 ```bash
 ➜  MyNewProj git:(main) ✗ uv add git+https://github.com/zms-publishing/zms.unibe
+
 Using CPython 3.15.1
 Creating virtual environment at: .venv
   Updated https://github.com/zms-publishing/zms.unibe (e2467e3a108fd8c983fecd43c7a76d0b99431a99)
@@ -172,6 +173,7 @@ Installed 99 packages in 155ms
 4. Test the Helper Functions in your project:
 ```bash
 ➜  MyNewProj git:(main) ✗ .venv/bin/python
+
 Python 3.15.1 (main, Oct 21 2026, 17:39:16) [Clang 23.1.3 ] on darwin
 Type "help", "copyright", "credits" or "license" for more information.
 >>> from zms.unibe.helpers import *
@@ -188,7 +190,13 @@ Helper: zms.unibe.helpers.string.normalize_split_by
 
 5. Add Zope to your project:
 ```bash
+➜  MyNewProj git:(main) ✗ .venv/bin/update-zope-constraints --version 6.3
+
+Updated /Users/cmeier/PyProjects/MyNewProj/pyproject.toml
+Used constraints from https://raw.githubusercontent.com/zopefoundation/Zope/6.3/constraints.txt
+
 ➜  MyNewProj git:(main) ✗ uv add git+https://github.com/zms-publishing/zms.unibe --extra zope
+
 Resolved 216 packages in 1.66s
   Built mynewproj @ file:///Users/cmeier/PyProjects/MyNewProj
   Built zope-proxy==7.3
@@ -335,12 +343,12 @@ Installed 116 packages in 109ms
 ```bash
 ➜  MyNewProj git:(main) ✗ ./.venv/bin/mkwsgiinstance -d . -u admin:admin
 ➜  MyNewProj git:(main) ✗ ./.venv/bin/runwsgi -v ./etc/zope.ini
-2026-10-31 10:22:19 INFO [Zope:42][MainThread] Ready to handle requests
+
 2026-10-31 10:22:18 INFO [chameleon.config:40][MainThread] directory cache: /Users/cmeier/PyProjects/MyNewProj/var/cache.
-automated minification: gen.zmi.js=/++resource++zms_/zms-all.min.js
 ...
-Starting server in PID 99695.
-2026-10-31 10:22:19 INFO [waitress:449][MainThread] Serving on http://127.0.0.1:8080
+2026-10-31 10:22:18 INFO [Zope:42][MainThread] Ready to handle requests
+Starting server in PID 7067.
+2026-10-31 10:22:18 INFO [waitress:449][MainThread] Serving on http://127.0.0.1:8080
 ```
 <details>
 <summary>Details</summary>
@@ -376,6 +384,7 @@ generate: /Users/cmeier/PyProjects/MyNewProj/.venv/lib/python3.15/site-packages/
 7. Add FastAPI to your project:
 ```bash
 ➜  MyNewProj git:(main) ✗ uv add git+https://github.com/zms-publishing/zms.unibe --extra fastapi
+
 Resolved 255 packages in 2.02s
 Built mynewproj @ file:///Users/cmeier/PyProjects/MyNewProj
 Built pyyaml==6.0.3
@@ -431,12 +440,20 @@ Installed 40 packages in 26ms
 
 8. Run FastAPI with Uvicorn:
 ```bash
-➜  MyNewProj git:(main) ✗ .venv/bin/python -m zms.unibe.fastapi.app 
-INFO: Started server process [1590]
-INFO: Waiting for application startup.
-...
-INFO: Application startup complete.
-INFO: Uvicorn running on http://0.0.0.0:5555 (Press CTRL+C to quit)
+➜  MyNewProj git:(main) ✗ .venv/bin/fastapi run --entrypoint zms.unibe.fastapi.app:api --port 5555
+
+ ⚡️ Starting FastAPI in production mode
+ 🐍 Using import string: zms.unibe.fastapi.app:api
+ 🌐 Server started at http://0.0.0.0:5555
+    Documentation at http://0.0.0.0:5555/docs
+  Logs:
+ ▕  Started server process [6724]
+ ▕  Waiting for application startup.
+  ...
+  .venv/lib/python3.15/site-packages/zms/unibe/utils/db.py:31 connect_sqldb
+    sqlengine: Engine(postgresql://postgres:***@127.0.0.1:5432/unibeportal) (Engine)
+ ▕  Application startup complete.
+ ▕  Uvicorn running on http://0.0.0.0:5555 (Press CTRL+C to quit)
 ```
 <details>
 <summary>Details</summary>
@@ -491,8 +508,6 @@ SQLModel: zms.unibe.maintenance.sqlmodels.ZMSSchedulerRegistry
 SQLModel: zms.unibe.formulator.sqlmodels.ZMSSurveyJSSubmissions
 SQLModel: zms.unibe.formulator.sqlmodels.ZMSFormulator
 SQLModel: zms.unibe.formulator.sqlmodels.ZMSSurveyJSAttachments
-.venv/lib/python3.15/site-packages/zms/unibe/utils/db.py:31 connect_sqldb
-    sqlengine: Engine(postgresql://postgres:***@127.0.0.1:5432/unibeportal) (Engine)
 </pre>
 </details>
 
