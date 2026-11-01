@@ -25,8 +25,8 @@ services:
           target: /app/dev/etc
           action: sync+restart
           initial_sync: true
-        - path: ./dev/zope/src
-          target: /app/dev/zope/src
+        - path: ./dev/Zope/src
+          target: /app/dev/Zope/src
           action: sync+restart
           initial_sync: true
         - path: ./dev/ZMS/Products/zms
@@ -116,6 +116,7 @@ services:
       - REDIS_URL=redis://redis:6379
       - QUEUE_NAME=default
       - PORTAL_MASTER=/unibe/content
+      - ZMS_UV_PACKAGE_MANAGER=true
     ports:
       - "5055:8000"
     deploy:
@@ -152,7 +153,7 @@ services:
           cpus: "1.0"
           memory: 768M
     ports:
-      - 11211:11211
+      - "127.0.0.1:11211:11211"
     volumes:
       - ./dev/unibe-cms/var/log:/app/log
     networks:
@@ -175,7 +176,7 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - 5432:5432
+      - "127.0.0.1:5432:5432"
     volumes:
       - ./dev/postgresql/data:/var/lib/postgresql/data
     environment:
