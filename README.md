@@ -208,7 +208,7 @@ Resolved 216 packages in 1.66s
   Built btrees==6.5
   Built persistence==5.5
 Prepared 115 packages in 12.59s
-Uninstalled 1 package in 0.80ms
+Uninstalled 3 packages in 0.80ms
 Installed 116 packages in 109ms
 ```
 <details>
@@ -347,7 +347,6 @@ Installed 116 packages in 109ms
 2026-10-31 10:22:18 INFO [chameleon.config:40][MainThread] directory cache: /Users/cmeier/PyProjects/MyNewProj/unibe-cms/var/cache.
 ...
 2026-10-31 10:22:18 INFO [Zope:42][MainThread] Ready to handle requests
-Starting server in PID 7067.
 2026-10-31 10:22:18 INFO [waitress:449][MainThread] Serving on http://127.0.0.1:8080
 ```
 <details>
