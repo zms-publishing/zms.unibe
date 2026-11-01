@@ -341,10 +341,10 @@ Installed 116 packages in 109ms
 
 6. Init Zope and run with ZMS:
 ```bash
-➜  MyNewProj git:(main) ✗ ./.venv/bin/mkwsgiinstance -d . -u admin:admin
-➜  MyNewProj git:(main) ✗ ./.venv/bin/runwsgi -v ./etc/zope.ini
+➜  MyNewProj git:(main) ✗ ./.venv/bin/mkwsgiinstance -d unibe-cms -u admin:admin
+➜  MyNewProj git:(main) ✗ ./.venv/bin/runwsgi -v ./unibe-cms/etc/zope.ini
 
-2026-10-31 10:22:18 INFO [chameleon.config:40][MainThread] directory cache: /Users/cmeier/PyProjects/MyNewProj/var/cache.
+2026-10-31 10:22:18 INFO [chameleon.config:40][MainThread] directory cache: /Users/cmeier/PyProjects/MyNewProj/unibe-cms/var/cache.
 ...
 2026-10-31 10:22:18 INFO [Zope:42][MainThread] Ready to handle requests
 Starting server in PID 7067.

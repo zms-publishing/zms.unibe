@@ -197,8 +197,8 @@ $ git clone https://github.com/zms-publishing/zms.unibe.git
 
 # Checkout the dependencies for editable mode
 $ cd zms.unibe/dev
-$ git clone https://github.com/zopefoundation/Zope.git zope
-$ git clone https://github.com/zms-publishing/ZMS.git products-zms
+$ git clone https://github.com/zopefoundation/Zope.git
+$ git clone https://github.com/zms-publishing/ZMS.git
 
 # Force rebuild of the containers
 $ docker compose build --no-cache
@@ -213,8 +213,8 @@ These directories are synchronized into the containers - see `develop.watch` in 
 - Config Sync for Zope application server:
   - Changes in `./src/zms/unibe/conf/` to `/app/dev/etc`
 - Editable Dependencies for Zope/ZMS:
-  - Changes in `./dev/zope/src` to `/app/dev/zope/src/zope/src`
-  - Changes in `./dev/products-zms/Products/zms` to `/app/dev/zope/src/products-zms/Products/zms`
+  - Changes in `./dev/Zope/src/` to `/app/dev/Zope/src`
+  - Changes in `./dev/ZMS/Products/zms/` to `/app/dev/ZMS/Products/zms`
 
 ### Checkout and link the content models
 

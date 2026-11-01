@@ -253,7 +253,7 @@ constraints = [
     { name = "zodb", specifier = "==6.4" },
     { name = "zodbpickle", specifier = "==4.5" },
     { name = "zodburi", specifier = "==3.0.0" },
-    { name = "zope", editable = "zope" },
+    { name = "zope", editable = "Zope" },
     { name = "zope-annotation", specifier = "==6.0" },
     { name = "zope-app-publication", specifier = "==6.0" },
     { name = "zope-authentication", specifier = "==6.0" },
@@ -4779,7 +4779,7 @@ wheels = [
 
 [[package]]
 name = "zms"
-source = { editable = "products-zms" }
+source = { editable = "ZMS" }
 dependencies = [
     { name = "configparser" },
     { name = "docutils" },
@@ -4983,9 +4983,9 @@ dev = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "zms", editable = "products-zms" },
+    { name = "zms", editable = "ZMS" },
     { name = "zms-unibe", extras = ["zope", "msgraphapi", "fastapi", "rq", "alembic", "pydevd-pycharm"], editable = "../" },
-    { name = "zope", editable = "zope" },
+    { name = "zope", editable = "Zope" },
 ]
 
 [[package]]
@@ -5051,7 +5051,7 @@ wheels = [
 [[package]]
 name = "zope"
 version = "6.3"
-source = { editable = "zope" }
+source = { editable = "Zope" }
 dependencies = [
     { name = "accesscontrol" },
     { name = "acquisition" },

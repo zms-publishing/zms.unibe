@@ -18,5 +18,5 @@ dev/*
 !dev/README.md
 !dev/uv.lock
 !dev/unibe-cms-models
-!dev/products-zms
-!dev/zope
+!dev/ZMS
+!dev/Zope

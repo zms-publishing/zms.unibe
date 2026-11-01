@@ -24,10 +24,10 @@ build-backend = "uv_build"
 
 [tool.uv.sources]
 # PREREQUISTES in ./dev
-# -> git clone https://github.com/zopefoundation/Zope.git zope
-# -> git clone https://github.com/zms-publishing/ZMS.git products-zms
-zope = { path = "./zope", editable = true }  # see constraint-dependencies below
-zms = { path = "./products-zms", editable = true }
+# -> git clone https://github.com/zopefoundation/Zope.git
+# -> git clone https://github.com/zms-publishing/ZMS.git
+zope = { path = "./Zope", editable = true }  # see constraint-dependencies below
+zms = { path = "./ZMS", editable = true }
 zms-unibe = { path = "../", editable = true }
 
 [tool.uv]
