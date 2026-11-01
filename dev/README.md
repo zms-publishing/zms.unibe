@@ -28,7 +28,7 @@ This package includes modules for agenda management, announcements, contacts, da
 
 It features a fully decoupled, [headless RESTful API](https://idasm-unibe-ch.github.io/unibe-web-mobile/CMSAPI/) for accessing the content objects stored in [ZODB](https://zodb.org), using the ~~web application (micro)framework Flask~~ [FastAPI](https://fastapi.tiangolo.com) framework, which is served by [Uvicorn](https://www.uvicorn.dev).
 
-In addition, it relies on ~~Flasgger to generate the documentation~~ [SQLModel](https://sqlmodel.tiangolo.com) for implementing an object-relational mapping.
+In addition, it relies on ~~Flasgger to generate the documentation~~ [SQLModel](https://sqlmodel.tiangolo.com) for implementing an object-relational mapping to mirror selected ZMS content objects to SQL data relations.
 
 Furthermore, it can connect to [Microsoft Graph API](https://learn.microsoft.com/en-us/graph/api/overview) as the gateway to data and intelligence in Microsoft cloud services like [M365](https://learn.microsoft.com/en-us/graph/overview) or [Entra](https://learn.microsoft.com/en-us/graph/identity-network-access-overview) if the `[msgraphapi]` extra has been applied on installation.
 
@@ -148,7 +148,7 @@ The package requires [Python 3.12+](https://www.python.org/downloads/) and depen
 - **Office Integration**: `XlsxWriter`, `azure-identity`, `msgraph-sdk` with `[msgraphapi]` extra
 - **Data Processing**: `pandas`, `beautifulsoup4`, `lxml`, `MarkItDown`, `rq` with `rq-dashboard-fast`
 
-See [`pyproject.toml`](https://github.com/zms-publishing/zms.unibe/blob/main/pyproject.toml) for the complete list and references of dependencies and `zms.unibe/constraints-Zope-*.txt` for their pinned versions.
+See [`pyproject.toml`](https://github.com/zms-publishing/zms.unibe/blob/main/pyproject.toml) for the complete list and references of dependencies.
 
 </details>
 
@@ -156,7 +156,7 @@ See [`pyproject.toml`](https://github.com/zms-publishing/zms.unibe/blob/main/pyp
 <summary>Utilities</summary>
 <br />
 
-The package provides the `zms2sql` command-line tool for object-relational mappings to mirror selected data from the [ZODB](https://zodb.org) to [PostgreSQL](https://www.postgresql.org), for example:
+The package provides the `zms2sql` command-line tool for object-relational mappings to mirror selected ZMS content objects to SQL data relations, for example:
 
 ```bash
 $ ./.venv/bin/zms2sql --help
@@ -168,7 +168,7 @@ Furthermore, it provides the `update-zope-constraints` utility to update the dep
 $ ./.venv/bin/update-zope-constraints --version 6.3
 ```
 
-To apply the [monkey patches](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/monkey) for customizing other installed packages as well as the [security assertions](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/security) for using the helper utilities in [RestrictedPython](https://github.com/zopefoundation/RestrictedPython) code (py, zpt, dtml), the following package include must be added to the `./.venv/etc/site.zcml` file:
+To apply the [monkey patches](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/monkey) for customizing other installed packages as well as the [security assertions](https://github.com/zms-publishing/zms.unibe/blob/main/src/zms/unibe/patches/security) for using the helper utilities in [RestrictedPython](https://github.com/zopefoundation/RestrictedPython) code (py, zpt, dtml), the following package include must be added to the `site.zcml` file:
 
 ```xml
 <configure xmlns:zcml="http://namespaces.zope.org/zcml">
@@ -187,9 +187,6 @@ See [`alembic/README.md`](https://github.com/zms-publishing/zms.unibe/blob/main/
 ## Environment
 
 ### Build and run the container environment
-
-> [!NOTE]
-> It is expected that the `postgresql`, `memcached`, and `zeo` containers from the `unibe-cms` stack are running to provide the data storages.
 
 ```bash
 # Checkout the project
@@ -266,7 +263,7 @@ $ git pull origin main
   - **`postgresql`**: The PostgreSQL database for relational data storage
     - Image: `docker.io/postgres:16.2`
     - Port: `5432` (mapped to `5432` internally)
-    - Used for ZMSFormulator, ZMSSurveyJS, and SQLModel with Alembic migrations
+    - Used for ZODBRelstorage, ZMSFormulator, ZMSSurveyJS, and SQLModel with Alembic migrations
 
 ### Images
 

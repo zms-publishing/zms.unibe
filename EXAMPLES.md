@@ -60,7 +60,7 @@ The code snippets below are `Python Scripts` – but the examples can be used in
 
 - Normalize arbitrary representations of dates and times to a standard Python timezone-aware [`datetime`](https://docs.python.org/3/library/datetime.html#aware-and-naive-objects) object.
 - You can put in as any `ISO strings`, `struct_time`, or UNIX timestamps and convert them to the specified timezone.
-- If no timezone is provided, it defaults to `Europe/Zurich` – see [list of timezones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+- If no timezone is provided, it defaults to `Europe/Zurich` – see [list of timezones](https://github.com/zms-publishing/zms.unibe/blob/main/TIMEZONES.md).
 - You can also adjust the datetime by a number of days given as delta.
 
 <details>
@@ -68,32 +68,23 @@ The code snippets below are `Python Scripts` – but the examples can be used in
 
 ```python
 def local_timezone(dt: Any = None,
-                   tz: str = 'Europe/Zurich',
+                   tz: str | tzinfo | None = None,
                    days_delta: int = 0) -> datetime:
     """
-    Convert a datetime, timestamp, or ISO8601 string to the specified local timezone.
+    Convert a date/time value to a timezone-aware datetime.
 
-    This function takes a datetime object or other datetime representations such 
-    as ISO8601 strings, struct_time objects, or UNIX timestamps and converts them 
-    to the specified timezone. If no timezone is provided, it defaults to 'Europe/Zurich'. 
-    The function optionally adjusts the datetime by a specified number of days before 
-    performing the timezone conversion.
+    Naive calendar values are interpreted as wall times in the target timezone.
+    Aware values are converted without changing their represented instant. An
+    aware ISO8601 string retains its offset when no timezone is explicitly given.
+    Unix timestamps represent instants; ``struct_time`` is interpreted in the
+    system timezone. Invalid ISO8601 strings fall back to the Unix epoch.
 
-    :param dt: The datetime input, which can be a datetime or date object, ISO8601 string, 
-        struct_time object, or a UNIX timestamp (int or float). If no value 
-        is provided, the current datetime will be used.
-    :type dt: Optional[Union[datetime, date, str, time.struct_time, int, float, DateTime]]
-
-    :param tz: The timezone to convert the datetime to. If it is not provided, the 
-        timezone 'Europe/Zurich' will be used.
-    :type tz: Optional[str]
-
-    :param days_delta: Number of days to adjust the datetime before converting it 
-        to the specified timezone.
-    :type days_delta: int
-
-    :return: A timezone-aware datetime object in the specified timezone.
-    :rtype: datetime
+    :param dt: A datetime, date, time, ISO8601 string, ``struct_time``,
+        Unix timestamp, legacy Zope ``DateTime``, or ``None`` for the current time.
+    :param tz: Target IANA timezone name or tzinfo object. Defaults to
+        ``Europe/Zurich``; an aware ISO8601 string supplies its timezone if omitted.
+    :param days_delta: Number of days to add before converting to the target timezone.
+    :return: A timezone-aware datetime in the resolved timezone.
     """
 ```
 </details>
@@ -104,13 +95,13 @@ from zms.unibe.helpers.datetime import local_timezone
 now = local_timezone()
 
 local_timezone(now)
-# datetime.datetime(2026, 10, 9, 16, 46, 33, 741677, tzinfo=<DstTzInfo 'Europe/Zurich' CEST+2:00:00 DST>)
+# datetime.datetime(2026, 11, 1, 14, 0, 43, 597064, tzinfo=zoneinfo.ZoneInfo(key='Europe/Zurich'))
 
 local_timezone(now, days_delta=7, tz='Asia/Tokyo')
-# datetime.datetime(2026, 10, 16, 23, 46, 33, 741677, tzinfo=<DstTzInfo 'Asia/Tokyo' JST+9:00:00 STD>)
+# datetime.datetime(2026, 11, 8, 22, 0, 43, 597064, tzinfo=zoneinfo.ZoneInfo(key='Asia/Tokyo'))
 
 local_timezone('2027-01-01', tz='Atlantic/Bermuda')
-# datetime.datetime(2026, 12, 31, 19, 0, tzinfo=<DstTzInfo 'Atlantic/Bermuda' AST-1 day, 20:00:00 STD>)
+# datetime.datetime(2027, 1, 1, 0, 0, tzinfo=zoneinfo.ZoneInfo(key='Atlantic/Bermuda'))
 ```
 
 ## Date/Time formatting
@@ -127,52 +118,31 @@ local_timezone('2027-01-01', tz='Atlantic/Bermuda')
 def get_when(dt: Any = None,
              mode: str | None = None,
              locale: str = 'de_CH',
-             tz: str = 'Europe/Zurich',
+             tz: str | tzinfo | None = None,
              granularity: str = 'second',
              threshold: float | int = 0.85,
              format: str = 'long',
-             add_direction: bool = True) -> str:
+             add_direction: bool = True) -> str | float:
     """
-    Determines and returns a formatted representation of the input date, time, or timedelta 
-    based on the specified `mode` and formatting criteria. Handles localization, time zone 
-    adjustments, and granularity for delta formats.
+    Format a date/time value or relative duration using Babel.
 
-    It is basically a wrapper for https://babel.pocoo.org/en/latest/dates.html
+    ``date``, ``time``, ``day``, and ``weekday`` select localized calendar
+    representations; ``utcoffset`` returns the offset in hours. ``delta``
+    formats a timedelta or a number interpreted as days. A timedelta always
+    selects ``delta`` mode. Other string modes are Babel datetime patterns;
+    ``None``, ``iso``, and ``iso8601`` use the default ISO8601 pattern.
 
-    :param dt: Input date, time, or timedelta. Can be a `datetime`, `date`, or a number 
-               (interpreted as days). This parameter determines the entity to be formatted 
-               based on the given `mode`.
-    :type dt: datetime | date | timedelta | int | float
-    :param mode: Specifies the formatting operation to perform. Options include:
-                 - 'date': Formats only the date.
-                 - 'time': Formats only the time.
-                 - 'day': Formats the day of the month.
-                 - 'weekday': Formats the name of the weekday.
-                 - 'delta': Formats timedelta with varying granularity and threshold.
-                 - Other values are interpreted as explicit format strings or defaulted
-                   to ISO8601 if not recognized.
-    :type mode: str | None
-    :param locale: Locale string for localized formatting. Defaults to 'de_CH'.
-    :type locale: str
-    :param tz: Timezone information for adjusting the datetime. Defaults to 'Europe/Zurich' 
-               if the provided timezone is unrecognized or `None`.
-    :type tz: str | None
-    :param granularity: Defines the smallest time unit (e.g., 'second', 'minute', 'day') 
-                        for timedelta formatting when the mode is 'delta'. Defaults to 'second'.
-    :type granularity: str
-    :param threshold: Threshold value determining when to step into the next higher 
-                      granularity for timedelta formatting. Defaults to 0.85.
-    :type threshold: float
-    :param format: Specifies the verbosity of the output in timedelta formatting (e.g., 'short', 
-                   'long'). Defaults to 'long'.
-    :type format: str
-    :param add_direction: When `True`, includes direction indicators (e.g., 'in', 'ago') 
-                          in timedelta formatting. Defaults to `True`.
-    :type add_direction: bool
-    :return: Returns a string representing the formatted input based on the specified mode 
-             and locale. The format varies depending on the mode. Examples include formatted 
-             dates, times, weekdays, and timedelta durations.
-    :rtype: str
+    :param dt: A datetime, date, time, ISO8601 string, timedelta, or numeric
+        value interpreted as days in ``delta`` mode. ``None`` means the current time.
+    :param mode: Formatting mode, Babel datetime pattern, or ``None`` for ISO8601.
+    :param locale: Babel locale identifier.
+    :param tz: Target IANA timezone or tzinfo. If omitted, an aware input
+        supplies its timezone; otherwise ``Europe/Zurich`` is used.
+    :param granularity: Smallest unit used by Babel for ``delta`` mode.
+    :param threshold: Babel's threshold for stepping to the next duration unit.
+    :param format: Babel duration format, such as ``long`` or ``short``.
+    :param add_direction: Whether delta output includes relative direction.
+    :return: Formatted text, or the UTC offset in hours for ``utcoffset`` mode.
     """
 ```
 </details>
@@ -235,6 +205,15 @@ get_when(diff, threshold=10000)
 
 get_when(diff, threshold=1000000)
 # 'in 7114406 Sekunden'
+
+get_when(mode='utcoffset')
+# 1.0
+
+get_when(tz='Asia/Tokyo', mode='utcoffset')
+# 9.0
+
+get_when(tz='Atlantic/Bermuda', mode='utcoffset')
+# -4.0
 ```
 
 ## Output sanitization
