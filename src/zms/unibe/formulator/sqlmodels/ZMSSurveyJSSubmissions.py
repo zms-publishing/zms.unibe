@@ -34,7 +34,7 @@ class ZMSSurveyJSSubmissions(SQLModel, table=True):
             'survey_uuid_zms': parse_uuid(survey_obj.get_uid()),
             'survey_path_zms': survey_obj.getPath(),
             'survey_data_json': json.dumps(data_json, indent=4, sort_keys=True, default=str),
-            'survey_submitted_at': local_timezone(datetime.now()),
+            'survey_submitted_at': local_timezone(),
         }
         return cls.model_validate(mapping), data_json, data_blobs
 

@@ -34,7 +34,7 @@ def _resolve_timezone(tz: str | tzinfo | None) -> tzinfo:
     if isinstance(tz, str):
         try:
             return ZoneInfo(tz)
-        except ZoneInfoNotFoundError:
+        except (ZoneInfoNotFoundError, ValueError):
             return ZoneInfo(DEFAULT_TIMEZONE)
     return tz
 
@@ -91,7 +91,8 @@ def local_timezone(dt: Any = None,
     if not isinstance(dt, _DATETIME_TYPE):
         raise TypeError(f'Unsupported datetime value: {type(dt).__name__}')
     dt = _attach_timezone(dt, target_timezone)
-    dt += timedelta(days=days_delta)
+    if days_delta:
+        dt += timedelta(days=days_delta)
     return dt.astimezone(target_timezone)
 
 
