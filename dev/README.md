@@ -250,6 +250,10 @@ $ git pull origin main
     - Image: `ghcr.io/idasm-unibe-ch/zms-unibe-dev-zope:local`
     - Port: `8088` (mapped to `8080` internally)
     - Zope/ZMS: [http://127.0.0.1:8088/manage](http://localhost:8088/manage)
+  - **`memcached`**: The [Memcached](https://memcached.org/) in-memory key-value store
+    - Image: `docker.io/memcached:1.6.9-alpine`
+    - Port: `11211` (mapped to `11211` internally)
+    - Used for session data of Zope/ZMS backend
   - **`fastapi`**: The FastAPI frontend/API layer
     - Image: `ghcr.io/idasm-unibe-ch/zms-unibe-dev-fastapi:local`
     - Port: `5055` (mapped to `8000` internally)
@@ -259,6 +263,10 @@ $ git pull origin main
     - Image: `docker.io/redis:7.4-alpine`
     - Port: `6379` (mapped to `6379` internally)
     - Used as message broker for background jobs (queue endpoints) and caching (cache endpoints)
+  - **`postgresql`**: The PostgreSQL database for relational data storage
+    - Image: `docker.io/postgres:16.2`
+    - Port: `5432` (mapped to `5432` internally)
+    - Used for ZMSFormulator, ZMSSurveyJS, and SQLModel with Alembic migrations
 
 ### Images
 
