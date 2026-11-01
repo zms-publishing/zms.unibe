@@ -1,4 +1,4 @@
-# $ rq worker default --url "$REDIS_URL"
+# $ rq worker default --with-scheduler --url "$REDIS_URL"
 # https://python-rq.org/docs/workers/
 # https://python-rq.org/docs/scheduling/
 
