@@ -93,7 +93,7 @@ def local_timezone(dt: Any = None,
     dt = _attach_timezone(dt, target_timezone)
     if days_delta:
         dt += timedelta(days=days_delta)
-    return dt.astimezone(target_timezone)
+    return dt.astimezone(timezone.utc).astimezone(target_timezone)
 
 
 print('Helper: zms.unibe.helpers.datetime.get_when')
