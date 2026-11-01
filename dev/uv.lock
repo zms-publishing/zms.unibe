@@ -4830,6 +4830,7 @@ requires-dist = [
     { name = "requests" },
     { name = "ruamel-yaml" },
     { name = "selenium", marker = "extra == 'dev'" },
+    { name = "sqlalchemy", marker = "extra == 'dev'" },
     { name = "watching-testrunner", marker = "extra == 'dev'" },
     { name = "xmltodict" },
     { name = "zeo", marker = "extra == 'zeo'" },

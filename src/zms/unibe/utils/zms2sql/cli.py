@@ -37,7 +37,7 @@ AVAILABLE_COMMANDS = {
     'update-zmsobjects': update_zmsobjects,         # (317,300) = 65.17 min 
 }
 
-def run(command: str = typer.Argument(None, help=' | '.join(AVAILABLE_COMMANDS.keys()))):
+def run_command(command: str):
     if command not in AVAILABLE_COMMANDS:
         raise ValueError(f'{command} does not exist')
     fn = AVAILABLE_COMMANDS[command]
@@ -47,6 +47,11 @@ def run(command: str = typer.Argument(None, help=' | '.join(AVAILABLE_COMMANDS.k
     else:
         zope_context = create_zope_app_context()
         fn(zope_context.unibe.content)
+
+
+def run(command: str = typer.Argument(None, help=' | '.join(AVAILABLE_COMMANDS.keys()))):
+    run_command(command)
+
 
 def main():
     typer.run(run)

@@ -1,28 +1,35 @@
-# $ rq cron cron_config.py
+# $ rq cron zms.unibe.tasks.cron_config --url "$REDIS_URL"
 # https://python-rq.org/docs/cron/
 # https://python-rq.org/docs/jobs/
+# Set TZ to the timezone previously used by system cron.
 
-from rq.cron import register
+from rq.cron import register as register_cron
 
-from zms.unibe.tasks.demo import intensive_data_process
+from zms.unibe.tasks.task_config import register as run_task
 
-register(
-    intensive_data_process,
-    queue_name='maintenance',
-    interval=1800  # 30 minutes in seconds
+register_cron(
+    run_task,
+    queue_name='default',
+    args=('afterwork',),
+    name='afterwork',
+    cron='5 18 * * 1-5',
+    job_timeout=3600,
 )
 
-register(
-    intensive_data_process,
-    queue_name='reports',
-    args=('daily_metrics',),
-    #kwargs={'format': 'json', 'recipients': ['bob@example.com']},
-    interval=21600  # 6 hours in seconds
+register_cron(
+    run_task,
+    queue_name='default',
+    args=('officehours',),
+    name='officehours',
+    cron='50 7-17/2 * * 1-5',
+    job_timeout=3600,
 )
 
-register(
-    intensive_data_process,
-    queue_name='cron',
-    name="hourly_status",
-    cron="1/5 * * * *"  # every 5 minutes from :01 through :59
+register_cron(
+    run_task,
+    queue_name='default',
+    args=('weekly',),
+    name='weekly',
+    cron='5 8 * * 6',
+    job_timeout=10800,
 )
