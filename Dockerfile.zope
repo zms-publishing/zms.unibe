@@ -1,0 +1,29 @@
+ARG PYTHON_VERSION=3.14.9
+
+FROM python:3.14.9-slim
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+WORKDIR /app/dev
+COPY dev/pyproject.toml dev/uv.lock ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
+
+WORKDIR /app
+COPY . .
+
+WORKDIR /app/dev
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen
+
+ENV PATH="/app/dev/.venv/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
+
+RUN /app/dev/.venv/bin/mkwsgiinstance -d . -u admin:admin
+
+COPY ./src/zms/unibe/conf/* /app/dev/etc/
+
+# Requires an image from a private repository – permission is required to check it out.
+# Prerequisite: Remove "cms-backend" as unibe-cms.build.target to copy the assets into the image.
+# COPY --from=ghcr.io/idasm-unibe-ch/unibe-cms:python3.14.9-zope6.3 /app/frontend/web/estatico-handlebars/dist/assets /app/frontend/web/estatico-handlebars/dist/assets
+
+CMD ["/app/dev/.venv/bin/runwsgi", "-v", "/app/dev/etc/zope.ini"]

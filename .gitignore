@@ -1,5 +1,7 @@
 *~
 .*.swp
+.tmp-*
+*.py[oc]
 
 .env
 .idea/
@@ -8,9 +10,20 @@
 *.egg-info/
 
 dev/*
+!dev/.python-version
+!dev/pyproject.toml
 !dev/README.md
+!dev/uv.lock
 data.json
 data.csv
 /build
+**/__pycache__/**
 __pycache__/
 .DS_Store
+
+build/
+dist/
+wheels/
+.venv
+venv/
+app/
