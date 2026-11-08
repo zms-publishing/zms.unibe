@@ -1,15 +1,16 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
     xmlns:browser="http://namespaces.zope.org/browser">
 
   <configure
       xmlns:cmf="http://namespaces.zope.org/cmf"
-      xmlns:zcml="http://namespaces.zope.org/zcml"
       zcml:condition="installed Products.CMFCore"
       >
     <!-- invoked in etc/site.zcml by <include zcml:condition="installed zms.unibe.patches" package="zms.unibe.patches" />  -->
     <!-- provokes loading of zms.unibe.patches.__init.py__ to initialize monkey patches and security assertions on zope startup -->
     <cmf:registerDirectory
+      zcml:condition="envvar ZMS_ENABLE_ESTATICO_HANDLEBARS_DIST_ASSETS"
       name="assets"
       directory="../../../../frontend/web/estatico-handlebars/dist/assets"
       recursive="True" />
@@ -18,11 +19,13 @@
   <subscriber
       for="ZPublisher.interfaces.IPubSuccess"
       handler="zms.unibe.utils.subscribers.transform_html_to_markdown"
+      zcml:condition="envvar ZMS_ENABLE_MARKDOWN_RENDERING"
       />
 
   <subscriber
       for="ZPublisher.interfaces.IPubSuccess"
       handler="zms.unibe.utils.subscribers.add_csp_headers"
+      zcml:condition="envvar ZMS_ENABLE_CSP_HEADERS"
       />
 
 </configure>
