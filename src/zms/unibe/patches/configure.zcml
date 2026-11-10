@@ -11,7 +11,7 @@
     <!-- provokes loading of zms.unibe.patches.__init.py__ to initialize monkey patches and security assertions on zope startup -->
     <cmf:registerDirectory
       name="assets"
-      directory="../../../../../../frontend/web/estatico-handlebars/dist/assets"
+      directory="../../../../../../frontend/web/storybook/dist/assets"
       recursive="True" />
   </configure>
 
