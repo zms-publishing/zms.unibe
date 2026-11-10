@@ -90,6 +90,8 @@ zope = [
     "trio",                             # https://github.com/python-trio/trio -> see https://github.com/idasm-unibe-ch/zms-base/issues/5
     "ZMS",                              # https://github.com/zms-publishing/ZMS
     "zeo",                              # https://github.com/zopefoundation/ZEO
+    "zodb-convert",                     # https://github.com/bluedynamics/zodb-convert
+    "zodb-pgjsonb",                     # https://github.com/bluedynamics/zodb-pgjsonb
     "zodburi",                          # https://github.com/Pylons/zodburi
     "Zope[wsgi]",                       # https://github.com/zopefoundation/Zope
 ]

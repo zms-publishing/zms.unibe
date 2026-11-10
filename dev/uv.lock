@@ -163,6 +163,7 @@ constraints = [
     { name = "protobuf", specifier = "==7.36.2" },
     { name = "psycopg", specifier = "==3.3.6" },
     { name = "psycopg-binary", specifier = "==3.3.6" },
+    { name = "psycopg-pool", specifier = "==3.3.3" },
     { name = "psycopg2-binary", specifier = "==2.9.13" },
     { name = "pycparser", specifier = "==3.11" },
     { name = "pydantic", specifier = "==2.14.1" },
@@ -251,6 +252,9 @@ constraints = [
     { name = "zeo", specifier = "==6.2" },
     { name = "zexceptions", specifier = "==6.0" },
     { name = "zodb", specifier = "==6.4" },
+    { name = "zodb-convert", specifier = "==1.0.0b12" },
+    { name = "zodb-json-codec", specifier = "==1.7.0" },
+    { name = "zodb-pgjsonb", specifier = "==1.19.2" },
     { name = "zodbpickle", specifier = "==4.5" },
     { name = "zodburi", specifier = "==3.0.0" },
     { name = "zope", editable = "Zope" },
@@ -3373,6 +3377,9 @@ wheels = [
 binary = [
     { name = "psycopg-binary", marker = "implementation_name != 'pypy'" },
 ]
+pool = [
+    { name = "psycopg-pool" },
+]
 
 [[package]]
 name = "psycopg-binary"
@@ -3412,6 +3419,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/5d/0f/62113dc6b1df65983a1f2fc816c04b1edfa22f2ae9d4abee74ed267f4a96/psycopg_binary-3.3.6-cp315-cp315-musllinux_1_2_riscv64.whl", hash = "sha256:c7753871eb57e6a5f4646f6168590c6653073dea5e9e720b201c8875332df4c8", size = 4027121, upload-time = "2026-09-18T13:22:38.334Z" },
     { url = "https://files.pythonhosted.org/packages/5d/d5/cf0cbd1ea5a7d8167fe2c6953efde19101f7b193bd61a23e6d622ad6854c/psycopg_binary-3.3.6-cp315-cp315-musllinux_1_2_x86_64.whl", hash = "sha256:303732e798fe6729f8e12021b9c96107df8e95ecec4dd487c67b98ec2a59435e", size = 4336388, upload-time = "2026-09-18T13:22:45.576Z" },
     { url = "https://files.pythonhosted.org/packages/98/33/e2a5b36edf8aa422f6fa4b894756eb33dc93b36df5f65121280bb8b929c4/psycopg_binary-3.3.6-cp315-cp315-win_amd64.whl", hash = "sha256:2f122603f36050937982abf9668d8bc4769a79f7c93a65013b1c49f1cab7b56b", size = 3756154, upload-time = "2026-09-18T13:22:51.283Z" },
+]
+
+[[package]]
+name = "psycopg-pool"
+version = "3.3.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/74/5e/c0664b968b102ff68b811d999c728546c48d5c1eec03e3bbaf88c0cb4472/psycopg_pool-3.3.3.tar.gz", hash = "sha256:df87b5d9d0ad7db37f6cdad4fa8ce113d250f5997f6db38e9a99192fb67f9e1d", size = 32006, upload-time = "2026-09-22T15:53:24.947Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5d/b4/452c6607a0f479465cd8a9b0d9956919fcb150050c1f83f9f11e6b8ee8dc/psycopg_pool-3.3.3-py3-none-any.whl", hash = "sha256:9b9cd6a4fcec47a410f7e82d408540e7f77b478509e91b44c1a5457a13e5ff37", size = 40304, upload-time = "2026-09-22T15:53:23.712Z" },
 ]
 
 [[package]]
@@ -4909,6 +4928,8 @@ zope = [
     { name = "trio" },
     { name = "zeo" },
     { name = "zms" },
+    { name = "zodb-convert" },
+    { name = "zodb-pgjsonb" },
     { name = "zodburi" },
     { name = "zope", extra = ["wsgi"] },
 ]
@@ -4963,6 +4984,8 @@ requires-dist = [
     { name = "xmltodict" },
     { name = "zeo", marker = "extra == 'zope'" },
     { name = "zms", marker = "extra == 'zope'" },
+    { name = "zodb-convert", marker = "extra == 'zope'" },
+    { name = "zodb-pgjsonb", marker = "extra == 'zope'" },
     { name = "zodburi", marker = "extra == 'zope'" },
     { name = "zope", extras = ["wsgi"], marker = "extra == 'zope'" },
 ]
@@ -5005,6 +5028,61 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/68/2c/cf2661cf12fb8a8fc326d0d9f4663c109c9f1184afd9a68f637e762205bf/zodb-6.4.tar.gz", hash = "sha256:bdc5de730bdc624d1eee0d53d66ad80d58f393080cab5c96e5d7ffeee5dba341", size = 532048, upload-time = "2026-10-12T07:25:12.789Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/25/90/a5349b6bdbaa02548ef730f2a91620bc5a663cce5567db90a7811c78f377/zodb-6.4-py3-none-any.whl", hash = "sha256:130020c9048e8a28f025a7b88787bbdbd2eabda7ced5de8dd8d0b28886ed61f7", size = 420336, upload-time = "2026-10-12T07:25:11.023Z" },
+]
+
+[[package]]
+name = "zodb-convert"
+version = "1.0.0b12"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "transaction" },
+    { name = "zconfig" },
+    { name = "zodb" },
+    { name = "zope-interface" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e1/f3/b69e9b69a3fedf32869ed9e714835a7836b30da14877326d6ed911115cd5/zodb_convert-1.0.0b12.tar.gz", hash = "sha256:211f8ba473e51574c06ed40e3edc3b9c0030bf68c832560d9a86396f48403026", size = 52760, upload-time = "2026-03-31T00:51:10.025Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/04/b3/028167a1de8e719c63c2ed308984b48e55365272afc0ae8e3e9e282e44f9/zodb_convert-1.0.0b12-py3-none-any.whl", hash = "sha256:cee8a8aa099c695a2e1087877370ef6defecdf4682d3b97cb1888b3062d9c873", size = 15958, upload-time = "2026-03-31T00:51:08.543Z" },
+]
+
+[[package]]
+name = "zodb-json-codec"
+version = "1.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f1/c6/4349aefcf2e3b5d2d2bb81aaa11b17d52214bc15cbd64a41001ce6adde3d/zodb_json_codec-1.7.0.tar.gz", hash = "sha256:c8d8cfade25b7c61dee8c311c534e4c6d657cb662b418e2aeb641e2e6dd36439", size = 8268714, upload-time = "2026-09-30T22:19:26.381Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/95/12/e04621fe6b863aceb0744f4317d3edc9edfaba71a2bc3ed97d71738b895b/zodb_json_codec-1.7.0-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:7d3afc473e0ad45238f59dcacd91cbb42366d86e84d696e6e47ec17bb5627a2a", size = 631154, upload-time = "2026-09-30T22:19:00.945Z" },
+    { url = "https://files.pythonhosted.org/packages/16/6c/37ed8dca9f0f8c03e761300e0ed3b26165241c26065487d8b1251a5f7518/zodb_json_codec-1.7.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:f29dc47bf70e49e6578cc0755bbe745a7a954ba65fd9fc28ffce92f43cf5f424", size = 586627, upload-time = "2026-09-30T22:19:02.667Z" },
+    { url = "https://files.pythonhosted.org/packages/19/2b/7c9aad666f9b8350a4e923dbd0de2b9030139f746c16cf61a1d058737bd0/zodb_json_codec-1.7.0-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:88a032eb907dfecdef3b8dd129fc0c150d3f06039caae526d17d5d768aedff1d", size = 582972, upload-time = "2026-09-30T22:19:04.407Z" },
+    { url = "https://files.pythonhosted.org/packages/56/dd/1dc2fca5bfd245dae213aa4c2f3880102da6325084ae693d6938e356f801/zodb_json_codec-1.7.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9f6a9581de64b80adc36ab6d586e0352e47265a7372d5c720f6830b7fd6fa0e9", size = 589180, upload-time = "2026-09-30T22:19:06.224Z" },
+    { url = "https://files.pythonhosted.org/packages/8d/0b/05760bc795c7ae6de1a3e9e865145cae10fdc3ca9f1102ab7d1245c33f02/zodb_json_codec-1.7.0-cp313-cp313-win_amd64.whl", hash = "sha256:23d8be2d89f68cca5a5844acad418eb2c01d9642534d9b00c362871457b4616a", size = 869216, upload-time = "2026-09-30T22:19:07.831Z" },
+    { url = "https://files.pythonhosted.org/packages/62/d2/9b1f3fdd309c5326abf842faaa13b25e2b7a36b280f277d9b24f19e8d576/zodb_json_codec-1.7.0-cp314-cp314-macosx_10_12_x86_64.whl", hash = "sha256:a01bbe9686188f17fa7557d1ca2a2b043164f45d2c46025f2234d947d7a59a5e", size = 631635, upload-time = "2026-09-30T22:19:09.698Z" },
+    { url = "https://files.pythonhosted.org/packages/da/c3/5b1e72353d3c4ac4282c72fad1a747992a324c9c5ce8d54aa157519f291b/zodb_json_codec-1.7.0-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:f74b26fe6bd4c9b69f368ff8403fb42d444f99e62524a373cdd23ab989a522c7", size = 586896, upload-time = "2026-09-30T22:19:11.117Z" },
+    { url = "https://files.pythonhosted.org/packages/c3/84/4455f6ca3daab69454faa0591b10a2b52d57b2ef29f4bc700597933c912c/zodb_json_codec-1.7.0-cp314-cp314-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7833f3f4399abde2143ed6640ff33bdefdcc8db4776294485d40aa72fbaab34d", size = 582993, upload-time = "2026-09-30T22:19:12.603Z" },
+    { url = "https://files.pythonhosted.org/packages/58/20/d04558b9954340a1a9bf46a0d0f13d3f062ca20ac362fee61624bffb7a81/zodb_json_codec-1.7.0-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:809d89bd5fba03c3e5cc08f4a47eb3d812cb30a65920efac013a23194890bfff", size = 589841, upload-time = "2026-09-30T22:19:14.31Z" },
+    { url = "https://files.pythonhosted.org/packages/d2/30/1dc4b0b5f7fa73b53ecdc06b52074816b8d0715c6946c027dcc1f765a1eb/zodb_json_codec-1.7.0-cp314-cp314-win_amd64.whl", hash = "sha256:d2de55c90deff7b46d76f52441b5798081b5b6e3f58f47324d29c71dd04b4778", size = 869333, upload-time = "2026-09-30T22:19:15.822Z" },
+    { url = "https://files.pythonhosted.org/packages/dc/7d/367fd2ea0760387f14f50a5b4a5b45bcc101b6a21cc9001bc212c6b98508/zodb_json_codec-1.7.0-cp315-cp315-macosx_10_12_x86_64.whl", hash = "sha256:cffb71cdebb599c9646e1d5a1428f17471bb53c74e2fca4e547aa4fae013b5a9", size = 631744, upload-time = "2026-09-30T22:19:17.85Z" },
+    { url = "https://files.pythonhosted.org/packages/a3/48/4b1b06096af32acf840841ce709aeb90b2c52e357cd2d3915cbf8c77d7a9/zodb_json_codec-1.7.0-cp315-cp315-macosx_11_0_arm64.whl", hash = "sha256:d6ded694465431030fb519ee91da5bf2b0880a8ff702164fbb95eee046833803", size = 587023, upload-time = "2026-09-30T22:19:19.366Z" },
+    { url = "https://files.pythonhosted.org/packages/08/c1/c57b376da51d205cec76d2957b779477613cd050e1a70f22cb8db1c4f260/zodb_json_codec-1.7.0-cp315-cp315-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:789ac59a88bd1bc12e2fdf84bd9e375082bc970de056b3f4f54393d6b5748ed0", size = 583444, upload-time = "2026-09-30T22:19:21.046Z" },
+    { url = "https://files.pythonhosted.org/packages/4e/02/b8b7bdb7850f3d89a686647d806e296530f38701a1f71c7009a1867812ee/zodb_json_codec-1.7.0-cp315-cp315-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:63b740a4060af743020789ba6a238ebe4d6ab25e11ee5bd51572256e120409aa", size = 590089, upload-time = "2026-09-30T22:19:22.572Z" },
+    { url = "https://files.pythonhosted.org/packages/8c/9c/84500f75cbedf6c9a07f6e7eab2f32a593e28cad1400006f883c8c20a752/zodb_json_codec-1.7.0-cp315-cp315-win_amd64.whl", hash = "sha256:56bd8ad7e99fa13171c5c38c2e2d958cab44c571a37efc5b963f1d20b035f4f2", size = 869402, upload-time = "2026-09-30T22:19:24.104Z" },
+]
+
+[[package]]
+name = "zodb-pgjsonb"
+version = "1.19.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "psycopg", extra = ["binary", "pool"] },
+    { name = "transaction" },
+    { name = "zconfig" },
+    { name = "zodb" },
+    { name = "zodb-json-codec" },
+    { name = "zope-interface" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6d/ae/1bd6e3d2d70658bc9c1a5bf8dfb6eb1258f73b9bf9970675814fbb687e1f/zodb_pgjsonb-1.19.2.tar.gz", hash = "sha256:bc8a192488312aa622739f304a29e08acd6a96289ce4114346e37682f111aa8f", size = 2475362, upload-time = "2026-11-05T01:24:27.158Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cc/77/24694e80229c9f32925586b713be84cc8b693775ecce564e23564c84086f/zodb_pgjsonb-1.19.2-py3-none-any.whl", hash = "sha256:41993c0b0f7b5e8e9dbf59a4704d757557a0cd80bc9fe9cbfc60b6405648efdb", size = 84350, upload-time = "2026-11-05T01:24:25.383Z" },
 ]
 
 [[package]]

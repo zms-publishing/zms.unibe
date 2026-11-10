@@ -36,7 +36,7 @@ services:
           action: sync+restart
           initial_sync: true
     volumes:
-      - ./dev/unibe-cms/Extensions:/app/dev/Extensions:rw
+      - ./dev/Extensions:/app/dev/Extensions:rw
       - ./dev/unibe-cms-models/frontend/zms/models:/app/frontend/zms/models:rw
     environment:
       - AGENDA_CATEGORIES_URL=http://zope:8080/unibe/agenda-categories.json
@@ -46,12 +46,11 @@ services:
       - SQLDB_STORAGE=postgresql://postgres:thisIsMyRoot@postgresql:5432/cms_formulator
       - ZEO_URL=zeo:8000
       - ZMS_ENABLE_CSP_HEADERS=true
-      - ZMS_ENABLE_ESTATICO_HANDLEBARS_DIST_ASSETS=true
       - ZMS_ENABLE_MARKDOWN_RENDERING=true
       - ZMS_UV_PACKAGE_MANAGER=true
       - ZODB_CONF=zodb-relstorage.conf
       - ZODB_RELSTORAGE_DB_HOST=postgresql
-      - ZODB_RELSTORAGE_DB_NAME=zodb
+      - ZODB_RELSTORAGE_DB_NAME=zodb_bytea
       - ZODB_RELSTORAGE_DB_PASSWORD=thisIsMyRoot
       - ZODB_RELSTORAGE_DB_USER=postgres
       - ZOPE_INSTANCE=/app/dev
@@ -121,7 +120,7 @@ services:
       - ZMS_UV_PACKAGE_MANAGER=true
       - ZODB_CONF=zodb-relstorage.conf
       - ZODB_RELSTORAGE_DB_HOST=postgresql
-      - ZODB_RELSTORAGE_DB_NAME=zodb
+      - ZODB_RELSTORAGE_DB_NAME=zodb_bytea
       - ZODB_RELSTORAGE_DB_PASSWORD=thisIsMyRoot
       - ZODB_RELSTORAGE_DB_USER=postgres
       - ZOPE_INSTANCE=/app/dev
@@ -163,7 +162,7 @@ services:
     ports:
       - "127.0.0.1:11211:11211"
     volumes:
-      - ./dev/unibe-cms/var/log:/app/log
+      - ./dev/logs:/app/log
     networks:
       - worker
 
@@ -193,7 +192,7 @@ services:
       POSTGRES_DB: postgres
     entrypoint: >
       sh -c "
-      echo 'CREATE DATABASE zodb; CREATE DATABASE unibeportal; CREATE DATABASE cms_formulator;' > /docker-entrypoint-initdb.d/init.sql &&
+      echo 'CREATE DATABASE zodb_bytea; CREATE DATABASE zodb_jsonb; CREATE DATABASE unibeportal; CREATE DATABASE cms_formulator;' > /docker-entrypoint-initdb.d/init.sql &&
       exec /usr/local/bin/docker-entrypoint.sh postgres
       "
     networks:
