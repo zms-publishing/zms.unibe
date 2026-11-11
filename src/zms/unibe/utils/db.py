@@ -4,13 +4,13 @@ from devtools import debug
 from sqlmodel import create_engine
 
 ZODB_STORAGE = os.getenv('ZODB_STORAGE', 'zeo://127.0.0.1:8000?storage=main')
-SQLDB_STORAGE = os.getenv('SQLDB_STORAGE', 'postgresql://127.0.0.1:5432/zms_fastapi')
+SQLDB_STORAGE = os.getenv('SQLDB_STORAGE', 'postgresql://127.0.0.1:5432/unibeportal')
 
 
 def connect_sqldb(verbose=False):
     
     global SQLDB_STORAGE
-    credentials = 'postgres:mysecretpassword'
+    credentials = 'postgres:thisIsMyRoot'  # default credentials for local development
     
     try:
         with open('/run/secrets/sqldb.credentials') as file:  # via Docker Swarm secrets config
