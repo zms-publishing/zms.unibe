@@ -50,25 +50,33 @@ def add_csp_headers(event):
     if host.startswith('127.0.0.1') or host.startswith('localhost'):
         return
     
-    # Add CSP headers only for index_*.html pages
-    # e.g. index_ger.html, index_eng.html, index_fra.html
-    if 'index_' not in path or not path.endswith('.html'):
-        return
-
     # This default CSP header will be set at portal master as ZMS system property 'csp_header'
+    # and can be enabled for certain comma-separated 'csp_content_types' (a whitelist)
     # and can be overridden in each client's ZMS system properties.
     # csp_header = "frame-ancestors 'self' https://unibe.ch https://*.unibe.ch; report-uri /csp-report; report-to csp;"
+    # csp_content_types = "text/html, application/pdf, application/xhtml+xml, application/xml"
 
     try:
         csp_header = parents[0].content.getConfProperty('csp_header', None)
+        csp_content_types = parents[0].content.getConfProperty('csp_content_types', 'None')
     except Exception:
         csp_header = None
+        csp_content_types = 'None'
         pass
+
+    # Skip if content type is not set in ZMS system property
+    content_type = response.getHeader('content-type') or ''
+    configured_content_types = (
+        item.strip().lower()
+        for item in csp_content_types.split(',')
+        if item.strip()
+    )
+    if not any(item in content_type.lower() for item in configured_content_types):
+        return
 
     if csp_header:
         response.setHeader('Reporting-Endpoints', 'csp="/csp-report"')
         response.setHeader('Content-Security-Policy', csp_header)
-
 
 
 def transform_html_to_markdown(event):
