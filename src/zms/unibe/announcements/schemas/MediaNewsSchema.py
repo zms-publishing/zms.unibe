@@ -12,6 +12,7 @@ class MediaNews(BaseModel):
 
     infos: str | None               # media_lead
     topics: str | None              # attr_schlagworte
+    categories: list[str] | None 
     image: str | None               # teaser_image
     url: str | None                 # url
 
