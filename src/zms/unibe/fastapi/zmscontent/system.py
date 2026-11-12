@@ -6,7 +6,7 @@ from fastapi_cache.decorator import cache
 
 from Products.zms.standard import get_installed_packages
 from ...fastapi.meta import Tags
-from ...utils.dependencies import ContextDependency
+from ...utils.dependencies import ContextDependency, OAuth2Dependency
 from ...utils.enums import PipCmd, VirtualHosting
 
 router = APIRouter(prefix="/zms", tags=[Tags.system])
@@ -18,7 +18,8 @@ router = APIRouter(prefix="/zms", tags=[Tags.system])
 )
 @cache(expire=60)
 def get_installed_python_packages(
-    mode: PipCmd = PipCmd.freeze,
+        token: OAuth2Dependency,
+        mode: PipCmd = PipCmd.freeze,
 ):
     packages = list(filter(lambda x:
                            len(x) > 0 and x[0] not in ('#', ''),
@@ -51,6 +52,7 @@ def get_installed_python_packages(
 @cache(expire=60)
 def get_zope_object_databases(
         context: ContextDependency,
+        token: OAuth2Dependency,
 ):
     mounts = {}
     for zodb in context.Control_Panel.Database.getDatabaseNames():
@@ -80,6 +82,7 @@ def get_zope_object_databases(
 @cache(expire=60)
 def get_virtual_hosting_mappings(
         context: ContextDependency,
+        token: OAuth2Dependency,
         filter_by: VirtualHosting | None = None,
 ):
     flipped = False
@@ -116,6 +119,7 @@ def get_virtual_hosting_mappings(
 # ) # TODO: restrict access to change the mappings
 def set_virtual_hosting_mappings(
         context: ContextDependency,
+        token: OAuth2Dependency,
         mapping: str
 ):
     mappings = '\n'.join(context.virtual_hosting.lines)

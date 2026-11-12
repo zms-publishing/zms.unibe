@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException
 from .meta import Tags
 from ..helpers import local_timezone
 from ..tasks.task_config import register
-from ..utils.dependencies import QueueDependency
+from ..utils.dependencies import QueueDependency, OAuth2Dependency
 
 router = APIRouter(prefix="/queue", tags=[Tags.redis])
 
@@ -17,6 +17,7 @@ router = APIRouter(prefix="/queue", tags=[Tags.redis])
 )
 def create_job(
         queue: QueueDependency,
+        token: OAuth2Dependency,
         task: str = 'intensive_data_process',
         in_seconds: int = 0,
         at_datetime: datetime | None = None,
@@ -73,6 +74,7 @@ def create_job(
 )
 def get_job_status(
         queue: QueueDependency,
+        token: OAuth2Dependency,
         uuid: UUID
 ):
     job = queue.fetch_job(str(uuid))
@@ -100,6 +102,7 @@ def get_job_status(
 )
 def cancel_job(
         jobs: QueueDependency,
+        token: OAuth2Dependency,
         uuid: UUID,
 ):
     job = jobs.fetch_job(str(uuid))
