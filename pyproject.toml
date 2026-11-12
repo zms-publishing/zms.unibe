@@ -99,6 +99,7 @@ fastapi = [
     "FastAPI[standard]",                # https://github.com/fastapi/fastapi
     "uvicorn[standard]",                # https://github.com/Kludex/uvicorn
     "rq-dashboard-fast",                # https://github.com/Hannes221/rq-dashboard-fast
+    "pwdlib[argon2]",                   # https://github.com/frankie567/pwdlib
     "fastapi-cache2",                   # https://github.com/long2ice/fastapi-cache 
                                         # PLEASE NOTE: fastapi-cache2 is the package name on PyPI (due conflict with outdated fastapi-cache),
                                         # but the repo name on GitHub is long2ice/fastapi-cache and the import name in code is fastapi_cache.

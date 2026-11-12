@@ -1,12 +1,22 @@
+import os
 from typing import Annotated, Generator
 
+from OFS.Application import Application
+from Products.zms.standard import pybool
 from fastapi import Depends, Request
+from fastapi.security import OAuth2PasswordRequestForm
 from redis import Redis
 from rq import Queue
 from sqlmodel import Session
 
-from OFS.Application import Application
+from ..utils.auth import validate_token
 from ..utils.zope.context import create_zope_app_context
+
+if not pybool(os.getenv("FASTAPI_AUTH_ENABLED", True)):
+    OAuth2Dependency = Annotated[str, Depends(lambda: None)]
+else:
+    OAuth2Dependency = Annotated[str, Depends(validate_token)]
+OAuth2FormDependency = Annotated[OAuth2PasswordRequestForm, Depends()]
 
 
 def get_sqldb_session(request: Request) -> Generator[Session, None, None]:
