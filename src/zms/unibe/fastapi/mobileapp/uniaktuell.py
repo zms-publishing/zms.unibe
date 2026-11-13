@@ -34,9 +34,11 @@ def get_uniaktuell(
     data = []
 
     # get translations from unibe langdict
-    labels = asyncio.run(get_content_labels(context, lang, 
-                                            '/unibe/content', 
-                                            ContentModel.UniaktuellArticle))
+    labels = asyncio.run(get_content_labels(context=context,
+                                            token='',
+                                            locale=lang, 
+                                            portal_master='/unibe/content', 
+                                            content_model=ContentModel.UniaktuellArticle))
 
     statement = [select(model.UniaktuellArticle, ZMSSite).join(ZMSSite).
                  where(get_attr_by_lang(lang,

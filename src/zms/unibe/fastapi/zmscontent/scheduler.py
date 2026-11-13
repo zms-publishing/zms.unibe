@@ -8,7 +8,7 @@ from sqlmodel import select
 
 from ...fastapi.meta import Tags
 from ...maintenance.sqlmodels.ZMSSchedulerRegistry import ZMSSchedulerRegistry
-from ...utils.dependencies import ContextDependency, SessionDependency
+from ...utils.dependencies import ContextDependency, SessionDependency, OAuth2Dependency
 from ...utils.zope.context import get_zmsindex
 
 router = APIRouter(prefix="/zms/scheduler", tags=[Tags.scheduler])
@@ -23,6 +23,7 @@ router = APIRouter(prefix="/zms/scheduler", tags=[Tags.scheduler])
 @cache(expire=60)
 def get_scheduler_tasks(
         session: SessionDependency,
+        token: OAuth2Dependency,
 ):
     statement = select(ZMSSchedulerRegistry).where(
         ZMSSchedulerRegistry.processed_dt.is_(None))
@@ -37,6 +38,7 @@ def get_scheduler_tasks(
 )
 def update_scheduler_tasks(
         session: SessionDependency,
+        token: OAuth2Dependency,
         uuids: list[UUID] = Query(None, description='Processed UUIDs'),
 ):
     if not isinstance(uuids, list):
@@ -69,6 +71,7 @@ def update_scheduler_tasks(
 def schedule_agenda_update_by_upn(
         context: ContextDependency,
         session: SessionDependency,
+        token: OAuth2Dependency,
         upn: str,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
                                           description="Portal master with ZMSIndex"),

@@ -1,14 +1,13 @@
-import os
-
 from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
 
-from Products.zms.standard import pybool
 from . import cache, queue
 from .mobileapp import medianews, newsevents, servicelinks, uniaktuell
 from .zmscontent import labels, managers, objects, scheduler, system
 from ..fastapi.app import api
 from ..fastapi.meta import tags
+from ..utils.auth import *
+from ..utils.dependencies import OAuth2FormDependency
 
 # https://fastapi.tiangolo.com/advanced/sub-applications/
 # https://fastapi.tiangolo.com/advanced/behind-a-proxy/#enable-proxy-forwarded-headers
@@ -20,7 +19,7 @@ from ..fastapi.meta import tags
 v1 = FastAPI(
     title="zms.unibe.fastapi",
     summary="Python-based REST API to connect unibe.ch and unibe.app with ZMS",
-    version="1.0.3",
+    version="1.0.4",
     openapi_tags=tags,
     redoc_url="/redoc",
     redirect_slashes=False,
@@ -37,7 +36,7 @@ if pybool(os.getenv("API_V1")):
 v3 = FastAPI(
     title="zms.unibe.fastapi",
     summary="Python-based REST API to connect unibe.ch and unibe.app with ZMS",
-    version="3.4.2",
+    version="3.4.3",
     openapi_tags=tags,
     redoc_url="/redoc",
     redirect_slashes=False,
@@ -84,3 +83,22 @@ if pybool(os.getenv("API_V1")):
 if pybool(os.getenv("API_V3")):
     print("FastAPI: Mounted /v3/cache for Redis Cache")
     v3.include_router(cache.router)
+    
+    
+@v1.post("/token")
+@v3.post("/token")
+async def login_for_access_token(
+    form_data: OAuth2FormDependency,
+) -> Token:
+    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+    return Token(access_token=access_token, token_type="bearer")

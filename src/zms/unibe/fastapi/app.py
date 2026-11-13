@@ -75,7 +75,7 @@ async def lifespan(app: FastAPI):
         FastAPICache.init(
             RedisBackend(app.state.redis_connection),
             prefix="fastapi-cache",
-            enable=pybool(os.getenv("FASTAPI_CACHE_ENABLED", True)),
+            enable=pybool(os.getenv("FASTAPI_CACHE_ENABLED", False)),
         )
         print(f"FastAPI: Endpoint caching is {'enabled' if FastAPICache.get_enable() else 'disabled'}")
         import_submodules_recursively(endpoints)

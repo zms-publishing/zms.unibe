@@ -47,6 +47,7 @@ services:
       - ZEO_URL=zeo:8000
       - ZMS_ENABLE_CSP_HEADERS=true
       - ZMS_ENABLE_MARKDOWN_RENDERING=true
+      - ZMS_FORCE_RESTRICTED_INPUTS=true
       - ZMS_UV_PACKAGE_MANAGER=true
       - ZODB_CONF=zodb-relstorage.conf
       - ZODB_RELSTORAGE_DB_HOST=postgresql
@@ -106,7 +107,12 @@ services:
       - API_RQ=true
       - API_V1=true
       - API_V3=true
-      - FASTAPI_CACHE_ENABLED=false
+      - FASTAPI_AUTH_EXP=1  # ACCESS_TOKEN_EXPIRE_MINUTES
+      - FASTAPI_AUTH_KEY=${FASTAPI_AUTH_KEY}  # echo "FASTAPI_AUTH_KEY=$(openssl rand -hex 32)" >> .env
+      - FASTAPI_AUTH_PWD=${FASTAPI_AUTH_PWD}  # echo "FASTAPI_AUTH_PWD=******" >> .env
+      - FASTAPI_AUTH_USR=${FASTAPI_AUTH_USR}  # echo "FASTAPI_AUTH_USR=abcxyz" >> .env
+      #- FASTAPI_AUTH_ENABLED=false  # for dev on localhost only, DO NOT disable in production
+      - FASTAPI_CACHE_ENABLED=false  # beware of caching if FASTAPI_AUTH_ENABLED
       - FORWARDED_ALLOW_IPS=*
       - PORTAL_MASTER=/unibe/content
       - PYTHONUNBUFFERED=true
