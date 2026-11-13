@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 
 @pytest.fixture
 def auth(monkeypatch):
+    monkeypatch.setenv("FASTAPI_AUTH_ENABLED", "true")
     monkeypatch.setenv("FASTAPI_AUTH_PWD", "test-password")
     monkeypatch.setenv("FASTAPI_AUTH_USR", "test-user")
     monkeypatch.setenv("FASTAPI_AUTH_KEY", "test-secret-key-with-at-least-48-bytes-for-hs384-jwt")

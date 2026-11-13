@@ -53,6 +53,8 @@ class UserInDB(User):
 
 
 def authenticate_user(fake_db, username: str, password: str):    
+    if not fake_db:
+        return False
     user = None
     if username in fake_db:
         user_dict = fake_db[username]
