@@ -1,5 +1,4 @@
-from Products.zms.standard import pybool
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
 
 from . import cache, queue

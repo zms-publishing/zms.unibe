@@ -3,29 +3,33 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 import jwt
+from Products.zms.standard import pybool
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from pwdlib import PasswordHash
 from pydantic import BaseModel
 
+fake_users_db = {}
 password_hash = PasswordHash.recommended()
 
-DUMMY_PASS = password_hash.hash("dummypassword")
-AUTH_PASS = password_hash.hash(os.getenv("FASTAPI_AUTH_PWD"))
-AUTH_USER = os.getenv("FASTAPI_AUTH_USR")
-SECRET_KEY = os.getenv("FASTAPI_AUTH_KEY")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("FASTAPI_AUTH_EXP", 30))
+if pybool(os.getenv("FASTAPI_AUTH_ENABLED", True)):
 
-fake_users_db = {
-    AUTH_USER: {
-        "username": AUTH_USER,
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": AUTH_PASS,
-        "disabled": False,
+    DUMMY_PASS = password_hash.hash("dummypassword")
+    AUTH_PASS = password_hash.hash(os.getenv("FASTAPI_AUTH_PWD"))
+    AUTH_USER = os.getenv("FASTAPI_AUTH_USR")
+    SECRET_KEY = os.getenv("FASTAPI_AUTH_KEY")
+    ALGORITHM = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("FASTAPI_AUTH_EXP", 30))
+    
+    fake_users_db = {
+        AUTH_USER: {
+            "username": AUTH_USER,
+            "full_name": "John Doe",
+            "email": "johndoe@example.com",
+            "hashed_password": AUTH_PASS,
+            "disabled": False,
+        }
     }
-}
 
 
 class Token(BaseModel):
