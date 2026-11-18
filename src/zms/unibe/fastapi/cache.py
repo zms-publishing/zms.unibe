@@ -4,7 +4,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 
 from .meta import Tags
-from ..utils.dependencies import CacheDependency
+from ..utils.dependencies import CacheDependency, OAuth2Dependency
 
 router = APIRouter(prefix="/cache", tags=[Tags.redis])
 
@@ -15,6 +15,7 @@ router = APIRouter(prefix="/cache", tags=[Tags.redis])
 )
 def set_cached_value(
         cache: CacheDependency,
+        token: OAuth2Dependency,
         prefix: str,
         key: str,
         value: dict = {'data': 'demo'},
@@ -43,6 +44,7 @@ def set_cached_value(
 )
 def get_cached_value(
         cache: CacheDependency,
+        token: OAuth2Dependency,
         prefix: str,
         key: str,
 ):
@@ -68,6 +70,7 @@ def get_cached_value(
 )
 def delete_cached_value(
         cache: CacheDependency,
+        token: OAuth2Dependency,
         prefix: str,
         key: str,
 ):

@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi_cache.decorator import cache
 
 from ...fastapi.meta import Tags
-from ...utils.dependencies import ContextDependency
+from ...utils.dependencies import ContextDependency, OAuth2Dependency
 from ...utils.enums import ContentModel
 from ...utils.zope.context import get_zmsindex
 
@@ -18,6 +18,7 @@ router = APIRouter(prefix="/zms/content", tags=[Tags.content])
 @cache(expire=60)
 def get_installed_content_models(
         context: ContextDependency,
+        token: OAuth2Dependency,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
                                           description="Portal master with ZMSIndex"),
         content_model: ContentModel | None = None,
@@ -55,6 +56,7 @@ def get_installed_content_models(
 @cache(expire=60)
 def get_installed_content_actions(
         context: ContextDependency,
+        token: OAuth2Dependency,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
                                           description="Portal master with ZMSIndex"),
         content_model: ContentModel | None = None,

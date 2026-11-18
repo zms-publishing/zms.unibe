@@ -8,7 +8,7 @@ from fastapi_cache.decorator import cache
 from ...agenda.schemas.ZMSAgendaEventSchema import ZMSAgendaEventSchema
 from ...fastapi.meta import Tags
 from ...helpers import get_when, local_timezone
-from ...utils.dependencies import ContextDependency
+from ...utils.dependencies import ContextDependency, OAuth2Dependency
 from ...utils.enums import ContentModel, ImageVariant, Lang, Locale
 from ...utils.zms2sql.getters import get_data, is_activated_by_checkbox_and_timeline
 from ...utils.zope.context import get_zmsindex
@@ -43,6 +43,7 @@ def _get_entry_for_uuid(zmsindex, uuid: UUID):
 @cache(expire=60)
 def get_content_objects(
         context: ContextDependency,
+        token: OAuth2Dependency,
         locale: Locale = Locale.de,
         content_model: ContentModel | None = None,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
@@ -90,6 +91,7 @@ def get_content_objects(
 @cache(expire=60)
 def get_content_object_by_uuid(
         context: ContextDependency,
+        token: OAuth2Dependency,
         uuid: UUID,
         locale: Locale = Locale.de,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
@@ -122,6 +124,7 @@ def get_content_object_by_uuid(
 @cache(expire=60)
 def get_content_object_data_by_uuid(
         context: ContextDependency,
+        token: OAuth2Dependency,
         uuid: UUID,
         locale: Locale = Locale.de,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
@@ -185,6 +188,7 @@ def get_content_object_data_by_uuid(
 @cache(expire=60)
 def get_content_object_log_by_uuid(
         context: ContextDependency,
+        token: OAuth2Dependency,
         uuid: UUID,
         locale: Locale = Locale.de,
         portal_master: str | None = Query(os.getenv('PORTAL_MASTER', '/myzmsx/content'),
