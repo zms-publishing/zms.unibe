@@ -11,6 +11,12 @@
     <!-- provokes loading of zms.unibe.patches.__init.py__ to initialize monkey patches and security assertions on zope startup -->
     <cmf:registerDirectory
       name="assets"
+      zcml:condition="not-envvar ZMS_EDITABLE_INSTALL"
+      directory="../../../../../../../frontend/web/storybook/dist/assets"
+      recursive="True" />
+    <cmf:registerDirectory
+      name="assets"
+      zcml:condition="envvar ZMS_EDITABLE_INSTALL"
       directory="../../../../frontend/web/storybook/dist/assets"
       recursive="True" />
   </configure>

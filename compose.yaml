@@ -45,6 +45,7 @@ services:
       - RUN_MIGRATIONS=false
       - SQLDB_STORAGE=postgresql://postgres:thisIsMyRoot@postgresql:5432/cms_formulator
       - ZEO_URL=zeo:8000
+      - ZMS_EDITABLE_INSTALL=true
       - ZMS_ENABLE_CSP_HEADERS=true
       - ZMS_ENABLE_MARKDOWN_RENDERING=true
       - ZMS_FORCE_RESTRICTED_INPUTS=true
