@@ -87,7 +87,7 @@ if pybool(os.getenv("API_V3")):
     
 @v1.post("/token")
 @v3.post("/token")
-async def login_for_access_token(
+def login_for_access_token(
     form_data: OAuth2FormDependency,
 ) -> Token:
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
