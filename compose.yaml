@@ -44,11 +44,12 @@ services:
       - PYTHONUNBUFFERED=true
       - RUN_MIGRATIONS=false
       - SQLDB_STORAGE=postgresql://postgres:thisIsMyRoot@postgresql:5432/cms_formulator
+      - TZ=Europe/Zurich
       - ZEO_URL=zeo:8000
       - ZMS_EDITABLE_INSTALL=true
       - ZMS_ENABLE_CSP_HEADERS=true
       - ZMS_ENABLE_MARKDOWN_RENDERING=true
-      - ZMS_FORCE_RESTRICTED_INPUTS=true
+      - ZMS_FORCE_RESTRICTED_INPUTS=false
       - ZMS_UV_PACKAGE_MANAGER=true
       - ZODB_CONF=zodb-relstorage.conf
       - ZODB_RELSTORAGE_DB_HOST=postgresql
@@ -120,6 +121,8 @@ services:
       - QUEUE_NAME=default
       - REDIS_URL=redis://redis:6379
       - SQLDB_STORAGE=postgresql://postgres:thisIsMyRoot@postgresql:5432/unibeportal
+      - STRIP_CMSTEST=true
+      - TZ=Europe/Zurich
       - UVICORN_HOST=0.0.0.0
       - UVICORN_PORT=8000
       - ZEO_URL=zeo:8000
