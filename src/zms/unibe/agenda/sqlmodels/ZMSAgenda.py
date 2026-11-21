@@ -15,6 +15,7 @@ class ZMSAgenda(ZMSBase, table=True):
     include_library: bool
     include_itstatusmessages: bool
     include_outlook: bool
+    include_infotage: bool
     outlook_upn: str | None = None
     limit_time_range: bool
     begin_date: OptionalDateTime
@@ -40,6 +41,7 @@ class ZMSAgenda(ZMSBase, table=True):
             'include_library':          get_attr(obj, 'include_library'),
             'include_itstatusmessages': get_attr(obj, 'include_itstatusmessages'),
             'include_outlook':          get_attr(obj, 'include_outlook'),
+            'include_infotage':         get_attr(obj, 'include_infotage'),
             'outlook_upn':              get_attr(obj, 'outlook_upn'),
             'limit_time_range':         get_attr(obj, 'limit_time_range'),
             'begin_date':               local_timezone(

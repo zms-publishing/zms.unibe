@@ -1,4 +1,4 @@
-from datetime import date, datetime, timezone
+from datetime import date
 from uuid import UUID
 
 from anytree import Node, RenderTree
@@ -6,7 +6,7 @@ from anytree.exporter import DictExporter, JsonExporter
 from devtools import debug
 from fastapi import APIRouter, Query
 from fastapi_cache.decorator import cache
-from sqlmodel import not_, or_, select, func, desc
+from sqlmodel import desc, func, not_, or_, select
 
 from ...agenda.sqlmodels.StatusMessages import StatusMessage
 from ...fastapi.meta import Tags
@@ -15,7 +15,7 @@ from ...helpers import flatten_to_str_list, local_timezone, normalize_split_by
 from ...mobileapp.schemas import NewsEventsSchema as schema
 from ...mobileapp.sqlmodels.NewsEvents import NewsEvents
 from ...utils.dependencies import SessionDependency
-from ...utils.enums import Locale, SiteType, CategoryType
+from ...utils.enums import Locale, SiteType
 from ...utils.zms2sql.getters import get_attr_by_lang, strip_cmstest
 
 router = APIRouter(tags=[Tags.mobile])
@@ -57,6 +57,7 @@ def get_news(
                  where(not_(ZMSSite.path.contains('/uniaktuell'))).
                  where(not_(ZMSSite.path.contains('/uni_aktuell'))).
                  where(not_(ZMSSite.path.contains('/zms_schulung'))).
+                 where(not_(NewsEvents.path.contains('/uniintern'))).
                  where(not_(NewsEvents.path.contains('/trashcan'))).
                  where(or_(sections is None and True or (NewsEvents.site_uuid == section for section in sections))).
                  order_by(NewsEvents.level).
@@ -135,6 +136,7 @@ def fetch_events(session,
                  start_after,
                  end_before,
                  categories,
+                 include_past,
                  offset,
                  limit):
 
@@ -151,7 +153,7 @@ def fetch_events(session,
                                         fr=NewsEvents.active_fr)).
                  where(start_after is None and True or (NewsEvents.start_dt > local_timezone(start_after))).
                  where(end_before is None and True or (NewsEvents.end_dt < local_timezone(end_before))).
-                 where(NewsEvents.end_dt > datetime.now(timezone.utc)).
+                 where(include_past and True or (NewsEvents.end_dt > local_timezone())).
                  where(not_(ZMSSite.path.contains('/arbeitgeberin'))).
                  where(not_(ZMSSite.path.contains('/images'))).
                  where(not_(ZMSSite.path.contains('/jahresberichte'))).
@@ -160,6 +162,7 @@ def fetch_events(session,
                  where(not_(ZMSSite.path.contains('/uniaktuell'))).
                  where(not_(ZMSSite.path.contains('/uni_aktuell'))).
                  where(not_(ZMSSite.path.contains('/zms_schulung'))).
+                 where(not_(NewsEvents.path.contains('/uniintern'))).
                  where(not_(NewsEvents.path.contains('/trashcan'))).
                  where(or_(sections is None and True or (NewsEvents.site_uuid == section for section in sections))).
                  order_by(NewsEvents.start_dt).
@@ -176,69 +179,6 @@ def fetch_events(session,
     return results.all(), total.all()
 
 
-def get_sections_tree(data, lang):
-
-    root = Node(UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'),
-                title='UniBE',
-                path='/unibe/content',
-                uuid=UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'))
-    nodes = {}
-
-    # set nodes with parent == root
-    for i, obj in enumerate(data):
-        if obj.parent_uuid == UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
-                obj.uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
-            nodes[obj.uuid] = Node(obj.uuid, parent=root,
-                                   domain=strip_cmstest(obj.domain),
-                                   title=get_attr_by_lang(lang,
-                                                          de=obj.title_de,
-                                                          en=obj.title_en,
-                                                          fr=obj.title_fr),
-                                   type=obj.type,
-                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
-                                   uuid=obj.uuid)
-
-    # set nodes with parent != root
-    for i, obj in enumerate(data):
-        if obj.parent_uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
-                obj.uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
-            nodes[obj.uuid] = Node(obj.uuid,
-                                   domain=strip_cmstest(obj.domain),
-                                   title=get_attr_by_lang(lang,
-                                                          de=obj.title_de,
-                                                          en=obj.title_en,
-                                                          fr=obj.title_fr),
-                                   type=obj.type,
-                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
-                                   uuid=obj.uuid)
-
-    # set parent nodes - Prerequisite: order_by(ZMSSite.level) to process in hierarchy
-    for i, obj in enumerate(data):
-        if obj.parent_uuid in nodes.keys():
-            nodes[obj.uuid] = Node(obj.uuid, parent=nodes[obj.parent_uuid],
-                                   domain=strip_cmstest(obj.domain),
-                                   title=get_attr_by_lang(lang,
-                                                          de=obj.title_de,
-                                                          en=obj.title_en,
-                                                          fr=obj.title_fr),
-                                   type=obj.type,
-                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
-                                   uuid=obj.uuid)
-        elif obj.parent_uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
-            debug(obj.parent_uuid, obj.uuid)
-
-    # for pre, fill, node in RenderTree(root):
-    #     print("%s%s" % (pre, node.title))
-    #     pass
-    # 
-    # jsonexporter = JsonExporter(indent=2, sort_keys=True, ensure_ascii=False)
-    # print(jsonexporter.export(root))
-
-    dictexporter = DictExporter(attriter=lambda attrs: [(k, v) for k, v in attrs if k != "name"])
-
-    return dictexporter.export(root)
-
-
 @router.get("/events", summary='Events', response_model=schema.EventResponse,
             description='Events from portal at <a href="https://www.unibe.ch" target="_blank">unibe.ch</a> '
                         'and faculties at <a href="https://www.unibe.ch/fakultaeteninstitute" '
@@ -253,12 +193,13 @@ def get_events(
         start_after: date | None = Query(None, description='Filter by start after'),
         end_before: date | None = Query(None, description='Filter by end before'),
         categories: list[str] | None = Query(None, description='Filter by categories'),
+        include_past: bool = Query(False, description='Include past events'),
         offset: int = 0,
         limit: int = 20):
 
     data = []
     results, total = fetch_events(
-        session, lang, sections, start_after, end_before, categories, offset, limit
+        session, lang, sections, start_after, end_before, categories, include_past, offset, limit
     )
 
     for res in results:
@@ -331,14 +272,78 @@ def get_events(
     }
 
 
+def get_sections_tree(data, lang):
+
+    root = Node(UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'),
+                title='UniBE',
+                path='/unibe/content',
+                uuid=UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'))
+    nodes = {}
+
+    # set nodes with parent == root
+    for i, obj in enumerate(data):
+        if obj.parent_uuid == UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
+                obj.uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
+            nodes[obj.uuid] = Node(obj.uuid, parent=root,
+                                   domain=strip_cmstest(obj.domain),
+                                   title=get_attr_by_lang(lang,
+                                                          de=obj.title_de,
+                                                          en=obj.title_en,
+                                                          fr=obj.title_fr),
+                                   type=obj.type,
+                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
+                                   uuid=obj.uuid)
+
+    # set nodes with parent != root
+    for i, obj in enumerate(data):
+        if obj.parent_uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2') and \
+                obj.uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
+            nodes[obj.uuid] = Node(obj.uuid,
+                                   domain=strip_cmstest(obj.domain),
+                                   title=get_attr_by_lang(lang,
+                                                          de=obj.title_de,
+                                                          en=obj.title_en,
+                                                          fr=obj.title_fr),
+                                   type=obj.type,
+                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
+                                   uuid=obj.uuid)
+
+    # set parent nodes - Prerequisite: order_by(ZMSSite.level) to process in hierarchy
+    for i, obj in enumerate(data):
+        if obj.parent_uuid in nodes.keys():
+            nodes[obj.uuid] = Node(obj.uuid, parent=nodes[obj.parent_uuid],
+                                   domain=strip_cmstest(obj.domain),
+                                   title=get_attr_by_lang(lang,
+                                                          de=obj.title_de,
+                                                          en=obj.title_en,
+                                                          fr=obj.title_fr),
+                                   type=obj.type,
+                                   path=obj.path,  # Beware: 'path' is a reserved attribute of anytree
+                                   uuid=obj.uuid)
+        elif obj.parent_uuid != UUID('urn:uuid:2780d477-f517-49bb-a0f4-c46b56eeaab2'):
+            debug(obj.parent_uuid, obj.uuid)
+
+    # for pre, fill, node in RenderTree(root):
+    #     print("%s%s" % (pre, node.title))
+    #     pass
+    # 
+    # jsonexporter = JsonExporter(indent=2, sort_keys=True, ensure_ascii=False)
+    # print(jsonexporter.export(root))
+
+    dictexporter = DictExporter(attriter=lambda attrs: [(k, v) for k, v in attrs if k != "name"])
+
+    return dictexporter.export(root)
+
+
 @router.get("/sections", summary='Sections to filter News and Events')
 @cache(expire=600)
 def get_sections(
         session: SessionDependency,
         lang: Locale = Locale.de,
         tree: bool = False,
+        domain: str | None | None = Query(None, description='Filter by substring of domain'),
+        sections: list[UUID] | None = Query(None, description='Filter by UUID of sections'),
         category_unfold: bool = False,
-        category_type: CategoryType = CategoryType.event.value,
         types: list[SiteType] = Query([SiteType.Fakultaet.value,
                                        SiteType.Departement.value,
                                        SiteType.Institut.value,
@@ -370,6 +375,10 @@ def get_sections(
                  where(not_(ZMSSite.path.contains('/uniaktuell'))).
                  where(not_(ZMSSite.path.contains('/uni_aktuell'))).
                  where(not_(ZMSSite.path.contains('/zms_schulung'))).
+                 where(not_(NewsEvents.path.contains('/uniintern'))).
+                 where(not_(NewsEvents.path.contains('/trashcan'))).
+                 where(or_(sections is None and True or (ZMSSite.uuid == section for section in sections))).
+                 where(ZMSSite.domain.like(f'%{domain}%') if domain else True).
                  group_by(NewsEvents.site_uuid,
                           ZMSSite.title_de,
                           ZMSSite.title_en,
@@ -405,10 +414,17 @@ def get_sections(
                                            en=ZMSSite.title_en,
                                            fr=ZMSSite.title_fr)),
                  
-                 select(NewsEvents.site_uuid, categories, func.count()).join(ZMSSite).
-                 where(NewsEvents.type==category_type).
+                 select(NewsEvents.site_uuid, NewsEvents.type, categories, func.count()).join(ZMSSite).
                  group_by(NewsEvents.site_uuid).
+                 group_by(NewsEvents.type).
                  group_by(categories).
+                 where(get_attr_by_lang(lang,
+                                        de=NewsEvents.active_de,
+                                        en=NewsEvents.active_en,
+                                        fr=NewsEvents.active_fr)).
+                 where(NewsEvents.type.in_(['news', 'event'])).
+                 where(not_(NewsEvents.path.contains('/uniintern'))).
+                 where(not_(NewsEvents.path.contains('/trashcan'))).
                  order_by(desc(func.count()))
                  )
 
@@ -423,19 +439,18 @@ def get_sections(
         results2 = session.exec(statement[2]).all()
 
     for res in results.all():
+        newsevents_categories = []
 
         if category_unfold:
-            category = {
-                category: count for site_uuid, category, count in results2
-                if site_uuid == res.ZMSSite.uuid and count > 1
-            }
-            categories = sorted(
-                category.items(),
-                key=lambda item: item[1],
-                reverse=True
-            )
-        else:
-            categories = {}
+            for site_uuid, category_type, category_key, count in results2:
+                if site_uuid == res.ZMSSite.uuid and count > 1:
+                    newsevents_categories.append(schema.Category(
+                        key=category_key,
+                        type=category_type,
+                        count=count,
+                    ))
+            # sort by count desc, then by name asc
+            newsevents_categories.sort(key=lambda x: (-x.count, x.key.lower()))
         
         data.append(schema.Section.model_validate({
             'title': get_attr_by_lang(lang,
@@ -445,7 +460,7 @@ def get_sections(
             'domain': strip_cmstest(res.ZMSSite.domain),
             'type': res.ZMSSite.type,
             'path': res.ZMSSite.path,
-            'categories': dict({category_type: categories}),
+            'categories': newsevents_categories,
             'uuid': res.ZMSSite.uuid,
         }))
 
@@ -453,6 +468,61 @@ def get_sections(
         'offset': offset,
         'limit': limit,
         'total': len(total.all()),
+        'data': data
+    }
+
+
+@router.get("/categories", summary='Categories to filter News and Events')
+@cache(expire=600)
+def get_categories(
+        session: SessionDependency,
+        lang: Locale = Locale.de,
+        offset: int = 0,
+        limit: int = 20):
+
+    topics = get_attr_by_lang(lang,
+                              de=NewsEvents.topics_de,
+                              en=NewsEvents.topics_en,
+                              fr=NewsEvents.topics_fr)
+    # unfold ARRAY of topics
+    categories = func.unnest(topics)
+
+    statement = (select(NewsEvents.type, categories, func.count()).
+                 group_by(NewsEvents.type).
+                 group_by(categories).
+                 where(get_attr_by_lang(lang,
+                                        de=NewsEvents.active_de,
+                                        en=NewsEvents.active_en,
+                                        fr=NewsEvents.active_fr)).
+                 where(NewsEvents.type.in_(['news', 'event'])).
+                 where(not_(NewsEvents.path.contains('/uniintern'))).
+                 where(not_(NewsEvents.path.contains('/trashcan'))).
+                 order_by(desc(func.count())),
+                 )
+
+    results = session.exec(statement[0].offset(offset).limit(limit))
+    total = session.exec(statement[0])
+    data = []
+    data_total = 0
+
+    for category_type, category_key, count in results.all():
+        if count > 1:
+            data.append(schema.Category.model_validate({
+                'key': category_key,
+                'type': category_type,
+                'count': count,
+            }))
+    # sort by count desc, then by key asc
+    data.sort(key=lambda x: (-x.count, x.key.lower()))
+    
+    for category_type, category_key, count in total.all():
+        if count > 1:
+            data_total += 1
+
+    return {
+        'offset': offset,
+        'limit': limit,
+        'total': data_total,
         'data': data
     }
 
@@ -498,7 +568,7 @@ def get_statusmessages(
         data.append(schema.StatusMessage.model_validate({
             'title': res.subject,
             'start': local_timezone(res.begin),
-            'end': res.end > local_timezone('1970-01-01T00:00:00+00:00')
+            'end': local_timezone(res.end) > local_timezone('1970-01-01T00:00:00+00:00')
                    and local_timezone(res.end) or None,
             'infos': f'{res.description}\n\n{res.service} \n\n{res.info}',
             'categories': categories,

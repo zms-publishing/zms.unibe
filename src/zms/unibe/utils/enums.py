@@ -25,11 +25,6 @@ class SiteType(str, Enum):
     Unisport = "Unisport"
 
 
-class CategoryType(str, Enum):
-    event = "event"
-    news = "news"
-    
-
 class ContentModel(str, Enum):
     UniaktuellArticle = "UniaktuellArticle"
     ZMSAgenda = "ZMSAgenda"

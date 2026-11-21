@@ -4,12 +4,25 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
+class Category(BaseModel):    
+    key: str
+    type: str
+    count: int
+
+
+class CategoryResponse(BaseModel):
+    offset: int
+    limit: int
+    total: int
+    data: list[Category]
+
+
 class Section(BaseModel):
     domain: str                     # ZMS subdomain
     title: str                      # ZMS gettitle
     type: str                       # ZMS sitetype
     path: str | None                # ZMS sitepath
-    categories: dict | None
+    categories: list[Category] | None
     uuid: UUID | None               # ZMS siteuuid
 
 
@@ -18,7 +31,6 @@ class SectionResponse(BaseModel):
     limit: int
     total: int
     data: list[Section]
-
 
                                     # TODO: move this mapping overview to README
 class News(BaseModel):              # TEASER ELEMENT 2022
