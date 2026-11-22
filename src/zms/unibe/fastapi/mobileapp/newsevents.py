@@ -11,6 +11,7 @@ from sqlmodel import desc, func, not_, or_, select
 from ...agenda.sqlmodels.StatusMessages import StatusMessage
 from ...fastapi.meta import Tags
 from ...foundation.sqlmodels.ZMSSite import ZMSSite
+from ...foundation.sqlmodels.ZMSLangDict import ZMSLangDict
 from ...helpers import flatten_to_str_list, local_timezone, normalize_split_by
 from ...mobileapp.schemas import NewsEventsSchema as schema
 from ...mobileapp.sqlmodels.NewsEvents import NewsEvents
@@ -523,6 +524,42 @@ def get_categories(
         'offset': offset,
         'limit': limit,
         'total': data_total,
+        'data': data
+    }
+
+
+@router.get('/labels', summary='Labels translated, mapped, and filtered by keyword')
+def get_labels(
+        session: SessionDependency,
+        lang: Locale = Locale.de,
+        keyword: str | None = Query(None, description='Filter by substring of keyword'),
+        offset: int = 0,
+        limit: int = 20):
+    
+    data = []
+    statement = (select(ZMSLangDict).
+                 where(or_(ZMSLangDict.key.
+                           contains(keyword) if keyword else True, 
+                    ZMSLangDict.key.  # see agenda-categories.json for conventions 
+                           contains(f"ZMSAgenda.Category.{keyword.replace(' ', '_')}") if keyword else True)),
+                 )
+
+    results = session.exec(statement[0].offset(offset).limit(limit))
+    total = session.exec(statement[0])
+
+    for res in results.all():
+        data.append(schema.Label.model_validate({
+            'key': res.key,
+            'value': get_attr_by_lang(lang,
+                                      de=res.ger,
+                                      en=res.eng,
+                                      fr=res.fra) or '',
+        }))
+    
+    return {
+        'offset': offset,
+        'limit': limit,
+        'total': len(total.all()),
         'data': data
     }
 

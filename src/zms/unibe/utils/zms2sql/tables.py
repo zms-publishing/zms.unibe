@@ -1,5 +1,4 @@
 import collections
-import time
 import traceback
 import uuid
 
@@ -11,7 +10,7 @@ from ...utils.db import connect_sqldb
 
 def drop_all(verbose=False):
     sqlengine = connect_sqldb(verbose=verbose)
-    
+
     SQLModel.metadata.drop_all(sqlengine)
     SQLModel.metadata.create_all(sqlengine)
 
@@ -21,12 +20,8 @@ def process_sql_updates(zmsindex_result, model, drop=False, verbose=False):
 
     with Session(sqlengine) as session:
 
-        t0 = time.time()
-        print('--------------------------------------------------------------------------')
-        print('Process', model)
-
         uuids_processed = []
-        
+
         if drop and inspect(sqlengine).has_table(model.__name__.lower()):
             model.__table__.drop(sqlengine)
 
@@ -97,12 +92,3 @@ def process_sql_updates(zmsindex_result, model, drop=False, verbose=False):
             if row is not None:
                 session.delete(row)
                 session.commit()
-
-        statement = select(model)
-        results = session.exec(statement)
-
-        t1 = time.time()
-        ts = t1 - t0
-        print('--------------------------------------------------------------------------')
-        print(model.__name__, f'({len(results.all()):,})', f'{ts:.3f} sec', f'= {ts / 60:.2f} min')
-        print('==========================================================================')

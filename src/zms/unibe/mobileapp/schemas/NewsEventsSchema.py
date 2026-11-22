@@ -17,6 +17,18 @@ class CategoryResponse(BaseModel):
     data: list[Category]
 
 
+class Label(BaseModel):    
+    key: str
+    value: str
+
+
+class LabelResponse(BaseModel):
+    offset: int
+    limit: int
+    total: int
+    data: list[Label]
+
+
 class Section(BaseModel):
     domain: str                     # ZMS subdomain
     title: str                      # ZMS gettitle
