@@ -24,6 +24,6 @@ COPY ./src/zms/unibe/conf/* /app/dev/etc/
 
 # Requires an image from a private repository – permission is required to check it out.
 # Prerequisite: Remove "cms-backend" as unibe-cms.build.target to copy the assets into the image.
-COPY --from=ghcr.io/idasm-unibe-ch/unibe-cms:local /app/frontend/web/estatico-handlebars/dist/assets /app/frontend/web/estatico-handlebars/dist/assets
+COPY --from=ghcr.io/idasm-unibe-ch/unibe-cms:local /app/frontend/web/storybook/dist/assets /app/frontend/web/storybook/dist/assets
 
 CMD ["/app/dev/.venv/bin/runwsgi", "-v", "/app/dev/etc/zope.ini"]
