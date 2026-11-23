@@ -25,30 +25,6 @@ class AzureFrontDoorMiddleware:
             start_response("403 Forbidden", [("Content-Type", "text/plain; charset=utf-8")])
             return [b"Forbidden: Invalid or missing X-Azure-FDID"]
 
-        if is_valid_afd:
-            xf_host = environ.get("HTTP_X_FORWARDED_HOST")
-            xf_proto = environ.get("HTTP_X_FORWARDED_PROTO", "https")
-
-            first_proto, _, _ = xf_proto.partition(",")
-            proto = first_proto.strip().lower() or "https"
-            default_port = "443" if proto == "https" else "80"
-
-            environ["wsgi.url_scheme"] = proto
-            environ["SERVER_PORT"] = default_port
-
-            if xf_host:
-                first_host, _, _ = xf_host.partition(",")
-                clean_host = first_host.strip()
-                host_only, _, port_part = clean_host.partition(":")
-
-                if port_part and port_part not in ("80", "443"):
-                    environ["HTTP_HOST"] = clean_host
-                    environ["SERVER_PORT"] = port_part
-                else:
-                    environ["HTTP_HOST"] = host_only
-
-                environ["SERVER_NAME"] = host_only
-
         return self.app(environ, start_response)
 
 
