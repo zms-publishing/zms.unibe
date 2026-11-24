@@ -23,7 +23,7 @@ def fetch_constraints(url: str) -> list[str]:
 
 def run_uv_pip_freeze() -> list[str]:
     result = subprocess.run(
-        ["uv", "pip", "freeze"],
+        ["uv", "pip", "freeze", "--exclude-editable"],
         capture_output=True,
         text=True,
         check=True,
@@ -84,6 +84,9 @@ def _clean_lines(text: str) -> list[str]:
             continue
 
         if line.startswith(("-e ", "--editable", "-r ", "--requirement", "-")):
+            continue
+
+        if "@ git+" in line:
             continue
 
         if line not in seen:
@@ -169,7 +172,7 @@ def update_pyproject(path: Path, entries: list[str]) -> None:
 
     if match:
         new_section = rebuild_tool_uv_section(match.group(0), entries)
-        text = text[: match.start()] + new_section + text[match.end() :]
+        text = text[: match.start()] + new_section + text[match.end():]
     else:
         if text and not text.endswith("\n"):
             text += "\n"
