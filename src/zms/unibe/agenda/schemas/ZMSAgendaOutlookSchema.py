@@ -32,6 +32,13 @@ class ZMSAgendaOutlookSchema:
         soup = BeautifulSoup(content, 'html.parser')
         for link in soup.find_all('a'):
             link['target'] = '_blank'
+        # extract tagline (aka Spitzmarke) to be displayed instead of categories
+        tagline = None
+        pre_tag = soup.find("pre")
+        if pre_tag:
+            pre_text = pre_tag.get_text()
+            if pre_text:
+                tagline = pre_text.strip()
         # remove editorial notes from rendering
         for tag in soup.find_all('blockquote'):
             tag.decompose()
@@ -59,7 +66,7 @@ class ZMSAgendaOutlookSchema:
             'eventLocation': event.location.displayName,  # TODO: handle geo-coords and multiple locations...?!
             'eventInfos': content if preview != href else '',  # if plain link set as eventUrl below and leave infos empty
             'eventInfosPreview': None,  # preview,  -> removed due to leading editorial notes in <blockquote>
-            'eventTagline': None,
+            'eventTagline': tagline,
             'eventCategories': event.categories,
             'eventImage': None,  # TODO: handle inline images - /event/body.content contains binary...?!
             'eventUrl': href if preview == href else None,
@@ -178,7 +185,7 @@ class ZMSAgendaOutlookSchema:
                     f"<br />{html.escape(event.get('event_submitter_email', ''))} {html.escape(event.get('event_submitter_phone', ''))}"
                     f"<hr />BEACHTE: {html.escape(event.get('event_submitter_hints', ''))}"
                     f"<hr />TURNUS: {html.escape(event.get('event_recurrence', ''))}"
-                    f"<hr />WEITERE KATEGORIE: {html.escape(event.get('event_categories-Comment', ''))}"
+                    f"<hr />SPITZMARKE: <pre>{html.escape(event.get('event_tagline', ''))}</pre>"
                     f"<hr /></blockquote><br />{html.escape(event.get('event_description', ''))} {link}"
             },
             "isAllDay": is_allday,
